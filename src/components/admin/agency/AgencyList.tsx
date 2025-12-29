@@ -22,6 +22,7 @@ const {user} = useSelector((state:RootState)=>state.user)
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
     { key: 'status', label: 'Status' },
+        { key: 'passwordHash', label: 'password Hash' , hidden:true},
     { key: 'createdAt', label: 'Created', render: (value: any) => value ? new Date(value).toLocaleString() : '-' },
   ];
 
@@ -59,6 +60,9 @@ const {user} = useSelector((state:RootState)=>state.user)
       }
     };
   
+    const handleBusiness=()=>{
+      
+    }
   return (
     <div>
       <DataTableExt
@@ -66,7 +70,7 @@ const {user} = useSelector((state:RootState)=>state.user)
         data={data}
          onCreate={handleAdd}
         initialColumns={columns}
-          opentab={() => {}}
+          opentab={() => handleBusiness}
            onDelete={(row) => handleDelete(row)}
         // loading={isAgencyLoading}
         // Add onView, onDelete, onCreate handlers as needed

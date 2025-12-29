@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { auth } from "@/auth";
 import React, { Suspense } from "react";
+import UpdateBusiness from "./UpdateBusiness";
 const ShowBusiness = React.lazy(() => import("@/components/admin/business/showbusiness"));
 
 type Business = {
@@ -161,6 +162,7 @@ export default async function BusinessList({
 
   const result = await res.json();
   const businesses: Business[] = result.item || [];
+  console.log("businesses--",businesses)
   const totalCount = result.totalCount || businesses.length;
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -204,7 +206,12 @@ export default async function BusinessList({
 
  
   return (
-    <div className="w-full max-w-[1200px] space-y-6">
+    <>
+
+    <UpdateBusiness
+    business={businesses??[]}
+    />
+     <div className="w-full max-w-[1200px] space-y-6">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h2 className="text-[26px] font-semibold text-slate-900">Businesses</h2>
@@ -459,5 +466,7 @@ export default async function BusinessList({
         </div>
       )}
     </div>
+    </>
+   
   );
 }
