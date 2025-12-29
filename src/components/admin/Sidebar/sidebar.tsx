@@ -488,7 +488,7 @@ export function Sidebar({
                             </div>
 
                             <div className="flex-1">
-                              <div className="text-[13px] font-semibold text-black/80">
+                              <div className="text-[13px] font-semibold text-black/80 ">
                                 {section.label}
                               </div>
                             </div>

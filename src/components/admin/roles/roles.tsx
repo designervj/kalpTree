@@ -248,7 +248,7 @@ const permissionGroups: PermissionGroups = availablePermissions.reduce(
               key={role._id}
               className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
             >
-              <div className="flex justify-between items-start mb-4">
+              <div className="flex justify-between items-start mb-4 border-b border-gray-200 pb-2">
                 <div>
                   <h3 className="text-xl font-semibold text-gray-800">
                     {role.name}
@@ -260,15 +260,15 @@ const permissionGroups: PermissionGroups = availablePermissions.reduce(
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleOpenModal(role)}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                    className="p-2 text-black hover:bg-blue-50 rounded-sm transition-colors border  border-gray-200"
                   >
-                    <Edit2 size={18} />
+                    <Edit2 size={16} />
                   </button>
                   <button
                     onClick={() => handleDelete(role._id!)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-red-600 hover:bg-red-50 rounded-sm transition-colors border border-gray-200"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={16} />
                   </button>
                 </div>
               </div>
@@ -281,7 +281,7 @@ const permissionGroups: PermissionGroups = availablePermissions.reduce(
                   {role.permissions.map((permission, index) => (
                     <span
                       key={index}
-                      className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded"
+                      className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded shadow-sm "
                     >
                       {permission}
                     </span>
