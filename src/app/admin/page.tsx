@@ -186,7 +186,7 @@ function SiteIcon({ style }: { style?: "wp" | "code" }) {
       ].join(" ")}
     >
       {isWP ? (
-        <div className="h-9 w-9 rounded-full border-2 border-white grid place-items-center text-white font-bold">
+        <div className="h-9 w-9 rounded-md border-2 border-white grid place-items-center text-white font-bold">
           W
         </div>
       ) : (
@@ -215,7 +215,7 @@ function PillButton({
     <Button
       asChild
       variant={variant}
-      className={`h-10 rounded-full px-4 text-sm font-semibold text-white ${className}`}
+      className={`h-10 rounded-md px-4 text-sm font-semibold text-white ${className}`}
     >
       <Link href={href} className="flex items-center gap-2">
         <Icon className="h-4 w-4" />
@@ -311,7 +311,7 @@ export default async function AdminIndex() {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
 
           <div className="relative z-10 p-7 lg:p-9 text-white">
-            <span className="w-fit rounded-full bg-white/90 text-black px-3 py-1 text-xs font-medium">
+            <span className="w-fit rounded-md bg-white/90 text-black px-3 py-1 text-xs font-medium">
               For agencies
             </span>
 
@@ -408,7 +408,7 @@ export default async function AdminIndex() {
             </p>
           </div>
 
-          <Button asChild variant="outline" className="rounded-full">
+          <Button asChild variant="outline" className="rounded-md">
             <Link href="/admin/websites/new">
               <Plus className="mr-2 h-4 w-4" />
               Add website
@@ -448,7 +448,7 @@ export default async function AdminIndex() {
                         </div>
 
                         {/* Pills */}
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md">
                           <PillButton
                             href={site.manageDomainHref}
                             icon={Globe}
@@ -465,7 +465,7 @@ export default async function AdminIndex() {
                             <Button
                               asChild
                               variant="secondary"
-                              className="h-10 rounded-full px-4 text-sm font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100"
+                              className="h-10 rounded-md px-4 text-sm font-semibold text-purple-700 bg-purple-50 hover:bg-purple-100"
                             >
                               <Link
                                 href={site.setupEmailHref || "/admin/emails/setup"}
@@ -547,7 +547,7 @@ export default async function AdminIndex() {
                     </div>
 
                     <div className="mt-4">
-                      <Button variant="secondary" className="rounded-full h-9 px-4 text-white">
+                      <Button variant="secondary" className="rounded-md h-9 px-4 text-white">
                         View {s.title}
                       </Button>
                     </div>
@@ -572,7 +572,7 @@ export default async function AdminIndex() {
           </div>
 
           <Link href="/admin/settings/general">
-            <Button variant="outline" className="rounded-full">
+            <Button variant="outline" className="rounded-md">
               Open settings
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -626,21 +626,21 @@ export default async function AdminIndex() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" className="rounded-full text-white" asChild>
+              <Button variant="secondary" className="rounded-md text-white" asChild>
                 <Link href="/admin/domains">
                   <Globe className="mr-2 h-4 w-4" />
                   Manage domain
                 </Link>
               </Button>
 
-              <Button variant="secondary" className="rounded-full text-white" asChild>
+              <Button variant="secondary" className="rounded-md text-white" asChild>
                 <Link href="/admin/emails">
                   <Mail className="mr-2 h-4 w-4" />
                   Manage email
                 </Link>
               </Button>
 
-              <Button variant="outline" className="rounded-full" asChild>
+              <Button variant="outline" className="rounded-md" asChild>
                 <Link href="/admin/analytics">
                   <Activity className="mr-2 h-4 w-4" />
                   View analytics

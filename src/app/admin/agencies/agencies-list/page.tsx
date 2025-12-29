@@ -71,7 +71,7 @@ function Badge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${cls}`}
+      className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${cls}`}
     >
       {children}
     </span>
@@ -88,10 +88,10 @@ function BusinessIcon({
       ? "bg-purple-600"
       : tone === "dark"
       ? "bg-slate-900"
-      : "bg-[#0b6d8e]";
+      : "bg-[#ddd]";
   return (
     <div
-      className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}
+      className={`h-14 w-14 rounded-md  ${bg} grid place-items-center text-white font-bold`}
     >
       <Users className="h-6 w-6" />
     </div>
@@ -181,7 +181,7 @@ export default async function BusinessList({
         </div>
         <Card className="rounded-3xl border bg-white shadow-sm">
           <CardContent className="p-12 text-center">
-            <div className="mx-auto h-16 w-16 rounded-full bg-slate-100 grid place-items-center mb-4">
+            <div className="mx-auto h-16 w-16 rounded-md bg-slate-100 grid place-items-center mb-4">
               <Users className="h-8 w-8 text-slate-400" />
             </div>
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
@@ -190,7 +190,7 @@ export default async function BusinessList({
             <p className="text-sm text-muted-foreground mb-6">
               Create your first business to manage websites, users, and billing.
             </p>
-            <Button asChild className="rounded-full">
+            <Button asChild className="rounded-md">
               <Link href="/admin/businesses/create">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Business
@@ -265,14 +265,14 @@ export default async function BusinessList({
         </Card>
 
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline" className="rounded-full">
+          <Button asChild variant="outline" className="rounded-md">
             <Link href="/admin/rolesandpermission">
               <ShieldCheck className="mr-2 h-4 w-4" />
               Roles & Permissions
             </Link>
           </Button>
 
-          <Button asChild className="rounded-full">
+          <Button asChild className="rounded-md">
             <Link href="/admin/businesses/create">
               <Plus className="mr-2 h-4 w-4" />
               Add Business
@@ -331,7 +331,7 @@ export default async function BusinessList({
                         <Button
                           asChild
                           variant="secondary"
-                          className="h-10 rounded-full px-4 text-sm font-semibold text-white"
+                          className="h-10 rounded-md px-4 text-sm font-semibold text-white"
                         >
                           <Link
                             href={`${href}/websites`}
@@ -339,7 +339,7 @@ export default async function BusinessList({
                           >
                             <Globe className="h-4 w-4" />
                             Websites{" "}
-                            <span className="ml-1 rounded-full bg-white/50 px-2 py-0.5 text-xs">
+                            <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
                               {b.websitesCount ?? 0}
                             </span>
                           </Link>
@@ -348,7 +348,7 @@ export default async function BusinessList({
                         <Button
                           asChild
                           variant="secondary"
-                          className="h-10 rounded-full px-4 text-sm font-semibold text-white"
+                          className="h-10 rounded-md px-4 text-sm font-semibold text-white"
                         >
                           <Link
                             href={`${href}/users`}
@@ -356,7 +356,7 @@ export default async function BusinessList({
                           >
                             <Users className="h-4 w-4" />
                             Members{" "}
-                            <span className="ml-1 rounded-full bg-white/50 px-2 py-0.5 text-xs">
+                            <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
                               {b.membersCount ?? 0}
                             </span>
                           </Link>
@@ -391,7 +391,7 @@ export default async function BusinessList({
                     <Button
                       asChild
                       variant="outline"
-                      className="h-10 rounded-xl px-5 text-sm font-semibold"
+                      className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
                     >
                       <Link href={href} className="flex items-center gap-2">
                         Open Dashboard
@@ -419,7 +419,7 @@ export default async function BusinessList({
               variant="outline"
               size="sm"
               disabled={currentPage === 1}
-              className="rounded-full"
+              className="rounded-md"
             >
               <Link
                 href={`?page=${currentPage - 1}`}
@@ -460,7 +460,7 @@ export default async function BusinessList({
                       asChild
                       variant={currentPage === page ? "default" : "outline"}
                       size="sm"
-                      className="rounded-full w-10 h-10 p-0"
+                      className="rounded-md w-10 h-10 p-0"
                     >
                       <Link href={`?page=${page}`}>{page}</Link>
                     </Button>
@@ -474,7 +474,7 @@ export default async function BusinessList({
               variant="outline"
               size="sm"
               disabled={currentPage === totalPages}
-              className="rounded-full"
+              className="rounded-md"
             >
               <Link
                 href={`?page=${currentPage + 1}`}

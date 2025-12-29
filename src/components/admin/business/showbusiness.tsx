@@ -22,7 +22,7 @@ const showbusiness = ({businessId}:Props) => {
     <Button
       asChild
       variant="outline"
-      className="h-10 rounded-xl px-5 text-sm font-semibold"
+      className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
       onClick={handleDashboard}
     >
       <a className="flex items-center gap-2">

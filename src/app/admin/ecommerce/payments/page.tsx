@@ -20,7 +20,7 @@ export default function PaymentsPage() {
 
       <div className="grid gap-6">
          {/* Stripe (Active) */}
-         <Card className="border-green-200 bg-green-50/10">
+         <Card className="border-green-200 bg-white">
             <CardHeader>
                <div className="flex justify-between items-start">
                   <div className="flex items-center gap-3">
@@ -46,7 +46,7 @@ export default function PaymentsPage() {
 
          {/* Razorpay (Configurable) */}
          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="razorpay" className="border rounded-xl px-4 data-[state=open]:bg-gray-50 transition-colors">
+            <AccordionItem value="razorpay" className="border rounded-xl px-4 data-[state=open]:bg-white bg-white transition-colors">
                <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-3">
                      <div className="h-10 w-10 bg-[#072654] text-white flex items-center justify-center rounded-md font-bold text-lg">R</div>
@@ -78,7 +78,7 @@ export default function PaymentsPage() {
             </AccordionItem>
 
             {/* PayPal */}
-            <AccordionItem value="paypal" className="border rounded-xl px-4 mt-4 data-[state=open]:bg-gray-50 transition-colors">
+            <AccordionItem value="paypal" className="border rounded-xl px-4 mt-4 data-[state=open]:bg-white bg-white transition-colors">
                <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-3">
                      <div className="h-10 w-10 bg-[#003087] text-white flex items-center justify-center rounded-md font-bold text-lg">P</div>
