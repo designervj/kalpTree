@@ -12,10 +12,13 @@ import llmSettingReducer from "../hooks/slices/setting/llmSetting/LLMSettingSlic
 import BlockReducer from "../hooks/slices/blocks/BlockSlice"
 import websitePageReducer from "../hooks/slices/website/websitePageSlice"
 import agencyReducer from "../hooks/slices/user/agencySlice"
+
+import businessReducer from "../hooks/slices/user/businessSlice"
 export const store = configureStore({
   reducer: {
     user: userSlice,
     agency:agencyReducer,
+    business:businessReducer,
     pageEdit: pageEditReducer,
     category: categoryReducer,
     brand: brandReducer,

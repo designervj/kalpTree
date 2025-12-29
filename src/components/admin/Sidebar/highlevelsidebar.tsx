@@ -56,7 +56,7 @@ const navigationItems = [
     href: "/admin/agencies",
     hasSubmenu: true,
     submenuItems: [
-      { label: "Agencies list", href: "/admin/agencies/agencies-list" },
+      { label: "Agencies list", href: "/admin/agencies" },
       { label: "Add New Agency", href: "/admin/agencies/createnew" },
     ],
   },
