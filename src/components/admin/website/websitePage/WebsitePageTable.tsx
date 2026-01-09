@@ -105,7 +105,7 @@ const WebsitePageTable = () => {
       <DataTableExt
         title="Pages"
         data={filteredPages}
-        createHref="/admin/pages/new"
+        createHref="/admin/website/pages/create"
         initialColumns={initialColumns} 
         onDelete={handleDelete}
         onView={handleView}
