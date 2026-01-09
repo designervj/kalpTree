@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "../store/ReduxProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,9 +31,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} antialiased`}>
-        
-          <ReduxProvider>{children}</ReduxProvider>
-        
+
+        <ReduxProvider>{children}</ReduxProvider>
+        <Toaster />
+
       </body>
     </html>
   );

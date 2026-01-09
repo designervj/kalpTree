@@ -105,7 +105,14 @@ const websitePageSlice = createSlice({
   reducers: {
     updateCurrentPage:(state, action)=>{
         state.currentpage=action.payload
-    }
+    },
+    setAllWebsitePages: (state, action) => {
+      state.websitePages = action.payload
+      state.hasFetched = true
+    },
+     updateWebsitePages: (state, action) => {
+      state.websitePages.push(action.payload)
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -151,7 +158,9 @@ const websitePageSlice = createSlice({
 });
 
 export const {
-updateCurrentPage
+updateCurrentPage,
+ setAllWebsitePages,
+ updateWebsitePages
 } = websitePageSlice.actions;
 
 export default websitePageSlice.reducer;

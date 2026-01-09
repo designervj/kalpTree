@@ -13,9 +13,25 @@ const nextConfig: NextConfig = {
       ],
     },
   ],
-  typescript:{
+  typescript: {
     ignoreBuildErrors: true
-  }
+  },
+  webpack: (config, { isServer }) => {
+    // Fix for MongoDB client-side encryption modules not available in browser
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        child_process: false,
+        fs: false,
+        net: false,
+        tls: false,
+        dns: false,
+      };
+    }
+    return config;
+  },
+  // Empty turbopack config to acknowledge Next.js 16+ Turbopack usage
+  turbopack: {},
 };
 
 
