@@ -5,31 +5,33 @@ import categoryReducer from "../hooks/slices/category/CategorySlice";
 import websitesReducer from "../hooks/slices/websites/WebsiteSlice";
 import attributeReducer from "../hooks/slices/attribute/AttributeSlice";
 import brandReducer from "../hooks/slices/brand/BrandSlice";
-
+import accountReducer from "../hooks/slices/user/accountSlice";
 import productReducer from "../hooks/slices/product/ProductSlice";
 import tenantsReducer from "../hooks/slices/tenants/TenantSlice";
 import llmSettingReducer from "../hooks/slices/setting/llmSetting/LLMSettingSlice";
-import BlockReducer from "../hooks/slices/blocks/BlockSlice"
-import websitePageReducer from "../hooks/slices/website/websitePageSlice"
-import agencyReducer from "../hooks/slices/user/agencySlice"
+import BlockReducer from "../hooks/slices/blocks/BlockSlice";
+import websitePageReducer from "../hooks/slices/website/websitePageSlice";
+import agencyReducer from "../hooks/slices/user/agencySlice";
+import rolePermissionReducer from "../hooks/slices/RolePermissions/rolePermissionSlice";
+import businessReducer from "../hooks/slices/user/businessSlice";
 
-import businessReducer from "../hooks/slices/user/businessSlice"
 export const store = configureStore({
   reducer: {
     user: userSlice,
-    agency:agencyReducer,
-    business:businessReducer,
+    agency: agencyReducer,
+    business: businessReducer,
     pageEdit: pageEditReducer,
     category: categoryReducer,
     brand: brandReducer,
-
     attribute: attributeReducer,
     product: productReducer,
     websites: websitesReducer,
     tenants: tenantsReducer,
     llmSetting: llmSettingReducer,
-     block:BlockReducer,
-     websitePage:websitePageReducer
+    block: BlockReducer,
+    websitePage: websitePageReducer,
+    rolePermission: rolePermissionReducer,
+    account: accountReducer,
   },
 });
 

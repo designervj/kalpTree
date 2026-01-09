@@ -60,7 +60,6 @@ export function AppShellClient({
   const resetRedux = () => {
     dispatch(clearAttributes());
     dispatch(clearBrands());
-
     dispatch(clearCategories());
     dispatch(clearProducts());
   };

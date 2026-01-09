@@ -52,7 +52,7 @@ export type DataTableExtProps = {
   initialColumns?: ColumnConfig[];
   onDelete?: (row: any) => void;
   onView?: (row: any) => void;
-  opentab: (row: any) => void;
+  opentab?: (row: any) => void;
 };
 
 type SortDir = "asc" | "desc";
@@ -343,7 +343,7 @@ export function DataTableExt({
     }
   ) {
    
-    opentab(row)
+    // opentab(row)
   //   e.preventDefault();
   //   if (path.includes("domain")) {
   //     if (!row.primaryDomain?.length) return;
