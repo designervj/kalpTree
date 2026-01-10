@@ -5,9 +5,6 @@ import { useParams, usePathname } from "next/navigation";
 import {
   Home,
   Globe,
-  Layers,
-  Mail,
-  Server,
   CreditCard,
   Package,
   ChevronRight,
@@ -20,6 +17,7 @@ import {
   Sparkles,
   LogOut,
   Bell,
+  Palette,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -33,8 +31,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-
-import { GoSidebarExpand, GoSidebarCollapse } from "react-icons/go";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home, href: "/admin" },
@@ -72,9 +68,6 @@ const navigationItems = [
       { label: "Transfers", href: "/domains/transfers" },
     ],
   },
-  // { id: "horizons", label: "Horizons", icon: Layers, href: "/horizons" },
-  // { id: "emails", label: "Emails", icon: Mail, href: "/emails" },
-  // { id: "vps", label: "VPS", icon: Server, href: "/vps" },
   {
     id: "billing",
     label: "Billing",
@@ -111,6 +104,13 @@ const navigationItems = [
     icon: Shield,
     href: "/admin/rolesandpermission",
   },
+
+    {
+    id: "themes",
+    label: "Themes",
+    icon: Palette,
+    href: "/admin/themes",
+  },
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -121,12 +121,8 @@ function cn(...classes: any[]) {
 
 type HighLevelSidebarProps = {
   user?: any;
-
-  // ✅ parent controlled
   collapsed: boolean;
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-
-  // (optional) mobile use
   showSidebar: boolean;
   setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -147,9 +143,6 @@ export function HighLevelSidebar({
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-
-  const toggleCollapsed = () => setCollapsed((v) => !v);
-
   return (
     <div
       className={cn(
@@ -160,7 +153,9 @@ export function HighLevelSidebar({
       <div className="w-full">
         <div
           className={cn(
-            "h-full border bg-[#f5f6f7] text-[#111]",
+            "h-full border",
+            "bg-[var(--admin-sidebar-bg)] text-[color:var(--admin-sidebar-fg)]",
+            "border-[color:var(--admin-sidebar-border)]",
             "shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
           )}
         >
@@ -174,7 +169,7 @@ export function HighLevelSidebar({
             >
               <div className="space-y-1">
                 {navigationItems.map((item) => {
-                  const Icon = item.icon;
+                  const Icon = item.icon as any;
                   const isOpen = !!openItems[item.id];
                   const isActive = pathname === item.href;
 
@@ -194,16 +189,23 @@ export function HighLevelSidebar({
                             type="button"
                             className={cn(
                               "w-full flex items-center justify-center relative",
-                              "h-11 rounded-md transition",
+                              "h-11 rounded-md transition border",
+                              "border-[color:var(--admin-sidebar-border)]",
                               isActive
-                                ? "bg-white text-black shadow-sm"
-                                : "bg-white/70 hover:bg-white",
-                              "border border-black/5"
+                                ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm"
+                                : "bg-white/50 hover:bg-[var(--admin-sidebar-hover)]"
                             )}
                           >
-                            <Icon className="h-5 w-5 text-black/70" />
+                            <Icon className="h-5 w-5 opacity-80" />
                             {(item as any).badge && (
-                              <span className="absolute -top-1 -right-1 text-[9px] rounded-full bg-purple-100 text-purple-700 px-1.5 py-0.5 font-semibold border border-purple-200">
+                              <span
+                                className="absolute -top-1 -right-1 text-[9px] rounded-full px-1.5 py-0.5 font-semibold border"
+                                style={{
+                                  background: "var(--admin-sidebar-badge-bg)",
+                                  color: "var(--admin-sidebar-badge-fg)",
+                                  borderColor: "var(--admin-sidebar-border)",
+                                }}
+                              >
                                 {(item as any).badge}
                               </span>
                             )}
@@ -262,14 +264,14 @@ export function HighLevelSidebar({
                     <div key={item.id}>
                       <div
                         className={cn(
-                          "w-full flex items-center gap-3 rounded-md px-3 py-2.5 1",
-                          "text-left transition",
+                          "w-full flex items-center gap-3 rounded-md px-3 py-2.5",
+                          "text-left transition border border-transparent",
                           isActive
-                            ? "bg-white text-black shadow-sm"
-                            : "bg-transparent hover:bg-white/50"
+                            ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm border-[color:var(--admin-sidebar-border)]"
+                            : "hover:bg-[var(--admin-sidebar-hover)]"
                         )}
                       >
-                        <Icon className="h-5 w-5 text-black/70" />
+                        <Icon className="h-5 w-5 opacity-80" />
 
                         <Link
                           href={item.href}
@@ -281,7 +283,7 @@ export function HighLevelSidebar({
                         {item.hasSubmenu && (
                           <button
                             type="button"
-                            className="text-black/40"
+                            className="opacity-60"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -322,7 +324,7 @@ export function HighLevelSidebar({
                                     href={subItem.href}
                                     className="block"
                                   >
-                                    <div className="flex items-center gap-3 rounded-md px-3 py-2 text-[13px] text-black/70 hover:bg-white/70">
+                                    <div className="flex items-center gap-3 rounded-md px-3 py-2 text-[13px] text-[color:var(--admin-sidebar-muted)] hover:bg-[var(--admin-sidebar-hover)]">
                                       <span className="truncate flex-1">
                                         {subItem.label}
                                       </span>
@@ -340,40 +342,15 @@ export function HighLevelSidebar({
               </div>
             </div>
 
-            {/* ✅ Collapse/Expand Button */}
-            {/* <div className="border-t border-black/10 px-3 py-2">
-              <button
-                type="button"
-                onClick={toggleCollapsed}
-                className={cn(
-                  "w-full flex items-center rounded-md transition hover:bg-white/60",
-                  collapsed ? "justify-center h-10" : "justify-between px-3 py-2"
-                )}
-              >
-                <span className="text-black/70">
-                  {collapsed ? (
-                    <GoSidebarExpand size={20} />
-                  ) : (
-                    <GoSidebarCollapse size={20} />
-                  )}
-                </span>
-
-                {!collapsed && (
-                  <span className="text-[12px] text-black/60">
-                    Collapse sidebar
-                  </span>
-                )}
-              </button>
-            </div> */}
-
             {/* User menu */}
-            <div className="border-t border-black/10 p-3">
+            <div className="border-t p-3 border-[color:var(--admin-sidebar-border)]">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
                     className={cn(
                       "flex w-full items-center gap-3 rounded-lg px-3 py-2",
-                      "text-left transition-colors hover:bg-muted focus:outline-none",
+                      "text-left transition-colors focus:outline-none",
+                      "hover:bg-[var(--admin-sidebar-hover)]",
                       collapsed && "justify-center px-2"
                     )}
                   >
@@ -389,11 +366,11 @@ export function HighLevelSidebar({
                           <span className="text-sm font-medium">
                             {user?.name || "shadcn"}
                           </span>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-[color:var(--admin-sidebar-muted)]">
                             {user?.email || "m@example.com"}
                           </span>
                         </div>
-                        <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
+                        <ChevronsUpDown className="h-4 w-4 text-[color:var(--admin-sidebar-muted)]" />
                       </>
                     )}
                   </button>
@@ -430,6 +407,13 @@ export function HighLevelSidebar({
                   </DropdownMenuItem>
 
                   <DropdownMenuSeparator className="my-1" />
+
+                  <Link href="/admin/themes" className="no-underline cursor-pointer">
+                    <DropdownMenuItem className="rounded-md font-normal">
+                      <Palette className="mr-2 h-4 w-4" />
+                      Themes
+                    </DropdownMenuItem>
+                  </Link>
 
                   <DropdownMenuItem className="rounded-md">
                     <User className="mr-2 h-4 w-4" />

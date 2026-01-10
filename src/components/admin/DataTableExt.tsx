@@ -426,7 +426,7 @@ export function DataTableExt({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <DropdownMenu>
+        <DropdownMenu >
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="lg" className="gap-2">
               <ListFilter className="h-4 w-4" /> Filters
@@ -458,10 +458,10 @@ export function DataTableExt({
                         }))
                       }
                     >
-                      <SelectTrigger className="h-8">
+                      <SelectTrigger className="h-8 w-full">
                         <SelectValue placeholder="Any" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="w-full">
                         <SelectItem value="__any__">Any</SelectItem>
                         {uniques.map((u) => (
                           <SelectItem key={String(u)} value={String(u)}>

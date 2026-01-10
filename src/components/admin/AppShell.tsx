@@ -68,6 +68,8 @@ import {
   ArrowLeftRight,
   User,
   Sparkles,
+  ChevronsUpDown,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -107,6 +109,7 @@ import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
+import { Label } from "../ui/label";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -221,6 +224,12 @@ export const currentWebsiteSections: NavSection[] = [
       {
         label: "Media",
         href: "/admin/website/media",
+        icon: ImageIcon,
+        permission: ["media:update", "media:read", "media:delete"],
+      },
+       {
+        label: "Templates",
+        href: "/admin/website/templates",
         icon: ImageIcon,
         permission: ["media:update", "media:read", "media:delete"],
       },
@@ -795,8 +804,12 @@ export function AppShell({
             </button>
           </div>
 
-          {currentWebsite && (
-            <div className="flex items-center gap-2 rounded-full border bg-muted/60 px-3 py-1 text-xs text-muted-foreground">
+           
+
+
+
+          {/* {currentWebsite && (
+            <div className="flex items-center gap-2 rounded-full border bg-muted/60 px-3 py-1 text-xs text-muted-foreground ">
               <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 text-[10px] font-semibold text-primary">
                 {currentWebsite.name &&
                   currentWebsite.name.charAt(0).toUpperCase()}
@@ -806,7 +819,7 @@ export function AppShell({
                 {currentWebsite.primaryDomain || currentWebsite.systemSubdomain}
               </span>
             </div>
-          )}
+          )} */}
         </div>
 
         {/* RIGHT */}
@@ -833,9 +846,8 @@ export function AppShell({
           </Button>
 
           {/* Avatar */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              {/* <Button variant="ghost" size="icon" className=""> */}
               <Button variant="ghost" size="icon" className="">
                 <Avatar className="h-7 w-7">
                   <AvatarFallback>
@@ -849,7 +861,9 @@ export function AppShell({
               align="end"
               className="bg-white rounded-md shadow-md w-40"
             >
-              <DropdownMenuLabel className="hover:bg-primary hover:text-white p-2">
+
+              <Label className="px-2 font-semibold text-sm">Super Admin</Label>
+              <DropdownMenuLabel className="hover:bg-primary hover:text-white p-2 font-normal hover:bg-trasnparent">
                 {user?.email || "User"}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -867,7 +881,93 @@ export function AppShell({
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
+
+
+
+                <DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    {/* ✅ TOP STYLE trigger but works for your current header */}
+      <Button variant="ghost" size="icon" className="">
+      {/* Avatar circle (gradient like top code) */}
+      {/* <div className="h-9 w-9 rounded-full">
+        {user?.email?.charAt(0).toUpperCase() || "U"}
+      </div> */}
+
+       <Avatar className="h-7 w-7">
+                  <AvatarFallback>
+                       {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+
+      {/* Optional: if you want email next to avatar in header */}
+      {/* <div className="hidden md:flex flex-col leading-tight">
+        <span className="text-sm font-medium">{user?.name || "Super Admin"}</span>
+        <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+          {user?.email || "m@example.com"}
+        </span>
+      </div>
+      <ChevronsUpDown className="hidden md:block h-4 w-4 text-muted-foreground" /> */}
+    </Button>
+  </DropdownMenuTrigger>
+
+  {/* ✅ TOP STYLE dropdown */}
+  <DropdownMenuContent
+    side="bottom"
+    align="end"
+    sideOffset={10}
+    className="w-56 rounded-xl border bg-background shadow-lg p-1"
+  >
+    <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
+      {/* <Avatar className="h-8 w-8">
+        <AvatarFallback className="font-semibold">
+          {user?.email?.charAt(0).toUpperCase() || "U"}
+          
+        </AvatarFallback>
+      </Avatar> */}
+
+      <div className="flex flex-col leading-tight px-2">
+        <span className="text-sm font-medium capitalize">{ user?.role}</span>
+        <span className="text-xs text-muted-foreground truncate">
+          {user?.email || "m@example.com"}
+        </span>
+      </div>
+    </DropdownMenuLabel>
+
+    <DropdownMenuSeparator className="my-1" />
+
+    {/* Role badge / label */}
+    <div className="px-2 pb-2">
+      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground capitalize">
+        {/* Super Admin  */}
+                      {/* {sentenceCase(user?.role)} panel */}
+        {user?.role || "Super Admin"}
+      </span>
+    </div>
+
+    <DropdownMenuItem className="rounded-md">
+      <User className="mr-2 h-4 w-4" />
+      Profile
+    </DropdownMenuItem>
+
+    <DropdownMenuItem className="rounded-md">
+      <Settings className="mr-2 h-4 w-4" />
+      Account settings
+    </DropdownMenuItem>
+
+    <DropdownMenuSeparator className="my-1" />
+
+    <DropdownMenuItem
+      onClick={handleSignOut}
+      className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
+    >
+      <LogOut className="mr-2 h-4 w-4" />
+      Sign out
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+                        
         </div>
       </header>
 
@@ -900,7 +1000,7 @@ export function AppShell({
 
         <div className="flex flex-1 min-h-screen flex-col overflow-hidden">
           <main className="flex-1 px-3 py-4 md:px-6 md:py-6 overflow-auto">
-            <div className="mx-auto max-w-7xl">{children}</div>
+            <div className="mx-auto ">{children}</div>
           </main>
         </div>
 

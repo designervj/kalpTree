@@ -154,7 +154,7 @@ export default async function BusinesswithID({
 
 
   return (
-    <div className="w-full max-w-[1200px] space-y-6">
+    <div className="w-full max-full space-y-6">
       {/* HERO */}
       <div className="relative overflow-hidden rounded-md border bg-white shadow-sm">
         <div className="absolute inset-0 bg-white" />

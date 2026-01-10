@@ -165,7 +165,7 @@ export function Topbar({
               onClick={handleSignOut}
               className="hover:bg-primary hover:text-white p-2"
             >
-              Sign out
+              Sign out 
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -3,176 +3,152 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* -----------------------------------------------------------------------
-  THEME CONFIGURATION (Tailwind v4)
-  Mapping CSS variables to Tailwind utility classes
-  -----------------------------------------------------------------------
-*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  /* Chart Colors for Dashboards */
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
-
-  /* Sidebar Specifics */
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
-
-  /* Fonts */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-
-  /* Radii */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* -----------------------------------------------------------------------
-  COLOR PALETTE DEFINITIONS (OKLCH)
-  Primary Base: #6d455a -> oklch(0.429 0.126 345.26)
-  -----------------------------------------------------------------------
+/* PREMIUM COLOR PALETTE: INDIGO & SLATE 
+  Format: HSL (Safe for all browsers & React styles)
 */
 :root {
-  --radius: 0.5rem;
-
-  /* LIGHT MODE - Clean, Architectural, Warm */
-  --background: oklch(0.99 0.003 345);      /* Almost pure white with tiny hint of warmth */
-  --foreground: oklch(0.20 0.02 345);       /* Deep charcoal, softer than black */
-
-  --card: oklch(1 0 0);                     /* Pure White */
-  --card-foreground: oklch(0.20 0.02 345);
-
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.20 0.02 345);
-
-  /* Brand Primary: #6d455a */
-  --primary: oklch(0.429 0.126 345.26);
-  --primary-foreground: oklch(0.98 0.01 345); /* White text on primary */
-
-  /* Secondary: Soft Champagne/Sand (Compliments Plum) */
-  --secondary: #293849;
-  --secondary-foreground: oklch(0.429 0.126 345.26); /* Primary color text */
-
-  /* Muted: Subtle Grays */
-  --muted: oklch(0.96 0.01 345);
-  --muted-foreground: oklch(0.55 0.04 345);
-
-  /* Accent: Hover states, row highlights */
-  --accent: oklch(0.96 0.01 345);
-  --accent-foreground: oklch(0.429 0.126 345.26);
-
-  /* Functional */
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
+  --radius: 0.625rem;
   
-  --border: oklch(0.92 0.01 345);
-  --input: oklch(0.92 0.01 345);
-  --ring: oklch(0.429 0.126 345.26); /* Focus ring matches primary */
+  /* Backgrounds */
+  --background: 210 40% 98%;      /* Very slight blue tint for premium feel */
+  --foreground: 222.2 84% 4.9%;   /* Deep dark blue-black text */
 
-  /* Sidebar (Light) */
-  --sidebar: oklch(0.985 0.005 345);
-  --sidebar-foreground: oklch(0.25 0.02 345);
-  --sidebar-primary: oklch(0.429 0.126 345.26);
-  --sidebar-primary-foreground: oklch(0.98 0.01 345);
-  --sidebar-accent: oklch(0.95 0.01 345);
-  --sidebar-accent-foreground: oklch(0.429 0.126 345.26);
-  --sidebar-border: oklch(0.90 0.01 345);
-  --sidebar-ring: oklch(0.429 0.126 345.26);
+  /* Cards */
+  --card: 0 0% 100%;              /* Pure White */
+  --card-foreground: 222.2 84% 4.9%;
 
-  /* Chart Colors (Harmonized) */
-  --chart-1: oklch(0.429 0.126 345.26); /* The Primary Plum */
-  --chart-2: oklch(0.55 0.10 20);       /* Muted Rose/Red */
-  --chart-3: oklch(0.60 0.12 85);       /* Muted Gold */
-  --chart-4: oklch(0.65 0.08 180);      /* Soft Teal */
-  --chart-5: oklch(0.60 0.05 250);      /* Soft Blue */
+  /* Popovers */
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+
+  /* Primary (Indigo - Matches GrapesJS) */
+  --primary: 243 75% 59%;         /* #6366f1 - Your main brand color */
+  --primary-foreground: 210 40% 98%;
+
+  /* Secondary */
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+
+  /* Muted */
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+
+  /* Accent */
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+
+  /* Destructive */
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+
+  /* Borders & Inputs */
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 243 75% 59%;
+
+  /* Sidebar (Light Mode) */
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 240 5.3% 26.1%;
+  --sidebar-primary: 240 5.9% 10%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 240 4.8% 95.9%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  
+  /* Charts */
+  --chart-1: 12 76% 61%;
+  --chart-2: 173 58% 39%;
+  --chart-3: 197 37% 24%;
+  --chart-4: 43 74% 66%;
+  --chart-5: 27 87% 67%;
 }
 
-/* DARK MODE - Luxury, Deep, High Contrast */
 .dark {
-  --background: oklch(0.14 0.02 280);       /* Deep dark slate (not pitch black) */
-  --foreground: oklch(0.98 0.005 345);      /* Off-white */
+  /* Dark Mode Backgrounds - Deep Slate (Not Black) */
+  --background: 222.2 84% 4.9%;
+  --foreground: 210 40% 98%;
 
-  --card: oklch(0.17 0.02 280);             /* Slightly lighter than BG */
-  --card-foreground: oklch(0.98 0.005 345);
+  /* Cards */
+  --card: 222.2 84% 4.9%;
+  --card-foreground: 210 40% 98%;
 
-  --popover: oklch(0.17 0.02 280);
-  --popover-foreground: oklch(0.98 0.005 345);
+  /* Popovers */
+  --popover: 222.2 84% 4.9%;
+  --popover-foreground: 210 40% 98%;
 
-  /* Primary in dark mode: Slightly lighter/more vibrant for visibility */
-  --primary: lab(34.49% 20.6 -5.31) !important;
-  --primary-foreground: oklch(0.98 0.005 345);
+  /* Primary (Lighter Indigo for Dark Mode) */
+  --primary: 243 100% 70%; 
+  --primary-foreground: 222.2 47.4% 11.2%;
 
-  /* Secondary: Deep muted purple/grey */
-  --secondary: oklch(0.25 0.04 345);
-  --secondary-foreground: oklch(0.98 0.005 345);
+  /* Secondary */
+  --secondary: 217.2 32.6% 17.5%;
+  --secondary-foreground: 210 40% 98%;
 
-  --muted: oklch(0.25 0.02 280);
-  --muted-foreground: oklch(0.70 0.02 280);
+  /* Muted */
+  --muted: 217.2 32.6% 17.5%;
+  --muted-foreground: 215 20.2% 65.1%;
 
-  --accent: oklch(0.25 0.04 345);
-  --accent-foreground: oklch(0.98 0.005 345);
+  /* Accent */
+  --accent: 217.2 32.6% 17.5%;
+  --accent-foreground: 210 40% 98%;
 
-  --destructive: oklch(0.60 0.20 25);
-  --destructive-foreground: oklch(0.985 0 0);
+  /* Destructive */
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 210 40% 98%;
 
-  --border: oklch(0.28 0.02 280);
-  --input: oklch(0.28 0.02 280);
-  --ring: #6d455a ;
+  /* Borders */
+  --border: 217.2 32.6% 17.5%;
+  --input: 217.2 32.6% 17.5%;
+  --ring: 212.7 26.8% 83.9%;
 
-  /* Sidebar (Dark) */
-  --sidebar: oklch(0.12 0.02 280);
-  --sidebar-foreground: oklch(0.95 0.01 345);
-  --sidebar-primary: #6d455a;
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.20 0.02 280);
-  --sidebar-accent-foreground: oklch(0.98 0.005 345);
-  --sidebar-border: oklch(0.25 0.02 280);
-  --sidebar-ring: #6d455a;
-
-  /* Charts - Brightened for Dark Mode */
-  --chart-1: #6d455a;
-  --chart-2: oklch(0.65 0.14 20);
-  --chart-3: oklch(0.75 0.14 85);
-  --chart-4: oklch(0.75 0.10 180);
-  --chart-5: oklch(0.70 0.08 250);
+  /* Sidebar (Dark Mode) */
+  --sidebar: 222.2 84% 4.9%;
+  --sidebar-foreground: 240 4.8% 95.9%;
+  --sidebar-primary: 224.3 76.3% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 217.2 91.2% 59.8%;
+  
+  /* Charts */
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
 }
 
 @layer base {
@@ -180,69 +156,56 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground antialiased;
-  }
-  
-  /* Standard Link Strategy */
-  a {
-    @apply text-primary font-medium transition-colors;
-  }
-  
-  a:hover {
-    @apply opacity-80 underline decoration-primary/30 underline-offset-4;
-  }
-
-  /* Typography Defaults */
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight text-foreground font-semibold;
-  }
-
-  /* This ensures all text selection across the site is white on a primary background */
-  ::selection {
-    background-color: var(--primary);
-    color: #ffffff;
-  }
-
-  /* High-Contrast Selection Strategy */
-  ::selection {
-    /* Uses the Primary Maroon for the highlight background */
-    background-color: var(--primary); 
-    /* Forces the text to pure white for maximum readability on maroon */
-    color: #ffffff !important; 
-  }
-
-  /* Specific override for Webkit browsers (Chrome, Safari, Edge) */
-  ::-webkit-selection {
-    background-color: var(--primary);
-    color: #ffffff !important;
-  }
-
-  /* Specific override for Firefox */
-  ::-moz-selection {
-    background-color: var(--primary);
-    color: #ffffff !important;
+    @apply bg-background text-foreground;
   }
 }
 
-/* -----------------------------------------------------------------------
-  GRAPESJS EDITOR OVERRIDES
-  Keeping your specific editor styling intact
-  -----------------------------------------------------------------------
-*/
-.gjs-pn-panel { display: none !important; }
-.gjs-cv-canvas { width: 100% !important; height: 100% !important; top: 0 !important; left: 0 !important; }
-.gjs-frame-wrapper { padding: 0 !important; }
+/* ... Keep your existing GrapesJS styles below ... */
+/* Hide GrapesJS default UI */
+.gjs-pn-panel {
+  display: none !important;
+}
 
-/* Editor Backgrounds */
-.gjs-one-bg { background-color: #0f172a !important; }
-.gjs-two-color { color: #e2e8f0 !important; } /* Lightened for contrast */
-.gjs-three-bg { background-color: var(--color-primary) !important; } /* Use brand primary */
-.gjs-four-color, .gjs-four-color-h:hover { color: var(--color-primary) !important; }
+.gjs-cv-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  top: 0 !important;
+  left: 0 !important;
+}
 
-.gjs-frame { background-color: white !important; }
+.gjs-frame-wrapper {
+  padding: 0 !important;
+}
 
-/* Modals */
-.gjs-mdl-container { background-color: rgba(15, 23, 42, 0.7) !important; backdrop-filter: blur(4px) !important; }
+/* Style the editor */
+.gjs-one-bg {
+  background-color: #0f172a !important;
+}
+
+.gjs-two-color {
+  color: #6366f1 !important;
+}
+
+.gjs-three-bg {
+  background-color: #6366f1 !important;
+}
+
+.gjs-four-color,
+.gjs-four-color-h:hover {
+  color: #4f46e5 !important;
+}
+
+/* Style the canvas */
+.gjs-frame {
+  background-color: white !important;
+}
+
+/* Style the modal */
+.gjs-mdl-container {
+  background-color: rgba(15, 23, 42, 0.7) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
 .gjs-mdl-dialog {
   background-color: #1e293b !important;
   color: white !important;
@@ -250,83 +213,197 @@
   border: 1px solid #334155 !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
 }
-.gjs-mdl-header { border-bottom: 1px solid #334155 !important; padding: 0.75rem 1rem !important; }
-.gjs-mdl-title { font-weight: 600 !important; }
-.gjs-mdl-btn-close { color: white !important; }
 
-/* Selection Highlighting - mapped to Primary */
-.gjs-selected { outline: 2px solid var(--color-primary) !important; }
-.gjs-hovered { outline: 1px solid color-mix(in srgb, var(--color-primary), transparent 50%) !important; }
-.gjs-resizer-h, .gjs-resizer-v { background-color: var(--color-primary) !important; border-color: var(--color-primary) !important; }
+.gjs-mdl-header {
+  border-bottom: 1px solid #334155 !important;
+  padding: 0.75rem 1rem !important;
+}
 
-/* -----------------------------------------------------------------------
-  UTILITY CLASSES
-  -----------------------------------------------------------------------
-*/
-.tooltip { position: relative; display: inline-block; }
+.gjs-mdl-title {
+  font-weight: 600 !important;
+}
+
+.gjs-mdl-btn-close {
+  color: white !important;
+}
+
+/* Style the component highlight */
+.gjs-selected {
+  outline: 2px solid #6366f1 !important;
+}
+
+.gjs-hovered {
+  outline: 1px solid rgba(99, 102, 241, 0.5) !important;
+}
+
+/* Style the resizer */
+.gjs-resizer-h {
+  background-color: #6366f1 !important;
+  border-color: #6366f1 !important;
+}
+
+.gjs-resizer-v {
+  background-color: #6366f1 !important;
+  border-color: #6366f1 !important;
+}
+
+/* Custom styles for tooltips */
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
 .tooltip .tooltiptext {
-  visibility: hidden; width: 120px;
-  background-color: #1e293b; color: #fff;
-  text-align: center; border-radius: 6px; padding: 5px;
-  position: absolute; z-index: 1; bottom: 125%; left: 50%;
-  margin-left: -60px; opacity: 0; transition: opacity 0.3s;
-  font-size: 12px; border: 1px solid #334155;
+  visibility: hidden;
+  width: 120px;
+  background-color: #1e293b;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  font-size: 12px;
+  border: 1px solid #334155;
 }
-.tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
 
-.overflow-y-auto::-webkit-scrollbar { width: 6px; }
-.overflow-y-auto::-webkit-scrollbar-track { background: transparent; }
-.overflow-y-auto::-webkit-scrollbar-thumb { background: var(--color-muted-foreground); border-radius: 3px; opacity: 0.5; }
-.overflow-y-auto::-webkit-scrollbar-thumb:hover { background: var(--color-foreground); }
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
 
-.responsive-panel { background-color: #1e293b; border-top: 1px solid #334155; }
+/* Custom scrollbar for panels */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
 
-/* Compact & Premium UI */
-.compact-button { @apply h-8 text-xs px-2.5; }
-.compact-icon-button { @apply h-7 w-7; }
-.compact-input { @apply h-8 text-xs px-2.5 py-1.5; }
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #1e293b;
+}
 
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Responsive panel styles */
+.responsive-panel {
+  background-color: #1e293b;
+  border-top: 1px solid #334155;
+}
+
+/* Compact UI elements */
+.compact-button {
+  @apply h-8 text-xs px-2.5;
+}
+
+.compact-icon-button {
+  @apply h-7 w-7;
+}
+
+.compact-input {
+  @apply h-8 text-xs px-2.5 py-1.5;
+}
+
+/* Premium UI enhancements */
 .premium-card {
-  @apply bg-card text-card-foreground border border-border rounded-lg shadow-sm hover:shadow-md transition-shadow;
+  @apply bg-slate-800 border border-slate-700 rounded-md shadow-sm hover:shadow-md transition-shadow;
 }
 
-/* Gradient utilizing brand colors */
 .premium-gradient {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #6d455a);
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
 }
 
 .premium-text-gradient {
-  background: linear-gradient(135deg, var(--color-primary) 0%, #6d455a);
+  background: linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-.invisible { visibility: hidden !important; }
-
-@layer utilities {
-  .scrollbar-thin { scrollbar-width: thin; }
-  
-  /* Scrollbar updated to use theme vars */
-  .scrollbar-thumb-slate-700::-webkit-scrollbar-thumb { background-color: var(--color-muted-foreground); border-radius: 3px; }
-  .scrollbar-track-slate-800::-webkit-scrollbar-track { background-color: var(--color-muted); }
-  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+/* Ensure resize handles are always visible when needed */
+.invisible {
+  visibility: hidden !important;
 }
 
-/* Animations */
-.fade-in { opacity: 0; transition: opacity 0.3s ease; }
-.fade-in.active { opacity: 1; }
+/* Add these styles to your globals.css */
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
 
-.slide-in { transform: translateY(20px); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
-.slide-in.active { transform: translateY(0); opacity: 1; }
+  .scrollbar-thumb-slate-700::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 3px;
+  }
 
-.scale-in { transform: scale(0.8); opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; }
-.scale-in.active { transform: scale(1); opacity: 1; }
+  .scrollbar-track-slate-800::-webkit-scrollbar-track {
+    background-color: #1e293b;
+  }
 
-.hidden-element { display: none; }
-.visible-element { display: block; }
-.interactive-hover:hover { transition: all 0.3s ease; }
-.interactive-active { transition: all 0.3s ease; }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}
 
-/* .bg-primary{
-  background-color: #6d455a !important;
-} */
+/* Add these styles for interactivity animations */
+.fade-in {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.fade-in.active {
+  opacity: 1;
+}
+
+.slide-in {
+  transform: translateY(20px);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.slide-in.active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.scale-in {
+  transform: scale(0.8);
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.scale-in.active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Add these utility classes for interactivity */
+.hidden-element {
+  display: none;
+}
+
+.visible-element {
+  display: block;
+}
+
+.interactive-hover:hover {
+  transition: all 0.3s ease;
+}
+
+.interactive-active {
+  transition: all 0.3s ease;
+}
+
+/* .accont-settings-dialog{
+  min-width: 1020px !important;
+}  */

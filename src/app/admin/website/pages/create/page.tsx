@@ -76,7 +76,7 @@ export default async function NewPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-medium">Create New Page</h2>
+      {/* <h2 className="text-xl font-medium">Create New Page</h2> */}
       <PageCreator item={emptyItem} fields={fieldConfig} />
     </div>
   );
