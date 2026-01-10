@@ -13,7 +13,7 @@ import BlockReducer from "../hooks/slices/blocks/BlockSlice";
 import websitePageReducer from "../hooks/slices/website/websitePageSlice";
 import agencyReducer from "../hooks/slices/user/agencySlice";
 import rolePermissionReducer from "../hooks/slices/RolePermissions/rolePermissionSlice";
-import businessReducer from "../hooks/slices/user/businessSlice";
+import businessReducer from "../hooks/slices/business/BusinessSlice";
 import templateReducer from "../hooks/slices/templates/TemplateSlice";
 import dashboardDetailsReducer from "../hooks/slices/dashboardSlice/dashBoardSlice";
 

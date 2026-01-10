@@ -1,4 +1,5 @@
-import { CreateTemplateInput, TemplateDocument, UpdateTemplateInput } from "@/components/templates/TemplateType";
+
+import { TemplateDocument, UpdateTemplateInput } from "@/components/admin/templates/TemplateType";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Thunk to fetch all templates
@@ -42,7 +43,7 @@ export const fetchTemplateById = createAsyncThunk(
 // Thunk to create a new template
 export const createTemplate = createAsyncThunk(
     "templates/create",
-    async (input: CreateTemplateInput, { rejectWithValue }) => {
+    async (input: TemplateDocument, { rejectWithValue }) => {
         try {
             const response = await fetch("/api/template", {
                 method: "POST",
@@ -58,7 +59,7 @@ export const createTemplate = createAsyncThunk(
             }
 
             const data = await response.json();
-            return data.template as TemplateDocument;
+            return data.insertedId;
         } catch (error: any) {
             return rejectWithValue(error.message || "Failed to create template");
         }

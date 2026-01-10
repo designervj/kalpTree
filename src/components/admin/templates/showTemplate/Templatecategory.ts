@@ -1,0 +1,25 @@
+import { ComponentCategory } from "../../../../../types/editor";
+
+export const componentCategories: ComponentCategory[] = [
+  { id: "hero", label: "Hero Sections" },
+  { id: "about", label: "About Sections" },
+  { id: "navigation", label: "Navigation" },
+  { id: "features", label: "Features" },
+  { id: "testimonials", label: "Testimonials" },
+  { id: "pricing", label: "Pricing" },
+  { id: "cta", label: "Call to Action" },
+  { id: "forms", label: "Forms" },
+  { id: "footer", label: "Footer" },
+  { id: "ecommerce", label: "E-Commerce" },
+  { id: "blog", label: "Blog" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "team", label: "Team" },
+  { id: "stats", label: "Statistics" },
+  { id: "faq", label: "FAQ" },
+  { id: "gallery", label: "Gallery" },
+  { id: "contact", label: "Contact" },
+  { id: "cards", label: "Cards" },
+  { id: "sections", label: "Sections" },
+  { id: "layouts", label: "Layouts" },
+  { id: "accordian", label: "Accordians" },
+];
