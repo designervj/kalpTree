@@ -49,43 +49,39 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import { RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 type SidebarProps = {
-  tenants: any[];
-  currentTenant: any | null;
   onTenantChange: (tenantId: string) => void;
 
-  websites: Website[];
-  currentWebsite: Website | null;
   onWebsiteChange: (websiteId: string) => void;
 
-  user: UserType | null;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-  loggedinTenant: any;
 
-  currentagency: any;
-  agencies: any[];
   onAgencyChage: (agencyId: string) => void;
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Sidebar({
-  websites,
-  currentWebsite,
-  user,
   onWebsiteChange,
   collapsed = false,
   onToggleCollapse,
-  tenants,
-  currentTenant,
   onTenantChange,
-  loggedinTenant,
-  agencies,
-  currentagency,
   onAgencyChage,
 }: SidebarProps) {
+  const {
+    user,
+    agencies,
+    business: tenants,
+    websites,
+    currentAgency: currentagency,
+    currentWebsite,
+    currentbusiness: currentTenant,
+    loggedinTenant,
+  } = useSelector((state: RootState) => state.dashboardDetails);
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
 
@@ -570,84 +566,6 @@ export function Sidebar({
                   )}
                 </div>
               </ScrollArea>
-
-              {/* collapse button */}
-              {/* <div className="border-t border-black/10 p-3">
-                <div className="mt-4">
-                  <DropdownMenu>
-                
-                    <DropdownMenuTrigger asChild>
-                      <button className="flex w-full items-center gap-3 rounded-md px-3 py-2 hover:bg-muted">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>SC</AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex flex-col flex-1 text-left leading-tight">
-                          <span className="text-sm font-medium">shadcn</span>
-                          <span className="text-xs text-muted-foreground">
-                            m@example.com
-                          </span>
-                        </div>
-
-                        <ChevronsUpDown className="h-4 w-4 text-muted-foreground" />
-                      </button>
-                    </DropdownMenuTrigger>
-
-             
-                    <DropdownMenuContent
-                      side="right" 
-                      align="start" 
-                      sideOffset={12} 
-                      className="w-56 rounded-xl shadow-xl mb-2"
-                    >
-                    
-                      <DropdownMenuLabel className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback>SC</AvatarFallback>
-                        </Avatar>
-
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium">shadcn</span>
-                          <span className="text-xs text-muted-foreground">
-                            m@example.com
-                          </span>
-                        </div>
-                      </DropdownMenuLabel>
-
-                      <DropdownMenuSeparator />
-
-                      <DropdownMenuItem>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Upgrade to Pro
-                      </DropdownMenuItem>
-
-                      <DropdownMenuSeparator />
-
-                      <DropdownMenuItem>
-                        <User className="mr-2 h-4 w-4" />
-                        Account
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem>
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        Billing
-                      </DropdownMenuItem>
-
-                      <DropdownMenuItem>
-                        <Bell className="mr-2 h-4 w-4" />
-                        Notifications
-                      </DropdownMenuItem>
-
-                      <DropdownMenuSeparator />
-
-                      <DropdownMenuItem className="text-red-600 focus:text-red-600">
-                        <LogOut className="mr-2 h-4 w-4" />
-                        Log out
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

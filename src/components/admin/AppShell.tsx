@@ -119,7 +119,7 @@ export type Website = {
   tenantId?: string;
   websiteId?: string;
   name: string;
-  primaryDomain?: string[] | string | null;
+  primaryDomain?: string[] | null;
   systemSubdomain?: string;
   serviceType: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
@@ -138,16 +138,8 @@ export type User = {
 
 type AppShellProps = {
   children: React.ReactNode;
-  websites?: Website[];
-  currentWebsite?: Website | null;
-  user?: User | null;
   onWebsiteChange?: (websiteId: string) => void;
-  tenants: any[];
-  currentTenant: any | null;
   onTenantChange?: (tenantId: string) => void;
-  loggedinTenant: any;
-  currentagency: any;
-  agencies: any[];
   onAgencyChage?: (agencyId: string) => void;
 };
 
@@ -722,18 +714,13 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  websites = [],
-  currentWebsite = null,
-  user = null,
   onWebsiteChange = () => {},
   onTenantChange = () => {},
   onAgencyChage = () => {},
-  tenants = [],
-  currentTenant = null,
-  loggedinTenant,
-  currentagency = null,
-  agencies = [],
 }: AppShellProps) {
+  const { user, websites, currentWebsite } = useSelector(
+    (state: RootState) => state.dashboardDetails
+  );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const params = useParams();
@@ -769,7 +756,7 @@ export function AppShell({
 
   const [collapsed, setCollapsed] = React.useState(Boolean(params.website));
   const [showSidebar, setShowSidebar] = React.useState(true);
-  const {isSecondDashBoard}= useSelector((state:RootState)=>state.user)
+  const { isSecondDashBoard } = useSelector((state: RootState) => state.user);
   return (
     <>
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
@@ -980,20 +967,12 @@ export function AppShell({
           setShowSidebar={setShowSidebar}
         />
 
-        { isSecondDashBoard &&(
+        {isHighLevelCollapsed && (
           <Sidebar
-            tenants={tenants}
-            currentTenant={currentTenant}
             onTenantChange={onTenantChange}
-            websites={websites}
-            currentWebsite={currentWebsite}
-            user={user}
             onWebsiteChange={onWebsiteChange}
-            collapsed={sidebarCollapsed}
+            collapsed={false}
             onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            loggedinTenant={loggedinTenant}
-            agencies={agencies}
-            currentagency={currentagency}
             onAgencyChage={onAgencyChage}
           />
         )}

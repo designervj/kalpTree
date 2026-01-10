@@ -36,12 +36,6 @@ export function serializeMongoDoc<T>(doc: T): any {
 }
 
 export async function GET(req: NextRequest) {
-  const query = (await req).nextUrl.searchParams;
-  const tenantId = query.get("tenantId");
-  const businessid = query.get("businessid");
-  const url = query.get("url");
-
-  const cookieStore = await cookies();
   const session = await auth();
   const user = session?.user
     ? {
@@ -56,193 +50,81 @@ export async function GET(req: NextRequest) {
       }
     : null;
   let agencies: any[] = [];
-  let currentagency: any | null = null;
   let business: any[] = [];
-  let currentbusiness: any | null = null;
   let websites: any[] = [];
-  let currentWebsite: any | null = null;
   let loggedinTenant: null | any | undefined = null;
   let agencyColl = await getCollection("tenants");
   let websiteColl = await getCollection("websites");
+
   if (user?.role == "superadmin") {
-    agencies = (await agencyColl.find({ type: "agency" }).toArray()).map(
-      (d) => {
-        delete d.createdAt;
-        delete d.updatedAt;
-        return {
-          ...d,
-          _id: String(d._id),
-        };
-      }
-    );
-    const currentAgencyId = cookieStore.get(
-      "current_selected_agency_id"
-    )?.value;
+    agencies = await agencyColl
+      .find({ type: "agency" })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+      })
+      .toArray();
 
-    if (currentAgencyId) {
-      currentagency = agencies.find((a) => a._id === currentagency) || null;
-    }
+    business = await agencyColl
+      .find({ type: "business" })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+      })
+      .toArray();
 
-    if (!currentagency && agencies.length > 0) {
-      if (businessid != "null") {
-        currentagency = agencies.find((a) => a._id === businessid) || null;
-      } else {
-        currentagency = agencies[0];
-      }
-    }
-
-    if (currentagency?._id) {
-      business = await agencyColl
-        .find({ tenantId: new ObjectId(currentagency._id) })
-        .toArray();
-      business = business.map((doc: any) => ({
-        _id: doc._id.toString(),
-        name: doc.name,
-        email: doc.email,
-        slug: doc.slug,
-        createdById: doc.createdById?.toString(),
-      }));
-
-      const currentBusinessId = cookieStore.get(
-        "current_selected_business_id"
-      )?.value;
-
-      if (currentBusinessId) {
-        currentbusiness =
-          business.find((t) => t._id === currentBusinessId) || null;
-      }
-      if (!currentBusinessId && business.length > 0) {
-        if (tenantId != "null") {
-          currentbusiness = business.find((t) => t._id === tenantId) || null;
-        } else {
-          currentbusiness = business[0];
-        }
-      }
-
-      if (currentbusiness?._id) {
-        websites = await websiteColl
-          .find({
-            tenantId: new ObjectId(currentbusiness._id),
-          })
-          .toArray();
-
-        websites = websites.map((doc: any) => ({
-          _id: doc._id.toString(),
-          websiteId: doc.websiteId,
-          name: doc.name,
-          primaryDomain: Array.isArray(doc.primaryDomain)
-            ? doc.primaryDomain[0] ?? null
-            : doc.primaryDomain,
-          serviceType: doc.serviceType,
-          status: "active" as const,
-        }));
-
-        const currentWebsiteId = cookieStore.get("current_website_id")?.value;
-
-        if (currentWebsiteId) {
-          currentWebsite =
-            websites.find((w) => w._id === currentWebsiteId) || null;
-        }
-
-        if (!currentWebsite && websites.length > 0) {
-          if (url != "undefined") {
-            currentWebsite =
-              websites.find((w) => w.primaryDomain.includes(url)) || null;
-          } else {
-            currentWebsite = websites[0];
-          }
-        }
-      }
-    }
+    websites = await websiteColl
+      .find()
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+        primaryDomain: 1,
+      })
+      .toArray();
   } else if (user?.role == "agency") {
     business = await agencyColl
       .find({ tenantId: new ObjectId(user.tenantId) })
+      .project({
+        name: 1,
+        _id: 1,
+      })
       .toArray();
-    business = business.map((doc: any) => ({
-      _id: doc._id.toString(),
-      name: doc.name,
-      email: doc.email,
-      slug: doc.slug,
-      createdById: doc.createdById?.toString(),
-    }));
-
-    const currentBusinessId = cookieStore.get(
-      "current_selected_business_id"
-    )?.value;
-
-    if (currentBusinessId) {
-      currentbusiness =
-        business.find((t) => t._id === currentBusinessId) || null;
-    }
-    if (!currentBusinessId && business.length > 0) {
-      currentbusiness = business[0];
-    }
-
-    if (currentbusiness?._id) {
-      websites = await websiteColl
-        .find({
-          tenantId: new ObjectId(currentbusiness._id),
-        })
-        .toArray();
-      websites = websites.map((doc: any) => ({
-        _id: doc._id.toString(),
-        websiteId: doc.websiteId,
-        name: doc.name,
-        primaryDomain: Array.isArray(doc.primaryDomain)
-          ? doc.primaryDomain[0] ?? null
-          : doc.primaryDomain,
-        serviceType: doc.serviceType,
-        status: "active" as const,
-      }));
-
-      const currentWebsiteId = cookieStore.get("current_website_id")?.value;
-
-      if (currentWebsiteId) {
-        currentWebsite =
-          websites.find((w) => w._id === currentWebsiteId) || null;
-      }
-
-      if (!currentWebsite && websites.length > 0) {
-        currentWebsite = websites[0];
-      }
-    }
+    websites = await websiteColl
+      .find({
+        tenantId: {
+          $in: business.map((d) => d._id),
+        },
+      })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+        primaryDomain: 1,
+      })
+      .toArray();
   } else if (user?.role == "business") {
     websites = await websiteColl
       .find({
         tenantId: new ObjectId(user.tenantId),
       })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+        primaryDomain: 1,
+      })
       .toArray();
-    websites = websites.map((doc: any) => ({
-      _id: doc._id.toString(),
-      websiteId: doc.websiteId,
-      name: doc.name,
-      primaryDomain: Array.isArray(doc.primaryDomain)
-        ? doc.primaryDomain[0] ?? null
-        : doc.primaryDomain,
-      serviceType: doc.serviceType,
-      status: "active" as const,
-    }));
-
-    const currentWebsiteId = cookieStore.get("current_website_id")?.value;
-
-    if (currentWebsiteId) {
-      currentWebsite = websites.find((w) => w._id === currentWebsiteId) || null;
-    }
-
-    if (!currentWebsite && websites.length > 0) {
-      currentWebsite = websites[0];
-    }
   }
 
   return NextResponse.json({
     user,
     business,
-    currentbusiness,
     websites,
-    currentWebsite,
     loggedinTenant,
     agencies,
-    currentagency,
   });
 }
 

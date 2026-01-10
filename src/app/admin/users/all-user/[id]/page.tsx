@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-
 import GetAllAccount from "@/components/admin/accounts/GetAllAccount";
 import GetAllRolePermission from "@/components/admin/onboarding/GetAllRolePermission";
 import GetAllUsers from "@/components/admin/users/GetAllUsers";

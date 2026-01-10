@@ -114,18 +114,20 @@ type Role = keyof typeof ROLE_MAP;
 
 export function toCreateHref(
   url: string,
-  tenantId: string | null = null,
   businessId: string | null = null,
+  agencyid: string | null = null,
   role: string
 ) {
   if (!(role in ROLE_MAP)) {
     throw new Error("Invalid role");
   }
   const obj: Record<Role, string> = {
-    superadmin: `/admin/websites/${url}?businessid=${businessId}&tenantId=${tenantId}`,
+    superadmin: `/admin/websites/${url}?businessid=${businessId}&agencyid=${agencyid}`,
     agency: `/admin/websites/${url}?businessid=${businessId}`,
     business: `/admin/websites/${url}`,
   };
+
+  console.log(obj[role as Role]);
 
   return obj[role as Role];
 }
@@ -151,7 +153,6 @@ export default async function BusinesswithID({
 
   const totalWebsites = websites.length;
   const primaryDomain = websites?.[0]?.primaryDomain?.[0] || "—";
-
 
   return (
     <div className="w-full max-full space-y-6">
@@ -361,8 +362,11 @@ export default async function BusinesswithID({
               {websites.length ? (
                 websites.map((w: any, idx: number) => {
                   const dom = w.primaryDomain?.[0] || "—";
+                  const domain = w.primaryDomain.find((d: string) =>
+                    d.includes("kalptree.xyz")
+                  );
                   let href = toCreateHref(
-                    dom,
+                    domain,
                     business._id,
                     business.tenantId,
                     user?.role!

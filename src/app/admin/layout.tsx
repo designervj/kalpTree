@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
+import { ReactNode, Suspense } from "react";
 import { AppShellProvider } from "@/components/admin/AppShellProvider";
 import { Inter } from "next/font/google";
-import { auth } from "@/auth";
+import GetDashBoardDetails from "@/components/admin/GetDashboardDetails";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -13,6 +13,11 @@ export default async function AdminLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await auth()
-  return <AppShellProvider >{children}</AppShellProvider>;
+  return (
+    <>
+      <Suspense fallback={null}>
+        <AppShellProvider>{children}</AppShellProvider>
+      </Suspense>
+    </>
+  );
 }
