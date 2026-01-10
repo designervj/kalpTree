@@ -189,7 +189,7 @@ export default async function BusinessList({
     totalCount = await tenantcoll.countDocuments({ type: "business" });
   }
 
-  console.log("businesses--", businesses);
+
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;

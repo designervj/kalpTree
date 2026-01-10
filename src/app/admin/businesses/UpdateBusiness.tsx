@@ -1,5 +1,6 @@
 "use client"
-import { setBusinesses } from '@/hooks/slices/user/businessSlice'
+
+import { setBusinesses } from '@/hooks/slices/business/BusinessSlice'
 import { IBusiness } from '@/models/business'
 import { IUser } from '@/models/user'
 import { AppDispatch } from '@/store/store'

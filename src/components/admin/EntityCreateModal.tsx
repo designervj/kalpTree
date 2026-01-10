@@ -301,13 +301,13 @@ export default function EntityCreateModal({ entity }: Props) {
 
   return (
     <>
-      <button
+      {/* <button
         onClick={() => setOpen(true)}
         className="text-sm btn btn-primary"
         type="button"
       >
         + New {entity}
-      </button>
+      </button> */}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

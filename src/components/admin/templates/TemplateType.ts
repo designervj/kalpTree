@@ -4,24 +4,29 @@ import { ObjectId } from 'mongodb';
  * Template document schema for MongoDB "templates" collection
  */
 export interface TemplateDocument {
-    _id: ObjectId;
-    id?:string;
-    templateId: string;
-    label: string;
-    category: string;
-    content: string;
-    attributes: Record<string, any>;
-    thumbnail: string | null;
-
+    _id?: ObjectId;
+    id?: string;
+    slug?: string;
+    templateId?: string;
+    templateType?: string,
+    pageType?: string,
+    label?: string;
+    category?: string;
+    content?: string;
+    description?: string;
+    imageDataUrl?: string;
+    attributes?: Record<string, any>;
+    thumbnail?: string | null;
+    version?: string;
     // Metadata
-    status: 'active' | 'inactive' | 'draft';
-    isPublic: boolean;
-    isPremium: boolean;
-    tags: string[];
-
+    status?: 'active' | 'inactive' | 'draft';
+    isPublic?: boolean;
+    isPremium?: boolean;
+    tags?: string;
+    notes?: string;
     // Timestamps
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 /**
