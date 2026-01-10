@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "../store/ReduxProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { AdminThemeProvider } from "@/components/admin/ThemeProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -30,11 +31,17 @@ export default function RootLayout({
           href="https://unpkg.com/grapesjs/dist/css/grapes.min.css"
         />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      {/* <body className={`${inter.variable} antialiased`}>
 
         <ReduxProvider>{children}</ReduxProvider>
         <Toaster />
 
+      </body> */}
+
+       <body className={`${inter.variable} antialiased`}>
+        <AdminThemeProvider>
+          <ReduxProvider>{children}</ReduxProvider>
+        </AdminThemeProvider>
       </body>
     </html>
   );

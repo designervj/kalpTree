@@ -242,10 +242,12 @@ export default async function AdminIndex() {
     ]);
 
   const stats: QuickStat[] = [
-    { title: "Pages", value: pages, href: "/admin/pages", icon: FileText },
-    { title: "Posts", value: posts, href: "/admin/posts", icon: FileText },
+    { title: "Agencies", value: 10, href: "/admin/agencies", icon: FileText },
+
+    { title: "Businesses", value: 15, href: "/admin/businesses", icon: Globe },
+
     {
-      title: "Products",
+      title: "Website",
       value: products,
       href: "/admin/products",
       icon: ShoppingCart,
@@ -292,11 +294,11 @@ export default async function AdminIndex() {
   ];
 
   return (
-    <div className="w-full max-w-[1200px] space-y-10">
+    <div className="w-full space-y-10">
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h2 className="text-[28px] font-semibold text-slate-900">
-          Welcome to hPanel
+          Welcome to Admin dashboard 
         </h2>
         <p className="text-sm text-muted-foreground">
           Everything you need to manage website, branding, products & marketing.
@@ -396,6 +398,53 @@ export default async function AdminIndex() {
         </Card>
       </div>
 
+
+  {/* ✅ AT A GLANCE (counts moved here so "Your business" stays like screenshot) */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-[22px] font-semibold text-slate-900">At a glance</h3>
+          <p className="text-sm text-muted-foreground">
+            Content + store totals across your workspace.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {stats.map((s) => {
+            const Icon = s.icon;
+            return (
+              <Link key={s.title} href={s.href} className="block">
+                <Card className="rounded-2xl border bg-white shadow-sm hover:shadow-md transition">
+                  <CardContent className="p-5">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center gap-2 text-sm text-slate-500">
+                          <Icon className="h-4 w-4" />
+                          <span>{s.title}</span>
+                        </div>
+                        <div className="mt-1 text-[42px] font-semibold text-slate-900">
+                          {s.value}
+                        </div>
+                      </div>
+
+                      <div className="text-slate-400">
+                        <ExternalLink className="h-5 w-5" />
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Button  className="rounded-md h-9 px-4 text-white">
+                        View {s.title}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+
       {/* ✅ YOUR BUSINESS (Hostinger-like list design) */}
       <div className="space-y-4">
         <div className="flex items-end justify-between gap-4 flex-wrap">
@@ -427,7 +476,7 @@ export default async function AdminIndex() {
                 className="rounded-3xl border bg-white shadow-sm"
               >
                 <CardContent className="p-6">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between 1">
                     {/* LEFT */}
                     <div className="flex items-start gap-5">
                       <SiteIcon style={site.iconStyle} />
@@ -514,50 +563,7 @@ export default async function AdminIndex() {
         </div>
       </div>
 
-      {/* ✅ AT A GLANCE (counts moved here so "Your business" stays like screenshot) */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="text-[22px] font-semibold text-slate-900">At a glance</h3>
-          <p className="text-sm text-muted-foreground">
-            Content + store totals across your workspace.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {stats.map((s) => {
-            const Icon = s.icon;
-            return (
-              <Link key={s.title} href={s.href} className="block">
-                <Card className="rounded-2xl border bg-white shadow-sm hover:shadow-md transition">
-                  <CardContent className="p-5">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="flex items-center gap-2 text-sm text-slate-500">
-                          <Icon className="h-4 w-4" />
-                          <span>{s.title}</span>
-                        </div>
-                        <div className="mt-1 text-[30px] font-semibold text-slate-900">
-                          {s.value}
-                        </div>
-                      </div>
-
-                      <div className="text-slate-400">
-                        <ExternalLink className="h-5 w-5" />
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <Button variant="secondary" className="rounded-md h-9 px-4 text-white">
-                        View {s.title}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-      </div>
+    
 
       {/* Action Center */}
       <div className="space-y-4">

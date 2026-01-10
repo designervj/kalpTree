@@ -268,6 +268,7 @@ export default function PageCreator({
           <Button
             type="button"
             variant="secondary"
+            className="text-white"
             // className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 text-gray-700 font-medium hover:from-gray-300 hover:to-gray-400 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
             onClick={handleCancel}
           >

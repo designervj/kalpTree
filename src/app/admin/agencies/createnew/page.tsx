@@ -14,6 +14,7 @@ import { Brandingdetails } from "@/components/admin/users/brandingdetails";
 import { Businessdetails } from "@/components/admin/users/businessdetails";
 import { Userdetails } from "@/components/admin/users/userdetails";
 import Link from "next/link";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
@@ -218,18 +219,17 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
 
   return (
     <div className="min-h-screen bg-transparent p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className=" mx-auto">
         
-        <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
-      {/* Page Title */}
+        {/* <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
+
       <h1 className="text-2xl font-semibold text-slate-900">
         Agencies
       </h1>
 
-      {/* Divider */}
       <div className="h-6 w-px bg-slate-300" />
 
-      {/* Breadcrumb */}
+ 
       <div className="flex items-center gap-2 text-sm text-slate-500">
         <Home className="h-4 w-4" />
 
@@ -248,22 +248,25 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
          Add New Agency
         </span>
       </div>
-      </div>
+      </div> */}
         
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-black mb-2">
+          {/* <h1 className="text-4xl font-bold text-black mb-2">
             {safeUser.role === "superadmin"
               ? "Agency & Business Management"
               : "Agencies"}
-          </h1>
+          </h1> */}
+
+          <BreadCrumbPage />
+
           <p className="text-gray-600">
             {safeUser.role === "superadmin"
               ? "Create agency and business accounts with complete branding"
-              : "Create and manage business accounts with complete branding "}
+              : "Create and manage business accounts with complete branding"}
           </p>
         </div>
 
-        <div className="bg-white rounded-md shadow-2xl overflow-hidden border border-primary-100">
+        <div className="bg-white rounded-md  overflow-hidden border border-primary-100">
           {/* Tabs */}
           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex">

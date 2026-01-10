@@ -170,7 +170,7 @@ export default async function BusinessList({
 
   if (businesses.length === 0) {
     return (
-      <div className="w-full max-w-[1200px] space-y-6">
+      <div className="w-full max-full space-y-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-[26px] font-semibold text-slate-900">
             Businesses
@@ -203,7 +203,7 @@ export default async function BusinessList({
   }
 
   return (
-    <div className="w-full max-w-[1200px] space-y-6">
+    <div className="w-full max-full space-y-6">
 
              <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
       {/* Page Title */}

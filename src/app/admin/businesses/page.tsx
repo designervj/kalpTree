@@ -20,6 +20,7 @@ import { auth } from "@/auth";
 import React, { Suspense } from "react";
 import UpdateBusiness from "./UpdateBusiness";
 import { redirect } from "next/navigation";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 const ShowBusiness = React.lazy(() => import("@/components/admin/business/showbusiness"));
 
 type Business = {
@@ -196,16 +197,18 @@ export default async function BusinessList({
 
   if (businesses.length === 0) {
     return (
-      <div className="w-full max-w-[1200px] space-y-6">
+      <div className="w-full max-full space-y-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-[26px] font-semibold text-slate-900">
-            Businesses
+            Businesses 
           </h2>
+          
+          
           <p className="text-sm text-muted-foreground">
             No businesses found. Create your first business to get started.
           </p>
         </div>
-        <Card className="rounded-3xl border bg-white shadow-sm">
+        <Card className="rounded-md border bg-white shadow-sm">
           <CardContent className="p-12 text-center">
             <div className="mx-auto h-16 w-16 rounded-md bg-slate-100 grid place-items-center mb-4">
               <Users className="h-8 w-8 text-slate-400" />
@@ -236,13 +239,31 @@ export default async function BusinessList({
       <UpdateBusiness
         business={businesses ?? []}
       />
-      <div className="w-full max-w-[1200px] space-y-6">
+      <div className="w-full  space-y-6">
         {/* Header */}
-        <div className="flex flex-col gap-1">
-          <h2 className="text-[26px] font-semibold text-slate-900">Businesses</h2>
+        <div className="flex items-center justify-between gap-1">
+          <div>
+          {/* <h2 className="text-[26px] font-semibold text-slate-900">Businesses a</h2> */}
+          <BreadCrumbPage />
           <p className="text-sm text-muted-foreground">
             Manage businesses, switch context, and open a dashboard for each.
           </p>
+        </div>
+             <div className="flex items-center gap-2">
+            <Button asChild variant="outline" className="rounded-md">
+              <Link href="/admin/rolesandpermission">
+                <ShieldCheck className="mr-2 h-4 w-4" />
+                Roles & Permissions
+              </Link>
+            </Button>
+
+            <Button asChild className="rounded-md">
+              <Link href="/admin/businesses/create">
+                <Plus className="mr-2 h-4 w-4" />
+                Add Business
+              </Link>
+            </Button>
+          </div>
         </div>
 
         {/* Top actions */}
@@ -266,21 +287,7 @@ export default async function BusinessList({
             </CardContent>
           </Card>
 
-          <div className="flex items-center gap-2">
-            <Button asChild variant="outline" className="rounded-full">
-              <Link href="/admin/rolesandpermission">
-                <ShieldCheck className="mr-2 h-4 w-4" />
-                Roles & Permissions
-              </Link>
-            </Button>
-
-            <Button asChild className="rounded-full">
-              <Link href="/admin/businesses/create">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Business
-              </Link>
-            </Button>
-          </div>
+       
         </div>
 
         {/* List */}
@@ -292,7 +299,7 @@ export default async function BusinessList({
             const href = `/admin/businesses/${b._id}`;
 
             return (
-              <Card key={b._id} className="rounded-3xl border bg-white shadow-sm">
+              <Card key={b._id} className="rounded-md border bg-white shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -329,11 +336,12 @@ export default async function BusinessList({
                           </div>
                         ) : null}
 
-                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                        <div className="mt-3 flex flex-wrap items-center gap-2 1">
                           <Button
                             asChild
-                            variant="secondary"
-                            className="h-10 rounded-full px-4 text-sm font-semibold text-white"
+                            // variant="secondary"
+                            variant="outline"
+                            // className="h-10 rounded-md px-4 text-sm font-semibold text-white"
                           >
                             <Link
                               href={`${href}/websites`}
@@ -341,7 +349,7 @@ export default async function BusinessList({
                             >
                               <Globe className="h-4 w-4" />
                               Websites{" "}
-                              <span className="ml-1 rounded-full bg-white/50 px-2 py-0.5 text-xs">
+                              <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
                                 {b.websitesCount ?? 0}
                               </span>
                             </Link>
@@ -349,8 +357,8 @@ export default async function BusinessList({
 
                           <Button
                             asChild
-                            variant="secondary"
-                            className="h-10 rounded-full px-4 text-sm font-semibold text-white"
+                              variant="outline"
+                            // className="h-10 rounded-md px-4 text-sm font-semibold text-white"
                           >
                             <Link
                               href={`${href}/users`}
@@ -358,7 +366,7 @@ export default async function BusinessList({
                             >
                               <Users className="h-4 w-4" />
                               Members{" "}
-                              <span className="ml-1 rounded-full bg-white/50 px-2 py-0.5 text-xs">
+                              <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
                                 {b.membersCount ?? 0}
                               </span>
                             </Link>
@@ -386,7 +394,7 @@ export default async function BusinessList({
                           className="flex items-center gap-2"
                         >
                           <Settings className="h-4 w-4" />
-                          Settings
+                          Settings 
                         </Link>
                       </Button>
 
@@ -418,7 +426,7 @@ export default async function BusinessList({
                 variant="outline"
                 size="sm"
                 disabled={currentPage === 1}
-                className="rounded-full"
+                className="rounded-md"
               >
                 <Link
                   href={`?page=${currentPage - 1}`}
@@ -459,7 +467,7 @@ export default async function BusinessList({
                         asChild
                         variant={currentPage === page ? "default" : "outline"}
                         size="sm"
-                        className="rounded-full w-10 h-10 p-0"
+                        className="rounded-md w-10 h-10 p-0"
                       >
                         <Link href={`?page=${page}`}>{page}</Link>
                       </Button>
@@ -473,7 +481,7 @@ export default async function BusinessList({
                 variant="outline"
                 size="sm"
                 disabled={currentPage === totalPages}
-                className="rounded-full"
+                className="rounded-md"
               >
                 <Link
                   href={`?page=${currentPage + 1}`}

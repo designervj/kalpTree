@@ -26,7 +26,7 @@ const showbusiness = ({businessId}:Props) => {
       onClick={handleDashboard}
     >
       <a className="flex items-center gap-2">
-        Open Dashboard
+        Open Dashboard 
         <ArrowRight className="h-4 w-4" />
       </a>
     </Button>

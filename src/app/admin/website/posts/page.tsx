@@ -1,7 +1,10 @@
 "use client";
 
 import React from "react";
-import { Plus, Trash2, Edit2 } from "lucide-react";
+import { Plus, Trash2, Edit2,  } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import Link from "next/link";
 
 export default function Page() {
   const posts = [
@@ -11,7 +14,7 @@ export default function Page() {
       excerpt: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus interdum.",
       author: "Admin",
       date: "Dec 29, 2025",
-      thumbnail: "https://via.placeholder.com/400x200?text=Post+1",
+      thumbnail: "/bizcraft.webp",
     },
     {
       id: 2,
@@ -19,7 +22,7 @@ export default function Page() {
       excerpt: "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
       author: "Admin",
       date: "Dec 28, 2025",
-      thumbnail: "https://via.placeholder.com/400x200?text=Post+2",
+      thumbnail: "/Medilab-bootstrap-website-template.webp",
     },
     {
       id: 3,
@@ -27,7 +30,7 @@ export default function Page() {
       excerpt: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip.",
       author: "Editor",
       date: "Dec 27, 2025",
-      thumbnail: "https://via.placeholder.com/400x200?text=Post+3",
+      thumbnail: "/Moderna.webp",
     },
     {
       id: 4,
@@ -35,18 +38,21 @@ export default function Page() {
       excerpt: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.",
       author: "Admin",
       date: "Dec 26, 2025",
-      thumbnail: "https://via.placeholder.com/400x200?text=Post+4",
+      thumbnail: "/post_img.png",
     },
   ];
 
   return (
-    <div className="bg-gray-100 min-h-screen p-6">
+    <div className=" min-h-screen p-6">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
-        <h1 className="text-3xl font-bold text-gray-800">Posts</h1>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          <Plus className="h-4 w-4" /> Add New Post
-        </button>
+        {/* <h1 className="text-3xl font-bold text-gray-800">Posts 1</h1> */}
+        <BreadCrumbPage />
+        <Link href="/admin/websites/posts/create" className="cursor-pointer">
+          <Button>
+            <Plus className="h-4 w-4" /> Add New Post
+          </Button>
+        </Link>
       </div>
 
       {/* Posts Grid */}
@@ -61,7 +67,7 @@ export default function Page() {
 
             {/* Content */}
             <div className="p-4 flex flex-col flex-1">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">{post.title}</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-gray-800 mb-2">{post.title}</h2>
               <p className="text-gray-600 text-sm mb-4 flex-1">{post.excerpt}</p>
               
               {/* Meta */}
@@ -72,12 +78,12 @@ export default function Page() {
 
               {/* Actions */}
               <div className="flex gap-2">
-                <button className="flex-1 px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 flex items-center justify-center gap-1 text-sm">
+                <Button className="flex-1 px-3 py-1  flex items-center justify-center gap-1 ">
                   <Edit2 className="h-4 w-4" /> Edit
-                </button>
-                <button className="flex-1 px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center justify-center gap-1 text-sm">
+                </Button>
+                <Button className="flex-1 px-3 py-1 bg-secondary text-black hover:bg-accent-foreground flex items-center justify-center gap-1 ">
                   <Trash2 className="h-4 w-4" /> Delete
-                </button>
+                </Button>
               </div>
             </div>
           </div>
