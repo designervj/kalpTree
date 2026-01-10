@@ -34,17 +34,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home, href: "/admin" },
-  {
-    id: "businesses",
-    label: "Businesses",
-    icon: LayoutDashboard,
-    href: "/admin/businesses",
-    hasSubmenu: true,
-    submenuItems: [
-      { label: "Businesses list", href: "/admin/businesses" },
-      { label: "Add New Business", href: "/admin/businesses/createnew" },
-    ],
-  },
+
   {
     id: "agencies",
     label: "Agencies",
@@ -56,6 +46,19 @@ const navigationItems = [
       { label: "Add New Agency", href: "/admin/agencies/createnew" },
     ],
   },
+
+    {
+    id: "businesses",
+    label: "Businesses",
+    icon: LayoutDashboard,
+    href: "/admin/businesses",
+    hasSubmenu: true,
+    submenuItems: [
+      { label: "Businesses list", href: "/admin/businesses" },
+      { label: "Add New Business", href: "/admin/businesses/createnew" },
+    ],
+  },
+  
   {
     id: "domains",
     label: "Domains",
@@ -142,6 +145,24 @@ export function HighLevelSidebar({
   const toggleItem = (id: string) => {
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
+
+  const getRoleAvatarClass = (role?: string) => {
+  const r = (role || "").toLowerCase().trim();
+
+  if (r === "super admin" || r === "superadmin" || r === "admin") {
+    return "bg-red-500 text-white";
+  }
+  if (r === "business") {
+    return "bg-green-600 text-white";
+  }
+  if (r === "agency") {
+    return "bg-yellow-400 text-black";
+  }
+
+  // fallback
+  return "bg-primary text-white";
+};
 
   return (
     <div
@@ -363,8 +384,8 @@ export function HighLevelSidebar({
                     {!collapsed && (
                       <>
                         <div className="flex flex-col flex-1 text-left leading-tight">
-                          <span className="text-sm font-medium">
-                            {user?.name || "shadcn"}
+                          <span className="text-sm font-medium capitalize">
+                           {user?.name || user?.role}
                           </span>
                           <span className="text-xs text-[color:var(--admin-sidebar-muted)]">
                             {user?.email || "m@example.com"}
@@ -383,15 +404,28 @@ export function HighLevelSidebar({
                   className="w-56 rounded-xl border bg-background shadow-lg p-1"
                 >
                   <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-                    <Avatar className="h-8 w-8">
+                    
+                    {/* <Avatar className="h-8 w-8 ">
                       <AvatarFallback className="font-semibold">
                         {user?.name?.[0]?.toUpperCase() || "SC"}
                       </AvatarFallback>
-                    </Avatar>
+                    </Avatar> */}
+
+                    <Avatar className="h-7 w-7">
+                            <AvatarFallback
+                              className={cn(
+                                "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
+                                getRoleAvatarClass(user?.role)
+                              )}
+                            >
+                              
+                              {user?.email?.charAt(0).toUpperCase() || "U"}
+                            </AvatarFallback>
+                          </Avatar>
 
                     <div className="flex flex-col leading-tight">
-                      <span className="text-sm font-medium">
-                        {user?.name || "shadcn"}
+                      <span className=" font-medium capitalize">
+                        {user?.name || user?.role}
                       </span>
                       <span className="text-xs text-muted-foreground truncate">
                         {user?.email || "m@example.com"}

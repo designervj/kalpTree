@@ -675,6 +675,26 @@ export const currentWebsiteSections: NavSection[] = [
   },
 ];
 
+
+const getRoleAvatarClass = (role?: string) => {
+  const r = (role || "").toLowerCase().trim();
+
+  if (r === "super admin" || r === "superadmin" || r === "admin") {
+    return "bg-red-500 text-white";
+  }
+  if (r === "business") {
+    return "bg-green-600 text-white";
+  }
+  if (r === "agency") {
+    return "bg-yellow-400 text-black";
+  }
+
+  // fallback
+  return "bg-primary text-white";
+};
+
+
+
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function useHasPermission(user: User | null) {
@@ -746,6 +766,7 @@ export function AppShell({
       await signOut({ callbackUrl: "/" });
     }
   };
+  
 
   const resetRedux = () => {
     dispatch(clearAttributes());
@@ -760,16 +781,17 @@ export function AppShell({
   const { isSecondDashBoard } = useSelector((state: RootState) => state.user);
   return (
     <>
+    
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
         {/* LEFT */}
         <div className="flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full   flex items-center justify-center text-white text-xs font-semibold">
+            <div className="h-10 w-15 rounded-full   flex items-center justify-center text-white text-xs font-semibold">
               <img
                 src="../kalptree-favicon.svg"
                 alt="KalpTree"
-                className="h-10 w-10"
+                className="h-18 w-18"
               />
             </div>
             <button
@@ -780,8 +802,7 @@ export function AppShell({
                 collapsed
                   ? "h-10 flex items-center justify-center"
                   : "h-10 flex items-center justify-between px-3"
-              )}
-            >
+              )}>
               <span className="text-black/70">
                 {collapsed ? (
                   <GoSidebarExpand size={20} />
@@ -855,88 +876,67 @@ export function AppShell({
           </DropdownMenu> */}
 
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              {/* ✅ TOP STYLE trigger but works for your current header */}
-              <Button variant="ghost" size="icon" className="">
-                {/* Avatar circle (gradient like top code) */}
-                {/* <div className="h-9 w-9 rounded-full">
-        {user?.email?.charAt(0).toUpperCase() || "U"}
-      </div> */}
+  <DropdownMenuTrigger asChild>
+    <Button variant="ghost" size="icon" className="hover:bg-transparent">
+      <Avatar className="h-7 w-7">
+        <AvatarFallback
+          className={cn(
+            "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
+            getRoleAvatarClass(user?.role)
+          )}
+        >
+          
+          {user?.email?.charAt(0).toUpperCase() || "U"}
+        </AvatarFallback>
+      </Avatar>
+    </Button>
+  </DropdownMenuTrigger>
 
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback>
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-
-                {/* Optional: if you want email next to avatar in header */}
-                {/* <div className="hidden md:flex flex-col leading-tight">
-        <span className="text-sm font-medium">{user?.name || "Super Admin"}</span>
-        <span className="text-xs text-muted-foreground truncate max-w-[160px]">
+  <DropdownMenuContent
+    side="bottom"
+    align="end"
+    sideOffset={10}
+    className="w-56 rounded-xl border bg-background shadow-lg p-1"
+  >
+    <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
+      <div className="flex flex-col leading-tight px-2">
+        <span className="text-sm font-medium capitalize">{user?.role}</span>
+        <span className="text-xs text-muted-foreground truncate">
           {user?.email || "m@example.com"}
         </span>
       </div>
-      <ChevronsUpDown className="hidden md:block h-4 w-4 text-muted-foreground" /> */}
-              </Button>
-            </DropdownMenuTrigger>
+    </DropdownMenuLabel>
 
-            {/* ✅ TOP STYLE dropdown */}
-            <DropdownMenuContent
-              side="bottom"
-              align="end"
-              sideOffset={10}
-              className="w-56 rounded-xl border bg-background shadow-lg p-1"
-            >
-              <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-                {/* <Avatar className="h-8 w-8">
-        <AvatarFallback className="font-semibold">
-          {user?.email?.charAt(0).toUpperCase() || "U"}
-          
-        </AvatarFallback>
-      </Avatar> */}
+    <DropdownMenuSeparator className="my-1" />
 
-                <div className="flex flex-col leading-tight px-2">
-                  <span className="text-sm font-medium capitalize">
-                    {user?.role}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {user?.email || "m@example.com"}
-                  </span>
-                </div>
-              </DropdownMenuLabel>
+    <div className="px-2 pb-2">
+      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground capitalize">
+        {user?.role || "Super Admin"}
+      </span>
+    </div>
 
-              <DropdownMenuSeparator className="my-1" />
+    <DropdownMenuItem className="rounded-md">
+      <User className="mr-2 h-4 w-4" />
+      Profile
+    </DropdownMenuItem>
 
-              {/* Role badge / label */}
-              <div className="px-2 pb-2">
-                <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground capitalize">
-                  {/* Super Admin  */}
-                  {/* {sentenceCase(user?.role)} panel */}
-                  {user?.role || "Super Admin"}
-                </span>
-              </div>
+    <DropdownMenuItem className="rounded-md">
+      <Settings className="mr-2 h-4 w-4" />
+      Account settings
+    </DropdownMenuItem>
 
-              <DropdownMenuItem className="rounded-md">
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </DropdownMenuItem>
+    <DropdownMenuSeparator className="my-1" />
 
-              <DropdownMenuItem className="rounded-md">
-                <Settings className="mr-2 h-4 w-4" />
-                Account settings
-              </DropdownMenuItem>
+    <DropdownMenuItem
+      onClick={handleSignOut}
+      className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
+    >
+      <LogOut className="mr-2 h-4 w-4" />
+      Sign out
+    </DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
 
-              <DropdownMenuSeparator className="my-1" />
-
-              <DropdownMenuItem
-                onClick={handleSignOut}
-                className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </header>
 

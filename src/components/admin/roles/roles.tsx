@@ -419,6 +419,8 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Eye } from "lucide-react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface formData {
   _id?: string;
@@ -631,7 +633,7 @@ export default function RolesManagement() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto">
+      <div className=" mx-auto">
         <div className="flex justify-between items-start mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Roles & Permissions</h1>
@@ -640,12 +642,14 @@ export default function RolesManagement() {
             </p>
           </div>
 
-          <button
-            onClick={() => openModal("create")}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-          >
-            Create New Role
-          </button>
+          <Link href="/admin/rolesandpermission/create">
+            <Button
+              onClick={() => openModal("create")}
+              // className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              Create New Role
+            </Button>
+          </Link>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -670,20 +674,23 @@ export default function RolesManagement() {
               </div>
 
               <div className="flex gap-2">
-                <button
+                <Button
                   onClick={() => openModal("view", role)}
-                  className="flex-1 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
+                  variant="outline"
+                  className="w-[50%]"
+                  // className="flex-1 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <Eye className="w-4 h-4" />
                   View
-                </button>
-                <button
+                </Button>
+                <Button
                   onClick={() => openModal("edit", role)}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
+                    className="w-[50%]"
+                  // className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <Edit2 className="w-4 h-4" />
                   Edit
-                </button>
+                </Button>
               </div>
             </div>
           ))}

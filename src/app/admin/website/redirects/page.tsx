@@ -2,6 +2,8 @@
 
 import React from "react";
 import { Plus, Trash2, ArrowRight } from "lucide-react";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import { Button } from "@/components/ui/button";
 
 export default function Page() {
   const redirects = [
@@ -20,20 +22,21 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen  p-8">
       {/* PAGE HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-semibold">Redirects</h1>
+          {/* <h1 className="text-3xl font-semibold">Redirects</h1> */}
+          <BreadCrumbPage />
           <p className="text-gray-500 mt-1">
             Manage URL redirects for your website
           </p>
         </div>
 
-        <button className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+        <Button >
           <Plus size={18} />
           Add Redirect
-        </button>
+        </Button>
       </div>
 
       {/* ADD REDIRECT FORM */}
