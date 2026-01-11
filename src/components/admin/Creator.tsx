@@ -45,7 +45,10 @@ export default function PageCreator({
   onCreateRedirect = "/admin/pages",
 }: PageCreatorProps) {
 
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  // const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const {currentbusiness,currentWebsite} = useSelector((state: RootState) => state.dashboardDetails);
+  
+  
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   // Single state object for all form data
@@ -67,8 +70,8 @@ export default function PageCreator({
 
   // Update websiteId when currentWebsite changes
   useEffect(() => {
-    if (currentWebsite?._id) {
-      setFormData((prev) => ({ ...prev, websiteId: currentWebsite._id }));
+    if (currentWebsite?._id && currentWebsite?.tenantId) {
+      setFormData((prev) => ({ ...prev, websiteId: currentWebsite._id,tenantId: currentWebsite.tenantId }));
     }
   }, [currentWebsite]);
 

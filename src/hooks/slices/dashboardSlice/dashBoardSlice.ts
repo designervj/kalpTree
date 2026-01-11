@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { pageService } from "@/modules/website/page-service";
 import { User, Website } from "@/components/admin/AppShell";
+import { IBusiness } from "@/models/business";
 
 const applyAgencyChange = (state: dashboardDetailsState, agencyId: string) => {
   const selectedAgency = state.agencies.find((d) => d._id === agencyId);
@@ -50,7 +51,7 @@ interface dashboardDetailsState {
   agencies: any[];
   currentAgency: any | null;
   business: any[];
-  currentbusiness: any | null;
+  currentbusiness: IBusiness | null;
   websites: Website[];
   currentWebsite: Website | null;
   loggedinTenant: any | null;
