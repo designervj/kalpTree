@@ -172,7 +172,7 @@ export function Sidebar({
                       <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
                         <div className="relative">
                           <Select
-                            value={currentagency?._id || ""}
+                            value={currentagency?._id ? String(currentagency._id) : ""}
                             onValueChange={onAgencyChage}
                           >
                             <SelectTrigger
@@ -197,7 +197,7 @@ export function Sidebar({
                               </div>
 
                               {agencies.map((agency) => (
-                                <SelectItem key={agency._id} value={agency._id}>
+                                <SelectItem key={String(agency._id)} value={String(agency._id)}>
                                   <div className="flex items-center gap-2">
                                     <Building2 className="h-4 w-4 text-black/60" />
                                     <span className="text-sm font-medium">
@@ -232,7 +232,7 @@ export function Sidebar({
                       <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
                         <div className="relative">
                           <Select
-                            value={currentTenant?._id || ""}
+                            value={currentTenant?._id ? String(currentTenant._id) : ""}
                             onValueChange={onTenantChange}
                           >
                             <SelectTrigger
@@ -257,7 +257,7 @@ export function Sidebar({
                               </div>
 
                               {tenants.map((tenant) => (
-                                <SelectItem key={tenant._id} value={tenant._id}>
+                                <SelectItem key={String(tenant._id)} value={String(tenant._id)}>
                                   <div className="flex items-center gap-2">
                                     <Building2 className="h-4 w-4 text-black/60" />
                                     <span className="text-sm font-medium">
@@ -290,7 +290,7 @@ export function Sidebar({
                     <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
                       <div className="relative">
                         <Select
-                          value={currentWebsite?._id || ""}
+                          value={currentWebsite?._id ? String(currentWebsite._id) : ""}
                           onValueChange={onWebsiteChange}
                         >
                           <SelectTrigger
@@ -320,7 +320,7 @@ export function Sidebar({
                             </div>
 
                             {websites.map((site) => (
-                              <SelectItem key={site._id} value={site._id}>
+                              <SelectItem key={String(site._id)} value={String(site._id)}>
                                 <div className="flex flex-col">
                                   <span className="text-sm font-medium">
                                     {site.name}

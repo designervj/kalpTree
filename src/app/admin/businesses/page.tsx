@@ -22,7 +22,7 @@ import UpdateBusiness from "./UpdateBusiness";
 import { redirect } from "next/navigation";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 const ShowBusiness = React.lazy(() => import("@/components/admin/business/showbusiness"));
-
+ const updateBusiness = React.lazy(() => import("./UpdateBusiness"));
 type Business = {
   _id: string;
   slug: string;

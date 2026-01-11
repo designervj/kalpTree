@@ -17,6 +17,7 @@ import {
   onParamsChange,
   onWebSiteChange,
 } from "@/hooks/slices/dashboardSlice/dashBoardSlice";
+import { ObjectId } from "mongodb";
 
 type AppShellClientProps = {
   children: React.ReactNode;
@@ -50,7 +51,7 @@ export function AppShellClient({ children }: AppShellClientProps) {
     dispatch(onWebSiteChange({ websiteId }));
   };
 
-  const handleTenantChange = (tenantId: string) => {
+  const handleTenantChange = (tenantId: string | ObjectId) => {
     dispatch(onBusinessChange({ tenantId }));
   };
 

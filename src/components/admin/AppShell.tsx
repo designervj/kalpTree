@@ -83,7 +83,7 @@ import { Sidebar } from "./Sidebar/sidebar";
 import { Topbar } from "./Sidebar/topbar";
 import { MobileSidebar } from "./Sidebar/mobileSidebar";
 import { HighLevelSidebar } from "./Sidebar/highlevelsidebar";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 import { Button } from "../ui/button";
 import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
@@ -111,12 +111,13 @@ import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
 import { Label } from "../ui/label";
 import { UpperBar } from "./Sidebar/UpperBar";
+import { ObjectId } from "mongodb";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
 
 export type Website = {
-  _id: string;
+  _id?: string|ObjectId;
   tenantId?: string;
   websiteId?: string;
   name: string;
@@ -744,10 +745,23 @@ export function AppShell({
   );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
+    const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
+  const searchParams = useSearchParams();
+    const businessid = searchParams.get("businessid");
+  const agencyid = searchParams.get("agencyid");
+  const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
 
-  const isHighLevelCollapsed = !params.website ? false : true;
 
+  React.useEffect(() => {
+    if (currentbusiness && currentbusiness._id) {
+      setIsHighLevelCollapsed(true);
+    } else {
+      setIsHighLevelCollapsed(false);
+    }
+  }, [currentbusiness]);
+  // const isHighLevelCollapsed = !params.website ? false : true;
+// const isHighLevelCollapsed = true
   const handleSignOut = async () => {
     try {
       resetRedux();
