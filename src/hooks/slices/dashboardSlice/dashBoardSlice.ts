@@ -94,88 +94,88 @@ export const savedashboardDetailsThunk = createAsyncThunk(
   }
 );
 
-export const dashboardDetailsSlice = createSlice({
-  name: "dashboardDetails",
-  initialState,
-  reducers: {
-    onAgencyChange: (state, action) => {
-      const { agencyId } = action.payload;
-      applyAgencyChange(state, agencyId);
-    },
-    onParamsChange: (state, action) => {
-      const { agencyid, businessid, url } = action.payload;
-      const decode = decodeURIComponent(url);
-      console.log(decode);
-      if (agencyid && businessid && url) {
-        applyAgencyChange(state, agencyid);
-        state.currentbusiness = state.totalbusiness.find(
-          (d) => d._id == businessid
-        );
-        state.currentWebsite =
-          state.totalwebsites.find((d) => d.primaryDomain?.includes(decode)) ??
-          null;
-      } else if (businessid && url) {
-        applyBusinessChange(state, businessid);
-        state.currentWebsite =
-          state.websites.find((d) => d.primaryDomain?.includes(decode)) ?? null;
-      } else if (url) {
-        applyWebSiteChange(state, url);
-      }
-    },
-    onBusinessChange: (state, action) => {
-      const { tenantId } = action.payload;
-      applyBusinessChange(state, tenantId);
-    },
-    onWebSiteChange: (state, action) => {
-      const { websiteId } = action.payload;
-      applyWebSiteChange(state, websiteId);
-    },
-  },
-  extraReducers: (builder) => {
-    builder
-      .addCase(savedashboardDetailsThunk.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
-        state.loading = false;
-        const { agencies, business, websites, user } = action.payload;
-        if (agencies) {
-          state.agencies = agencies;
-        }
-        if (business) {
-          state.totalbusiness = business;
-          if (
-            user.role !== "superadmin" &&
-            (user.role == "agency" || user.permissions.includes("agency:read"))
-          ) {
-            state.business = business;
-          }
-        }
-        if (websites) {
-          state.totalwebsites = websites;
-          if (
-            user.role != "superadmin" &&
-            user.role != "agency" &&
-            (user.role == "business" ||
-              user.permissions.includes("websites:read"))
-          ) {
-            state.websites = websites;
-          }
-        }
-        state.loggedinTenant = action.payload.loggedinTenant;
-        state.user = action.payload.user;
-      })
-      .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message;
-      });
-  },
-});
+// export const dashboardDetailsSlice = createSlice({
+//   name: "dashboardDetails",
+//   initialState,
+//   reducers: {
+//     onAgencyChange: (state, action) => {
+//       const { agencyId } = action.payload;
+//       applyAgencyChange(state, agencyId);
+//     },
+//     onParamsChange: (state, action) => {
+//       const { agencyid, businessid, url } = action.payload;
+//       const decode = decodeURIComponent(url);
+//       console.log(decode);
+//       if (agencyid && businessid && url) {
+//         applyAgencyChange(state, agencyid);
+//         state.currentbusiness = state.totalbusiness.find(
+//           (d) => d._id == businessid
+//         );
+//         state.currentWebsite =
+//           state.totalwebsites.find((d) => d.primaryDomain?.includes(decode)) ??
+//           null;
+//       } else if (businessid && url) {
+//         applyBusinessChange(state, businessid);
+//         state.currentWebsite =
+//           state.websites.find((d) => d.primaryDomain?.includes(decode)) ?? null;
+//       } else if (url) {
+//         applyWebSiteChange(state, url);
+//       }
+//     },
+//     onBusinessChange: (state, action) => {
+//       const { tenantId } = action.payload;
+//       applyBusinessChange(state, tenantId);
+//     },
+//     onWebSiteChange: (state, action) => {
+//       const { websiteId } = action.payload;
+//       applyWebSiteChange(state, websiteId);
+//     },
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(savedashboardDetailsThunk.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+//         state.loading = false;
+//         const { agencies, business, websites, user } = action.payload;
+//         if (agencies) {
+//           state.agencies = agencies;
+//         }
+//         if (business) {
+//           state.totalbusiness = business;
+//           if (
+//             user.role !== "superadmin" &&
+//             (user.role == "agency" || user.permissions.includes("agency:read"))
+//           ) {
+//             state.business = business;
+//           }
+//         }
+//         if (websites) {
+//           state.totalwebsites = websites;
+//           if (
+//             user.role != "superadmin" &&
+//             user.role != "agency" &&
+//             (user.role == "business" ||
+//               user.permissions.includes("websites:read"))
+//           ) {
+//             state.websites = websites;
+//           }
+//         }
+//         state.loggedinTenant = action.payload.loggedinTenant;
+//         state.user = action.payload.user;
+//       })
+//       .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.error.message;
+//       });
+//   },
+// });
 
-export const {
-  onAgencyChange,
-  onParamsChange,
-  onBusinessChange,
-  onWebSiteChange,
-} = dashboardDetailsSlice.actions;
-export default dashboardDetailsSlice.reducer;
+// export const {
+//   onAgencyChange,
+//   onParamsChange,
+//   onBusinessChange,
+//   onWebSiteChange,
+// } = dashboardDetailsSlice.actions;
+// export default dashboardDetailsSlice.reducer;

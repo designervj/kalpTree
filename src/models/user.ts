@@ -11,4 +11,5 @@ export interface IUser {
   tenantId?: string;
   updatedAt?: Date;
   lastLoginAt?: Date;
+   permissions?: string[];
 }

@@ -11,5 +11,5 @@ export function AvatarImage({ src, alt, className }: { src?: string; alt?: strin
 }
 
 export function AvatarFallback({ children, className }: { children?: React.ReactNode; className?: string }) {
-  return <div className={className ? className : "h-full w-full flex items-center justify-center bg-secondary text-white rounded-full"}>{children}</div>;
+  return <div className={`h-full w-full flex items-center justify-center bg-secondary text-white rounded-full ${className || ""}`}>{children}</div>;
 }

@@ -3,7 +3,7 @@ import { User, Website } from "../AppShell";
 import { signOut } from "next-auth/react";
 import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
 import { clearBrands } from "@/hooks/slices/brand/BrandSlice";
-import { clearSegments } from "@/hooks/slices/segment/SegmentSlice";
+// import { clearSegments } from "@/hooks/slices/segment/SegmentSlice";
 import { clearCategories } from "@/hooks/slices/category/CategorySlice";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,7 +18,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 type TopbarProps = {
   currentWebsite: Website | null;
@@ -61,7 +61,7 @@ export function Topbar({
   const resetRedux = () => {
     dispatch(clearAttributes());
     dispatch(clearBrands());
-    dispatch(clearSegments());
+    // dispatch(clearSegments());
     dispatch(clearCategories());
   };
 
@@ -165,7 +165,7 @@ export function Topbar({
               onClick={handleSignOut}
               className="hover:bg-primary hover:text-white p-2"
             >
-              Sign out 
+              Sign out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

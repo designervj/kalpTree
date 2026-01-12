@@ -48,7 +48,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 
@@ -72,16 +72,17 @@ export function Sidebar({
   onTenantChange,
   onAgencyChage,
 }: SidebarProps) {
-  const {
-    user,
-    agencies,
-    business: tenants,
-    websites,
-    currentAgency: currentagency,
-    currentWebsite,
-    currentbusiness: currentTenant,
-    loggedinTenant,
-  } = useSelector((state: RootState) => state.dashboardDetails);
+  // const {
+  //   user,
+  //   agencies,
+  //   business: tenants,
+  //   websites,
+  //   currentAgency: currentagency,
+  //   currentWebsite,
+  //   currentbusiness: currentTenant,
+  //   loggedinTenant,
+  // } = useSelector((state: RootState) => state.dashboardDetails);
+  const { user } = useSelector((state: RootState) => state.user);
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
 
@@ -142,214 +143,7 @@ export function Sidebar({
             )}
           >
             <div className="flex h-full flex-col">
-              <div className="border-b pb-4 ">
-                <div className="flex justify-between items-center">
-                  <div className={cn("px-4 pt-4 pb-0", collapsed && "px-3")}>
-                    <div className="flex items-center gap-3">
-                      <div className="grid h-10 w-10 place-items-center rounded-md">
-                        <img
-                          src="../kalptree-main-logo.svg"
-                          className="w-10 h-10"
-                        ></img>
-                      </div>
-                      {!collapsed && (
-                        <div className="leading-tight">
-                          <div className="text-md uppercase font-semibold">
-                            {loggedinTenant?.name}
-                          </div>
-                          <div className="text-[11px] text-black/45">
-                            {sentenceCase(user?.role)} panel
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
 
-                {user?.role == "superadmin" && (
-                  <div className="relative mt-2">
-                    {agencies.length > 0 && (
-                      <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
-                        <div className="relative">
-                          <Select
-                            value={currentagency?._id ? String(currentagency._id) : ""}
-                            onValueChange={onAgencyChage}
-                          >
-                            <SelectTrigger
-                              className={cn(
-                                "h-14 w-full rounded-lg bg-white border-2 border-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-gray-600",
-                                "text-left px-4 py-2 h-[500px]",
-                                "[&>svg]:hidden",
-                                collapsed && "justify-center px-2"
-                              )}
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <span className="text-base text-gray-900">
-                                  {currentagency?.name || ""}
-                                </span>
-                                <ChevronDown className="h-4 w-4 text-black/70" />
-                              </div>
-                            </SelectTrigger>
-
-                            <SelectContent className="w-[260px] rounded-lg border shadow-lg ">
-                              <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
-                                Tenants
-                              </div>
-
-                              {agencies.map((agency) => (
-                                <SelectItem key={String(agency._id)} value={String(agency._id)}>
-                                  <div className="flex items-center gap-2">
-                                    <Building2 className="h-4 w-4 text-black/60" />
-                                    <span className="text-sm font-medium">
-                                      {agency.name}
-                                    </span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          {/* Floating Label */}
-                          <label
-                            className={cn(
-                              "absolute left-7 transition-all duration-200 pointer-events-none bg-white px-1",
-                              currentTenant?._id
-                                ? "-top-2.5 text-xs text-gray-600"
-                                : "top-6 text-base text-gray-500"
-                            )}
-                          >
-                            Select Agency
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {(user?.role == "agency" || user?.role == "superadmin") && (
-                  <div className="relative mt-2">
-                    {tenants.length > 0 && (
-                      <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
-                        <div className="relative">
-                          <Select
-                            value={currentTenant?._id ? String(currentTenant._id) : ""}
-                            onValueChange={onTenantChange}
-                          >
-                            <SelectTrigger
-                              className={cn(
-                                "h-14 w-full rounded-lg bg-white border-2 border-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-gray-600",
-                                "text-left px-4 py-2 h-[500px]",
-                                "[&>svg]:hidden",
-                                collapsed && "justify-center px-2"
-                              )}
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <span className="text-base text-gray-900">
-                                  {currentTenant?.name || ""}
-                                </span>
-                                <ChevronDown className="h-4 w-4 text-black/70" />
-                              </div>
-                            </SelectTrigger>
-
-                            <SelectContent className="w-[260px] rounded-lg border shadow-lg ">
-                              <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
-                                Tenants
-                              </div>
-
-                              {tenants.map((tenant) => (
-                                <SelectItem key={String(tenant._id)} value={String(tenant._id)}>
-                                  <div className="flex items-center gap-2">
-                                    <Building2 className="h-4 w-4 text-black/60" />
-                                    <span className="text-sm font-medium">
-                                      {tenant.name}
-                                    </span>
-                                  </div>
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          {/* Floating Label */}
-                          <label
-                            className={cn(
-                              "absolute left-7 transition-all duration-200 pointer-events-none bg-white px-1",
-                              currentTenant?._id
-                                ? "-top-2.5 text-xs text-gray-600"
-                                : "top-6 text-base text-gray-500"
-                            )}
-                          >
-                            Select Businesses
-                          </label>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-                <div className="relative mt-2">
-                  {websites.length > 0 && (
-                    <div className={cn("px-3 pt-2 ", collapsed && "px-2")}>
-                      <div className="relative">
-                        <Select
-                          value={currentWebsite?._id ? String(currentWebsite._id) : ""}
-                          onValueChange={onWebsiteChange}
-                        >
-                          <SelectTrigger
-                            className={cn(
-                              "h-14 w-full rounded-lg bg-white border-2 border-gray-600 focus:ring-2 focus:ring-gray-600 focus:border-gray-600",
-                              "text-left px-4 py-2 h-[500px]",
-                              "[&>svg]:hidden",
-                              collapsed && "justify-center px-2"
-                            )}
-                          >
-                            {!collapsed ? (
-                              <div className="flex items-center justify-between w-full">
-                                {/* <Globe2 className="h-4 w-4 text-black/60" /> */}
-                                <span className="text-sm font-medium truncate">
-                                  {currentWebsite?.name || ""}
-                                </span>
-                                <ChevronDown className="h-4 w-4 text-black/70" />
-                              </div>
-                            ) : (
-                              <Globe2 className="h-4 w-4 text-black/70" />
-                            )}
-                          </SelectTrigger>
-
-                          <SelectContent className="w-[260px] rounded-lg border shadow-lg">
-                            <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
-                              Websites
-                            </div>
-
-                            {websites.map((site) => (
-                              <SelectItem key={String(site._id)} value={String(site._id)}>
-                                <div className="flex flex-col">
-                                  <span className="text-sm font-medium">
-                                    {site.name}
-                                  </span>
-                                  <span className="text-[11px] text-muted-foreground">
-                                    {site.primaryDomain || site.systemSubdomain}
-                                  </span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-
-                        {/* Floating Label */}
-                        <label
-                          className={cn(
-                            "absolute left-7  transition-all duration-200 pointer-events-none bg-white px-1",
-                            currentWebsite?._id
-                              ? "-top-2.5 text-xs text-gray-600"
-                              : "top-6 text-base text-gray-500"
-                          )}
-                        >
-                          Select Website
-                        </label>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
 
               <ScrollArea
                 className={cn("mt-3 flex-1 px-2 pb-3", collapsed && "px-2")}
