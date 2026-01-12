@@ -46,20 +46,21 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
   const [formData, setFormData] = useState(() => ({
     // Agency fields (for superadmin only)
     agency_name: "",
-    agency_url_suffix: "",
+    // agency_url_suffix: "",
     agency_email: "",
     agency_password: "",
-    agency_service: "ECOMMERCE",
+    // agency_service: "ECOMMERCE",
 
     // Business user fields
-    email: "",
-    password: "",
-    role: safeUser.role === "admin" ? "agency" : "business",
-    service: "ECOMMERCE",
-    business_name: "",
-    businsess_url: "",
+
 
     businessdetails: {
+      email: "",
+      password: "",
+      role: "business",
+      service: "ECOMMERCE",
+      business_name: "",
+      businsess_url: "",
       business_website_url: "",
       tagline: "",
       industry: "Architecture",
@@ -160,18 +161,18 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
 
       if (safeUser.role === "superadmin") {
         fd.append("agency_name", formData.agency_name);
-        fd.append("agency_url_suffix", formData.agency_url_suffix);
+        // fd.append("agency_url_suffix", formData.agency_url_suffix);
         fd.append("agency_email", formData.agency_email);
         fd.append("agency_password", formData.agency_password);
-        fd.append("agency_service", formData.agency_service);
+        // fd.append("agency_service", formData.agency_service);
       }
 
-      fd.append("email", formData.email);
-      fd.append("password", formData.password);
-      fd.append("role", formData.role);
-      fd.append("service", formData.service);
-      fd.append("business_name", formData.business_name);
-      fd.append("businsess_url", formData.businsess_url);
+      // fd.append("email", formData.email);
+      // fd.append("password", formData.password);
+      // fd.append("role", formData.role);
+      // fd.append("service", formData.service);
+      // fd.append("business_name", formData.business_name);
+      // fd.append("businsess_url", formData.businsess_url);
       fd.append("createdById", formData.createdById);
 
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
@@ -212,7 +213,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
   };
 
   const tabs = [
-    { id: "user", label: "User Details", icon: User },
+    { id: "agency", label: "Agency Details", icon: User },
     { id: "business", label: "Business Details", icon: Briefcase },
     { id: "branding", label: "Branding", icon: Palette },
   ];
@@ -220,7 +221,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
   return (
     <div className="min-h-screen bg-transparent p-8">
       <div className=" mx-auto">
-        
+
         {/* <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
 
       <h1 className="text-2xl font-semibold text-slate-900">
@@ -249,7 +250,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
         </span>
       </div>
       </div> */}
-        
+
         <div className="mb-8">
           {/* <h1 className="text-4xl font-bold text-black mb-2">
             {safeUser.role === "superadmin"
@@ -276,11 +277,10 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
-                      activeTab === tab.id
+                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${activeTab === tab.id
                         ? "text-primary"
                         : "text-gray-500 hover:text-gray-700"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Icon className="w-5 h-5" />
@@ -298,11 +298,10 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
           <div className="p-8">
             {message.text && (
               <div
-                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                  message.type === "success"
+                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === "success"
                     ? "bg-green-50 text-green-800 border border-green-200"
                     : "bg-red-50 text-red-800 border border-red-200"
-                }`}
+                  }`}
               >
                 {message.type === "success" ? (
                   <CheckCircle className="w-5 h-5" />
@@ -324,7 +323,12 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
             )}
 
             {activeTab === "business" && (
-              <Businessdetails handleInputChange={handleInputChange} formData={formData} />
+              <Businessdetails
+                handleInputChange={handleInputChange}
+                formData={formData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+              />
             )}
 
             {activeTab === "branding" && (
