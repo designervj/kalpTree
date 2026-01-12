@@ -946,10 +946,10 @@ export function AppShell({
           />
         )}
 
-        <div className="flex flex-1 min-h-screen flex-col overflow-hidden">
-          <main className="flex-1 px-3 py-4 md:px-6 md:py-6 overflow-auto">
+        <div className="flex  flex-col  w-full">
+          <div className=" px-3 py-4 md:px-6 md:py-6 overflow-auto ">
             <div className="mx-auto ">{children}</div>
-          </main>
+          </div>
         </div>
 
         <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>

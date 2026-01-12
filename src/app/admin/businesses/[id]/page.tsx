@@ -229,6 +229,7 @@ export default async function BusinesswithID({
               </Button>
             </div>
           </div>
+          
 
           {/* STATS STRIP */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

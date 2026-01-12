@@ -21,6 +21,9 @@ import React, { Suspense } from "react";
 import UpdateBusiness from "./UpdateBusiness";
 import { redirect } from "next/navigation";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import BusinessesToolbar from "./BusinessesToolbar";
+import BusinessesListToolbar from "./BusinessesToolbar";
+
 const ShowBusiness = React.lazy(
   () => import("@/components/admin/business/showbusiness")
 );
@@ -78,8 +81,7 @@ function Badge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${cls}`}
-    >
+      className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${cls}`}>
       {children}
     </span>
   );
@@ -98,8 +100,7 @@ function BusinessIcon({
       : "bg-[#0b6d8e]";
   return (
     <div
-      className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}
-    >
+      className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}>
       <Users className="h-6 w-6" />
     </div>
   );
@@ -288,6 +289,10 @@ export default async function BusinessList({
 
         {/* List */}
         <div className="space-y-4">
+          <div className="space-y-4">
+            <BusinessesListToolbar />
+          </div>
+
           {businesses.map((b, idx) => {
             const planBadge = getPlanBadge(b.plan);
             const statusBadge = getStatusBadge(b.status);
@@ -297,18 +302,7 @@ export default async function BusinessList({
             return (
               <Card
                 key={b._id}
-                className="relative rounded-md border bg-white shadow-sm"
-              >
-                <button
-                  className="group absolute right-2 top-2  p-1 rounded-md border-black 
-                 hover:border-red-500 hover:bg-red-500"
-                >
-                  <Trash
-                    size={15}
-                    className="text-black group-hover:text-white"
-                  />
-                </button>
-
+                className="rounded-md border bg-white shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -330,8 +324,7 @@ export default async function BusinessList({
                           </div>
                           {/* <Link
                             href={href}
-                            className="text-slate-400 hover:text-slate-600"
-                          >
+                            className="text-slate-400 hover:text-slate-600">
                             <ExternalLink className="h-5 w-5" />
                           </Link> */}
 
@@ -354,8 +347,7 @@ export default async function BusinessList({
                           >
                             <Link
                               href={`${href}/websites`}
-                              className="flex items-center gap-2"
-                            >
+                              className="flex items-center gap-2">
                               <Globe className="h-4 w-4" />
                               Websites{" "}
                               <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
@@ -371,8 +363,7 @@ export default async function BusinessList({
                           >
                             <Link
                               href={`${href}/users`}
-                              className="flex items-center gap-2"
-                            >
+                              className="flex items-center gap-2">
                               <Users className="h-4 w-4" />
                               Members{" "}
                               <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
@@ -396,12 +387,10 @@ export default async function BusinessList({
                       <Button
                         asChild
                         variant="outline"
-                        className="h-10 rounded-xl px-5 text-sm font-semibold"
-                      >
+                        className="h-10 rounded-xl px-5 text-sm font-semibold">
                         <Link
                           href={`${href}/settings`}
-                          className="flex items-center gap-2"
-                        >
+                          className="flex items-center gap-2">
                           <Settings className="h-4 w-4" />
                           Settings
                         </Link>
@@ -438,14 +427,12 @@ export default async function BusinessList({
                 variant="outline"
                 size="sm"
                 disabled={currentPage === 1}
-                className="rounded-md"
-              >
+                className="rounded-md">
                 <Link
                   href={`?page=${currentPage - 1}`}
                   className={
                     currentPage === 1 ? "pointer-events-none opacity-50" : ""
-                  }
-                >
+                  }>
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Link>
@@ -480,8 +467,7 @@ export default async function BusinessList({
                         asChild
                         variant={currentPage === page ? "default" : "outline"}
                         size="sm"
-                        className="rounded-md w-10 h-10 p-0"
-                      >
+                        className="rounded-md w-10 h-10 p-0">
                         <Link href={`?page=${page}`}>{page}</Link>
                       </Button>
                     );
@@ -494,16 +480,14 @@ export default async function BusinessList({
                 variant="outline"
                 size="sm"
                 disabled={currentPage === totalPages}
-                className="rounded-md"
-              >
+                className="rounded-md">
                 <Link
                   href={`?page=${currentPage + 1}`}
                   className={
                     currentPage === totalPages
                       ? "pointer-events-none opacity-50"
                       : ""
-                  }
-                >
+                  }>
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Link>

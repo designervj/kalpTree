@@ -12,7 +12,10 @@ import {
   ChevronsUpDown,
   LayoutDashboard,
   UserCircle,
+  Network ,
   Shield,
+  Building2,
+  BriefcaseBusiness,
   User,
   Sparkles,
   LogOut,
@@ -38,24 +41,24 @@ const navigationItems = [
   {
     id: "agencies",
     label: "Agencies",
-    icon: LayoutDashboard,
+    icon: Building2,
     href: "/admin/agencies",
     hasSubmenu: true,
     submenuItems: [
       { label: "Agencies list", href: "/admin/agencies" },
-      { label: "Add New Agency", href: "/admin/agencies/createnew" },
+      { label: "Add New Agency", href: "/admin/agencies/create" },
     ],
   },
 
     {
     id: "businesses",
     label: "Businesses",
-    icon: LayoutDashboard,
+    icon: Network,
     href: "/admin/businesses",
     hasSubmenu: true,
     submenuItems: [
       { label: "Businesses list", href: "/admin/businesses" },
-      { label: "Add New Business", href: "/admin/businesses/createnew" },
+      { label: "Add New Business", href: "/admin/businesses/create" },
     ],
   },
   
