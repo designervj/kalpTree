@@ -14,6 +14,7 @@ import {
   BadgeCheck,
   ChevronLeft,
   ChevronRight,
+  Trash,
 } from "lucide-react";
 import { auth } from "@/auth";
 import React, { Suspense } from "react";
@@ -190,6 +191,10 @@ export default async function BusinessList({
     totalCount = await tenantcoll.countDocuments({ type: "business" });
   }
 
+  const handleDeleteBusiness = async () => {
+
+  }
+
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalCount);
@@ -292,8 +297,18 @@ export default async function BusinessList({
             return (
               <Card
                 key={b._id}
-                className="rounded-md border bg-white shadow-sm"
+                className="relative rounded-md border bg-white shadow-sm"
               >
+                <button
+                  className="group absolute right-2 top-2  p-1 rounded-md border-black 
+                 hover:border-red-500 hover:bg-red-500"
+                >
+                  <Trash
+                    size={15}
+                    className="text-black group-hover:text-white"
+                  />
+                </button>
+
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
