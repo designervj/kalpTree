@@ -15,25 +15,18 @@ import {
 import { Building2, ChevronDown, Globe2 } from "lucide-react";
 import { IUser } from "@/models/user";
 import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
-import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
-import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
+import { setCurrentBusiness, setSelectedBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
+import { IBusiness } from "@/models/business";
 
 export const UpperBar = () => {
-  // const {
-  //   user,
-  //   agencies,
-  //   business: tenants,
-  //   websites,
-  //   currentAgency,
-  //   currentWebsite,
-  //   currentbusiness: currentTenant,
-  // } = useSelector((state: RootState) => state.dashboardDetails);
+
 
 
   const { user } = useSelector((state: RootState) => state.user)
   const { agencies, curretAgency } = useSelector((state: RootState) => state.agency)
-  const { allBusiness, currentBusiness } = useSelector((state: RootState) => state.business)
-  const { websites, currentWebsite } = useSelector((state: RootState) => state.websites)
+  const { allBusiness, currentBusiness,allSelectedBusiness } = useSelector((state: RootState) => state.business)
+  const { websites, currentWebsite ,selectedWebsites} = useSelector((state: RootState) => state.websites)
   const dispatch = useDispatch<AppDispatch>();
 
   const handleAgencyChange = (agencyId: string) => {
@@ -41,8 +34,20 @@ export const UpperBar = () => {
     dispatch(setCurretAgency(agency || null));
   //  dispatch(setCurrentBusiness(null));
     dispatch(setCurrentWebsite(null));
+       const allBus= allBusiness.filter(item=>item.tenantId===agency?._id)
+       if(allBus ){
+        dispatch(setSelectedBusiness(allBus))
+       }
   }
 
+  const handleWebsiteChange=(websiteId:string)=>{
+const website = websites.find(w => w._id?.toString() === websiteId);
+              dispatch(setCurrentWebsite(website || null));
+              const allWeb= websites.filter(item=>item.tenantId===website?._id)
+              if(allWeb){
+                dispatch(setSelectedWebsite(allWeb))
+              }
+  }
 
   return (
     <div className="flex flex-1 items-center gap-4 px-4 py-2 bg-white border-b">
@@ -84,7 +89,7 @@ export const UpperBar = () => {
 
       {/* ================= Business ================= */}
       {(user?.role === "agency" || user?.role === "superadmin") &&
-        allBusiness.length > 0 && (
+        allSelectedBusiness.length > 0 && (
           <Select
             value={currentBusiness?._id?.toString() ?? ""}
             onValueChange={(tenantId) => {
@@ -108,7 +113,7 @@ export const UpperBar = () => {
               <div className="px-3 py-2 text-xs text-muted-foreground">
                 Businesses
               </div>
-              {allBusiness.map((business) => (
+              {allSelectedBusiness.map((business) => (
                 <SelectItem key={business._id?.toString()} value={business._id?.toString() ?? ""}>
                   <div className="flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
@@ -122,12 +127,11 @@ export const UpperBar = () => {
 
       {/* ================= Website ================= */}
       {
-        websites.length > 0 && (
+        selectedWebsites.length > 0 && (
           <Select
             value={currentWebsite?._id?.toString() ?? ""}
-            onValueChange={(websiteId) => {
-              const website = websites.find(w => w._id?.toString() === websiteId);
-              dispatch(setCurrentWebsite(website || null));
+            onValueChange={(websiteId) => {  
+              handleWebsiteChange(websiteId)
             }}
           >
             <SelectTrigger className="h-12 min-w-[260px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
@@ -146,7 +150,7 @@ export const UpperBar = () => {
               <div className="px-3 py-2 text-xs text-muted-foreground">
                 Websites
               </div>
-              {websites.map((site) => (
+              {selectedWebsites.map((site) => (
                 <SelectItem key={site._id?.toString()} value={site._id?.toString() ?? ""}>
                   <div className="flex flex-col">
                     <span className="font-medium">{site.name}</span>
@@ -162,3 +166,5 @@ export const UpperBar = () => {
     </div>
   );
 };
+
+

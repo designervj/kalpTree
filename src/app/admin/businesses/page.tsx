@@ -14,6 +14,7 @@ import {
   BadgeCheck,
   ChevronLeft,
   ChevronRight,
+  Trash,
 } from "lucide-react";
 import { auth } from "@/auth";
 import React, { Suspense } from "react";
@@ -189,6 +190,10 @@ export default async function BusinessList({
       .skip(skip)
       .toArray()) as Business[];
     totalCount = await tenantcoll.countDocuments({ type: "business" });
+  }
+
+  const handleDeleteBusiness = async () => {
+
   }
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
