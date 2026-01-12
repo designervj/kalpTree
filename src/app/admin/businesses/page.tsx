@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,8 +20,10 @@ import React, { Suspense } from "react";
 import UpdateBusiness from "./UpdateBusiness";
 import { redirect } from "next/navigation";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
-const ShowBusiness = React.lazy(() => import("@/components/admin/business/showbusiness"));
- const updateBusiness = React.lazy(() => import("./UpdateBusiness"));
+const ShowBusiness = React.lazy(
+  () => import("@/components/admin/business/showbusiness")
+);
+const updateBusiness = React.lazy(() => import("./UpdateBusiness"));
 type Business = {
   _id: string;
   slug: string;
@@ -69,10 +70,10 @@ function Badge({
     variant === "purple"
       ? "bg-purple-50 text-purple-700 border-purple-200"
       : variant === "green"
-        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-        : variant === "amber"
-          ? "bg-amber-50 text-amber-700 border-amber-200"
-          : "bg-slate-50 text-slate-700 border-slate-200";
+      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+      : variant === "amber"
+      ? "bg-amber-50 text-amber-700 border-amber-200"
+      : "bg-slate-50 text-slate-700 border-slate-200";
 
   return (
     <span
@@ -92,8 +93,8 @@ function BusinessIcon({
     tone === "purple"
       ? "bg-purple-600"
       : tone === "dark"
-        ? "bg-slate-900"
-        : "bg-[#0b6d8e]";
+      ? "bg-slate-900"
+      : "bg-[#0b6d8e]";
   return (
     <div
       className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}
@@ -159,7 +160,7 @@ export default async function BusinessList({
   const itemsPerPage = 2;
   const currentPage = Number(params.page) || 1;
   if (!user || !user.id || !user.role) {
-    return redirect('/auth/signin');
+    return redirect("/auth/signin");
   }
 
   // Direct database call instead of HTTP fetch to avoid ECONNREFUSED
@@ -174,22 +175,20 @@ export default async function BusinessList({
   let totalCount = 0;
 
   if (user.role === "agency") {
-    businesses = await tenantcoll
+    businesses = (await tenantcoll
       .find({ createdById: createdById })
       .limit(itemsPerPage)
       .skip(skip)
-      .toArray() as Business[];
+      .toArray()) as Business[];
     totalCount = await tenantcoll.countDocuments({ createdById: createdById });
   } else if (user.role === "superadmin") {
-    businesses = await tenantcoll
+    businesses = (await tenantcoll
       .find({ type: "business" })
       .limit(itemsPerPage)
       .skip(skip)
-      .toArray() as Business[];
+      .toArray()) as Business[];
     totalCount = await tenantcoll.countDocuments({ type: "business" });
   }
-
-
 
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -200,10 +199,9 @@ export default async function BusinessList({
       <div className="w-full max-full space-y-6">
         <div className="flex flex-col gap-1">
           <h2 className="text-[26px] font-semibold text-slate-900">
-            Businesses 
+            Businesses
           </h2>
-          
-          
+
           <p className="text-sm text-muted-foreground">
             No businesses found. Create your first business to get started.
           </p>
@@ -231,25 +229,20 @@ export default async function BusinessList({
     );
   }
 
-
-
   return (
     <>
-
-      <UpdateBusiness
-        business={businesses ?? []}
-      />
+      <UpdateBusiness business={businesses ?? []} />
       <div className="w-full  space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-1">
           <div>
-          {/* <h2 className="text-[26px] font-semibold text-slate-900">Businesses a</h2> */}
-          <BreadCrumbPage />
-          <p className="text-sm text-muted-foreground">
-            Manage businesses, switch context, and open a dashboard for each.
-          </p>
-        </div>
-             <div className="flex items-center gap-2">
+            {/* <h2 className="text-[26px] font-semibold text-slate-900">Businesses a</h2> */}
+            <BreadCrumbPage />
+            <p className="text-sm text-muted-foreground">
+              Manage businesses, switch context, and open a dashboard for each.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
             <Button asChild variant="outline" className="rounded-md">
               <Link href="/admin/rolesandpermission">
                 <ShieldCheck className="mr-2 h-4 w-4" />
@@ -286,8 +279,6 @@ export default async function BusinessList({
               </div>
             </CardContent>
           </Card>
-
-       
         </div>
 
         {/* List */}
@@ -299,7 +290,10 @@ export default async function BusinessList({
             const href = `/admin/businesses/${b._id}`;
 
             return (
-              <Card key={b._id} className="rounded-md border bg-white shadow-sm">
+              <Card
+                key={b._id}
+                className="rounded-md border bg-white shadow-sm"
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -309,8 +303,8 @@ export default async function BusinessList({
                           idx % 3 === 0
                             ? "blue"
                             : idx % 3 === 1
-                              ? "dark"
-                              : "purple"
+                            ? "dark"
+                            : "purple"
                         }
                       />
 
@@ -319,12 +313,12 @@ export default async function BusinessList({
                           <div className="text-[26px] font-semibold text-slate-900 truncate">
                             {b.name}
                           </div>
-                          <Link
+                          {/* <Link
                             href={href}
                             className="text-slate-400 hover:text-slate-600"
                           >
                             <ExternalLink className="h-5 w-5" />
-                          </Link>
+                          </Link> */}
 
                           {planBadge}
                           {statusBadge}
@@ -357,7 +351,7 @@ export default async function BusinessList({
 
                           <Button
                             asChild
-                              variant="outline"
+                            variant="outline"
                             // className="h-10 rounded-md px-4 text-sm font-semibold text-white"
                           >
                             <Link
@@ -394,17 +388,20 @@ export default async function BusinessList({
                           className="flex items-center gap-2"
                         >
                           <Settings className="h-4 w-4" />
-                          Settings 
+                          Settings
                         </Link>
                       </Button>
 
                       <Suspense fallback={null}>
                         <>
-                          <ShowBusiness businessId={b._id} />
+                          <Link
+                            href={href}
+                            className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
+                          >
+                            Open Dashboard
+                          </Link>
                         </>
                       </Suspense>
-
-
                     </div>
                   </div>
                 </CardContent>
@@ -449,7 +446,8 @@ export default async function BusinessList({
 
                     const showEllipsis =
                       (page === currentPage - 2 && currentPage > 3) ||
-                      (page === currentPage + 2 && currentPage < totalPages - 2);
+                      (page === currentPage + 2 &&
+                        currentPage < totalPages - 2);
 
                     if (showEllipsis) {
                       return (
@@ -500,6 +498,5 @@ export default async function BusinessList({
         )}
       </div>
     </>
-
   );
 }

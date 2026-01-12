@@ -1,6 +1,11 @@
 import { Building2, MapPin, Eye, EyeOff } from "lucide-react";
 
-export const Businessdetails = ({ handleInputChange, formData, showPassword, setShowPassword }: any) => {
+export const Businessdetails = ({
+  handleInputChange,
+  formData,
+  showPassword,
+  setShowPassword,
+}: any) => {
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
@@ -91,7 +96,10 @@ export const Businessdetails = ({ handleInputChange, formData, showPassword, set
                 <button
                   type="button"
                   onClick={() => {
-                    console.log("Check URL:", formData.businessdetails.businsess_url);
+                    console.log(
+                      "Check URL:",
+                      formData.businessdetails.businsess_url
+                    );
                   }}
                   className="px-4 py-3 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
                 >
@@ -106,69 +114,15 @@ export const Businessdetails = ({ handleInputChange, formData, showPassword, set
 
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-3">
-            Permission Roles
-          </label>
-          <div className="space-y-3">
-            {false ? (
-              <label
-                className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.role === "agency"
-                  ? "border-primary-500 bg-gray-100"
-                  : "border-gray-200 hover:border-gray-300"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="businessdetails.role"
-                  value="agency"
-                  checked={formData.businessdetails.role === "agency"}
-                  onChange={handleInputChange}
-                  className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
-                />
-                <div className="ml-3">
-                  <div className="font-semibold text-gray-900">Agency Owner</div>
-                  <div className="text-sm text-gray-600">
-                    Manage services and make business.
-                  </div>
-                </div>
-              </label>
-            ) : (
-              <label
-                className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.role === "business"
-                  ? "border-primary-500 bg-gray-100"
-                  : "border-gray-200 hover:border-gray-300"
-                  }`}
-              >
-                <input
-                  type="radio"
-                  name="businessdetails.role"
-                  value="business"
-                  checked={formData.businessdetails.role === "business"}
-                  onChange={handleInputChange}
-                  className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
-                />
-                <div className="ml-3">
-                  <div className="font-semibold text-gray-900">
-                    Business Owner
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    Manage services and make purchases using added payment method.
-                  </div>
-                </div>
-              </label>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
             Service Type
           </label>
           <div className="space-y-3">
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_ONLY"
-                ? "border-primary-500 bg-gray-100"
-                : "border-gray-200 hover:border-gray-300"
-                }`}
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+                formData.service === "WEBSITE_ONLY"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
             >
               <input
                 type="radio"
@@ -187,21 +141,26 @@ export const Businessdetails = ({ handleInputChange, formData, showPassword, set
             </label>
 
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE"
-                ? "border-primary-500 bg-gray-100"
-                : "border-gray-200 hover:border-gray-300"
-                }`}
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+                formData.service === "WEBSITE_CATALOGUE"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
             >
               <input
                 type="radio"
                 name="businessdetails.service"
                 value="WEBSITE_CATALOGUE"
-                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE"}
+                checked={
+                  formData.businessdetails.service === "WEBSITE_CATALOGUE"
+                }
                 onChange={handleInputChange}
                 className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
               />
               <div className="ml-3">
-                <div className="font-semibold text-gray-900">Website and Catalogue</div>
+                <div className="font-semibold text-gray-900">
+                  Website and Catalogue
+                </div>
                 <div className="text-sm text-gray-600">
                   website hosting and catalogue with space 2GB
                 </div>
@@ -209,48 +168,61 @@ export const Businessdetails = ({ handleInputChange, formData, showPassword, set
             </label>
 
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE_ECOMMERCE"
-                ? "border-primary-500 bg-gray-100"
-                : "border-gray-200 hover:border-gray-300"
-                }`}
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+                formData.service === "WEBSITE_CATALOGUE_ECOMMERCE"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
             >
               <input
                 type="radio"
                 name="businessdetails.service"
                 value="WEBSITE_CATALOGUE_ECOMMERCE"
-                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE_ECOMMERCE"}
+                checked={
+                  formData.businessdetails.service ===
+                  "WEBSITE_CATALOGUE_ECOMMERCE"
+                }
                 onChange={handleInputChange}
                 className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
               />
               <div className="ml-3">
-                <div className="font-semibold text-gray-900">Website ,Catalogue and E-commerce</div>
+                <div className="font-semibold text-gray-900">
+                  Website ,Catalogue and E-commerce
+                </div>
                 <div className="text-sm text-gray-600">
-                  website hosting and catalogue with e-commerce functionality with space 3GB
+                  website hosting and catalogue with e-commerce functionality
+                  with space 3GB
                 </div>
               </div>
             </label>
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
-                ? "border-primary-500 bg-gray-100"
-                : "border-gray-200 hover:border-gray-300"
-                }`}
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+                formData.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+              }`}
             >
               <input
                 type="radio"
                 name="businessdetails.service"
                 value="WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
-                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"}
+                checked={
+                  formData.businessdetails.service ===
+                  "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
+                }
                 onChange={handleInputChange}
                 className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
               />
               <div className="ml-3">
-                <div className="font-semibold text-gray-900">Website ,Catalogue , E-commerce and Marketing</div>
+                <div className="font-semibold text-gray-900">
+                  Website ,Catalogue , E-commerce and Marketing
+                </div>
                 <div className="text-sm text-gray-600">
-                  website hosting and catalogue with e-commerce functionality with space 5GB and marketing
+                  website hosting and catalogue with e-commerce functionality
+                  with space 5GB and marketing
                 </div>
               </div>
             </label>
-
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

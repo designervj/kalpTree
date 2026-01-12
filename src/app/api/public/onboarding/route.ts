@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       formData.get("businessdetails") as string
     );
 
-    const { email, password, role, service, business_name, businsess_url } =
+    const { email, password, service, business_name, businsess_url } =
       businessdetails;
 
     const branding = JSON.parse(formData.get("branding") as string);
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       email: email,
       password: password,
       name: business_name,
-      role: role,
+      role: "business",
       createdById: createdById,
       tenantId: tenant._id,
     });
