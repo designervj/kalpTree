@@ -32,4 +32,14 @@ export interface IBusiness {
   createdById: string;
   type?: "business" | "franchise" | "agency";
   tenantId?: string;
+    websitesCount?: number;
+  membersCount?: number;
+  websites?: Array<{ 
+    name?: string;
+    primaryDomain?: string[];
+    serviceType?: string;
+    status?: string;
+    createdAt?: string;
+    updatedAt?: string;
+  }>;
 }

@@ -1,39 +1,307 @@
- "use client";
+"use client";
 
-import React from 'react'
+import { AppDispatch, RootState } from "@/store/store";
+import { useRouter } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store/store';
-import { updateIsSecondDashBoard } from '@/hooks/slices/user/userSlice';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import {
+    Plus,
+    ExternalLink,
+    Globe,
+    Users,
+    Settings,
+    ArrowRight,
+    ShieldCheck,
+    Sparkles,
+    Crown,
+    BadgeCheck,
+    ChevronLeft,
+    ChevronRight,
+    Trash,
+    Badge,
+} from "lucide-react";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import { Suspense } from "react";
+import BusinessesToolbar from "@/app/admin/businesses/BusinessesToolbar";
+import BusinessIcon from "./util/BusinessIcon";
+import { IBusiness } from "@/models/business";
+import GetPlanBadge from "./util/GetPlanBadge";
+import GetStatusBadge from "./util/getStatusBadge";
 
-type Props={
-businessId:string
-}
-const showbusiness = ({businessId}:Props) => {
-  const dispatch= useDispatch<AppDispatch>()
-  const router= useRouter()
-  const handleDashboard=()=>{
-    dispatch(updateIsSecondDashBoard(true))
-    router.push("/admin")
-  }
-  return (
-    <Button
-      asChild
-      variant="outline"
-      className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
-      onClick={handleDashboard}
-    >
-      <a className="flex items-center gap-2">
-        Open Dashboard 
-        <ArrowRight className="h-4 w-4" />
-      </a>
-    </Button>
-  )
+const ShowBusiness = () => {
+    const dispatch = useDispatch<AppDispatch>()
+    const router = useRouter()
+    const { allBusiness } = useSelector((state: RootState) => state.business)
+    return (
+        <>
+            <div className="w-full  space-y-6">
+                {/* Header */}
+                <div className="flex items-center justify-between gap-1">
+                    <div>
+                        {/* <h2 className="text-[26px] font-semibold text-slate-900">Businesses a</h2> */}
+                        <BreadCrumbPage />
+                        <p className="text-sm text-muted-foreground">
+                            Manage businesses, switch context, and open a dashboard for each.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button asChild variant="outline" className="rounded-md">
+                            <Link href="/admin/rolesandpermission">
+                                <ShieldCheck className="mr-2 h-4 w-4" />
+                                Roles & Permissions
+                            </Link>
+                        </Button>
+
+                        <Button asChild className="rounded-md">
+                            <Link href="/admin/businesses/create">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Business
+                            </Link>
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Top actions */}
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                    <Card className="rounded-md border bg-white shadow-sm">
+                        <CardContent className="p-4">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-md bg-slate-100 grid place-items-center">
+                                    <Sparkles className="h-5 w-5 text-slate-700" />
+                                </div>
+                                <div>
+                                    <div className="text-sm font-semibold text-slate-900">
+                                        Quick tip
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                        Create a new business to separate websites, users, and
+                                        billing.
+                                    </div>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* List */}
+                <div className="space-y-4">
+                    <div className="space-y-4">
+                        <BusinessesToolbar />
+                    </div>
+
+                    {allBusiness.map((b: IBusiness, idx) => {
+                        // const planBadge = getPlanBadge(b.plan);
+                        // const statusBadge = getStatusBadge(b.status);
+                        // const subtext = getSubtext(b.type);
+                        const href = `/admin/businesses/${b._id}`;
+
+                        return (
+                            <Card
+                                key={String(b._id ?? "")}
+                                className="rounded-md border bg-white shadow-sm">
+                                <CardContent className="p-6">
+                                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                        {/* LEFT */}
+                                        <div className="flex items-start gap-5">
+                                            <BusinessIcon
+                                                tone={
+                                                    idx % 3 === 0
+                                                        ? "blue"
+                                                        : idx % 3 === 1
+                                                            ? "dark"
+                                                            : "purple"
+                                                }
+                                            />
+
+                                            <div className="min-w-0">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <div className="text-[26px] font-semibold text-slate-900 truncate">
+                                                        {b.name}
+                                                    </div>
+                                                    {/* <Link
+                            href={href}
+                            className="text-slate-400 hover:text-slate-600">
+                            <ExternalLink className="h-5 w-5" />
+                          </Link> */}
+                                                    {/*                     
+                          {planBadge}
+                          {statusBadge} */}
+
+                                                    {b && b.plan && <GetPlanBadge plan={b.plan} />}
+                                                    {b && b.status && <GetStatusBadge status={b.status} />}
+                                                </div>
+
+                                                {/* {subtext ? (
+                                                    <div className="mt-1 text-sm text-muted-foreground">
+                                                        {subtext}
+                                                    </div>
+                                                ) : null} */}
+
+                                                <div className="mt-3 flex flex-wrap items-center gap-2 1">
+                                                    <Button
+                                                        asChild
+                                                        // variant="secondary"
+                                                        variant="outline"
+                                                    // className="h-10 rounded-md px-4 text-sm font-semibold text-white"
+                                                    >
+                                                        <Link
+                                                            href={`${href}/websites`}
+                                                            className="flex items-center gap-2">
+                                                            <Globe className="h-4 w-4" />
+                                                            Websites{" "}
+                                                            <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
+                                                                {b.websitesCount ?? 0}
+                                                            </span>
+                                                        </Link>
+                                                    </Button>
+
+                                                    <Button
+                                                        asChild
+                                                        variant="outline"
+                                                    // className="h-10 rounded-md px-4 text-sm font-semibold text-white"
+                                                    >
+                                                        <Link
+                                                            href={`${href}/users`}
+                                                            className="flex items-center gap-2">
+                                                            <Users className="h-4 w-4" />
+                                                            Members{" "}
+                                                            <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
+                                                                {b.membersCount ?? 0}
+                                                            </span>
+                                                        </Link>
+                                                    </Button>
+
+                                                    {b.email ? (
+                                                        <Badge>
+                                                            <Globe className="mr-1 h-3.5 w-3.5" />
+                                                            {b.email}
+                                                        </Badge>
+                                                    ) : null}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* RIGHT */}
+                                        <div className="flex flex-wrap items-center gap-3 justify-start lg:justify-end">
+                                            <Button
+                                                asChild
+                                                variant="outline"
+                                                className="h-10 rounded-xl px-5 text-sm font-semibold">
+                                                <Link
+                                                    href={`${href}/settings`}
+                                                    className="flex items-center gap-2">
+                                                    <Settings className="h-4 w-4" />
+                                                    Settings
+                                                </Link>
+                                            </Button>
+
+                                            <Suspense fallback={null}>
+                                                <>
+                                                    <Link
+                                                        href={href}
+                                                        className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
+                                                    >
+                                                        Open Dashboard
+                                                    </Link>
+                                                </>
+                                            </Suspense>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
+                </div>
+
+                {/* Pagination */}
+                {/* {totalPages > 1 && (
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                            Showing {startIndex + 1} to {endIndex} of {totalCount} businesses
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                disabled={currentPage === 1}
+                                className="rounded-md">
+                                <Link
+                                    href={`?page=${currentPage - 1}`}
+                                    className={
+                                        currentPage === 1 ? "pointer-events-none opacity-50" : ""
+                                    }>
+                                    <ChevronLeft className="h-4 w-4" />
+                                    Previous
+                                </Link>
+                            </Button>
+
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                                    (page) => {
+                                        const showPage =
+                                            page === 1 ||
+                                            page === totalPages ||
+                                            (page >= currentPage - 1 && page <= currentPage + 1);
+
+                                        const showEllipsis =
+                                            (page === currentPage - 2 && currentPage > 3) ||
+                                            (page === currentPage + 2 &&
+                                                currentPage < totalPages - 2);
+
+                                        if (showEllipsis) {
+                                            return (
+                                                <span key={page} className="px-2 text-muted-foreground">
+                                                    ...
+                                                </span>
+                                            );
+                                        }
+
+                                        if (!showPage) return null;
+
+                                        return (
+                                            <Button
+                                                key={page}
+                                                asChild
+                                                variant={currentPage === page ? "default" : "outline"}
+                                                size="sm"
+                                                className="rounded-md w-10 h-10 p-0">
+                                                <Link href={`?page=${page}`}>{page}</Link>
+                                            </Button>
+                                        );
+                                    }
+                                )}
+                            </div>
+
+                            <Button
+                                asChild
+                                variant="outline"
+                                size="sm"
+                                disabled={currentPage === totalPages}
+                                className="rounded-md">
+                                <Link
+                                    href={`?page=${currentPage + 1}`}
+                                    className={
+                                        currentPage === totalPages
+                                            ? "pointer-events-none opacity-50"
+                                            : ""
+                                    }>
+                                    Next
+                                    <ChevronRight className="h-4 w-4" />
+                                </Link>
+                            </Button>
+                        </div>
+                    </div>
+                )} */}
+            </div>
+        </>
+    )
 }
 
-export default showbusiness
+export default ShowBusiness
 
 
 
