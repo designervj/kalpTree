@@ -1,8 +1,9 @@
+  
 import { auth } from "@/auth";
 import AgenciesClient from "@/components/admin/agency/AgenciesClient";
 import AgencyList from "@/components/admin/agency/AgencyList";
 import { IUser } from "@/models/user";
-// import { useDispatch } from "react-redux";
+import { getDatabase, toObjectId } from "@/lib/db/mongodb";
 
 export default async function AgenciesPage({
   searchParams,
@@ -14,33 +15,45 @@ export default async function AgenciesPage({
   const user = session?.user;
   const itemsPerPage = 10;
   const currentPage = Number(params?.page) || 1;
-  // const dispatch = useDispatch();
+  const skip = (currentPage - 1) * itemsPerPage;
+
   let agencies: IUser[] = [];
   let totalCount = 0;
+
   if (user && user.role === "superadmin") {
-    // Get all users with role agency
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/admin/agency?role=agency&page=${currentPage}&limit=${itemsPerPage}`,
-      { cache: "no-store" }
-    );
-    const result = await res.json();
-    agencies = result.item || [];
-    totalCount = result.totalCount || agencies.length;
+    // Get all users with role agency - direct database query
+    const db = await getDatabase();
+    const query = { role: "agency" };
+
+    const [items, count] = await Promise.all([
+      db.collection("users").find(query).skip(skip).limit(itemsPerPage).toArray(),
+      db.collection("users").countDocuments(query),
+    ]);
+
+    agencies = items as IUser[];
+    totalCount = count;
   } else if (user && user.role === "agency") {
-    // Get only the agency for this user
-    const res = await fetch(
-      `${process.env.NEXTAUTH_URL}/api/admin/agency?userId=${user.id}&role=agency&page=${currentPage}&limit=${itemsPerPage}`,
-      { cache: "no-store" }
-    );
-    const result = await res.json();
-    agencies = result.item || [];
-    totalCount = result.totalCount || agencies.length;
+    // Get only the agency for this user - direct database query
+    const db = await getDatabase();
+    const query = {
+      role: "agency",
+      _id: toObjectId(user.id)
+    };
+
+    const [items, count] = await Promise.all([
+      db.collection("users").find(query).skip(skip).limit(itemsPerPage).toArray(),
+      db.collection("users").countDocuments(query),
+    ]);
+
+    agencies = items as IUser[];
+    totalCount = count;
   }
 
   return (
     <div className="w-full  space-y-6">
       <AgenciesClient agencies={agencies} />
       <AgencyList />
+
     </div>
   );
 }

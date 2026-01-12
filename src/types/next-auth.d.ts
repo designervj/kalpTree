@@ -6,7 +6,7 @@ declare module "next-auth" {
     tenantId: string;
     role: string;
     permissions: string[];
-    name: string;
+    name?: string; // Made optional
     email: string;
     createdById?: string; // Made optional
   }
@@ -15,7 +15,7 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
-      name: string;
+      name?: string; // Made optional
       tenantId: string;
       role: string;
       permissions: string[];
@@ -31,7 +31,7 @@ declare module "next-auth/jwt" {
     tenantId: string;
     role: string;
     permissions: string[];
-    name: string;
+    name?: string; // Made optional
     createdById?: string; // Made optional
   }
 }

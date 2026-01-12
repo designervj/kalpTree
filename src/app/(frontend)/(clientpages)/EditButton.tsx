@@ -2,14 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
-import { AppDispatch, RootState } from "@/store/store";
-import { setPageEdit } from "@/hooks/slices/pageEditSlice";
-import { fetchLLMSettingByWebsiteId } from "@/hooks/slices/setting/llmSetting/LLMSettingSlice";
-// import { fetchWebsiteById } from "@/hooks/slices/websites/WebsiteThunk";
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 
 // shadcn
@@ -46,56 +39,38 @@ import {
   Sparkles,
 } from "lucide-react";
 import { BsBoxArrowRight, BsGear, BsPersonCircle, BsSpeedometer2, BsStars } from "react-icons/bs";
+import { IUser } from "@/models/user";
+import { Website } from "@/components/admin/AppShell";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 
 export default function WpAdminEditorBar({
-  pageData,
+  pageData,user,currentWebsite
 }: {
   pageData: WebsitePageModel;
+  user:IUser
+  currentWebsite: Website
 }) {
-  const dispatch = useDispatch<AppDispatch>();
-  const router = useRouter();
 
-  const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const { currentLLMSetting } = useSelector(
-    (state: RootState) => state.llmSetting
-  );
-
-  useEffect(() => {
-    if (pageData?.websiteId && !currentWebsite) {
-      dispatch(fetchWebsiteById(pageData.websiteId));
-      dispatch(fetchLLMSettingByWebsiteId({ websiteId: pageData.websiteId }));
-    }
-  }, [pageData?.websiteId, currentWebsite, dispatch]);
-
-  // ✅ Only superadmin sees this bar
-  // if (!(user && user. && user.role === "superadmin")) return null;
-
-  const siteName = (currentWebsite as any)?.name || "Dzinly";
-  const userName = user?.name || "Admin";
+const router= useRouter()
+  const dispatch=useDispatch<AppDispatch>()
 
   // ✅ Fix: pageData.id may not exist in your type
   const pageId =
     (pageData as any)?._id ?? (pageData as any)?.id ?? (pageData as any)?.pageId ?? "";
 
-  // ✅ Fix: Website type may not have domain in your project
-  const siteDomain = (currentWebsite as any)?.domain;
-  const siteUrl = (currentWebsite as any)?.url;
-  const visitSiteHref = siteDomain
-    ? `https://${siteDomain}`
-    : siteUrl
-    ? siteUrl
-    : "/";
 
   const handleEditInBuilder = () => {
-    dispatch(setPageEdit(pageData));
-    router.push(pageData?.slug ? `/builder/${pageData.slug}` : "/builder");
+     dispatch(setPageEdit(pageData));
+     router.push(pageData?.slug ? `/${pageData.slug}/builder` : "/builder");
   };
 
   const handleEditInAdmin = () => {
-    // adjust as per your admin route
-    if (!pageId) return;
-    router.push(`/admin/websites/pages/${pageId}`);
+    // // adjust as per your admin route
+    // if (!pageId) return;
+    // router.push(`/admin/websites/pages/${pageId}`);
   };
 
   return (
@@ -268,8 +243,8 @@ export default function WpAdminEditorBar({
                   className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
                   type="button"
                 >
-                  <span className="hidden sm:inline">Hello, {userName}</span>
-                  <span className="sm:hidden">{userName}</span>
+                  <span className="hidden sm:inline">Hello, {user?.name}</span>
+                  <span className="sm:hidden">{user?.name}</span>
                   <ChevronDown className="h-4 w-4 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
@@ -277,7 +252,7 @@ export default function WpAdminEditorBar({
               <DropdownMenuContent align="end" className="w-56">
                 {/* <Link href="/admin/dashboard"> */}
                   <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    {siteName}
+                    {currentWebsite.name}
                   </DropdownMenuLabel>
                 {/* </Link> */}
 
@@ -311,7 +286,7 @@ export default function WpAdminEditorBar({
   <BsStars className="text-[16px] opacity-90" />
   LLM Setting:
   <span className="ml-1 text-xs opacity-80">
-    {currentLLMSetting ? "Loaded" : "Not loaded"}
+    {/* {currentLLMSetting ? "Loaded" : "Not loaded"} */}
   </span>
 </DropdownMenuItem>
 
@@ -356,7 +331,5 @@ function BarIconOnly({
     </Tooltip>
   );
 }
-function fetchWebsiteById(websiteId: string): any {
-  throw new Error("Function not implemented.");
-}
+
 

@@ -52,11 +52,11 @@ function buildUrlWithParams(
   return qs ? `${pathname}?${qs}` : pathname;
 }
 
-export default function BusinessesToolbar({
+const   BusinessesToolbar = ({
   className,
   showColumnsButton = true,
   onOpenColumns,
-}: Props) {
+}: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -235,3 +235,6 @@ export default function BusinessesToolbar({
     </div>
   );
 }
+
+
+export default BusinessesToolbar;

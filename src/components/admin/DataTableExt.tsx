@@ -35,8 +35,12 @@ import {
   Eye,
   Trash2,
   Edit2,
+  Layout,
 } from "lucide-react";
 import BreadCrumbPage from "../breadCrumb/BreadCrumbPage";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 
 export type ColumnConfig = {
   key: string;
@@ -118,6 +122,7 @@ export function DataTableExt({
   const [pageSize, setPageSize] = useState(10);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const dispatch= useDispatch<AppDispatch>()
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
   >({ content: false, _id: false });
@@ -136,6 +141,8 @@ export function DataTableExt({
 
   const path = usePathname();
   const lastSegment = path.split("/").filter(Boolean).pop();
+
+  const {currentWebsite}= useSelector((state: RootState) => state.websites);
 
   // derive columns
   const columns = useMemo(() => {
@@ -372,6 +379,41 @@ export function DataTableExt({
     //     // if (!row.slug) return;
     //     // router.push(`/${row.slug}`);
     //   }
+  }
+
+    const pathname = usePathname();
+  ///admin/websites extract website
+
+  const pageName = pathname.split("/")[3];
+
+
+    const handleBuilderEdit =async(
+    e: React.MouseEvent,
+    row: {
+      slug?: string;
+      primaryDomain?: string[];
+      content?: string;
+      website?: any;
+    }
+  ) => {
+    const copied = structuredClone(row);
+    delete copied.website;
+    dispatch(setPageEdit(copied));
+    try{
+        const res = await fetch(`/api/session/website`,{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({website:copied, currentWebsite})
+        });
+        const data = await res.json();
+        console.log("data--",data)
+    }catch(e){
+      console.log("e--",e)
+    }
+    //  router.push(`/${copied.slug}`);
+    window.open(`/${copied.slug}`, "_blank", "noopener,noreferrer");
   }
 
   return (
@@ -653,6 +695,17 @@ export function DataTableExt({
                     })}
                   <TableCell className="py-2 text-right">
                     <div className="flex items-center justify-end gap-2">
+                           {pageName === "pages" && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
+                          onClick={(e) => handleBuilderEdit(e, row)}
+                          title="Builder"
+                        >
+                          <Layout className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
