@@ -58,3 +58,29 @@ export function toCreateHref(
 
   return obj[role as Role];
 }
+
+export const buildWebsiteHref = (
+  href: string,
+  websiteId: string | undefined | string[],
+  arr: Record<string, string>
+) => {
+  if (!websiteId) return href;
+
+  const clean = href.replace(/^\/admin/, "");
+  let main = "?";
+
+  const keys = Object.keys(arr);
+
+  if (keys.length > 0) {
+    keys.forEach((key, index) => {
+      main += `${key}=${arr[key]}`;
+      if (index !== keys.length - 1) {
+        main += "&";
+      }
+    });
+  }
+
+  const final = main !== "?" ? main : "";
+
+  return `/admin/websites/${websiteId}${clean}${final}`;
+};

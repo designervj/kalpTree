@@ -735,9 +735,9 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  onWebsiteChange = () => { },
-  onTenantChange = () => { },
-  onAgencyChage = () => { },
+  onWebsiteChange = () => {},
+  onTenantChange = () => {},
+  onAgencyChage = () => {},
 }: AppShellProps) {
   // const { user, websites, currentWebsite } = useSelector(
   //   (state: RootState) => state.dashboardDetails
@@ -750,10 +750,11 @@ export function AppShell({
   const businessid = searchParams.get("businessid");
   const agencyid = searchParams.get("agencyid");
   const { user } = useSelector((state: RootState) => state.user);
-  const { websites, currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { websites, currentWebsite } = useSelector(
+    (state: RootState) => state.websites
+  );
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
-
 
   React.useEffect(() => {
     if (currentBusiness && currentBusiness._id) {
@@ -852,10 +853,13 @@ export function AppShell({
             Ai Assistant
           </Button>
 
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="hover:bg-transparent">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-transparent"
+              >
                 <Avatar className="h-7 w-7">
                   <AvatarFallback
                     className={cn(
@@ -863,7 +867,6 @@ export function AppShell({
                       getRoleAvatarClass(user?.role)
                     )}
                   >
-
                     {user?.email?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -878,7 +881,9 @@ export function AppShell({
             >
               <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
                 <div className="flex flex-col leading-tight px-2">
-                  <span className="text-sm font-medium capitalize">{user?.role}</span>
+                  <span className="text-sm font-medium capitalize">
+                    {user?.role}
+                  </span>
                   <span className="text-xs text-muted-foreground truncate">
                     {user?.email || "m@example.com"}
                   </span>
@@ -915,7 +920,7 @@ export function AppShell({
             </DropdownMenuContent>
           </DropdownMenu>
 
-              {/* <DropdownMenuItem
+          {/* <DropdownMenuItem
                 onClick={handleSignOut}
                 className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
               >

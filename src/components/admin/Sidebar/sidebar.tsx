@@ -1,4 +1,4 @@
-import { usePathname } from "next/navigation";
+import { useParams, usePathname, useSearchParams } from "next/navigation";
 import {
   currentWebsiteSections,
   FiCloseHint,
@@ -14,7 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
-import { cn } from "@/lib/utils";
+import { buildWebsiteHref, cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -72,25 +72,23 @@ export function Sidebar({
   onTenantChange,
   onAgencyChage,
 }: SidebarProps) {
-  // const {
-  //   user,
-  //   agencies,
-  //   business: tenants,
-  //   websites,
-  //   currentAgency: currentagency,
-  //   currentWebsite,
-  //   currentbusiness: currentTenant,
-  //   loggedinTenant,
-  // } = useSelector((state: RootState) => state.dashboardDetails);
   const { user } = useSelector((state: RootState) => state.user);
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
-
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const searchparams = Object.fromEntries(searchParams.entries());
+  // Might Crash if params is an array
   const filteredWebsiteSections = React.useMemo(() => {
     return currentWebsiteSections
       .map((section) => ({
         ...section,
-        items: section.items.filter((item) => hasPermission(item.permission)),
+        items: section.items
+          .filter((item) => hasPermission(item.permission))
+          .map((d) => ({
+            ...d,
+            href: buildWebsiteHref(d.href, params.website!, searchparams),
+          })),
       }))
       .filter((section) => section.items.length > 0);
   }, [hasPermission]);
@@ -143,8 +141,6 @@ export function Sidebar({
             )}
           >
             <div className="flex h-full flex-col">
-
-
               <ScrollArea
                 className={cn("mt-3 flex-1 px-2 pb-3", collapsed && "px-2")}
               >
