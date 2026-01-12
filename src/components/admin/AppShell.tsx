@@ -117,7 +117,7 @@ import { ObjectId } from "mongodb";
 // ---------------------------------------------------------------------------
 
 export type Website = {
-  _id?: string|ObjectId;
+  _id?: string | ObjectId;
   tenantId?: string;
   websiteId?: string;
   name: string;
@@ -676,7 +676,6 @@ export const currentWebsiteSections: NavSection[] = [
   },
 ];
 
-
 const getRoleAvatarClass = (role?: string) => {
   const r = (role || "").toLowerCase().trim();
 
@@ -693,8 +692,6 @@ const getRoleAvatarClass = (role?: string) => {
   // fallback
   return "bg-primary text-white";
 };
-
-
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -745,13 +742,14 @@ export function AppShell({
   );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
-    const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
+  const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
   const searchParams = useSearchParams();
-    const businessid = searchParams.get("businessid");
+  const businessid = searchParams.get("businessid");
   const agencyid = searchParams.get("agencyid");
-  const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
-
+  const { currentbusiness, currentAgency } = useSelector(
+    (state: RootState) => state.dashboardDetails
+  );
 
   React.useEffect(() => {
     if (currentbusiness && currentbusiness._id) {
@@ -761,7 +759,7 @@ export function AppShell({
     }
   }, [currentbusiness]);
   // const isHighLevelCollapsed = !params.website ? false : true;
-// const isHighLevelCollapsed = true
+  // const isHighLevelCollapsed = true
   const handleSignOut = async () => {
     try {
       resetRedux();
@@ -780,7 +778,6 @@ export function AppShell({
       await signOut({ callbackUrl: "/" });
     }
   };
-  
 
   const resetRedux = () => {
     dispatch(clearAttributes());
@@ -795,7 +792,6 @@ export function AppShell({
   const { isSecondDashBoard } = useSelector((state: RootState) => state.user);
   return (
     <>
-    
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
         {/* LEFT */}
         <div className="flex items-center gap-4">
@@ -816,7 +812,8 @@ export function AppShell({
                 collapsed
                   ? "h-10 flex items-center justify-center"
                   : "h-10 flex items-center justify-between px-3"
-              )}>
+              )}
+            >
               <span className="text-black/70">
                 {collapsed ? (
                   <GoSidebarExpand size={20} />
@@ -890,67 +887,71 @@ export function AppShell({
           </DropdownMenu> */}
 
           <DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button variant="ghost" size="icon" className="hover:bg-transparent">
-      <Avatar className="h-7 w-7">
-        <AvatarFallback
-          className={cn(
-            "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
-            getRoleAvatarClass(user?.role)
-          )}
-        >
-          
-          {user?.email?.charAt(0).toUpperCase() || "U"}
-        </AvatarFallback>
-      </Avatar>
-    </Button>
-  </DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hover:bg-transparent"
+              >
+                <Avatar className="h-7 w-7">
+                  <AvatarFallback
+                    className={cn(
+                      "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
+                      getRoleAvatarClass(user?.role)
+                    )}
+                  >
+                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
 
-  <DropdownMenuContent
-    side="bottom"
-    align="end"
-    sideOffset={10}
-    className="w-56 rounded-xl border bg-background shadow-lg p-1"
-  >
-    <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-      <div className="flex flex-col leading-tight px-2">
-        <span className="text-sm font-medium capitalize">{user?.role}</span>
-        <span className="text-xs text-muted-foreground truncate">
-          {user?.email || "m@example.com"}
-        </span>
-      </div>
-    </DropdownMenuLabel>
+            <DropdownMenuContent
+              side="bottom"
+              align="end"
+              sideOffset={10}
+              className="w-56 rounded-xl border bg-background shadow-lg p-1"
+            >
+              <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
+                <div className="flex flex-col leading-tight px-2">
+                  <span className="text-sm font-medium capitalize">
+                    {user?.role}
+                  </span>
+                  <span className="text-xs text-muted-foreground truncate">
+                    {user?.email || "m@example.com"}
+                  </span>
+                </div>
+              </DropdownMenuLabel>
 
-    <DropdownMenuSeparator className="my-1" />
+              <DropdownMenuSeparator className="my-1" />
 
-    <div className="px-2 pb-2">
-      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground capitalize">
-        {user?.role || "Super Admin"}
-      </span>
-    </div>
+              <div className="px-2 pb-2">
+                <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground capitalize">
+                  {user?.role || "Super Admin"}
+                </span>
+              </div>
 
-    <DropdownMenuItem className="rounded-md">
-      <User className="mr-2 h-4 w-4" />
-      Profile
-    </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-md">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </DropdownMenuItem>
 
-    <DropdownMenuItem className="rounded-md">
-      <Settings className="mr-2 h-4 w-4" />
-      Account settings
-    </DropdownMenuItem>
+              <DropdownMenuItem className="rounded-md">
+                <Settings className="mr-2 h-4 w-4" />
+                Account settings
+              </DropdownMenuItem>
 
-    <DropdownMenuSeparator className="my-1" />
+              <DropdownMenuSeparator className="my-1" />
 
-    <DropdownMenuItem
-      onClick={handleSignOut}
-      className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
-    >
-      <LogOut className="mr-2 h-4 w-4" />
-      Sign out
-    </DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
 

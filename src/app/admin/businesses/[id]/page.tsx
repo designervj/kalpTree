@@ -1,3 +1,5 @@
+
+
 import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -141,6 +143,7 @@ export default async function BusinesswithID({
   const user = session?.user;
   const param = await params;
   let id = param.id;
+
   const tenant = await fetch(
     `${process.env.NEXTAUTH_URL}/api/tenants/singletenant/${id}`
   );

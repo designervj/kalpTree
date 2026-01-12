@@ -38,9 +38,7 @@ export const UpperBar = () => {
       {user?.role === "superadmin" && agencies.length > 0 && (
         <Select
           value={currentAgency?._id ?? ""}
-          onValueChange={(agencyId) =>
-            dispatch(onAgencyChange({ agencyId }))
-          }
+          onValueChange={(agencyId) => dispatch(onAgencyChange({ agencyId }))}
         >
           <SelectTrigger className="h-12 min-w-[240px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
             <div className="flex items-center justify-between w-full gap-2">
@@ -74,7 +72,7 @@ export const UpperBar = () => {
       {(user?.role === "agency" || user?.role === "superadmin") &&
         tenants.length > 0 && (
           <Select
-            value={currentTenant?._id ?? ""}
+            value={String(currentTenant?._id) ?? ""}
             onValueChange={(tenantId) =>
               dispatch(onBusinessChange({ tenantId }))
             }

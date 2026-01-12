@@ -3,7 +3,7 @@ import { BrandingSettings } from "@/types";
 
 export interface TenantModel {
   _id: ObjectId;
-  slug: string;
+  slug?: string;
   name: string;
   email: string;
   type?: string;

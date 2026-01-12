@@ -1,39 +1,457 @@
+// "use client";
+
+// import { useState } from "react";
+// import {
+//   UserPlus,
+//   CheckCircle,
+//   XCircle,
+//   User,
+//   Briefcase,
+//   Palette,
+// } from "lucide-react";
+// import { Userdetails } from "./userdetails";
+// import { Businessdetails } from "./businessdetails";
+// import { Brandingdetails } from "./brandingdetails";
+
+// export default function BusinessCreatePage({ user }: any) {
+//   const [loading, setLoading] = useState(false);
+//   const [activeTab, setActiveTab] = useState("user");
+//   const [formData, setFormData] = useState({
+//     // Agency fields (for superadmin only)
+//     agency_name: "",
+//     agency_url_suffix: "",
+//     agency_email: "",
+//     agency_password: "",
+//     agency_service: "ECOMMERCE",
+
+//     // Business user fields
+//     email: "",
+//     password: "",
+//     role: user.role === "superadmin" ? "agency" : "business",
+//     service: "ECOMMERCE",
+//     business_name: "",
+//     businsess_url: "",
+
+//     // Business Details
+//     businessdetails: {
+//       business_website_url: "",
+//       tagline: "",
+//       industry: "Architecture",
+//       founded_year: "2023",
+//       about: "",
+//       public_email: "",
+//       phone: "",
+//       headquarters: "",
+//     },
+
+//     // Branding
+//     branding: {
+//       logo: null,
+//       primary_color: "#6366f1",
+//       secondary_color: "#8b5cf6",
+//       tertiary_color: "#ec4899",
+//       typography: "Inter",
+//     },
+
+//     createdById: user.id,
+//   });
+//   const [showPassword, setShowPassword] = useState(false);
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [message, setMessage] = useState({ type: "", text: "" });
+//   const [expandedUser, setExpandedUser] = useState(null);
+//   const [logoPreview, setLogoPreview] = useState<any>(null);
+
+//   console.log(formData)
+
+//   const slugify = (text: string) =>
+//     text
+//       .toLowerCase()
+//       .trim()
+//       .replace(/[^a-z0-9 ]/g, "")
+//       .replace(/\s+/g, "-");
+
+//   const handleInputChange = (e: any) => {
+//     const { name, value, type, files } = e.target;
+
+//     // Handle nested fields
+//     if (name.includes(".")) {
+//       const [parent, child] = name.split(".");
+//       setFormData((prev: any) => ({
+//         ...prev,
+//         [parent]: {
+//           ...prev[parent],
+//           [child]: value,
+//         },
+//       }));
+//       return;
+//     }
+
+//     // Handle business name (alphanumeric + space only)
+//     if (name === "business_name") {
+//       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
+
+//       setFormData((prev: any) => ({
+//         ...prev,
+//         business_name: value,
+//         businsess_url: slugify(value),
+//       }));
+//       return;
+//     }
+
+//     // Handle agency name (alphanumeric + space only)
+//     if (name === "agency_name") {
+//       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
+
+//       setFormData((prev: any) => ({
+//         ...prev,
+//         agency_name: value,
+//         agency_url_suffix: slugify(value),
+//       }));
+//       return;
+//     }
+
+//     // Handle file upload
+//     if (type === "file") {
+//       const file = files?.[0];
+//       if (file) {
+//         setFormData((prev: any) => ({
+//           ...prev,
+//           branding: {
+//             ...prev.branding,
+//             logo: file,
+//           },
+//         }));
+
+//         const reader = new FileReader();
+//         reader.onloadend = () => setLogoPreview(reader.result);
+//         reader.readAsDataURL(file);
+//       }
+//       return;
+//     }
+
+//     // Normal fields
+//     setFormData((prev: any) => ({
+//       ...prev,
+//       [name]: value,
+//     }));
+//   };
+
+//   const handleSubmit = async () => {
+//     try {
+//       setIsSubmitting(true);
+//       setMessage({ type: "", text: "" });
+
+//       const fd = new FormData();
+
+//       // Agency fields (if superadmin)
+//       if (user.role === "superadmin") {
+//         fd.append("agency_name", formData.agency_name);
+//         fd.append("agency_url_suffix", formData.agency_url_suffix);
+//         fd.append("agency_email", formData.agency_email);
+//         fd.append("agency_password", formData.agency_password);
+//         fd.append("agency_service", formData.agency_service);
+//       }
+
+//       // Root fields
+//       fd.append("email", formData.email);
+//       fd.append("password", formData.password);
+//       fd.append("role", formData.role);
+//       fd.append("service", formData.service);
+//       fd.append("business_name", formData.business_name);
+//       fd.append("businsess_url", formData.businsess_url);
+//       fd.append("createdById", formData.createdById);
+
+//       // Business details (nested → stringify)
+//       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
+
+//       // Branding fields
+//       fd.append(
+//         "branding",
+//         JSON.stringify({
+//           primary_color: formData.branding.primary_color,
+//           secondary_color: formData.branding.secondary_color,
+//           tertiary_color: formData.branding.tertiary_color,
+//           typography: formData.branding.typography,
+//         })
+//       );
+
+//       // Logo file
+//       if (formData.branding.logo) {
+//         fd.append("logo", formData.branding.logo);
+//       }
+
+//       const res = await fetch("/api/public/onboarding", {
+//         method: "POST",
+//         body: fd,
+//       });
+
+//       const result = await res.json();
+
+//       if (result.tenantId) {
+//         setFormData({
+//           // Agency fields
+//           agency_name: "",
+//           agency_url_suffix: "",
+//           agency_email: "",
+//           agency_password: "",
+//           agency_service: "ECOMMERCE",
+
+//           // Business fields
+//           email: "",
+//           password: "",
+//           role: user.role === "superadmin" ? "agency" : "business",
+//           service: "ECOMMERCE",
+//           business_name: "",
+//           businsess_url: "",
+
+//           // Business Details
+//           businessdetails: {
+//             business_website_url: "",
+//             tagline: "",
+//             industry: "Architecture",
+//             founded_year: "2023",
+//             about: "",
+//             public_email: "",
+//             phone: "",
+//             headquarters: "",
+//           },
+
+//           // Branding
+//           branding: {
+//             logo: null,
+//             primary_color: "#6366f1",
+//             secondary_color: "#8b5cf6",
+//             tertiary_color: "#ec4899",
+//             typography: "Inter",
+//           },
+
+//           createdById: user.id,
+//         });
+//         setLogoPreview(null);
+//         setMessage({ 
+//           type: "success", 
+//           text: "Account created successfully!" 
+//         });
+//       }
+
+//       setIsSubmitting(false);
+//     } catch (error) {
+//       console.error(error);
+//       setMessage({ 
+//         type: "error", 
+//         text: "Failed to create account. Please try again." 
+//       });
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   const tabs = [
+//     { id: "user", label: "User Details", icon: User },
+//     { id: "business", label: "Business Details", icon: Briefcase },
+//     { id: "branding", label: "Branding", icon: Palette },
+//   ];
+
+//   return (
+//     <div className="min-h-screen bg-transparent p-8">
+//       <div className="max-w-7xl mx-auto">
+//         {/* Header */}
+//         <div className="mb-8">
+//           <h1 className="text-4xl font-bold  text-black mb-2">
+//             {user.role === "superadmin" ? "Agency & Business Management" : "Business Management"}
+//           </h1>
+//           <p className="text-gray-600">
+//             {user.role === "superadmin" 
+//               ? "Create agency and business accounts with complete branding" 
+//               : "Create and manage business accounts with complete branding"}
+//           </p>
+//         </div>
+
+//         {/* Create User Form */}
+//         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
+//           {/* Tabs */}
+//           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+//             <div className="flex">
+//               {tabs.map((tab) => {
+//                 const Icon = tab.icon;
+//                 return (
+//                   <button
+//                     key={tab.id}
+//                     onClick={() => setActiveTab(tab.id)}
+//                     className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
+//                       activeTab === tab.id
+//                         ? "text-primary"
+//                         : "text-gray-500 hover:text-gray-700"
+//                     }`}
+//                   >
+//                     <div className="flex items-center justify-center gap-2">
+//                       <Icon className="w-5 h-5" />
+//                       <span>{tab.label}</span>
+//                     </div>
+//                     {activeTab === tab.id && (
+//                       <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full" />
+//                     )}
+//                   </button>
+//                 );
+//               })}
+//             </div>
+//           </div>
+
+//           {/* Tab Content */}
+//           <div className="p-8">
+//             {message.text && (
+//               <div
+//                 className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+//                   message.type === "success"
+//                     ? "bg-green-50 text-green-800 border border-green-200"
+//                     : "bg-red-50 text-red-800 border border-red-200"
+//                 }`}
+//               >
+//                 {message.type === "success" ? (
+//                   <CheckCircle className="w-5 h-5" />
+//                 ) : (
+//                   <XCircle className="w-5 h-5" />
+//                 )}
+//                 {message.text}
+//               </div>
+//             )}
+
+//             {/* User Details Tab */}
+//             {activeTab === "user" && (
+//               <Userdetails
+//                 handleInputChange={handleInputChange}
+//                 formData={formData}
+//                 showPassword={showPassword}
+//                 setShowPassword={setShowPassword}
+//                 role={user.role}
+//               />
+//             )}
+
+//             {/* Business Details Tab */}
+//             {activeTab === "business" && (
+//               <Businessdetails
+//                 handleInputChange={handleInputChange}
+//                 formData={formData}
+//               />
+//             )}
+
+//             {/* Branding Tab */}
+//             {activeTab === "branding" && (
+//               <Brandingdetails
+//                 handleInputChange={handleInputChange}
+//                 formData={formData}
+//                 logoPreview={logoPreview}
+//               />
+//             )}
+
+//             {/* Navigation Buttons */}
+//             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
+//               <button
+//                 onClick={() => {
+//                   const currentIndex = tabs.findIndex(
+//                     (t) => t.id === activeTab
+//                   );
+//                   if (currentIndex > 0) {
+//                     setActiveTab(tabs[currentIndex - 1].id);
+//                   }
+//                 }}
+//                 disabled={activeTab === "user"}
+//                 className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
+//               >
+//                 Previous
+//               </button>
+
+//               <div className="flex gap-3">
+//                 {activeTab === "branding" ? (
+//                   <button
+//                     onClick={handleSubmit}
+//                     disabled={isSubmitting}
+//                     className="px-8 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl hover:from-primary-700 hover:to-purple-700 disabled:from-primary-400 disabled:to-purple-400 disabled:cursor-not-allowed transition-all transform hover:scale-105 font-semibold shadow-lg"
+//                   >
+//                     {isSubmitting ? "Creating Account..." : "Create Account"}
+//                   </button>
+//                 ) : (
+//                   <button
+//                     onClick={() => {
+//                       const currentIndex = tabs.findIndex(
+//                         (t) => t.id === activeTab
+//                       );
+//                       if (currentIndex < tabs.length - 1) {
+//                         setActiveTab(tabs[currentIndex + 1].id);
+//                       }
+//                     }}
+//                     className="px-8 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-all transform hover:scale-105 font-semibold shadow-lg"
+//                   >
+//                     Next
+//                   </button>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
 "use client";
 
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  UserPlus,
   CheckCircle,
   XCircle,
   User,
   Briefcase,
   Palette,
+  Home,
 } from "lucide-react";
-import { Userdetails } from "./userdetails";
-import { Businessdetails } from "./businessdetails";
-import { Brandingdetails } from "./brandingdetails";
 
-export default function BusinessCreatePage({ user }: any) {
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("user");
-  const [formData, setFormData] = useState({
-    // Agency fields (for superadmin only)
+import { Brandingdetails } from "@/components/admin/users/brandingdetails";
+import { Businessdetails } from "@/components/admin/users/businessdetails";
+import { Userdetails } from "@/components/admin/users/userdetails";
+import Link from "next/link";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+
+type Role = "superadmin" | "admin" | "business" | "agency";
+
+export default function BusinessCreatePage({ user }: { user?: any }) {
+  // ✅ SAFE USER
+  const safeUser = useMemo(() => {
+    return {
+      id: user?.id ?? "",
+      role: (user?.role ?? "admin") as Role, // default admin
+      name: user?.name ?? "User",
+      email: user?.email ?? "",
+    };
+  }, [user]);
+
+
+
+  const [activeTab, setActiveTab] = useState("agency");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState({ type: "", text: "" });
+  const [logoPreview, setLogoPreview] = useState<any>(null);
+
+  const slugify = (text: string) =>
+    text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9 ]/g, "")
+      .replace(/\s+/g, "-");
+
+  // ✅ INIT FORM using safeUser
+  const [formData, setFormData] = useState(() => ({
     agency_name: "",
-    agency_url_suffix: "",
     agency_email: "",
     agency_password: "",
-    agency_service: "ECOMMERCE",
 
-    // Business user fields
-    email: "",
-    password: "",
-    role: user.role === "superadmin" ? "agency" : "business",
-    service: "ECOMMERCE",
-    business_name: "",
-    businsess_url: "",
-
-    // Business Details
     businessdetails: {
+      email: "",
+      password: "",
+      role: "business",
+      service: "ECOMMERCE",
+      business_name: "",
+      businsess_url: "",
       business_website_url: "",
       tagline: "",
       industry: "Architecture",
@@ -44,36 +462,29 @@ export default function BusinessCreatePage({ user }: any) {
       headquarters: "",
     },
 
-    // Branding
     branding: {
-      logo: null,
+      logo: null as File | null,
       primary_color: "#6366f1",
       secondary_color: "#8b5cf6",
       tertiary_color: "#ec4899",
       typography: "Inter",
     },
 
-    createdById: user.id,
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState({ type: "", text: "" });
-  const [expandedUser, setExpandedUser] = useState(null);
-  const [logoPreview, setLogoPreview] = useState<any>(null);
+    createdById: safeUser.id,
+  }));
 
-  console.log(formData)
-
-  const slugify = (text: string) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 ]/g, "")
-      .replace(/\s+/g, "-");
+  // ✅ if user changes later, update createdById safely
+  React.useEffect(() => {
+    setFormData((prev: any) => ({
+      ...prev,
+      createdById: safeUser.id,
+      role: safeUser.role === "superadmin" ? "agency" : prev.role,
+    }));
+  }, [safeUser.id, safeUser.role]);
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
 
-    // Handle nested fields
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setFormData((prev: any) => ({
@@ -86,7 +497,6 @@ export default function BusinessCreatePage({ user }: any) {
       return;
     }
 
-    // Handle business name (alphanumeric + space only)
     if (name === "business_name") {
       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
 
@@ -98,7 +508,6 @@ export default function BusinessCreatePage({ user }: any) {
       return;
     }
 
-    // Handle agency name (alphanumeric + space only)
     if (name === "agency_name") {
       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
 
@@ -110,7 +519,6 @@ export default function BusinessCreatePage({ user }: any) {
       return;
     }
 
-    // Handle file upload
     if (type === "file") {
       const file = files?.[0];
       if (file) {
@@ -129,12 +537,12 @@ export default function BusinessCreatePage({ user }: any) {
       return;
     }
 
-    // Normal fields
     setFormData((prev: any) => ({
       ...prev,
       [name]: value,
     }));
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -143,28 +551,15 @@ export default function BusinessCreatePage({ user }: any) {
 
       const fd = new FormData();
 
-      // Agency fields (if superadmin)
-      if (user.role === "superadmin") {
+      if (safeUser.role === "superadmin") {
         fd.append("agency_name", formData.agency_name);
-        fd.append("agency_url_suffix", formData.agency_url_suffix);
         fd.append("agency_email", formData.agency_email);
         fd.append("agency_password", formData.agency_password);
-        fd.append("agency_service", formData.agency_service);
       }
-
-      // Root fields
-      fd.append("email", formData.email);
-      fd.append("password", formData.password);
-      fd.append("role", formData.role);
-      fd.append("service", formData.service);
-      fd.append("business_name", formData.business_name);
-      fd.append("businsess_url", formData.businsess_url);
       fd.append("createdById", formData.createdById);
 
-      // Business details (nested → stringify)
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
 
-      // Branding fields
       fd.append(
         "branding",
         JSON.stringify({
@@ -175,10 +570,11 @@ export default function BusinessCreatePage({ user }: any) {
         })
       );
 
-      // Logo file
       if (formData.branding.logo) {
         fd.append("logo", formData.branding.logo);
       }
+
+      console.log("==>>", fd);
 
       const res = await fetch("/api/public/onboarding", {
         method: "POST",
@@ -187,87 +583,81 @@ export default function BusinessCreatePage({ user }: any) {
 
       const result = await res.json();
 
-      if (result.tenantId) {
-        setFormData({
-          // Agency fields
-          agency_name: "",
-          agency_url_suffix: "",
-          agency_email: "",
-          agency_password: "",
-          agency_service: "ECOMMERCE",
-
-          // Business fields
-          email: "",
-          password: "",
-          role: user.role === "superadmin" ? "agency" : "business",
-          service: "ECOMMERCE",
-          business_name: "",
-          businsess_url: "",
-
-          // Business Details
-          businessdetails: {
-            business_website_url: "",
-            tagline: "",
-            industry: "Architecture",
-            founded_year: "2023",
-            about: "",
-            public_email: "",
-            phone: "",
-            headquarters: "",
-          },
-
-          // Branding
-          branding: {
-            logo: null,
-            primary_color: "#6366f1",
-            secondary_color: "#8b5cf6",
-            tertiary_color: "#ec4899",
-            typography: "Inter",
-          },
-
-          createdById: user.id,
-        });
+      if (result?.tenantId) {
+        setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
-        setMessage({ 
-          type: "success", 
-          text: "Account created successfully!" 
+      } else {
+        setMessage({
+          type: "error",
+          text: result?.message || "Failed to create account.",
         });
       }
-
-      setIsSubmitting(false);
     } catch (error) {
       console.error(error);
-      setMessage({ 
-        type: "error", 
-        text: "Failed to create account. Please try again." 
+      setMessage({
+        type: "error",
+        text: "Failed to create account. Please try again.",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
 
   const tabs = [
-    { id: "user", label: "User Details", icon: User },
+    { id: "agency", label: "Agency Details", icon: User },
     { id: "business", label: "Business Details", icon: Briefcase },
     { id: "branding", label: "Branding", icon: Palette },
   ];
 
   return (
     <div className="min-h-screen bg-transparent p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
+      <div className=" mx-auto">
+        {/* <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
+
+      <h1 className="text-2xl font-semibold text-slate-900">
+        Agencies
+      </h1>
+
+      <div className="h-6 w-px bg-slate-300" />
+
+ 
+      <div className="flex items-center gap-2 text-sm text-slate-500">
+        <Home className="h-4 w-4" />
+
+        <span>–</span>
+
+        <Link
+          href="/billing"
+          className="hover:text-slate-700 transition"
+        >
+         Agencies
+        </Link>
+
+        <span>–</span>
+
+        <span className="text-slate-700 font-medium">
+         Add New Agency
+        </span>
+      </div>
+      </div> */}
+
         <div className="mb-8">
-          <h1 className="text-4xl font-bold  text-black mb-2">
-            {user.role === "superadmin" ? "Agency & Business Management" : "Business Management"}
-          </h1>
+          {/* <h1 className="text-4xl font-bold text-black mb-2">
+            {safeUser.role === "superadmin"
+              ? "Agency & Business Management"
+              : "Agencies"}
+          </h1> */}
+
+          <BreadCrumbPage />
+
           <p className="text-gray-600">
-            {user.role === "superadmin" 
-              ? "Create agency and business accounts with complete branding" 
+            {safeUser.role === "superadmin"
+              ? "Create agency and business accounts with complete branding"
               : "Create and manage business accounts with complete branding"}
           </p>
         </div>
 
-        {/* Create User Form */}
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
+        <div className="bg-white rounded-md  overflow-hidden border border-primary-100">
           {/* Tabs */}
           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex">
@@ -296,7 +686,6 @@ export default function BusinessCreatePage({ user }: any) {
             </div>
           </div>
 
-          {/* Tab Content */}
           <div className="p-8">
             {message.text && (
               <div
@@ -315,26 +704,25 @@ export default function BusinessCreatePage({ user }: any) {
               </div>
             )}
 
-            {/* User Details Tab */}
-            {activeTab === "user" && (
+            {activeTab === "agency" && (
               <Userdetails
                 handleInputChange={handleInputChange}
                 formData={formData}
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
-                role={user.role}
+                role={safeUser.role}
               />
             )}
 
-            {/* Business Details Tab */}
             {activeTab === "business" && (
               <Businessdetails
                 handleInputChange={handleInputChange}
                 formData={formData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
               />
             )}
 
-            {/* Branding Tab */}
             {activeTab === "branding" && (
               <Brandingdetails
                 handleInputChange={handleInputChange}
@@ -343,16 +731,11 @@ export default function BusinessCreatePage({ user }: any) {
               />
             )}
 
-            {/* Navigation Buttons */}
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
               <button
                 onClick={() => {
-                  const currentIndex = tabs.findIndex(
-                    (t) => t.id === activeTab
-                  );
-                  if (currentIndex > 0) {
-                    setActiveTab(tabs[currentIndex - 1].id);
-                  }
+                  const idx = tabs.findIndex((t) => t.id === activeTab);
+                  if (idx > 0) setActiveTab(tabs[idx - 1].id);
                 }}
                 disabled={activeTab === "user"}
                 className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
@@ -372,12 +755,8 @@ export default function BusinessCreatePage({ user }: any) {
                 ) : (
                   <button
                     onClick={() => {
-                      const currentIndex = tabs.findIndex(
-                        (t) => t.id === activeTab
-                      );
-                      if (currentIndex < tabs.length - 1) {
-                        setActiveTab(tabs[currentIndex + 1].id);
-                      }
+                      const idx = tabs.findIndex((t) => t.id === activeTab);
+                      if (idx < tabs.length - 1) setActiveTab(tabs[idx + 1].id);
                     }}
                     className="px-8 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-all transform hover:scale-105 font-semibold shadow-lg"
                   >

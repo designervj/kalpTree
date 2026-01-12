@@ -17,7 +17,6 @@ export async function GET(
   const tenantid = new ObjectId(param.id);
 
   const tenantcoll = await getCollection("tenants");
-  //   const tenants = await tenantcoll.findOne({ _id: tenantid });
 
   const tenants = await tenantcoll
     .aggregate([
@@ -38,5 +37,4 @@ export async function GET(
     .toArray();
 
   return NextResponse.json({ item: tenants[0] });
-  //   const final = (await getCollection("tenants")).find({createdById: t.})
 }

@@ -1,3 +1,4 @@
+import { error } from 'console';
 import { MongoClient, Db, ObjectId } from 'mongodb';
 
 if (!process.env.MONGODB_URI) {
@@ -30,6 +31,14 @@ export { clientPromise };
 export async function getDatabase(): Promise<Db> {
   const client = await clientPromise;
   return client.db(process.env.MONGODB_DB || 'KalpTree');
+}
+
+export async function getTestDatabase(dbname:string): Promise<Db> {
+  const client = await clientPromise;
+  if(!dbname){
+    throw error("No DB Name Found")
+  }
+  return client.db(dbname);
 }
 
 // Backward-compatible alias for older imports
