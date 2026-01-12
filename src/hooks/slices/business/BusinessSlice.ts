@@ -38,15 +38,12 @@ const businessSlice = createSlice({
         setBusinesses(state, action: PayloadAction<IBusiness[]>) {
             state.allBusiness = action.payload;
             state.hasFetchedBusiness = true;
-
-            // If currentBusiness is not set, pick the first one
-            // if (!state.currentBusiness && action.payload.length > 0) {
-            //     state.currentBusiness = action.payload[0];
-            // }
         },
         setSelectedBusiness:(state,action)=>{
-    state.allSelectedBusiness=action.payload
-    state.currentBusiness=action.payload[0]
+         state.allSelectedBusiness=action.payload
+        },
+          setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
+            state.currentBusiness = action.payload;
         },
         clearBusinesses(state) {
             state.allBusiness = [];
@@ -54,9 +51,7 @@ const businessSlice = createSlice({
             state.hasFetchedBusiness = false;
             state.allSelectedBusiness=[]
         },
-        setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
-            state.currentBusiness = action.payload;
-        },
+      
         setLoading(state, action: PayloadAction<boolean>) {
             state.isLoading = action.payload;
         },
@@ -238,7 +233,7 @@ const businessSlice = createSlice({
                       state.allBusiness = business;
                       const allBus= business.filter((item:IBusiness)=>item.tenantId===agencies[0]._id);
                       state.allSelectedBusiness=allBus;
-                      state.currentBusiness = business[0];
+                      state.currentBusiness = allBus[0];
                       state.hasFetchedBusiness = true;
                       }
                 

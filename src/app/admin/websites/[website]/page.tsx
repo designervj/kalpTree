@@ -11,8 +11,6 @@ import {
   Calendar,
   ShoppingBag,
   Clock,
-  MoreHorizontal,
-  Zap
 } from "lucide-react";
 import {
   Area,
@@ -25,26 +23,11 @@ import {
 } from "recharts";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ScrollArea } from "@/components/ui/scroll-area";
-
-
-import { Home } from "lucide-react";
-
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import { IoMdHome } from "react-icons/io";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 // --- Mock Data for Chart ---
@@ -65,10 +48,10 @@ export default function DashboardPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
         <div>
-       
-              <BreadCrumbPage/>
-       
-       
+
+          <BreadCrumbPage />
+
+
           <p className="text-muted-foreground mt-1">
             Overview of your store's performance and AI usage.
           </p>
@@ -149,7 +132,7 @@ export default function DashboardPage() {
               </Tabs>
             </CardHeader>
             <CardContent className="pl-0">
-              <div className="h-[350px] w-full pt-4">
+              <div className="h-[350px] w-full pt-4" style={{ minHeight: '350px', minWidth: '100%' }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
@@ -222,9 +205,9 @@ export default function DashboardPage() {
                     </div>
                     <div className="flex items-center gap-6">
                       <Badge variant="secondary" className={`w-20 justify-center ${order.status === 'Paid' ? "bg-green-100 text-green-700 hover:bg-green-100" :
-                          order.status === 'Pending' ? "bg-amber-100 text-amber-700 hover:bg-amber-100" :
-                            order.status === 'Failed' ? "bg-red-100 text-red-700 hover:bg-red-100" :
-                              "bg-blue-100 text-blue-700 hover:bg-blue-100"
+                        order.status === 'Pending' ? "bg-amber-100 text-amber-700 hover:bg-amber-100" :
+                          order.status === 'Failed' ? "bg-red-100 text-red-700 hover:bg-red-100" :
+                            "bg-blue-100 text-blue-700 hover:bg-blue-100"
                         }`}>
                         {order.status}
                       </Badge>

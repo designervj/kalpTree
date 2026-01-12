@@ -18,6 +18,7 @@ import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
 import { setCurrentBusiness, setSelectedBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { IBusiness } from "@/models/business";
+import { useMemo } from "react";
 
 export const UpperBar = () => {
 
@@ -25,28 +26,60 @@ export const UpperBar = () => {
 
   const { user } = useSelector((state: RootState) => state.user)
   const { agencies, curretAgency } = useSelector((state: RootState) => state.agency)
-  const { allBusiness, currentBusiness,allSelectedBusiness } = useSelector((state: RootState) => state.business)
-  const { websites, currentWebsite ,selectedWebsites} = useSelector((state: RootState) => state.websites)
+  const { allBusiness, currentBusiness, allSelectedBusiness } = useSelector((state: RootState) => state.business)
+  const { websites, currentWebsite, selectedWebsites } = useSelector((state: RootState) => state.websites)
   const dispatch = useDispatch<AppDispatch>();
+
+
+  const updatedAllBusiness= useMemo(() => {
+    return allSelectedBusiness
+  }, [allSelectedBusiness, ])
+
+
 
   const handleAgencyChange = (agencyId: string) => {
     const agency = agencies.find(a => a._id?.toString() === agencyId);
+    console.log("agency", agency)
     dispatch(setCurretAgency(agency || null));
-  //  dispatch(setCurrentBusiness(null));
-    dispatch(setCurrentWebsite(null));
-       const allBus= allBusiness.filter(item=>item.tenantId===agency?._id)
-       if(allBus ){
-        dispatch(setSelectedBusiness(allBus))
-       }
+
+    const allBus = allBusiness.filter(item => item.tenantId === agency?._id)
+    console.log("allBus", allBus)
+     if (allBus.length === 1) {
+      dispatch(setSelectedBusiness(allBus))
+      dispatch(setCurrentBusiness(allBus[0]))
+      const allWeb = websites.filter(item => item.tenantId === allBus[0]?.tenantId)
+      console.log("allWeb", allWeb)
+      if (allWeb) {
+        dispatch(setSelectedWebsite(allWeb))
+        dispatch(setCurrentWebsite(allWeb[0]))
+      }
+    }
+   else  if (allBus.length > 1) {
+      dispatch(setSelectedBusiness(allBus))
+      dispatch(setCurrentBusiness(allBus[0]))
+      const allWeb = websites.filter(item => item.tenantId === allBus[0]?.tenantId)
+      console.log("allWeb", allWeb)
+      if (allWeb) {
+        dispatch(setSelectedWebsite(allWeb))
+        dispatch(setCurrentWebsite(allWeb[0]))
+      }
+    } 
   }
 
-  const handleWebsiteChange=(websiteId:string)=>{
-const website = websites.find(w => w._id?.toString() === websiteId);
-              dispatch(setCurrentWebsite(website || null));
-              const allWeb= websites.filter(item=>item.tenantId===website?._id)
-              if(allWeb){
-                dispatch(setSelectedWebsite(allWeb))
-              }
+  const handleBusinessChange = (tenantId: string) => {
+    const business = allBusiness.find(b => b._id?.toString() === tenantId);
+    dispatch(setCurrentBusiness(business || null));
+    const allWeb = websites.filter(item => item.tenantId === business?._id)
+    if (allWeb) {
+      dispatch(setSelectedWebsite(allWeb))
+      dispatch(setCurrentWebsite(allWeb[0]))
+    }
+  }
+
+  const handleWebsiteChange = (websiteId: string) => {
+    const website = websites.find(w => w._id?.toString() === websiteId);
+    dispatch(setCurrentWebsite(website || null));
+
   }
 
   return (
@@ -89,12 +122,12 @@ const website = websites.find(w => w._id?.toString() === websiteId);
 
       {/* ================= Business ================= */}
       {(user?.role === "agency" || user?.role === "superadmin") &&
-        allSelectedBusiness.length > 0 && (
+        updatedAllBusiness.length > 0 && (
           <Select
             value={currentBusiness?._id?.toString() ?? ""}
             onValueChange={(tenantId) => {
-              const business = allBusiness.find(b => b._id?.toString() === tenantId);
-              dispatch(setCurrentBusiness(business || null));
+              handleBusinessChange(tenantId)
+
             }}
           >
             <SelectTrigger className="h-12 min-w-[240px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
@@ -130,7 +163,7 @@ const website = websites.find(w => w._id?.toString() === websiteId);
         selectedWebsites.length > 0 && (
           <Select
             value={currentWebsite?._id?.toString() ?? ""}
-            onValueChange={(websiteId) => {  
+            onValueChange={(websiteId) => {
               handleWebsiteChange(websiteId)
             }}
           >
