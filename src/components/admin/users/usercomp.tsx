@@ -228,18 +228,18 @@
 //           createdById: user.id,
 //         });
 //         setLogoPreview(null);
-//         setMessage({ 
-//           type: "success", 
-//           text: "Account created successfully!" 
+//         setMessage({
+//           type: "success",
+//           text: "Account created successfully!"
 //         });
 //       }
 
 //       setIsSubmitting(false);
 //     } catch (error) {
 //       console.error(error);
-//       setMessage({ 
-//         type: "error", 
-//         text: "Failed to create account. Please try again." 
+//       setMessage({
+//         type: "error",
+//         text: "Failed to create account. Please try again."
 //       });
 //       setIsSubmitting(false);
 //     }
@@ -260,8 +260,8 @@
 //             {user.role === "superadmin" ? "Agency & Business Management" : "Business Management"}
 //           </h1>
 //           <p className="text-gray-600">
-//             {user.role === "superadmin" 
-//               ? "Create agency and business accounts with complete branding" 
+//             {user.role === "superadmin"
+//               ? "Create agency and business accounts with complete branding"
 //               : "Create and manage business accounts with complete branding"}
 //           </p>
 //         </div>
@@ -424,8 +424,6 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
     };
   }, [user]);
 
-
-
   const [activeTab, setActiveTab] = useState("agency");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -448,7 +446,6 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
     businessdetails: {
       email: "",
       password: "",
-      role: "business",
       service: "ECOMMERCE",
       business_name: "",
       businsess_url: "",
@@ -543,7 +540,6 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
     }));
   };
 
-
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
@@ -573,9 +569,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
       if (formData.branding.logo) {
         fd.append("logo", formData.branding.logo);
       }
-
-      console.log("==>>", fd);
-
+      
       const res = await fetch("/api/public/onboarding", {
         method: "POST",
         body: fd,

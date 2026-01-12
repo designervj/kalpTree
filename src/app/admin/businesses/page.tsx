@@ -317,11 +317,11 @@ export default async function BusinessList({
                           <div className="text-[26px] font-semibold text-slate-900 truncate">
                             {b.name}
                           </div>
-                          <Link
+                          {/* <Link
                             href={href}
                             className="text-slate-400 hover:text-slate-600">
                             <ExternalLink className="h-5 w-5" />
-                          </Link>
+                          </Link> */}
 
                           {planBadge}
                           {statusBadge}
@@ -393,7 +393,12 @@ export default async function BusinessList({
 
                       <Suspense fallback={null}>
                         <>
-                          <ShowBusiness businessId={b._id} />
+                          <Link
+                            href={href}
+                            className="py-2 hover:no-underline rounded-md px-5 text-sm font-semibold bg-primary text-white hover:bg-primary hover:text-white"
+                          >
+                            Open Dashboard
+                          </Link>
                         </>
                       </Suspense>
                     </div>
