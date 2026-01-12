@@ -22,6 +22,8 @@ import {
   Bell,
   Palette,
 } from "lucide-react";
+import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
+
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 
@@ -34,6 +36,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home, href: "/admin" },
@@ -286,6 +289,8 @@ export function HighLevelSidebar({
                   // ✅ Expanded view
                   return (
                     <div key={item.id}>
+                    
+                  
                       <div
                         className={cn(
                           "w-full flex items-center gap-3 rounded-md px-3 py-2.5",

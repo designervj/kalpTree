@@ -20,6 +20,7 @@ import {
   Settings,
   Plus,
 } from "lucide-react";
+import { AiOutlineEye } from "react-icons/ai";
 
 /* ------------------------------------------
    Helpers
@@ -214,8 +215,8 @@ function PillButton({
   return (
     <Button
       asChild
-      variant={variant}
-      className={`h-10 rounded-md px-4 text-sm font-semibold text-white ${className}`}
+      variant="outline"
+      // className={`h-10 rounded-md px-4 text-sm font-semibold text-white ${className}`}
     >
       <Link href={href} className="flex items-center gap-2">
         <Icon className="h-4 w-4" />
@@ -242,24 +243,25 @@ export default async function AdminIndex() {
     ]);
 
   const stats: QuickStat[] = [
-    { title: "Agencies", value: 10, href: "/admin/agencies", icon: FileText },
+    
 
     { title: "Businesses", value: 15, href: "/admin/businesses", icon: Globe },
 
     {
       title: "Website",
-      value: products,
+      value: 40,
       href: "/admin/products",
       icon: ShoppingCart,
     },
     {
       title: "Orders",
-      value: orders,
+      value: 142,
       href: "/admin/ecommerce/orders",
       icon: ShoppingCart,
     },
     { title: "Categories", value: categories, href: "/admin/category", icon: Activity },
     { title: "Tags", value: tags, href: "/admin/tags", icon: Activity },
+    { title: "Others", value: 10, href: "#", icon: FileText },
   ];
 
   const actions: ActionCard[] = [
@@ -298,7 +300,7 @@ export default async function AdminIndex() {
       {/* Header */}
       <div className="flex flex-col gap-1">
         <h2 className="text-[28px] font-semibold text-slate-900">
-          Welcome to Admin dashboard 
+          Welcome to Agency dashboard
         </h2>
         <p className="text-sm text-muted-foreground">
           Everything you need to manage website, branding, products & marketing.
@@ -456,13 +458,22 @@ export default async function AdminIndex() {
               Quick access to domain, email and dashboard for each website.
             </p>
           </div>
+ 
+      <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline" className="rounded-md">
+            <Link href="/admin/websites/new">
+              <AiOutlineEye  className=" h-4 w-4" />
+              View all Businesses
+            </Link>
+          </Button>
 
           <Button asChild variant="outline" className="rounded-md">
             <Link href="/admin/websites/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Add website
+              <Plus className=" h-4 w-4" />
+              Add a Business
             </Link>
           </Button>
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -632,23 +643,23 @@ export default async function AdminIndex() {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" className="rounded-md text-white" asChild>
+              <Button variant="secondary" className="rounded-md " asChild>
                 <Link href="/admin/domains">
-                  <Globe className="mr-2 h-4 w-4" />
+                  <Globe className=" h-4 w-4" />
                   Manage domain
                 </Link>
               </Button>
 
-              <Button variant="secondary" className="rounded-md text-white" asChild>
+              <Button variant="secondary" className="rounded-md " asChild>
                 <Link href="/admin/emails">
-                  <Mail className="mr-2 h-4 w-4" />
+                  <Mail className="h-4 w-4" />
                   Manage email
                 </Link>
               </Button>
 
               <Button variant="outline" className="rounded-md" asChild>
                 <Link href="/admin/analytics">
-                  <Activity className="mr-2 h-4 w-4" />
+                  <Activity className=" h-4 w-4" />
                   View analytics
                 </Link>
               </Button>
