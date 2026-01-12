@@ -11,6 +11,7 @@ import {
     fetchBusinessesByPlan,
     searchBusinesses,
 } from "./BusinessThunk";
+import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
 interface BusinessState {
     allBusiness: IBusiness[];
@@ -37,9 +38,9 @@ const businessSlice = createSlice({
             state.hasFetchedBusiness = true;
 
             // If currentBusiness is not set, pick the first one
-            if (!state.currentBusiness && action.payload.length > 0) {
-                state.currentBusiness = action.payload[0];
-            }
+            // if (!state.currentBusiness && action.payload.length > 0) {
+            //     state.currentBusiness = action.payload[0];
+            // }
         },
         clearBusinesses(state) {
             state.allBusiness = [];
@@ -217,7 +218,26 @@ const businessSlice = createSlice({
             .addCase(searchBusinesses.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload as string;
-            });
+            })
+
+              .addCase(savedashboardDetailsThunk.pending, (state) => {
+                    state.isLoading = true;
+                  })
+                  .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+                    state.isLoading = false;
+                    const { business } = action.payload;
+                  
+                    if (business) {
+                      state.allBusiness = business;
+                      state.currentBusiness = business[0];
+                      state.hasFetchedBusiness = true;
+                      }
+                
+                  })
+                  .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
+                   state.isLoading = false;
+                   state.error = action.payload as string;
+                  });
     },
 });
 

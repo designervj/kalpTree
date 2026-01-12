@@ -1,6 +1,5 @@
 "use client";
 import {
-  onParamsChange,
   savedashboardDetailsThunk,
 } from "@/hooks/slices/dashboardSlice/dashBoardSlice";
 import { getAllUser } from "@/hooks/slices/user/userSlice";
@@ -10,14 +9,15 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const GetDashBoardDetails = () => {
-  const {
-    agencies,
-    business,
-    websites,
-    totalbusiness,
-    totalwebsites,
-    currentAgency,
-  } = useSelector((state: RootState) => state.dashboardDetails);
+  // const {
+  //   agencies,
+  //   business,
+  //   websites,
+  //   totalbusiness,
+  //   totalwebsites,
+  //   currentAgency,
+  // } = useSelector((state: RootState) => state.dashboardDetails);
+  const {agencies,hasfetched}=useSelector((state: RootState)=>state.agency)
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const query = useSearchParams();
@@ -28,16 +28,16 @@ const GetDashBoardDetails = () => {
     : params.website;
 
   useEffect(() => {
-    if (agencies.length == 0 && websites.length == 0 && business.length == 0) {
+    if (agencies.length == 0 && !hasfetched && agencyid) {
       dispatch(savedashboardDetailsThunk());
     }
-  }, [agencies, business, websites]);
+  }, [agencies,hasfetched,agencyid]);
 
-  useEffect(() => {
-    if (totalwebsites.length > 0 || websites.length > 0) {
-      dispatch(onParamsChange({ agencyid, businessid, url }));
-    }
-  }, [totalwebsites]);
+  // useEffect(() => {
+  //   if (totalwebsites.length > 0 || websites.length > 0) {
+  //     dispatch(onParamsChange({ agencyid, businessid, url }));
+  //   }
+  // }, [totalwebsites]);
   
   return null;
 };

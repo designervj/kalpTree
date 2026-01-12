@@ -11,12 +11,12 @@ import { clearBrands } from "@/hooks/slices/brand/BrandSlice";
 
 import { clearCategories } from "@/hooks/slices/category/CategorySlice";
 import { clearProducts } from "@/hooks/slices/product/ProductSlice";
-import {
-  onAgencyChange,
-  onBusinessChange,
-  onParamsChange,
-  onWebSiteChange,
-} from "@/hooks/slices/dashboardSlice/dashBoardSlice";
+// import {
+//   onAgencyChange,
+//   onBusinessChange,
+//   onParamsChange,
+//   onWebSiteChange,
+// } from "@/hooks/slices/dashboardSlice/dashBoardSlice";
 import { ObjectId } from "mongodb";
 
 type AppShellClientProps = {
@@ -24,16 +24,16 @@ type AppShellClientProps = {
 };
 
 export function AppShellClient({ children }: AppShellClientProps) {
-  const {
-    agencies,
-    business,
-    websites,
-    currentAgency,
-    currentWebsite,
-    currentbusiness,
-    totalwebsites,
-    totalbusiness,
-  } = useSelector((state: RootState) => state.dashboardDetails);
+  // const {
+  //   agencies,
+  //   business,
+  //   websites,
+  //   currentAgency,
+  //   currentWebsite,
+  //   currentbusiness,
+  //   totalwebsites,
+  //   totalbusiness,
+  // } = useSelector((state: RootState) => state.dashboardDetails);
 
   const router = useRouter();
 
@@ -48,44 +48,44 @@ export function AppShellClient({ children }: AppShellClientProps) {
     dispatch(clearProducts());
   };
   const handleWebsiteChange = (websiteId: string) => {
-    dispatch(onWebSiteChange({ websiteId }));
+    //  dispatch(onWebSiteChange({ websiteId }));
   };
 
   const handleTenantChange = (tenantId: string | ObjectId) => {
-    dispatch(onBusinessChange({ tenantId }));
+    //  dispatch(onBusinessChange({ tenantId }));
   };
 
   const handleAgencyChange = (agencyId: string) => {
-    dispatch(onAgencyChange({ agencyId }));
+ //   dispatch(onAgencyChange({ agencyId }));
   };
 
-  useEffect(() => {
-    // Only update URL if we don't already have the correct params
-    const currentAgencyId = currentAgency?._id;
-    const currentBusinessId = currentbusiness?._id;
-    const currentWebsiteId =
-      currentWebsite?.primaryDomain?.find((d: any) =>
-        d.includes("kalptree.xyz")
-      ) ?? null;
+  // useEffect(() => {
+  //   // Only update URL if we don't already have the correct params
+  //   const currentAgencyId = currentAgency?._id;
+  //   const currentBusinessId = currentbusiness?._id;
+  //   const currentWebsiteId =
+  //     currentWebsite?.primaryDomain?.find((d: any) =>
+  //       d.includes("kalptree.xyz")
+  //     ) ?? null;
 
-    let href = "/admin/websites";
+  //   let href = "/admin/websites";
 
-    if (currentWebsiteId) {
-      href += `/${currentWebsiteId}`;
-    }
+  //   if (currentWebsiteId) {
+  //     href += `/${currentWebsiteId}`;
+  //   }
 
-    if (currentBusinessId) {
-      href += `?businessid=${currentBusinessId}`;
-    }
+  //   if (currentBusinessId) {
+  //     href += `?businessid=${currentBusinessId}`;
+  //   }
 
-    if (currentAgencyId) {
-      href += `&agencyid=${currentAgencyId}`;
-    }
+  //   if (currentAgencyId) {
+  //     href += `&agencyid=${currentAgencyId}`;
+  //   }
 
-    if (currentWebsite || currentAgency || currentbusiness) {
-      router.push(href);
-    }
-  }, [currentAgency, currentWebsite, currentbusiness]);
+  //   if (currentWebsite || currentAgency || currentbusiness) {
+  //     router.push(href);
+  //   }
+  // }, [currentAgency, currentWebsite, currentbusiness]);
 
   return (
     <AppShell

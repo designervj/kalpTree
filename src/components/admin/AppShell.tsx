@@ -112,6 +112,7 @@ import { RootState } from "@/store/store";
 import { Label } from "../ui/label";
 import { UpperBar } from "./Sidebar/UpperBar";
 import { ObjectId } from "mongodb";
+import { IUser } from "@/models/user";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -128,14 +129,15 @@ export type Website = {
 };
 
 export type User = {
-  id: string;
+  _id?: string | ObjectId;
+  id?: string | ObjectId;
   email: string;
   name?: string;
   tenantId?: string;
   // tenantSlug: string;
   role: string;
   permissions?: string[];
-  createdById: string;
+  createdById?: string;
 };
 
 type AppShellProps = {
@@ -695,16 +697,16 @@ const getRoleAvatarClass = (role?: string) => {
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export function useHasPermission(user: User | null) {
+export function useHasPermission(user: User | IUser | null) {
   return React.useCallback(
     (permission?: string | string[]) => {
       if (!permission) return true;
       if (!user) return true;
 
       const required = Array.isArray(permission) ? permission : [permission];
-      if (!user.permissions) return true;
+      if (!user.permissions || !Array.isArray(user.permissions)) return true;
 
-      return required.some((p) => user.permissions?.includes(p));
+      return required.some((p) => user.permissions!.includes(p));
     },
     [user]
   );
@@ -733,13 +735,13 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  onWebsiteChange = () => {},
-  onTenantChange = () => {},
-  onAgencyChage = () => {},
+  onWebsiteChange = () => { },
+  onTenantChange = () => { },
+  onAgencyChage = () => { },
 }: AppShellProps) {
-  const { user, websites, currentWebsite } = useSelector(
-    (state: RootState) => state.dashboardDetails
-  );
+  // const { user, websites, currentWebsite } = useSelector(
+  //   (state: RootState) => state.dashboardDetails
+  // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
@@ -747,17 +749,19 @@ export function AppShell({
   const searchParams = useSearchParams();
   const businessid = searchParams.get("businessid");
   const agencyid = searchParams.get("agencyid");
-  const { currentbusiness, currentAgency } = useSelector(
-    (state: RootState) => state.dashboardDetails
-  );
+  const { user } = useSelector((state: RootState) => state.user);
+  const { websites, currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+  // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
+
 
   React.useEffect(() => {
-    if (currentbusiness && currentbusiness._id) {
+    if (currentBusiness && currentBusiness._id) {
       setIsHighLevelCollapsed(true);
     } else {
       setIsHighLevelCollapsed(false);
     }
-  }, [currentbusiness]);
+  }, [currentBusiness]);
   // const isHighLevelCollapsed = !params.website ? false : true;
   // const isHighLevelCollapsed = true
   const handleSignOut = async () => {
@@ -848,51 +852,10 @@ export function AppShell({
             Ai Assistant
           </Button>
 
-          {/* Avatar */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="">
-                <Avatar className="h-7 w-7">
-                  <AvatarFallback>
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent
-              align="end"
-              className="bg-white rounded-md shadow-md w-40"
-            >
-
-              <Label className="px-2 font-semibold text-sm">Super Admin</Label>
-              <DropdownMenuLabel className="hover:bg-primary hover:text-white p-2 font-normal hover:bg-trasnparent">
-                {user?.email || "User"}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="hover:bg-primary hover:text-white p-2">
-                Profile
-              </DropdownMenuItem>
-              <DropdownMenuItem className="hover:bg-primary hover:text-white p-2">
-                Account settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleSignOut}
-                className="hover:bg-primary hover:text-white p-2"
-              >
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-transparent"
-              >
+              <Button variant="ghost" size="icon" className="hover:bg-transparent">
                 <Avatar className="h-7 w-7">
                   <AvatarFallback
                     className={cn(
@@ -900,6 +863,7 @@ export function AppShell({
                       getRoleAvatarClass(user?.role)
                     )}
                   >
+
                     {user?.email?.charAt(0).toUpperCase() || "U"}
                   </AvatarFallback>
                 </Avatar>
@@ -914,9 +878,7 @@ export function AppShell({
             >
               <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
                 <div className="flex flex-col leading-tight px-2">
-                  <span className="text-sm font-medium capitalize">
-                    {user?.role}
-                  </span>
+                  <span className="text-sm font-medium capitalize">{user?.role}</span>
                   <span className="text-xs text-muted-foreground truncate">
                     {user?.email || "m@example.com"}
                   </span>
@@ -952,6 +914,16 @@ export function AppShell({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+              {/* <DropdownMenuItem
+                onClick={handleSignOut}
+                className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
         </div>
       </header>
 

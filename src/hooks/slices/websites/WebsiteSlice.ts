@@ -4,17 +4,20 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AppDispatch, RootState } from "@/store/store";
 // Adjust the import path for Website if needed
 import { Website } from "@/components/admin/AppShell";
+import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
 interface WebsitesState {
   websites: Website[];
   currentWebsite: Website | null;
-  hasfetched:boolean
+  hasfetched: boolean
+  isLoading: boolean
 }
 
 const initialState: WebsitesState = {
   websites: [],
   currentWebsite: null,
-  hasfetched:false
+  hasfetched: false,
+  isLoading: false
 };
 
 
@@ -48,6 +51,21 @@ const websitesSlice = createSlice({
       })
       .addCase(getAllWebsites.rejected, (state) => {
         state.hasfetched = false;
+      })
+      .addCase(savedashboardDetailsThunk.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const { websites, user } = action.payload;
+        if (websites) {
+          state.websites = websites;
+         state.currentWebsite=websites[0]
+         state.hasfetched=true
+        }
+      })
+      .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
+       state.isLoading=false
       });
   },
 });

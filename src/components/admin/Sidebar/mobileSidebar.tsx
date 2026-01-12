@@ -7,11 +7,12 @@ import { ChevronDown, ChevronRight, LayoutDashboard, LayoutGrid, Link } from "lu
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { IUser } from "@/models/user";
 
 type MobileSidebarProps = {
   websites: Website[];
   currentWebsite: Website | null;
-  user: User | null;
+  user: User | IUser | null;
   onWebsiteChange: (websiteId: string) => void;
 };
 
@@ -50,7 +51,7 @@ export function MobileSidebar({
       {websites.length > 0 && (
         <div className="p-3 border-b">
           <Select
-            value={currentWebsite?._id || ""}
+            value={currentWebsite?._id?.toString() || ""}
             onValueChange={onWebsiteChange}
           >
             <SelectTrigger className="h-10 w-full rounded-md">
@@ -58,7 +59,7 @@ export function MobileSidebar({
             </SelectTrigger>
             <SelectContent>
               {websites.map((site) => (
-                <SelectItem key={site._id} value={site._id}>
+                <SelectItem key={site._id?.toString()} value={site._id?.toString() || ""}>
                   <div className="flex flex-col">
                     <span className="text-xs font-medium">{site.name}</span>
                     <span className="text-[11px] text-muted-foreground">
