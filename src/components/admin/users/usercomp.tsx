@@ -611,36 +611,8 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
 
   return (
     <div className="min-h-screen bg-transparent p-8">
-      <div className=" mx-auto">
-        {/* <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
-
-      <h1 className="text-2xl font-semibold text-slate-900">
-        Agencies
-      </h1>
-
-      <div className="h-6 w-px bg-slate-300" />
-
- 
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Home className="h-4 w-4" />
-
-        <span>–</span>
-
-        <Link
-          href="/billing"
-          className="hover:text-slate-700 transition"
-        >
-         Agencies
-        </Link>
-
-        <span>–</span>
-
-        <span className="text-slate-700 font-medium">
-         Add New Agency
-        </span>
-      </div>
-      </div> */}
-
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <div className="mb-8">
           {/* <h1 className="text-4xl font-bold text-black mb-2">
             {safeUser.role === "superadmin"
@@ -657,7 +629,8 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
           </p>
         </div>
 
-        <div className="bg-white rounded-md  overflow-hidden border border-primary-100">
+        {/* Create User Form */}
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
           {/* Tabs */}
           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex">
