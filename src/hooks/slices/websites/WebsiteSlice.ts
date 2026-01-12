@@ -8,6 +8,7 @@ import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
 interface WebsitesState {
   websites: Website[];
+  selectedWebsites: Website[];
   currentWebsite: Website | null;
   hasfetched: boolean
   isLoading: boolean
@@ -15,6 +16,7 @@ interface WebsitesState {
 
 const initialState: WebsitesState = {
   websites: [],
+  selectedWebsites: [],
   currentWebsite: null,
   hasfetched: false,
   isLoading: false
@@ -31,6 +33,10 @@ const websitesSlice = createSlice({
       if (!state.currentWebsite && action.payload.length > 0) {
         state.currentWebsite = action.payload[0];
       }
+    },
+    setSelectedWebsite:(state,action)=>{
+        state.selectedWebsites=action.payload
+        state.currentWebsite=action.payload[0]
     },
     clearWebsites(state) {
       state.websites = [];
@@ -57,11 +63,16 @@ const websitesSlice = createSlice({
       })
       .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { websites, user } = action.payload;
-        if (websites) {
+        const { websites, user,business } = action.payload;
+        if (websites && business) {
           state.websites = websites;
-         state.currentWebsite=websites[0]
+        
          state.hasfetched=true
+         const allwebsites= websites.filter((item:Website)=>item.tenantId===business[0]?._id)
+         if(allwebsites ){
+          state.selectedWebsites=allwebsites
+           state.currentWebsite=allwebsites[0]
+         }
         }
       })
       .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
@@ -70,7 +81,7 @@ const websitesSlice = createSlice({
   },
 });
 
-export const { setWebsites, clearWebsites, setCurrentWebsite } = websitesSlice.actions;
+export const { setWebsites, clearWebsites, setCurrentWebsite ,setSelectedWebsite} = websitesSlice.actions;
 export default websitesSlice.reducer;
 
 // Thunk to create a Website (createD Website)

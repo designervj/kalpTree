@@ -15,6 +15,7 @@ import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
 interface BusinessState {
     allBusiness: IBusiness[];
+    allSelectedBusiness:IBusiness[]
     currentBusiness: IBusiness | null;
     hasFetchedBusiness: boolean;
     isLoading: boolean;
@@ -23,6 +24,7 @@ interface BusinessState {
 
 const initialState: BusinessState = {
     allBusiness: [],
+    allSelectedBusiness:[],
     currentBusiness: null,
     hasFetchedBusiness: false,
     isLoading: false,
@@ -42,10 +44,15 @@ const businessSlice = createSlice({
             //     state.currentBusiness = action.payload[0];
             // }
         },
+        setSelectedBusiness:(state,action)=>{
+    state.allSelectedBusiness=action.payload
+    state.currentBusiness=action.payload[0]
+        },
         clearBusinesses(state) {
             state.allBusiness = [];
             state.currentBusiness = null;
             state.hasFetchedBusiness = false;
+            state.allSelectedBusiness=[]
         },
         setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
             state.currentBusiness = action.payload;
@@ -225,10 +232,12 @@ const businessSlice = createSlice({
                   })
                   .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
                     state.isLoading = false;
-                    const { business } = action.payload;
-                  
-                    if (business) {
+                    const { business, user,agencies } = action.payload;
+                 
+                    if (business && agencies) {
                       state.allBusiness = business;
+                      const allBus= business.filter((item:IBusiness)=>item.tenantId===agencies[0]._id);
+                      state.allSelectedBusiness=allBus;
                       state.currentBusiness = business[0];
                       state.hasFetchedBusiness = true;
                       }
@@ -245,6 +254,7 @@ export const {
     setBusinesses,
     clearBusinesses,
     setCurrentBusiness,
+    setSelectedBusiness,
     setLoading,
     setError,
 } = businessSlice.actions;
