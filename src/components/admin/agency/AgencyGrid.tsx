@@ -112,7 +112,7 @@ export default function AgencyList() {
     (state: RootState) => state.agency
   );
 
-  console.log(agencies);
+
 
   // topbar state
   const [q, setQ] = useState("");

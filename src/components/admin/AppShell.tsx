@@ -167,7 +167,7 @@ export const currentWebsiteSections: NavSection[] = [
     id: "dashboard-overview",
     label: "Overview",
     items: [
-      { label: "Dashboard", href: "/admin/pages", icon: LayoutDashboard },
+      { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
       {
         label: "Analytics",
         href: "/admin/analytics",
@@ -951,7 +951,7 @@ export function AppShell({
           />
         )}
 
-        <div className="flex  flex-col  w-full">
+        <div className="flex  flex-col w-full">
           <div className=" px-3 py-4 md:px-6 md:py-6 overflow-auto ">
             <div className="mx-auto ">{children}</div>
           </div>

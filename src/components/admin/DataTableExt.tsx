@@ -77,7 +77,11 @@ function inferType(values: any[]): "string" | "number" | "date" | "boolean" {
 function formatValue(v: any, key?: string) {
   if (v == null) return "-";
   // Custom date formatting for createdAt/updatedAt
-  if (key && (key.toLowerCase().includes("created") || key.toLowerCase().includes("updated"))) {
+  if (
+    key &&
+    (key.toLowerCase().includes("created") ||
+      key.toLowerCase().includes("updated"))
+  ) {
     const date = new Date(v);
     if (!isNaN(date.getTime())) {
       const now = new Date();
@@ -87,7 +91,11 @@ function formatValue(v: any, key?: string) {
       const isYesterday = date.toDateString() === yesterday.toDateString();
       if (isToday) return "Today";
       if (isYesterday) return "Yesterday";
-      return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
     }
   }
   if (v instanceof Date) return v.toISOString();
@@ -323,7 +331,7 @@ export function DataTableExt({
     if (onView) {
       onView(row);
     } else {
-      router.push(`${lastSegment}/${row._id}`);
+      console.log(row);
     }
   }
 
@@ -343,54 +351,48 @@ export function DataTableExt({
       primaryDomain?: string[];
     }
   ) {
-   
     // opentab(row)
-  //   e.preventDefault();
-  //   if (path.includes("domain")) {
-  //     if (!row.primaryDomain?.length) return;
-    
-  //     const isLocalHost = window.location.hostname.includes("localhost");
-  //       console.log("isLocalHost--",isLocalHost)
-  //         console.log("row.primaryDomain--",row.primaryDomain)
-  //     const domain = row.primaryDomain.find((d) =>
-  //       isLocalHost ? d.includes("localhost") : !d.includes("localhost")
-  //     );
-
-  //     if (!domain) return;
-
-  //     const url = isLocalHost ? `http://${domain}` : `https://${domain}`;
-  // console.log("url00-0", url)
-  //     window.location.href = url;
-  //   } else {
-  //     // if (!row.slug) return;
-
-  //     // router.push(`/${row.slug}`);
-  //   }
+    if (opentab) {
+      opentab(row);
+    }
+    //   e.preventDefault();
+    //   if (path.includes("domain")) {
+    //     if (!row.primaryDomain?.length) return;
+    //     const isLocalHost = window.location.hostname.includes("localhost");
+    //       console.log("isLocalHost--",isLocalHost)
+    //         console.log("row.primaryDomain--",row.primaryDomain)
+    //     const domain = row.primaryDomain.find((d) =>
+    //       isLocalHost ? d.includes("localhost") : !d.includes("localhost")
+    //     );
+    //     if (!domain) return;
+    //     const url = isLocalHost ? `http://${domain}` : `https://${domain}`;
+    // console.log("url00-0", url)
+    //     window.location.href = url;
+    //   } else {
+    //     // if (!row.slug) return;
+    //     // router.push(`/${row.slug}`);
+    //   }
   }
 
   return (
     <div className="space-y-4">
-      {/* <div className="flex items-center justify-between">
-       
-      <div className="flex items-center gap-2 justify-between w-full">
-         
-          {onCreate ? (
-            <Button
-              size="sm"
-              className="py-2 rounded-sm px-4 py-2"
-              onClick={onCreate}
-            >
+      <div className="flex items-center gap-2 justify-end w-full">
+        {onCreate ? (
+          <Button
+            size="sm"
+            className="py-2 rounded-sm px-4 py-2"
+            onClick={onCreate}
+          >
+            Create New
+          </Button>
+        ) : createHref ? (
+          <Link href={createHref} className="text-sm">
+            <Button size="sm" className="py-2 rounded-sm px-4 py-2">
               Create New
             </Button>
-          ) : createHref ? (
-            <Link href={createHref} className="text-sm">
-              <Button size="sm" className="py-2 rounded-sm px-4 py-2">
-                Create New
-              </Button>
-            </Link>
-          ) : null}
-        </div>
-      </div> */}
+          </Link>
+        ) : null}
+      </div>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
@@ -426,7 +428,7 @@ export function DataTableExt({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <DropdownMenu >
+        <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="lg" className="gap-2">
               <ListFilter className="h-4 w-4" /> Filters
@@ -656,7 +658,7 @@ export function DataTableExt({
                         size="sm"
                         className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
                         onClick={(e) => handleViewPage(e, row)}
-                        title="Delete"
+                        title="View"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -665,7 +667,7 @@ export function DataTableExt({
                         size="sm"
                         className="h-8 w-8 p-0"
                         onClick={(e) => handleView(e, row)}
-                        title="View"
+                        title="Edit"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>

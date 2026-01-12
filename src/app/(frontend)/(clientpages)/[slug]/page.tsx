@@ -7,12 +7,13 @@ export default async function PageTemplate({ params }: any) {
 
   const host = headersList.get("host");
 
-
   const main = await fetch(`${API_BASE_URL}/api/domain/${host}`);
 
   const domainData = await main.json();
 
   const param = await params;
+
+  console.log(param);
 
   const slugs = !param.hasOwnProperty("slug") ? "home" : param.slug;
 
@@ -30,11 +31,14 @@ export default async function PageTemplate({ params }: any) {
   console.log("session iiii===", session);
 
   const res = await fetch(`${API_BASE_URL}/api/pages/websites?${query}`);
- 
+
   const t = await res.json();
-     console.log(" tttt-->",t)
+  console.log(" tttt-->", t);
   // t is an array, get the first item
-  const html = Array.isArray(t) && t.length > 0 ? t[0].content : undefined;
+  const html =
+    Array.isArray(t) && t.length > 0
+      ? t.find((d) => d.slug == slugs).content
+      : undefined;
 
   const EditButton = (await import("../EditButton")).default;
   console.log(" html-->", html);
@@ -46,10 +50,11 @@ export default async function PageTemplate({ params }: any) {
     <div>
       {session &&
         session.user &&
-        (session.user.role == "superadmin" || session?.user.role == "agency" || session.user.role==="business") &&
-        Array.isArray(t) && t.length > 0 && (
-          <EditButton pageData={t[0]} />
-        )}
+        (session.user.role == "superadmin" ||
+          session?.user.role == "agency" ||
+          session.user.role === "business") &&
+        Array.isArray(t) &&
+        t.length > 0 && <EditButton pageData={t[0]} />}
       <div dangerouslySetInnerHTML={{ __html: processedHtml }} />
     </div>
   );

@@ -22,6 +22,7 @@ export const deleteAgency = createAsyncThunk<
     }
   }
 );
+
 import { IUser } from '@/models/user';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { savedashboardDetailsThunk } from '../dashboardSlice/dashBoardSlice';
@@ -73,7 +74,6 @@ const agencySlice = createSlice({
       .addCase(deleteAgency.rejected, (state) => {
         state.isAgencyLoading = false;
       })
-      // update from dash Board
     .addCase(savedashboardDetailsThunk.pending, (state) => {
           state.isAgencyLoading = true;
         })
@@ -85,16 +85,10 @@ const agencySlice = createSlice({
             state.curretAgency = agencies[0];
             state.hasfetched = true;
           }
-          
-        
-        
         })
         .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
           state.isAgencyLoading = false;
-          
         });
-      
-
 }});
 
 export const { setAgencies, setAgencyLoading, setCurretAgency, clearAgencies } = agencySlice.actions;

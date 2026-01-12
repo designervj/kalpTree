@@ -1,11 +1,14 @@
-
 import { auth } from "@/auth";
 import AgenciesClient from "@/components/admin/agency/AgenciesClient";
 import AgencyList from "@/components/admin/agency/AgencyList";
 import { IUser } from "@/models/user";
 // import { useDispatch } from "react-redux";
 
-export default async function AgenciesPage({ searchParams }: { searchParams: { page?: string } }) {
+export default async function AgenciesPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
   const params = searchParams;
   const session = await auth();
   const user = session?.user;
@@ -37,8 +40,7 @@ export default async function AgenciesPage({ searchParams }: { searchParams: { p
   return (
     <div className="w-full  space-y-6">
       <AgenciesClient agencies={agencies} />
-      <AgencyList/>
-      
+      <AgencyList />
     </div>
   );
 }
