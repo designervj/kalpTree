@@ -1,6 +1,6 @@
-import { Building2, MapPin } from "lucide-react";
+import { Building2, MapPin, Eye, EyeOff } from "lucide-react";
 
-export const Businessdetails = ({ handleInputChange, formData }: any) => {
+export const Businessdetails = ({ handleInputChange, formData, showPassword, setShowPassword }: any) => {
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
@@ -8,6 +8,251 @@ export const Businessdetails = ({ handleInputChange, formData }: any) => {
           <Building2 className="w-5 h-5 text-indigo-600" />
           General Information
         </h3>
+        {/* Business User Fields */}
+        <div className="bg-gray-100 border-2 border-primary-200 rounded-md p-6">
+          <h3 className="text-lg font-bold text-primary-900 mb-4 flex items-center gap-2">
+            <span className="w-2 h-2 bg-primary-600 rounded-full"></span>
+            Business Account Details
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                name="businessdetails.email"
+                value={formData.businessdetails.email}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="user@example.com"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="businessdetails.password"
+                  value={formData.businessdetails.password}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Business Name
+              </label>
+              <input
+                type="text"
+                name="businessdetails.business_name"
+                value={formData.businessdetails.business_name}
+                onChange={handleInputChange}
+                required
+                className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                placeholder="KalpTree"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Website URL
+              </label>
+              <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 bg-white">
+                <input
+                  type="text"
+                  name="businessdetails.businsess_url"
+                  value={formData.businessdetails.businsess_url}
+                  onChange={handleInputChange}
+                  className="flex-1 px-3 py-3 outline-none"
+                  placeholder="kalptree"
+                />
+                <span className="px-2 text-gray-500">.kalptree.com</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    console.log("Check URL:", formData.businessdetails.businsess_url);
+                  }}
+                  className="px-4 py-3 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
+                >
+                  Check
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Permission Roles
+          </label>
+          <div className="space-y-3">
+            {false ? (
+              <label
+                className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.role === "agency"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+                  }`}
+              >
+                <input
+                  type="radio"
+                  name="businessdetails.role"
+                  value="agency"
+                  checked={formData.businessdetails.role === "agency"}
+                  onChange={handleInputChange}
+                  className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+                />
+                <div className="ml-3">
+                  <div className="font-semibold text-gray-900">Agency Owner</div>
+                  <div className="text-sm text-gray-600">
+                    Manage services and make business.
+                  </div>
+                </div>
+              </label>
+            ) : (
+              <label
+                className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.role === "business"
+                  ? "border-primary-500 bg-gray-100"
+                  : "border-gray-200 hover:border-gray-300"
+                  }`}
+              >
+                <input
+                  type="radio"
+                  name="businessdetails.role"
+                  value="business"
+                  checked={formData.businessdetails.role === "business"}
+                  onChange={handleInputChange}
+                  className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+                />
+                <div className="ml-3">
+                  <div className="font-semibold text-gray-900">
+                    Business Owner
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Manage services and make purchases using added payment method.
+                  </div>
+                </div>
+              </label>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Service Type
+          </label>
+          <div className="space-y-3">
+            <label
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_ONLY"
+                ? "border-primary-500 bg-gray-100"
+                : "border-gray-200 hover:border-gray-300"
+                }`}
+            >
+              <input
+                type="radio"
+                name="businessdetails.service"
+                value="WEBSITE_ONLY"
+                checked={formData.businessdetails.service === "WEBSITE_ONLY"}
+                onChange={handleInputChange}
+                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <div className="ml-3">
+                <div className="font-semibold text-gray-900">Website Only</div>
+                <div className="text-sm text-gray-600">
+                  Basic website hosting and management with space 1GB
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE"
+                ? "border-primary-500 bg-gray-100"
+                : "border-gray-200 hover:border-gray-300"
+                }`}
+            >
+              <input
+                type="radio"
+                name="businessdetails.service"
+                value="WEBSITE_CATALOGUE"
+                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE"}
+                onChange={handleInputChange}
+                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <div className="ml-3">
+                <div className="font-semibold text-gray-900">Website and Catalogue</div>
+                <div className="text-sm text-gray-600">
+                  website hosting and catalogue with space 2GB
+                </div>
+              </div>
+            </label>
+
+            <label
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE_ECOMMERCE"
+                ? "border-primary-500 bg-gray-100"
+                : "border-gray-200 hover:border-gray-300"
+                }`}
+            >
+              <input
+                type="radio"
+                name="businessdetails.service"
+                value="WEBSITE_CATALOGUE_ECOMMERCE"
+                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE_ECOMMERCE"}
+                onChange={handleInputChange}
+                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <div className="ml-3">
+                <div className="font-semibold text-gray-900">Website ,Catalogue and E-commerce</div>
+                <div className="text-sm text-gray-600">
+                  website hosting and catalogue with e-commerce functionality with space 3GB
+                </div>
+              </div>
+            </label>
+            <label
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${formData.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
+                ? "border-primary-500 bg-gray-100"
+                : "border-gray-200 hover:border-gray-300"
+                }`}
+            >
+              <input
+                type="radio"
+                name="businessdetails.service"
+                value="WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
+                checked={formData.businessdetails.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"}
+                onChange={handleInputChange}
+                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+              />
+              <div className="ml-3">
+                <div className="font-semibold text-gray-900">Website ,Catalogue , E-commerce and Marketing</div>
+                <div className="text-sm text-gray-600">
+                  website hosting and catalogue with e-commerce functionality with space 5GB and marketing
+                </div>
+              </div>
+            </label>
+
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -15,9 +260,9 @@ export const Businessdetails = ({ handleInputChange, formData }: any) => {
             </label>
             <input
               type="text"
-              //   name="businessdetails.business_name"
-              value={formData.business_name}
-              //   onChange={handleInputChange}
+              name="businessdetails.business_name"
+              value={formData.businessdetails.business_name}
+              onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="KaplTree"
               disabled={true}
