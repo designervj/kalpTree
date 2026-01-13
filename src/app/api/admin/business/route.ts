@@ -24,13 +24,13 @@ export async function GET(req: Request) {
 
         let filter: Record<string, any> = {};
 
-        if (user.role === "agency") {
-            filter.createdById = new ObjectId(user.id);
-        }
+        // if (user.role === "agency") {
+        //     filter.createdById = new ObjectId(user.id);
+        // }
 
         if (user.role === "superadmin") {
             filter.type = type;
-        }
+        }   
 
         const [businesses, totalCount] = await Promise.all([
             tenantcoll.find(filter).skip(skip).limit(ITEMS_PER_PAGE).toArray(),

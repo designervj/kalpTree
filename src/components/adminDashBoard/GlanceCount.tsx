@@ -1,9 +1,9 @@
 
 "use client"
-import React, { ElementType } from 'react'
+import React, { Activity, ElementType, useMemo } from 'react'
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, FileText, Globe, Link as LinkIcon } from 'lucide-react';
+import { ExternalLink, FileText, Globe, Link as LinkIcon, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
@@ -17,28 +17,50 @@ type QuickStat = {
 };
 
 const GlanceCount = () => {
-
+    const { user } = useSelector((state: RootState) => state.user)
     const { allAgencies } = useSelector((state: RootState) => state.agency)
     const { allBusiness } = useSelector((state: RootState) => state.business)
-    const {websites}= useSelector((state: RootState)=>state.websites)
-    const stats: QuickStat[] = [
+    const { websites } = useSelector((state: RootState) => state.websites)
+
+    const allBusinessBasedOnAgency = useMemo(()=>{
+        if(user?.role === "agency"){
+            return allBusiness.filter((business)=>business.tenantId === user?.tenantId)
+        }
+        return allBusiness
+    },[allBusiness,user])
+
+
+    const allWebsitesBasedOnAgency = useMemo(()=>{
+        if(user?.role === "agency"){
+            return websites.filter((website)=>website.tenantId === user?.tenantId)
+        }
+        return websites
+    },[websites,user])
+
+    console.log("alllagenxy ",allBusinessBasedOnAgency)
+    const allStats: QuickStat[] = [
         { title: "Agencies", value: allAgencies?.length || 0, href: "/admin/agencies", icon: FileText },
-        { title: "Businesses", value: allBusiness?.length || 0, href: "/admin/businesses", icon: Globe },
+        { title: "Businesses", value: user?.role === "agency" ? allBusinessBasedOnAgency?.length : allBusiness?.length || 0, href: "/admin/businesses", icon: Globe },
         {
             title: "Website",
-            value: websites?.length || 0,
+            value: user?.role === "agency" ? allWebsitesBasedOnAgency?.length : websites?.length || 0,
             href: "/admin/websites",
             icon: Globe,
         },
-        // {
-        //   title: "Orders",
-        //   value: orders,
-        //   href: "/admin/ecommerce/orders",
-        //   icon: ShoppingCart,
-        // },
-        // { title: "Categories", value: categories, href: "/admin/category", icon: Activity },
-        // { title: "Tags", value: tags, href: "/admin/tags", icon: Activity },
+        {
+            title: "Orders",
+            value: 0,
+            href: "/admin/ecommerce/orders",
+            icon: ShoppingCart,
+        },
+        { title: "Categories", value: 0, href: "/admin/category", icon: Activity },
+        { title: "Tags", value: 0, href: "/admin/tags", icon: Activity },
     ];
+
+    // Filter out "Agencies" when user role is "agency"
+    const stats = user?.role === "agency"
+        ? allStats.filter(stat => stat.title !== "Agencies")
+        : allStats;
     return (
         <>
             <div className="space-y-4">

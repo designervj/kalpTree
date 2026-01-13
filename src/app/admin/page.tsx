@@ -26,6 +26,7 @@ import ShowListOfBusiness from "@/components/adminDashBoard/ShowListOfBusiness";
 import QuickTool from "@/components/adminDashBoard/QuickTool";
 import GlanceCount from "@/components/adminDashBoard/GlanceCount";
 import GetAllWebsites from "@/components/admin/website/GetAllWebsites";
+import AdminHeader from "@/components/adminDashBoard/AdminHeader";
 
 /* ------------------------------------------
    Helpers
@@ -236,15 +237,15 @@ function PillButton({
 ------------------------------------------ */
 
 export default async function AdminIndex() {
-  const [agencies, businesses, websitesData, orders, categories, tags] =
-    await Promise.all([
-      fetchCount("/api/agencies"),
-      fetchCount("/api/businesses"),
-      fetchCount("/api/websites"),
-      fetchCount("/api/orders"),
-      fetchCount("/api/categories"),
-      fetchCount("/api/blog_tags"),
-    ]);
+  // const [agencies, businesses, websitesData, orders, categories, tags] =
+  //   await Promise.all([
+  //     fetchCount("/api/agencies"),
+  //     fetchCount("/api/businesses"),
+  //     fetchCount("/api/websites"),
+  //     fetchCount("/api/orders"),
+  //     fetchCount("/api/categories"),
+  //     fetchCount("/api/blog_tags"),
+  //   ]);
 
 
   const actions: ActionCard[] = [
@@ -285,15 +286,8 @@ export default async function AdminIndex() {
       <GetAllWebsites/>
       <div className="w-full space-y-10">
         {/* Header */}
-        <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-semibold text-slate-900">
-            Welcome to Admin dashboard
-          </h2>
-          <p className="text-sm text-muted-foreground">
-            Everything you need to manage website, branding, products & marketing.
-          </p>
-        </div>
-
+        <AdminHeader/>
+        
         {/* Top Row: Promo + Quick Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Promo */}
