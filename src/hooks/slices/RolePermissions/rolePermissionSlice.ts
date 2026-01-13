@@ -57,7 +57,7 @@ export const updateRolePermission = createAsyncThunk<
   Partial<RolePermissionModel>
 >("rolePermission/update", async (data, { rejectWithValue }) => {
   try {
-    console.log(data);
+    
     const response = await axios.put("/api/role", data);
     return response.data;
   } catch (error: any) {

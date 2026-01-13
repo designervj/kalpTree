@@ -1,52 +1,12 @@
-
-import { auth } from "@/auth";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { IBusiness } from "@/models/business";
-import {
-  ArrowLeft,
-  Building2,
-  CheckCircle2,
-
-  XCircle,
-} from "lucide-react";
-import Link from "next/link";
-import { toCreateHref } from "@/lib/utils/url-helpers";
+import { CheckCircle2, XCircle } from "lucide-react";
+import ShowBussinesById from "@/components/admin/business/businessID/ShowBussinesById";
+import { auth } from "@/auth";
 
 function cn(...c: (string | null | undefined | false)[]) {
   return c.filter(Boolean).join(" ");
 }
-
-// type Business = {
-//   _id: string;
-//   tenantId: string;
-//   name: string;
-//   email?: string;
-//   plan?: string;
-//   subscriptionStatus?: string;
-//   customDomainVerified?: boolean;
-//   branding?: { colors?: { primary?: string; secondary?: string } };
-//   features?: {
-//     websiteEnabled?: boolean;
-//     ecommerceEnabled?: boolean;
-//     blogEnabled?: boolean;
-//     invoicesEnabled?: boolean;
-//   };
-//   settings?: { locale?: string; currency?: string; timezone?: string };
-//   status?: string;
-//   createdAt?: string;
-//   updatedAt?: string;
-//   websites?: Array<{
-//     name?: string;
-//     primaryDomain?: string[];
-//     serviceType?: string;
-//     status?: string;
-//     createdAt?: string;
-//     updatedAt?: string;
-//   }>;
-// };
 
 function fmtDate(iso?: string) {
   if (!iso) return "—";
@@ -102,70 +62,24 @@ export default async function BusinesswithID({
 }: {
   params: { id: string };
 }) {
-  const session = await auth();
-  const user = session?.user;
   const param = await params;
   let id = param.id;
+  const sesssion = await auth();
 
-  let business: IBusiness;
+  const req = await fetch(
+    `${process.env.NEXTAUTH_URL}/api/admin/business/${id}`
+  );
 
-  try {
-    // Import database utilities
-    const { getDatabase } = await import("@/lib/db/mongodb");
-    const { ObjectId } = await import("mongodb");
+  const res = await req.json();
 
-    const db = await getDatabase();
-    const tenantcoll = db.collection("tenants");
-    const tenantid = new ObjectId(id);
-
-    const tenants = await tenantcoll
-      .aggregate([
-        {
-          $match: {
-            _id: tenantid,
-          },
-        },
-        {
-          $lookup: {
-            from: "websites",
-            localField: "_id",
-            foreignField: "tenantId",
-            as: "websites",
-          },
-        },
-      ])
-      .toArray();
-
-    const rawBusiness = tenants[0];
-
-    if (!rawBusiness) {
-      throw new Error("Business not found");
-    }
-
-    // Serialize ObjectId fields to strings for client component
-    business = JSON.parse(JSON.stringify(rawBusiness, (key, value) => {
-      if (value && typeof value === 'object' && value._bsontype === 'ObjectId') {
-        return value.toString();
-      }
-      return value;
-    })) as IBusiness;
-  } catch (error) {
-    console.error("Error fetching business data:", error);
-    // Return a fallback UI or redirect
-    throw error; // Re-throw to trigger Next.js error boundary
+  if (!res.success) {
+    return <div className="p-6 text-sm text-slate-600">Business not found</div>;
   }
+  const business: IBusiness = res.data;
 
-  const primary = business.branding?.colors?.primary || "#111827";
-  const secondary = business.branding?.colors?.secondary || "#e5e7eb";
-
-  const websites = business.websites || [];
-
-  const totalWebsites = websites.length;
-  const primaryDomain = websites?.[0]?.primaryDomain?.[0] || "—";
-  const ShowBussinesById = (await import("@/components/admin/business/businessID/ShowBussinesById")).default;
   return (
     <>
-      <ShowBussinesById business={business} />
+      <ShowBussinesById user={sesssion?.user!} business={business} />
     </>
   );
 }

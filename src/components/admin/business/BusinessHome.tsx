@@ -5,13 +5,10 @@ import React from 'react'
 import UpdateBusiness from './UpdateBusiness'
 import ShowBusiness from './showbussiness/showbusiness'
 
-type Props={
-    business:IBusiness[]
-}
-const BusinessHome = ({business}:Props) => {
+const BusinessHome = () => {
   return (
   <>
-      <UpdateBusiness business={business} />
+      <UpdateBusiness  />
       <ShowBusiness />
     </>
   )

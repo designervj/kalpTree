@@ -1,22 +1,31 @@
 "use client";
 
 import { setBusinesses } from "@/hooks/slices/business/BusinessSlice";
+import { fetchAllBusinesses } from "@/hooks/slices/business/BusinessThunk";
 import { IBusiness } from "@/models/business";
 import { IUser } from "@/models/user";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
+import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
-type Props = {
-  business: IBusiness[];
-};
-const UpdateBusiness = ({ business }: Props) => {
+const UpdateBusiness = () => {
+  const searchParams = useSearchParams();
+  const { allBusiness, pagination } = useSelector(
+    (state: RootState) => state.business
+  );
+  const page = searchParams.get("page") || 1;
+  const itemsperpage = searchParams.get("itemsperpage") || 30;
+
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
-    if (business && business.length > 0) {
-      dispatch(setBusinesses(business));
-    }
-  }, [business]);
+    dispatch(
+      fetchAllBusinesses({
+        page: Number(page),
+        itemsperpage: Number(itemsperpage),
+      })
+    );
+  }, [page, itemsperpage]);
   return null;
 };
 

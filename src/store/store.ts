@@ -35,7 +35,6 @@ export const store = configureStore({
     websitePage: websitePageReducer,
     rolePermission: rolePermissionReducer,
     account: accountReducer,
-    // dashboardDetails: dashboardDetailsReducer,
   },
 });
 

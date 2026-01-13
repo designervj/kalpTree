@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IBusiness } from "@/models/business";
+import { Pagination } from "./BusinessSlice";
 
 // Type definitions for Create and Update inputs
 export interface CreateBusinessInput {
@@ -64,18 +65,31 @@ export interface UpdateBusinessInput {
 
 // Thunk to fetch all businesses
 export const fetchAllBusinesses = createAsyncThunk(
-    "business/fetchAll",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await fetch("/api/admin/business?type=business");
+  "business/fetchAll",
+  async (
+    {
+      page = 1,
+      itemsperpage = 30,
+    }: {
+      page: number;
+      itemsperpage: number;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await fetch(
+        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}`
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch businesses");
       }
 
       const data = await response.json();
-      console.log(data);
-      return data.data as IBusiness[];
+      return data as {
+        pagination: Pagination;
+        data: IBusiness[];
+      };
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch businesses");
     }
