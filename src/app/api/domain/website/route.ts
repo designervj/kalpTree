@@ -6,14 +6,21 @@ import { NextRequest, NextResponse } from "next/server";
 // GET: Get website by id
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  const id = searchParams.get("tenantId");
-  if (!id) {
-    return NextResponse.json({ error: "id is required" }, { status: 400 });
-  }
-  const db = await getDatabase();
+  const tenantIdParam = searchParams.get("tenantId");
+    const db = await getDatabase();
   const collection = db.collection("websites");
-  const websites = await collection.find({ tenantId: id }).toArray();
-  return NextResponse.json({ items: websites });
+
+    // If tenantId is provided, filter by it; otherwise fetch all websites
+    let websites;
+    if (tenantIdParam!=="" && tenantIdParam!==null) {
+        const tenantId = new ObjectId(tenantIdParam);
+        websites = await collection.find({ tenantId: tenantId }).toArray();
+    } else {
+        websites = await collection.find({}).toArray();
+    }
+
+    return NextResponse.json({ item: websites });
+
 }
 
 // POST: Create a new website

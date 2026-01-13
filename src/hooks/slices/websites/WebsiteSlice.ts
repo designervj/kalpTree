@@ -5,6 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 // Adjust the import path for Website if needed
 import { Website } from "@/components/admin/AppShell";
 import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
+import { getAllWebsites } from "./WebsiteThunk";
 
 interface WebsitesState {
   websites: Website[];
@@ -34,9 +35,9 @@ const websitesSlice = createSlice({
         state.currentWebsite = action.payload[0];
       }
     },
-    setSelectedWebsite:(state,action)=>{
-        state.selectedWebsites=action.payload
-        state.currentWebsite=action.payload[0]
+    setSelectedWebsite: (state, action) => {
+      state.selectedWebsites = action.payload
+      state.currentWebsite = action.payload[0]
     },
     clearWebsites(state) {
       state.websites = [];
@@ -63,96 +64,23 @@ const websitesSlice = createSlice({
       })
       .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { websites, user,business } = action.payload;
+        const { websites, user, business } = action.payload;
         if (websites && business) {
           state.websites = websites;
-        
-         state.hasfetched=true
-         const allwebsites= websites.filter((item:Website)=>item.tenantId===business[0]?._id)
-         if(allwebsites ){
-          state.selectedWebsites=allwebsites
-           state.currentWebsite=allwebsites[0]
-         }
+
+          state.hasfetched = true
+          const allwebsites = websites.filter((item: Website) => item.tenantId === business[0]?._id)
+          if (allwebsites) {
+            state.selectedWebsites = allwebsites
+            state.currentWebsite = allwebsites[0]
+          }
         }
       })
       .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
-       state.isLoading=false
+        state.isLoading = false
       });
   },
 });
 
-export const { setWebsites, clearWebsites, setCurrentWebsite ,setSelectedWebsite} = websitesSlice.actions;
+export const { setWebsites, clearWebsites, setCurrentWebsite, setSelectedWebsite } = websitesSlice.actions;
 export default websitesSlice.reducer;
-
-// Thunk to create a Website (createD Website)
-export const createWebsite = createAsyncThunk<
-  Website,
-  Partial<Website>,
-  { rejectValue: string }
->(
-  "websites/createWebsite",
-  async (websiteData, { rejectWithValue }) => {
-    try {
-      const res = await fetch("/api/domain/website", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(websiteData),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        return rejectWithValue(error.error || "Failed to create website");
-      }
-      const data = await res.json();
-      return data.item as Website;
-    } catch (err: any) {
-      return rejectWithValue(err.message || "Failed to create website");
-    }
-  }
-);
-
-// Thunk to get all Websites for a tenant/user
-export const getAllWebsites = createAsyncThunk<
-  Website[],
-  { tenantId: string },
-  { rejectValue: string }
->(
-  "websites/getAllWebsites",
-  async ({ tenantId }, { rejectWithValue }) => {
-    try {
-      const res = await fetch(`/api/domain/website?tenantId=${tenantId}`);
-      if (!res.ok) {
-        const error = await res.json();
-        return rejectWithValue(error.error || "Failed to fetch websites");
-      }
-      const data = await res.json();
-      return data.items as Website[];
-    } catch (err: any) {
-      return rejectWithValue(err.message || "Failed to fetch websites");
-    }
-  }
-);
-
-// Thunk to delete a Website by _id (ObjectId)
-export const deleteWebsite = createAsyncThunk<
-  string, // returns deleted _id
-  string, // expects _id as argument
-  { rejectValue: string }
->(
-  "websites/deleteWebsite",
-  async (_id, { rejectWithValue }) => {
-    try {
-      const res = await fetch("/api/domain/website", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: _id }),
-      });
-      if (!res.ok) {
-        const error = await res.json();
-        return rejectWithValue(error.error || "Failed to delete website");
-      }
-      return _id;
-    } catch (err: any) {
-      return rejectWithValue(err.message || "Failed to delete website");
-    }
-  }
-);

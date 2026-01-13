@@ -252,7 +252,7 @@ const router= useRouter()
               <DropdownMenuContent align="end" className="w-56">
                 {/* <Link href="/admin/dashboard"> */}
                   <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    {currentWebsite.name}
+                    {currentWebsite?.name}
                   </DropdownMenuLabel>
                 {/* </Link> */}
 

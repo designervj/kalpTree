@@ -384,9 +384,10 @@ export function DataTableExt({
   const pathname = usePathname();
   ///admin/websites extract website
 
-  const pageName = pathname.split("/")[3];
+  const pageName = pathname.split("/")[5];
+  console.log("pageName",pageName)
 
-  const handleBuilderEdit = async (
+    const handleBuilderEdit =async(
     e: React.MouseEvent,
     row: {
       slug?: string;

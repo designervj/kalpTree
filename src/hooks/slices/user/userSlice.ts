@@ -45,6 +45,7 @@ interface UserState {
   isLoading: boolean;
   hasFetched: boolean;
   hasFetchedAllUsers: boolean;
+  websiteCount: number;
 }
 
 const initialState: UserState = {
@@ -54,6 +55,7 @@ const initialState: UserState = {
   isLoading: false,
   hasFetched: false,
   hasFetchedAllUsers: false,
+  websiteCount: 0,
 };
 
 const userSlice = createSlice({

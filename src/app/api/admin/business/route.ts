@@ -1,56 +1,35 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { ObjectId } from "mongodb";
-import { getCollection } from "@/app/api/tenants/[id]/route";
+import { getDatabase } from "@/lib/db/mongodb";
 
-export async function GET(req: Request) {
-  try {
-    const session = await auth();
-    const user = session?.user;
+// GET - Retrieve all tenants where type === "business"
+export async function GET(request: NextRequest) {
+    try {
+        // Check authentication
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+         const searchParams=request.nextUrl.searchParams.get("type")
+        // Get database connection
+        const db = await getDatabase();
+        const tenantCollection = db.collection("tenants");
 
-    if (!user || !user.id || !user.role) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        // Fetch all tenants where type === "business"
+        const businesses = await tenantCollection
+            .find({ type: searchParams })
+            .toArray();
+
+        // Return the results
+        return NextResponse.json({
+            businesses,
+            count: businesses.length,
+        });
+    } catch (error) {
+        console.error("Error fetching business tenants:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
     }
-
-    const { searchParams } = new URL(req.url);
-    const page = Number(searchParams.get("page")) || 1;
-    const ITEMS_PER_PAGE = Number(searchParams.get("itemsperpage") || 30);
-
-    const skip = (page - 1) * ITEMS_PER_PAGE;
-
-    const tenantcoll = await getCollection("tenants");
-
-    let filter: Record<string, any> = {};
-
-    if (user.role === "agency") {
-      filter.createdById = new ObjectId(user.id);
-    }
-
-    if (user.role === "superadmin") {
-      filter.type = "business";
-    }
-
-    const [businesses, totalCount] = await Promise.all([
-      tenantcoll.find(filter).skip(skip).limit(ITEMS_PER_PAGE).toArray(),
-      tenantcoll.countDocuments(filter),
-    ]);
-
-    return NextResponse.json({
-      data: businesses,
-      pagination: {
-        page,
-        itemsPerPage: ITEMS_PER_PAGE,
-        totalCount,
-        totalPages: Math.ceil(totalCount / ITEMS_PER_PAGE),
-        hasNextPage: skip + ITEMS_PER_PAGE < totalCount,
-        hasPrevPage: page > 1,
-      },
-    });
-  } catch (error) {
-    console.error("BUSINESS LIST API ERROR:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
-  }
 }

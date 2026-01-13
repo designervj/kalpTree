@@ -15,7 +15,7 @@ import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
 interface BusinessState {
     allBusiness: IBusiness[];
-    allSelectedBusiness:IBusiness[]
+    allSelectedBusiness: IBusiness[]
     currentBusiness: IBusiness | null;
     hasFetchedBusiness: boolean;
     isLoading: boolean;
@@ -24,7 +24,7 @@ interface BusinessState {
 
 const initialState: BusinessState = {
     allBusiness: [],
-    allSelectedBusiness:[],
+    allSelectedBusiness: [],
     currentBusiness: null,
     hasFetchedBusiness: false,
     isLoading: false,
@@ -39,19 +39,19 @@ const businessSlice = createSlice({
             state.allBusiness = action.payload;
             state.hasFetchedBusiness = true;
         },
-        setSelectedBusiness:(state,action)=>{
-         state.allSelectedBusiness=action.payload
+        setSelectedBusiness: (state, action) => {
+            state.allSelectedBusiness = action.payload
         },
-          setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
+        setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
             state.currentBusiness = action.payload;
         },
         clearBusinesses(state) {
             state.allBusiness = [];
             state.currentBusiness = null;
             state.hasFetchedBusiness = false;
-            state.allSelectedBusiness=[]
+            state.allSelectedBusiness = []
         },
-      
+
         setLoading(state, action: PayloadAction<boolean>) {
             state.isLoading = action.payload;
         },
@@ -222,26 +222,38 @@ const businessSlice = createSlice({
                 state.error = action.payload as string;
             })
 
-              .addCase(savedashboardDetailsThunk.pending, (state) => {
-                    state.isLoading = true;
-                  })
-                  .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
-                    state.isLoading = false;
-                    const { business, user,agencies } = action.payload;
-                 
-                    if (business && agencies) {
-                      state.allBusiness = business;
-                      const allBus= business.filter((item:IBusiness)=>item.tenantId===agencies[0]._id);
-                      state.allSelectedBusiness=allBus;
-                      state.currentBusiness = allBus[0];
-                      state.hasFetchedBusiness = true;
-                      }
-                
-                  })
-                  .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
-                   state.isLoading = false;
-                   state.error = action.payload as string;
-                  });
+            .addCase(savedashboardDetailsThunk.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+                state.isLoading = false;
+                const { business, user, agencies } = action.payload;
+
+                if (business && agencies) {
+                    state.allBusiness = business;
+                    const allBus = business.filter((item: IBusiness) => item.tenantId === agencies[0]._id);
+                    state.allSelectedBusiness = allBus;
+                    state.currentBusiness = allBus[0];
+                    state.hasFetchedBusiness = true;
+                }
+
+            })
+            .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload as string;
+            })
+
+            // fetch all business
+
+            // .addCase(fetchAllBusinesses.fulfilled, (state, action) => {
+            //     state.isLoading = false;
+            //     state.allBusiness = action.payload;
+            //     state.hasFetchedBusiness = true;
+            // })
+            // .addCase(fetchAllBusinesses.rejected, (state, action) => {
+            //     state.isLoading = false;
+            //     state.error = action.payload as string;
+            // });
     },
 });
 

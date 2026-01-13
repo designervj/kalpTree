@@ -41,5 +41,19 @@ export interface IBusiness {
     status?: string;
     createdAt?: string;
     updatedAt?: string;
+  
   }>;
+  businessdetails?:BussinessDetailModel
+}
+
+
+export interface BussinessDetailModel{
+  business_website_url:string
+  tagline:string
+  industry:string
+  founded_year:string
+  about:string
+  public_email:string
+phone:string
+headquarters:string
 }

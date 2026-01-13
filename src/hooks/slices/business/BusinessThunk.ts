@@ -64,12 +64,10 @@ export interface UpdateBusinessInput {
 
 // Thunk to fetch all businesses
 export const fetchAllBusinesses = createAsyncThunk(
-  "business/fetchAll",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch(
-        `/api/admin/business?page=1&itemsperpage=30`
-      );
+    "business/fetchAll",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await fetch("/api/admin/business?type=business");
 
       if (!response.ok) {
         throw new Error("Failed to fetch businesses");

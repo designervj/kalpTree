@@ -73,7 +73,7 @@ const WebsitePageTable = () => {
     { key: "createdAt", label: "Created" },
   ];
 
-  const handleViewTab = (row: WebsitePageModel) => {
+  const handleViewTab =async(row: WebsitePageModel) => {
     const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
       ? currentWebsite?.primaryDomain[0]
       : currentWebsite?.primaryDomain;
@@ -82,6 +82,7 @@ const WebsitePageTable = () => {
         ? currentSubdomain.split(".")[0]
         : "";
     const isLocalHost = window.location.hostname.includes("localhost");
+    
     if (isLocalHost) {
       const url = `http://${localsub}.localhost:55803/${row.slug}`;
 
