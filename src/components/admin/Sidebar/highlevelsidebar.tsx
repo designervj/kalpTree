@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useParams, usePathname } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Globe,
@@ -37,6 +37,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store/store";
+import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home, href: "/admin" },
@@ -152,7 +155,8 @@ export function HighLevelSidebar({
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
-
+  const router = useRouter();
+  const dispatch= useDispatch<AppDispatch>();
   const getRoleAvatarClass = (role?: string) => {
   const r = (role || "").toLowerCase().trim();
 
@@ -168,6 +172,12 @@ export function HighLevelSidebar({
 
   // fallback
   return "bg-primary text-white";
+};
+
+const handleClick = (href: string) => {
+  dispatch(setCurrentBusiness(null));
+  console.log("href", href);
+  router.push(href);
 };
 
   return (
@@ -210,8 +220,9 @@ export function HighLevelSidebar({
                           item.hasSubmenu && setHoverItemId(item.id)
                         }
                         onMouseLeave={() => setHoverItemId(null)}
+                         onClick={() => handleClick(item.href)}
                       >
-                        <Link href={item.href}>
+                        {/* <Link href={item.href}> */}
                           <button
                             type="button"
                             className={cn(
@@ -222,6 +233,7 @@ export function HighLevelSidebar({
                                 ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm"
                                 : "bg-white/50 hover:bg-[var(--admin-sidebar-hover)]"
                             )}
+                           
                           >
                             <Icon className="h-5 w-5 opacity-80" />
                             {(item as any).badge && (
@@ -237,7 +249,7 @@ export function HighLevelSidebar({
                               </span>
                             )}
                           </button>
-                        </Link>
+                        {/* </Link> */}
 
                         <AnimatePresence>
                           {hoverItemId === item.id && item.hasSubmenu && (

@@ -22,21 +22,14 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { IBusiness } from "@/models/business";
 
-// Mock data structure
-interface IBusiness {
-  _id: string;
-  name: string;
-  email: string;
-  plan: string;
-  status: string;
-  websitesCount?: number;
-  membersCount?: number;
-}
+
 
 interface Pagination {
   page: number;
@@ -47,14 +40,16 @@ interface Pagination {
   hasPrevPage: boolean;
 }
 
-const ShowBusiness = () => {
+const   ShowBusiness = () => {
   const { allBusiness, pagination } = useSelector(
     (state: RootState) => state.business
   );
   const params = useSearchParams();
   const itemsperpage = params.get("itemsperpage") || 30;
   const router = useRouter();
-  console.log(allBusiness, pagination);
+
+  const dispatch = useDispatch<AppDispatch>();
+
 
   const handlePageChange = (newPage: number) => {
     //   setPagination((prev) => ({
@@ -117,6 +112,12 @@ const ShowBusiness = () => {
     pagination.totalCount
   );
 
+
+  const handleOpenDashboard = (business: IBusiness) => {
+    console.log(business);
+    dispatch(setCurrentBusiness(business));
+    router.push(`/admin/businesses/${business._id}`);
+  };
   return (
     <div className="w-full space-y-6">
       {/* Header */}
@@ -290,10 +291,12 @@ const ShowBusiness = () => {
                     </Link>
                   </Button>
 
-                  <Button asChild>
-                    <Link href={`/admin/businesses/${b._id}`}>
+                  <Button 
+                  onClick={()=>handleOpenDashboard(b)}
+                  >
+                    {/* <Link href={`/admin/businesses/${b._id}`}> */}
                       Open Dashboard
-                    </Link>
+                    {/* </Link> */}
                   </Button>
                 </div>
               </div>

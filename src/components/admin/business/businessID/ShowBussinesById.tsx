@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -94,6 +94,8 @@ const ROLE_MAP = {
 
 type Role = keyof typeof ROLE_MAP;
 const ShowBussinesById = ({ business, user }: Props) => {
+  const {hasfetched, websites}= useSelector((state: RootState)=>state.websites)
+  const {businessWebsite}= useSelector((state:RootState)=>state.business)
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const primary = business.branding?.colors?.primary || "#111827";
@@ -109,6 +111,11 @@ const ShowBussinesById = ({ business, user }: Props) => {
     setOpen(true);
   };
 
+
+  const bussinessWebsite= useMemo(()=>{
+    return websites.filter((website)=>website.tenantId===businessWebsite?.tenantId)
+  },[websites,businessWebsite])
+ 
   return (
     <>
       <BusinessModal
@@ -201,7 +208,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
                 <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                   <Globe className="h-4 w-4 text-slate-600" />
                   <span className="truncate">
-                    {business.websites?.[0]?.primaryDomain?.[0] || "—"}
+                    {bussinessWebsite[0]?.primaryDomain?.[0] || "—"}
                   </span>
                 </div>
               </div>
@@ -211,7 +218,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
                   Websites
                 </div>
                 <div className="mt-2 text-2xl font-semibold text-slate-900">
-                  {business.websites?.length || 0}
+                  {bussinessWebsite?.length || 0}
                 </div>
                 <div className="text-xs text-muted-foreground font-semibold">
                   Total projects
@@ -326,8 +333,8 @@ const ShowBussinesById = ({ business, user }: Props) => {
               </CardHeader>
 
               <CardContent className="p-5 pt-0 space-y-3">
-                {business.websites && business.websites.length ? (
-                  business.websites.map((w: any, idx: number) => {
+                {bussinessWebsite.length ? (
+                  bussinessWebsite.map((w: any, idx: number) => {
                     const dom = w.primaryDomain?.[0] || "—";
                     const domain = w.primaryDomain.find((d: string) =>
                       d.includes("kalptree.xyz")

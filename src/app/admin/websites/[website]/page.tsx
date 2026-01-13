@@ -29,6 +29,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import GetAllAgency from "@/components/admin/agency/GetAllAgency";
 
 // --- Mock Data for Chart ---
 const chartData = [
@@ -43,6 +44,8 @@ const chartData = [
 
 export default function DashboardPage() {
   return (
+    <>
+    <GetAllAgency/>
     <div className="space-y-6 max-w-[1600px] mx-auto pb-10 font-sans text-slate-900">
 
       {/* Top Header */}
@@ -306,6 +309,7 @@ export default function DashboardPage() {
 
       </div>
     </div>
+    </>
   );
 }
 
