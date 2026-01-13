@@ -122,7 +122,7 @@ export function DataTableExt({
   const [pageSize, setPageSize] = useState(10);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
-  const dispatch= useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
   const [columnVisibility, setColumnVisibility] = useState<
     Record<string, boolean>
   >({ content: false, _id: false });
@@ -142,7 +142,7 @@ export function DataTableExt({
   const path = usePathname();
   const lastSegment = path.split("/").filter(Boolean).pop();
 
-  const {currentWebsite}= useSelector((state: RootState) => state.websites);
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
   // derive columns
   const columns = useMemo(() => {
@@ -381,13 +381,12 @@ export function DataTableExt({
     //   }
   }
 
-    const pathname = usePathname();
+  const pathname = usePathname();
   ///admin/websites extract website
 
   const pageName = pathname.split("/")[3];
 
-
-    const handleBuilderEdit =async(
+  const handleBuilderEdit = async (
     e: React.MouseEvent,
     row: {
       slug?: string;
@@ -399,26 +398,26 @@ export function DataTableExt({
     const copied = structuredClone(row);
     delete copied.website;
     dispatch(setPageEdit(copied));
-    try{
-        const res = await fetch(`/api/session/website`,{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({website:copied, currentWebsite})
-        });
-        const data = await res.json();
-        console.log("data--",data)
-    }catch(e){
-      console.log("e--",e)
+    try {
+      const res = await fetch(`/api/session/website`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ website: copied, currentWebsite }),
+      });
+      const data = await res.json();
+      console.log("data--", data);
+    } catch (e) {
+      console.log("e--", e);
     }
     //  router.push(`/${copied.slug}`);
     window.open(`/${copied.slug}`, "_blank", "noopener,noreferrer");
-  }
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 justify-end w-full">
+      {/* <div className="flex items-center gap-2 justify-end w-full">
         {onCreate ? (
           <Button
             size="sm"
@@ -434,7 +433,7 @@ export function DataTableExt({
             </Button>
           </Link>
         ) : null}
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
@@ -695,7 +694,7 @@ export function DataTableExt({
                     })}
                   <TableCell className="py-2 text-right">
                     <div className="flex items-center justify-end gap-2">
-                           {pageName === "pages" && (
+                      {pageName === "pages" && (
                         <Button
                           variant="ghost"
                           size="sm"

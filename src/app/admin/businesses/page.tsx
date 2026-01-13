@@ -147,7 +147,7 @@ export default async function BusinessList({
   const params = await searchParams;
   const session = await auth();
   const user = session?.user;
-  const itemsPerPage = 2;
+  const itemsPerPage = 30;
   const currentPage = Number(params.page) || 1;
   if (!user || !user.id || !user.role) {
     return redirect("/auth/signin");
@@ -226,7 +226,6 @@ export default async function BusinessList({
   return (
     <>
       <BusinessHome business={businesses} />
-
     </>
   );
 }
