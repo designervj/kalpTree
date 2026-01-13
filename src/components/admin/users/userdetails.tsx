@@ -12,7 +12,7 @@ export const Userdetails = ({
       {/* Agency Fields - Only visible for superadmin */}
       {true && (
         <>
-          <div className="bg-gray-100 border-2 border-primary-200 rounded-md p-6 mb-6">
+          <div className="bg-gray-100 border border-indigo-100 rounded-md p-6 mb-6">
             <h3 className="text-lg font-bold text-black mb-4 flex items-center gap-2">
               <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
               Agency Account Details

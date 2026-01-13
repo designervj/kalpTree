@@ -1,5 +1,6 @@
 import { Building2, MapPin, Eye, EyeOff } from "lucide-react";
 import { usePathname } from "next/navigation";
+import IndustryRadioList from "./IndustryRadioList";
 
 export const Businessdetails = ({
   handleInputChange,
@@ -18,19 +19,19 @@ export const Businessdetails = ({
 
   return (
     <div className="space-y-6">
-      <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
+      <div className="bg-gray-100 p-6 rounded-md border border-indigo-100">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Building2 className="w-5 h-5 text-indigo-600" />
           General Information
         </h3>
         {/* Business User Fields */}
-        <div className="bg-gray-100 border-2 border-primary-200 rounded-md p-6">
+        <div className="bg-gray-100  rounded-md">
           <h3 className="text-lg font-bold text-primary-900 mb-4 flex items-center gap-2">
             <span className="w-2 h-2 bg-primary-600 rounded-full"></span>
             Business Account Details
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-5">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Email
@@ -122,15 +123,15 @@ export const Businessdetails = ({
 
         <hr />
 
-        <div>
+        <div className="mt-4">
           <label className="block text-sm font-semibold text-gray-700 mb-3">
             Service Type
           </label>
           <div className="space-y-3">
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
                 formData.service === "WEBSITE_ONLY"
-                  ? "border-primary-500 bg-gray-100"
+                  ? "border-primary-500 bg-white"
                   : "border-gray-200 hover:border-gray-300"
               }`}
             >
@@ -151,7 +152,7 @@ export const Businessdetails = ({
             </label>
 
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
                 formData.service === "WEBSITE_CATALOGUE"
                   ? "border-primary-500 bg-gray-100"
                   : "border-gray-200 hover:border-gray-300"
@@ -178,7 +179,7 @@ export const Businessdetails = ({
             </label>
 
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
                 formData.service === "WEBSITE_CATALOGUE_ECOMMERCE"
                   ? "border-primary-500 bg-gray-100"
                   : "border-gray-200 hover:border-gray-300"
@@ -206,7 +207,7 @@ export const Businessdetails = ({
               </div>
             </label>
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer transition-all ${
+              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
                 formData.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
                   ? "border-primary-500 bg-gray-100"
                   : "border-gray-200 hover:border-gray-300"
@@ -236,7 +237,7 @@ export const Businessdetails = ({
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 mt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Brand Name
             </label>
@@ -245,7 +246,7 @@ export const Businessdetails = ({
               name="businessdetails.business_name"
               value={formData.businessdetails.business_name}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="KaplTree"
               disabled={true}
               readOnly={true}
@@ -261,17 +262,17 @@ export const Businessdetails = ({
               name="businessdetails.tagline"
               value={formData.businessdetails.tagline}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="AI-Powered Architecture & Design"
             />
           </div>
 
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Industry
-            </label>
-            <div className="space-y-3">
-              <label className="flex items-start p-4 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+            {/* <label className="block text-sm font-semibold text-gray-700 mb-3">
+              Industry 
+            </label> */}
+            {/* <div className="space-y-3">
+              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <input
                   type="radio"
                   name="businessdetails.industry"
@@ -288,7 +289,7 @@ export const Businessdetails = ({
                 </div>
               </label>
 
-              <label className="flex items-start p-4 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <input
                   type="radio"
                   name="businessdetails.industry"
@@ -309,7 +310,7 @@ export const Businessdetails = ({
                 </div>
               </label>
 
-              <label className="flex items-start p-4 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <input
                   type="radio"
                   name="businessdetails.industry"
@@ -326,7 +327,7 @@ export const Businessdetails = ({
                 </div>
               </label>
 
-              <label className="flex items-start p-4 border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                 <input
                   type="radio"
                   name="businessdetails.industry"
@@ -342,22 +343,17 @@ export const Businessdetails = ({
                   </div>
                 </div>
               </label>
-            </div>
+            </div> */}
+
+            <IndustryRadioList
+            formData={formData}
+            handleInputChange={handleInputChange}
+            // industries={yourDynamicIndustryArray} // optional (if you have API data)
+          />
+
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Founded Year
-            </label>
-            <input
-              type="text"
-              name="businessdetails.founded_year"
-              value={formData.businessdetails.founded_year}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
-              placeholder="2023"
-            />
-          </div>
+        
 
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -369,7 +365,7 @@ export const Businessdetails = ({
               onChange={handleInputChange}
               rows={4}
               maxLength={500}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white resize-none"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white resize-none"
               placeholder="KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering."
             />
             <div className="text-xs text-gray-500 mt-1 text-right">
@@ -379,7 +375,7 @@ export const Businessdetails = ({
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-blue-100">
+      <div className="bg-white p-6 rounded-md border border-blue-100">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <MapPin className="w-5 h-5 text-blue-600" />
           Contact & Location
@@ -389,7 +385,7 @@ export const Businessdetails = ({
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Website URL
             </label>
-            <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all bg-white">
+            <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-transparent transition-all bg-white">
               <span className="px-3 text-gray-500">https://</span>
               <input
                 type="text"
@@ -411,7 +407,7 @@ export const Businessdetails = ({
               name="businessdetails.public_email"
               value={formData.businessdetails.public_email}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="contact@KalpTree.com"
             />
           </div>
@@ -425,7 +421,7 @@ export const Businessdetails = ({
               name="businessdetails.phone"
               value={formData.businessdetails.phone}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="+1 (555) 123-4567"
             />
           </div>
@@ -439,7 +435,7 @@ export const Businessdetails = ({
               name="businessdetails.headquarters"
               value={formData.businessdetails.headquarters}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="123 Innovation Dr, Tech City, CA"
             />
           </div>
