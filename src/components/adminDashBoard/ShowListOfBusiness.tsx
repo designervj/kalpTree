@@ -89,7 +89,7 @@ const ShowListOfBusiness = () => {
                 </div>
 
                 <div className="space-y-4">
-                    {allBusiness.length > 0 &&
+                    {allBusiness && allBusiness?.length > 0 &&
                         allBusiness.map((site) => {
                             const openLink = ""
                             // const openLink = `https://${site.domain}`;

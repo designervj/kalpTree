@@ -75,7 +75,7 @@ export const fetchAllBusinesses = createAsyncThunk(
 
       const data = await response.json();
       console.log(data);
-      return data.businesses as IBusiness[];
+      return data.data as IBusiness[];
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch businesses");
     }

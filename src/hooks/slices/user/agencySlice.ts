@@ -16,7 +16,7 @@ export const fetchAllAgencies = createAsyncThunk<
       }
       const data = await res.json();
       console.log("data",data)
-      return data.businesses || [];
+      return data.data || [];
     } catch (err: any) {
       return rejectWithValue(err?.message || 'Failed to fetch agencies');
     }

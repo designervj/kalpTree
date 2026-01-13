@@ -22,11 +22,11 @@ const GlanceCount = () => {
     const { allBusiness } = useSelector((state: RootState) => state.business)
     const {websites}= useSelector((state: RootState)=>state.websites)
     const stats: QuickStat[] = [
-        { title: "Agencies", value: allAgencies.length, href: "/admin/agencies", icon: FileText },
-        { title: "Businesses", value: allBusiness.length, href: "/admin/businesses", icon: Globe },
+        { title: "Agencies", value: allAgencies?.length || 0, href: "/admin/agencies", icon: FileText },
+        { title: "Businesses", value: allBusiness?.length || 0, href: "/admin/businesses", icon: Globe },
         {
             title: "Website",
-            value: websites.length,
+            value: websites?.length || 0,
             href: "/admin/websites",
             icon: Globe,
         },
