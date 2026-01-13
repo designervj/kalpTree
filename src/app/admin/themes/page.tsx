@@ -22,7 +22,7 @@ export default function ThemePage() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30 p-4 md:p-8">
+    <div className="min-h-screen p-4 md:p-8">
     
       <div className="max-w-6xl mx-auto space-y-8">
         

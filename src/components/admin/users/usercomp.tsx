@@ -246,7 +246,7 @@ export default function BusinessCreatePage({
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
+        <div className="bg-white rounded-md  overflow-hidden border border-primary-100">
           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex">
               {tabs.map((tab) => {
