@@ -1,9 +1,9 @@
-  "use client";
+"use client";
 import { useEffect, useMemo, useState } from "react";
 import { Globe, Plus, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { createWebsite, deleteWebsite, getAllWebsites } from "@/hooks/slices/websites/WebsiteSlice";
+import { createWebsite, deleteWebsite, getAllWebsites } from "@/hooks/slices/websites/WebsiteThunk";
 import { toast } from "sonner";
 import { Website } from "@/components/admin/AppShell";
 
@@ -12,30 +12,30 @@ export default function WebsitesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentId, setCurrentId] = useState<string | null>(null);
-  const {user}= useSelector((state:RootState)=>state.user)
+  const { user } = useSelector((state: RootState) => state.user)
   const [name, setName] = useState("");
   const [serviceType, setServiceType] = useState<"WEBSITE_ONLY" | "ECOMMERCE">(
     "WEBSITE_ONLY"
   );
 
-  const dispatch= useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>()
   const [primaryDomains, setPrimaryDomains] = useState<string[]>([]);
   const [currentDomain, setCurrentDomain] = useState("");
   const [domain, setDomain] = useState("");
-  const {websites, hasfetched}= useSelector((state:RootState)=>state.websites)
+  const { websites, hasfetched } = useSelector((state: RootState) => state.websites)
 
-  const allWebsite= useMemo(()=>{
-    if(websites && websites.length>0)
+  const allWebsite = useMemo(() => {
+    if (websites && websites.length > 0)
       return websites
-  },[websites])
-  
-  useEffect(()=>{
-    if(user && user.tenantId &&
-      !hasfetched && websites.length==0){
-        console.log("websitite calloing")
-       dispatch(getAllWebsites({tenantId:user.tenantId}))
+  }, [websites])
+
+  useEffect(() => {
+    if (user && user.tenantId &&
+      !hasfetched && websites.length == 0) {
+      console.log("websitite calloing")
+      dispatch(getAllWebsites({ tenantId: user.tenantId }))
     }
-  },[hasfetched, websites,user])
+  }, [hasfetched, websites, user])
 
   const addDomain = () => {
     if (currentDomain.trim()) {
@@ -57,7 +57,7 @@ export default function WebsitesPage() {
 
   const onCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if(user &&!user.tenantId )
+    if (user && !user.tenantId)
       toast.error("Missing tenant Id")
     // const res = await fetch("/api/domain", {
     //   method: "POST",
@@ -68,18 +68,18 @@ export default function WebsitesPage() {
     //     primaryDomain: primaryDomains.length > 0 ? primaryDomains : null,
     //   }),
     // });
-    const data={
+    const data = {
       name: name,
-      tenantId:user?.tenantId,
+      tenantId: user?.tenantId,
       primaryDomain: primaryDomains.length > 0 ? primaryDomains : [currentDomain],
       systemSubdomain: "",
       serviceType: serviceType,
       status: "active" as const
     }
 
-    const response= await dispatch (createWebsite(data)).unwrap()
+    const response = await dispatch(createWebsite(data)).unwrap()
 
-     console.log(response);
+    console.log(response);
     if (response) {
       setName("");
       setPrimaryDomains([]);
@@ -87,13 +87,13 @@ export default function WebsitesPage() {
       setServiceType("WEBSITE_ONLY");
       // load();
     } else {
-    //   let msg = "";
-    //   try {
-    //     msg = (await response.json()).error;
-    //   } catch {}
-    //   alert("Create failed: " + (msg || response.status));
-    // }
-  };
+      //   let msg = "";
+      //   try {
+      //     msg = (await response.json()).error;
+      //   } catch {}
+      //   alert("Create failed: " + (msg || response.status));
+      // }
+    };
   }
   const setCurrent = async (websiteId: string) => {
     const res = await fetch("/api/session/website", {
@@ -105,15 +105,16 @@ export default function WebsitesPage() {
   };
 
 
-  const handleDeleteDomain=async(data:Website)=>{
-    if(data && !data._id)
+  const handleDeleteDomain = async (data: Website) => {
+    if (data && !data._id)
       toast.error("Missing the object Id of selected Website")
-    try{
-  const response= await dispatch(deleteWebsite(data._id))
-    }catch(err){
+    try {
+      const response = await dispatch(deleteWebsite(String(data?._id ?? ""))).unwrap()
+    } catch (err) {
       console.log("error on deleting domain")
     }
   }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -219,19 +220,16 @@ export default function WebsitesPage() {
           </div>
         </form>
       </div>
-{/* 
-      {loading && <p>Loading...</p>}
-      {error && <p className="text-red-600">{error}</p>} */}
-      { allWebsite&&allWebsite.length > 0 ? (
+      {allWebsite && allWebsite.length > 0 ? (
         <div className="mt-4">
           {(() => {
             const Ext = require("./ExtTable").default as any;
-            return <Ext 
-            items={allWebsite}
-             currentId={currentId}
-               deleteData={handleDeleteDomain}
-             
-              />;
+            return <Ext
+              items={allWebsite}
+              currentId={currentId}
+              deleteData={handleDeleteDomain}
+
+            />;
           })()}
         </div>
       ) : (

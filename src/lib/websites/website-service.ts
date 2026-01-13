@@ -216,6 +216,12 @@ export class WebsiteService {
     );
     return r.modifiedCount > 0;
   }
+
+  async websiteCount() {
+    const c = await getDatabase();
+    const coll = await c.collection("websites");
+    return coll.countDocuments();
+  }
 }
 
 export const websiteService = new WebsiteService();

@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+
 
 export function Avatar({ className, children }: { className?: string; children?: React.ReactNode }) {
   return <div className={className ? className : "inline-flex items-center justify-center rounded-full bg-muted"}>{children}</div>;
@@ -11,5 +11,13 @@ export function AvatarImage({ src, alt, className }: { src?: string; alt?: strin
 }
 
 export function AvatarFallback({ children, className }: { children?: React.ReactNode; className?: string }) {
-  return <div className={`h-full w-full flex items-center justify-center bg-secondary text-white rounded-full ${className || ""}`}>{children}</div>;
+  const baseClasses = "h-full w-full flex items-center justify-center bg-secondary text-white rounded-full";
+  const combinedClassName = className ? `${baseClasses} ${className}` : baseClasses;
+
+  return (
+    <div className={combinedClassName}>
+      {children}
+    </div>
+  );
 }
+
