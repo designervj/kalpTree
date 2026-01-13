@@ -16,6 +16,8 @@ const BreadCrumbPage = () => {
     const pathname = usePathname();
     const [urlPath, setUrlPath] = useState<string[]>([]);
 
+
+
     useEffect(() => {
         // Split pathname and filter out empty strings
         const pathSegments = pathname.split("/").filter(segment => segment !== "");
@@ -23,6 +25,8 @@ const BreadCrumbPage = () => {
         console.log("urlPath", pathSegments);
     }, [pathname]);
 
+
+    console.log(pathname)
 
 
     return (

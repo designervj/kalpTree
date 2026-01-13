@@ -1,398 +1,3 @@
-// "use client";
-
-// import { useState } from "react";
-// import {
-//   UserPlus,
-//   CheckCircle,
-//   XCircle,
-//   User,
-//   Briefcase,
-//   Palette,
-// } from "lucide-react";
-// import { Userdetails } from "./userdetails";
-// import { Businessdetails } from "./businessdetails";
-// import { Brandingdetails } from "./brandingdetails";
-
-// export default function BusinessCreatePage({ user }: any) {
-//   const [loading, setLoading] = useState(false);
-//   const [activeTab, setActiveTab] = useState("user");
-//   const [formData, setFormData] = useState({
-//     // Agency fields (for superadmin only)
-//     agency_name: "",
-//     agency_url_suffix: "",
-//     agency_email: "",
-//     agency_password: "",
-//     agency_service: "ECOMMERCE",
-
-//     // Business user fields
-//     email: "",
-//     password: "",
-//     role: user.role === "superadmin" ? "agency" : "business",
-//     service: "ECOMMERCE",
-//     business_name: "",
-//     businsess_url: "",
-
-//     // Business Details
-//     businessdetails: {
-//       business_website_url: "",
-//       tagline: "",
-//       industry: "Architecture",
-//       founded_year: "2023",
-//       about: "",
-//       public_email: "",
-//       phone: "",
-//       headquarters: "",
-//     },
-
-//     // Branding
-//     branding: {
-//       logo: null,
-//       primary_color: "#6366f1",
-//       secondary_color: "#8b5cf6",
-//       tertiary_color: "#ec4899",
-//       typography: "Inter",
-//     },
-
-//     createdById: user.id,
-//   });
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [message, setMessage] = useState({ type: "", text: "" });
-//   const [expandedUser, setExpandedUser] = useState(null);
-//   const [logoPreview, setLogoPreview] = useState<any>(null);
-
-//   console.log(formData)
-
-//   const slugify = (text: string) =>
-//     text
-//       .toLowerCase()
-//       .trim()
-//       .replace(/[^a-z0-9 ]/g, "")
-//       .replace(/\s+/g, "-");
-
-//   const handleInputChange = (e: any) => {
-//     const { name, value, type, files } = e.target;
-
-//     // Handle nested fields
-//     if (name.includes(".")) {
-//       const [parent, child] = name.split(".");
-//       setFormData((prev: any) => ({
-//         ...prev,
-//         [parent]: {
-//           ...prev[parent],
-//           [child]: value,
-//         },
-//       }));
-//       return;
-//     }
-
-//     // Handle business name (alphanumeric + space only)
-//     if (name === "business_name") {
-//       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
-
-//       setFormData((prev: any) => ({
-//         ...prev,
-//         business_name: value,
-//         businsess_url: slugify(value),
-//       }));
-//       return;
-//     }
-
-//     // Handle agency name (alphanumeric + space only)
-//     if (name === "agency_name") {
-//       if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
-
-//       setFormData((prev: any) => ({
-//         ...prev,
-//         agency_name: value,
-//         agency_url_suffix: slugify(value),
-//       }));
-//       return;
-//     }
-
-//     // Handle file upload
-//     if (type === "file") {
-//       const file = files?.[0];
-//       if (file) {
-//         setFormData((prev: any) => ({
-//           ...prev,
-//           branding: {
-//             ...prev.branding,
-//             logo: file,
-//           },
-//         }));
-
-//         const reader = new FileReader();
-//         reader.onloadend = () => setLogoPreview(reader.result);
-//         reader.readAsDataURL(file);
-//       }
-//       return;
-//     }
-
-//     // Normal fields
-//     setFormData((prev: any) => ({
-//       ...prev,
-//       [name]: value,
-//     }));
-//   };
-
-//   const handleSubmit = async () => {
-//     try {
-//       setIsSubmitting(true);
-//       setMessage({ type: "", text: "" });
-
-//       const fd = new FormData();
-
-//       // Agency fields (if superadmin)
-//       if (user.role === "superadmin") {
-//         fd.append("agency_name", formData.agency_name);
-//         fd.append("agency_url_suffix", formData.agency_url_suffix);
-//         fd.append("agency_email", formData.agency_email);
-//         fd.append("agency_password", formData.agency_password);
-//         fd.append("agency_service", formData.agency_service);
-//       }
-
-//       // Root fields
-//       fd.append("email", formData.email);
-//       fd.append("password", formData.password);
-//       fd.append("role", formData.role);
-//       fd.append("service", formData.service);
-//       fd.append("business_name", formData.business_name);
-//       fd.append("businsess_url", formData.businsess_url);
-//       fd.append("createdById", formData.createdById);
-
-//       // Business details (nested → stringify)
-//       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
-
-//       // Branding fields
-//       fd.append(
-//         "branding",
-//         JSON.stringify({
-//           primary_color: formData.branding.primary_color,
-//           secondary_color: formData.branding.secondary_color,
-//           tertiary_color: formData.branding.tertiary_color,
-//           typography: formData.branding.typography,
-//         })
-//       );
-
-//       // Logo file
-//       if (formData.branding.logo) {
-//         fd.append("logo", formData.branding.logo);
-//       }
-
-//       const res = await fetch("/api/public/onboarding", {
-//         method: "POST",
-//         body: fd,
-//       });
-
-//       const result = await res.json();
-
-//       if (result.tenantId) {
-//         setFormData({
-//           // Agency fields
-//           agency_name: "",
-//           agency_url_suffix: "",
-//           agency_email: "",
-//           agency_password: "",
-//           agency_service: "ECOMMERCE",
-
-//           // Business fields
-//           email: "",
-//           password: "",
-//           role: user.role === "superadmin" ? "agency" : "business",
-//           service: "ECOMMERCE",
-//           business_name: "",
-//           businsess_url: "",
-
-//           // Business Details
-//           businessdetails: {
-//             business_website_url: "",
-//             tagline: "",
-//             industry: "Architecture",
-//             founded_year: "2023",
-//             about: "",
-//             public_email: "",
-//             phone: "",
-//             headquarters: "",
-//           },
-
-//           // Branding
-//           branding: {
-//             logo: null,
-//             primary_color: "#6366f1",
-//             secondary_color: "#8b5cf6",
-//             tertiary_color: "#ec4899",
-//             typography: "Inter",
-//           },
-
-//           createdById: user.id,
-//         });
-//         setLogoPreview(null);
-//         setMessage({
-//           type: "success",
-//           text: "Account created successfully!"
-//         });
-//       }
-
-//       setIsSubmitting(false);
-//     } catch (error) {
-//       console.error(error);
-//       setMessage({
-//         type: "error",
-//         text: "Failed to create account. Please try again."
-//       });
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   const tabs = [
-//     { id: "user", label: "User Details", icon: User },
-//     { id: "business", label: "Business Details", icon: Briefcase },
-//     { id: "branding", label: "Branding", icon: Palette },
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-transparent p-8">
-//       <div className="max-w-7xl mx-auto">
-//         {/* Header */}
-//         <div className="mb-8">
-//           <h1 className="text-4xl font-bold  text-black mb-2">
-//             {user.role === "superadmin" ? "Agency & Business Management" : "Business Management"}
-//           </h1>
-//           <p className="text-gray-600">
-//             {user.role === "superadmin"
-//               ? "Create agency and business accounts with complete branding"
-//               : "Create and manage business accounts with complete branding"}
-//           </p>
-//         </div>
-
-//         {/* Create User Form */}
-//         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
-//           {/* Tabs */}
-//           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-//             <div className="flex">
-//               {tabs.map((tab) => {
-//                 const Icon = tab.icon;
-//                 return (
-//                   <button
-//                     key={tab.id}
-//                     onClick={() => setActiveTab(tab.id)}
-//                     className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
-//                       activeTab === tab.id
-//                         ? "text-primary"
-//                         : "text-gray-500 hover:text-gray-700"
-//                     }`}
-//                   >
-//                     <div className="flex items-center justify-center gap-2">
-//                       <Icon className="w-5 h-5" />
-//                       <span>{tab.label}</span>
-//                     </div>
-//                     {activeTab === tab.id && (
-//                       <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full" />
-//                     )}
-//                   </button>
-//                 );
-//               })}
-//             </div>
-//           </div>
-
-//           {/* Tab Content */}
-//           <div className="p-8">
-//             {message.text && (
-//               <div
-//                 className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-//                   message.type === "success"
-//                     ? "bg-green-50 text-green-800 border border-green-200"
-//                     : "bg-red-50 text-red-800 border border-red-200"
-//                 }`}
-//               >
-//                 {message.type === "success" ? (
-//                   <CheckCircle className="w-5 h-5" />
-//                 ) : (
-//                   <XCircle className="w-5 h-5" />
-//                 )}
-//                 {message.text}
-//               </div>
-//             )}
-
-//             {/* User Details Tab */}
-//             {activeTab === "user" && (
-//               <Userdetails
-//                 handleInputChange={handleInputChange}
-//                 formData={formData}
-//                 showPassword={showPassword}
-//                 setShowPassword={setShowPassword}
-//                 role={user.role}
-//               />
-//             )}
-
-//             {/* Business Details Tab */}
-//             {activeTab === "business" && (
-//               <Businessdetails
-//                 handleInputChange={handleInputChange}
-//                 formData={formData}
-//               />
-//             )}
-
-//             {/* Branding Tab */}
-//             {activeTab === "branding" && (
-//               <Brandingdetails
-//                 handleInputChange={handleInputChange}
-//                 formData={formData}
-//                 logoPreview={logoPreview}
-//               />
-//             )}
-
-//             {/* Navigation Buttons */}
-//             <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-//               <button
-//                 onClick={() => {
-//                   const currentIndex = tabs.findIndex(
-//                     (t) => t.id === activeTab
-//                   );
-//                   if (currentIndex > 0) {
-//                     setActiveTab(tabs[currentIndex - 1].id);
-//                   }
-//                 }}
-//                 disabled={activeTab === "user"}
-//                 className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
-//               >
-//                 Previous
-//               </button>
-
-//               <div className="flex gap-3">
-//                 {activeTab === "branding" ? (
-//                   <button
-//                     onClick={handleSubmit}
-//                     disabled={isSubmitting}
-//                     className="px-8 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl hover:from-primary-700 hover:to-purple-700 disabled:from-primary-400 disabled:to-purple-400 disabled:cursor-not-allowed transition-all transform hover:scale-105 font-semibold shadow-lg"
-//                   >
-//                     {isSubmitting ? "Creating Account..." : "Create Account"}
-//                   </button>
-//                 ) : (
-//                   <button
-//                     onClick={() => {
-//                       const currentIndex = tabs.findIndex(
-//                         (t) => t.id === activeTab
-//                       );
-//                       if (currentIndex < tabs.length - 1) {
-//                         setActiveTab(tabs[currentIndex + 1].id);
-//                       }
-//                     }}
-//                     className="px-8 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-all transform hover:scale-105 font-semibold shadow-lg"
-//                   >
-//                     Next
-//                   </button>
-//                 )}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useMemo, useState } from "react";
@@ -410,21 +15,33 @@ import { Businessdetails } from "@/components/admin/users/businessdetails";
 import { Userdetails } from "@/components/admin/users/userdetails";
 import Link from "next/link";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
-export default function BusinessCreatePage({ user }: { user?: any }) {
-  // ✅ SAFE USER
+export default function BusinessCreatePage({
+  user,
+  agencies,
+}: {
+  user?: any;
+  agencies?: any[];
+}) {
+  const path = usePathname();
+  const isAgencyPath = path.includes("agencies");
+
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
-      role: (user?.role ?? "admin") as Role, // default admin
+      role: (user?.role ?? "admin") as Role,
       name: user?.name ?? "User",
       email: user?.email ?? "",
     };
   }, [user]);
 
-  const [activeTab, setActiveTab] = useState("agency");
+  const [activeTab, setActiveTab] = useState(
+    isAgencyPath ? "agency" : "business"
+  );
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -437,11 +54,13 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
       .replace(/[^a-z0-9 ]/g, "")
       .replace(/\s+/g, "-");
 
-  // ✅ INIT FORM using safeUser
   const [formData, setFormData] = useState(() => ({
-    agency_name: "",
-    agency_email: "",
-    agency_password: "",
+    // Only include agency fields if isAgencyPath is true
+    ...(isAgencyPath && {
+      agency_name: "",
+      agency_email: "",
+      agency_password: "",
+    }),
 
     businessdetails: {
       email: "",
@@ -470,14 +89,18 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
     createdById: safeUser.id,
   }));
 
-  // ✅ if user changes later, update createdById safely
   React.useEffect(() => {
     setFormData((prev: any) => ({
       ...prev,
       createdById: safeUser.id,
-      role: safeUser.role === "superadmin" ? "agency" : prev.role,
+      role:
+        safeUser.role === "superadmin" && isAgencyPath ? "agency" : prev.role,
+      businessdetails: {
+        ...formData.businessdetails,
+        tenantId: "",
+      },
     }));
-  }, [safeUser.id, safeUser.role]);
+  }, [safeUser.id, safeUser.role, isAgencyPath]);
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
@@ -547,13 +170,14 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
 
       const fd = new FormData();
 
-      if (safeUser.role === "superadmin") {
-        fd.append("agency_name", formData.agency_name);
-        fd.append("agency_email", formData.agency_email);
-        fd.append("agency_password", formData.agency_password);
+      // Only append agency fields if path includes "agency"
+      if (isAgencyPath && safeUser.role === "superadmin") {
+        fd.append("agency_name", formData.agency_name || "");
+        fd.append("agency_email", formData.agency_email || "");
+        fd.append("agency_password", formData.agency_password || "");
       }
-      fd.append("createdById", formData.createdById);
 
+      fd.append("createdById", formData.createdById);
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
 
       fd.append(
@@ -569,7 +193,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
       if (formData.branding.logo) {
         fd.append("logo", formData.branding.logo);
       }
-      
+
       const res = await fetch("/api/public/onboarding", {
         method: "POST",
         body: fd,
@@ -578,6 +202,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
       const result = await res.json();
 
       if (result?.tenantId) {
+        toast.success(result.message);
         setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
       } else {
@@ -597,35 +222,31 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
     }
   };
 
-  const tabs = [
-    { id: "agency", label: "Agency Details", icon: User },
-    { id: "business", label: "Business Details", icon: Briefcase },
-    { id: "branding", label: "Branding", icon: Palette },
-  ];
+  const tabs = isAgencyPath
+    ? [
+        { id: "agency", label: "Agency Details", icon: User },
+        { id: "business", label: "Business Details", icon: Briefcase },
+        { id: "branding", label: "Branding", icon: Palette },
+      ]
+    : [
+        { id: "business", label: "Business Details", icon: Briefcase },
+        { id: "branding", label: "Branding", icon: Palette },
+      ];
 
   return (
     <div className="min-h-screen bg-transparent p-8">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
-          {/* <h1 className="text-4xl font-bold text-black mb-2">
-            {safeUser.role === "superadmin"
-              ? "Agency & Business Management"
-              : "Agencies"}
-          </h1> */}
-
           <BreadCrumbPage />
 
           <p className="text-gray-600">
-            {safeUser.role === "superadmin"
+            {isAgencyPath
               ? "Create agency and business accounts with complete branding"
               : "Create and manage business accounts with complete branding"}
           </p>
         </div>
 
-        {/* Create User Form */}
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden border border-primary-100">
-          {/* Tabs */}
           <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
             <div className="flex">
               {tabs.map((tab) => {
@@ -671,7 +292,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
               </div>
             )}
 
-            {activeTab === "agency" && (
+            {activeTab === "agency" && isAgencyPath && (
               <Userdetails
                 handleInputChange={handleInputChange}
                 formData={formData}
@@ -687,6 +308,8 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
                 formData={formData}
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
+                user={user}
+                agencies={agencies}
               />
             )}
 
@@ -704,7 +327,7 @@ export default function BusinessCreatePage({ user }: { user?: any }) {
                   const idx = tabs.findIndex((t) => t.id === activeTab);
                   if (idx > 0) setActiveTab(tabs[idx - 1].id);
                 }}
-                disabled={activeTab === "user"}
+                disabled={activeTab === tabs[0].id}
                 className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
               >
                 Previous

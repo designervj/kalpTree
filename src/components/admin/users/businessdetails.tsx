@@ -1,11 +1,21 @@
 import { Building2, MapPin, Eye, EyeOff } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export const Businessdetails = ({
   handleInputChange,
   formData,
   showPassword,
   setShowPassword,
+  user,
+  agencies = [
+    {
+      _id: "234234",
+      name: "Admin",
+    },
+  ],
 }: any) => {
+  const path = usePathname();
+
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
@@ -435,6 +445,32 @@ export const Businessdetails = ({
           </div>
         </div>
       </div>
+
+      {user?.role === "superadmin" && !path.includes("agencies") && (
+        <div className="md:col-span-2">
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Assign Agency (Tenant)
+          </label>
+
+          <select
+            name="businessdetails.tenantId"
+            value={formData.businessdetails.tenantId || ""}
+            onChange={handleInputChange}
+            required={user?.role === "superadmin"}
+            className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+          >
+            <option value="" disabled>
+              Select an agency
+            </option>
+
+            {agencies.map((agency: any) => (
+              <option key={agency._id} value={agency._id}>
+                {agency.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
     </div>
   );
 };

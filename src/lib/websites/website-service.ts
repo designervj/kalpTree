@@ -163,10 +163,10 @@ export class WebsiteService {
 
   async create(params: {
     tenantId: string | ObjectId;
-    // tenantSlug: string;
     name: string;
     serviceType: string;
     primaryDomain?: string[] | null;
+    systemSubdomain?: string;
   }) {
     const c = await this.col();
     const tid =
@@ -174,10 +174,7 @@ export class WebsiteService {
         ? new ObjectId(params.tenantId)
         : params.tenantId;
     const websiteId = new ObjectId().toHexString();
-    // const systemSubdomain = await this.generateSystemSubdomain(
-    //   params.tenantSlug,
-    //   params.name
-    // );
+
     const now = new Date();
     const doc: Omit<WebsiteDoc, "_id"> = {
       websiteId,
@@ -185,10 +182,10 @@ export class WebsiteService {
       name: params.name,
       serviceType: params.serviceType,
       ...(params.primaryDomain ? { primaryDomain: params.primaryDomain } : {}),
-      // systemSubdomain,
       branding: {},
       createdAt: now,
       updatedAt: now,
+      systemSubdomain: params.systemSubdomain,
     };
     const r = await c.insertOne(doc as WebsiteDoc);
     return { ...doc, _id: r.insertedId } as WebsiteDoc;
