@@ -4,6 +4,32 @@ import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 import { permission } from "process";
 
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const body = await req.json();
+    const param = await params;
+    const id = new ObjectId(param.id);
+    console.log(id)
+    if (!id) {
+      return NextResponse.json({ success: false, message: "Fetched Role" });
+    }
+
+    const db = await getDatabase();
+    const collection = db.collection("roles");
+
+    const roles = await collection.findOne({
+      _id: id,
+    });
+
+    return NextResponse.json({ success: true, items: roles });
+  } catch (error) {
+    return NextResponse.json({ success: false, message: error });
+  }
+}
+
 export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
@@ -39,7 +65,7 @@ export async function PUT(
     }
   );
 
-  console.log(finalchangestoall)
+  console.log(finalchangestoall);
 
   return NextResponse.json({ items: roles });
 }

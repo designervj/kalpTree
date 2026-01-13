@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 const GetAllRolePermission = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { rolesPermissions, hasFetched } = useSelector(
+  const { rolesPermissions, hasFetched, current } = useSelector(
     (state: RootState) => state.rolePermission
   );
 

@@ -16,7 +16,7 @@ export interface RolePermissionModel {
 export interface RolePermissionState {
   rolesPermissions: RolePermissionModel[];
   hasFetched: boolean;
-  current?: RolePermissionModel;
+  current?: RolePermissionModel | null;
   loading: boolean;
   error?: string;
 }
@@ -25,6 +25,7 @@ const initialState: RolePermissionState = {
   rolesPermissions: [],
   loading: false,
   hasFetched: false,
+  current: null,
 };
 
 export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[]>(
@@ -32,7 +33,6 @@ export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[]>(
   async (_, { rejectWithValue }) => {
     try {
       const response = await axios.get("/api/roles");
-      console.log(response.data)
       return response.data.items;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -45,7 +45,7 @@ export const createRolePermission = createAsyncThunk<
   Partial<RolePermissionModel>
 >("rolePermission/create", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post("/api/role-permissions", data);
+    const response = await axios.post("/api/roles", data);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data || error.message);
@@ -57,7 +57,8 @@ export const updateRolePermission = createAsyncThunk<
   Partial<RolePermissionModel>
 >("rolePermission/update", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.put("/api/role-permissions", data);
+    console.log(data);
+    const response = await axios.put("/api/role", data);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(error.response?.data || error.message);
@@ -68,7 +69,7 @@ export const deleteRolePermission = createAsyncThunk<{ id: string }, string>(
   "rolePermission/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await axios.delete(`/api/role-permissions?id=${id}`);
+      await axios.delete(`/api/role/${id}`);
       return { id };
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Search,
   CheckCircle2,
@@ -9,6 +9,8 @@ import {
   Save,
   Loader2,
   ArrowLeft,
+  Users,
+  Shield,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -18,16 +20,32 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { useRouter } from "next/navigation";
-
-// (optional) If you use sonner in your project
-// import { toast } from "sonner";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import {
+  fetchRolePermissions,
+  setCurrentRolePermission,
+  updateRolePermission,
+} from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 
 type RoleFormData = {
   name: string;
   code: string;
   permissions: string[];
+  canCreateRole: string[];
+  type: "internal" | "external";
+  canMultipleTenants: boolean;
 };
 
 const ALL_PERMISSIONS = [
@@ -122,18 +140,70 @@ function miniToast(msg: string) {
   setTimeout(() => el.remove(), 1400);
 }
 
-export default function RolesPersmissionForm() {
+interface Rolesprops {
+  id: string;
+}
+
+export default function RolesPersmissionForm({ id }: Rolesprops) {
   const router = useRouter();
 
+  const { rolesPermissions: roles, current } = useSelector(
+    (state: RootState) => state.rolePermission
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [formData, setFormData] = useState<RoleFormData>({
     name: "",
     code: "",
     permissions: [],
+    canCreateRole: [],
+    type: "internal",
+    canMultipleTenants: false,
   });
 
   const [search, setSearch] = useState("");
-  const [actionFilter, setActionFilter] = useState<Set<Action>>(new Set()); // empty => all
+  const [actionFilter, setActionFilter] = useState<Set<Action>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
+
+  // Get available roles for canCreateRole (all roles with code)
+  const availableRolesForCreation = useMemo(() => {
+    return roles
+      .filter((role) => role.code && role._id !== id)
+      .map((role) => ({
+        code: role.code!,
+        name: role.name || role.code!,
+      }));
+  }, [roles, id]);
+
+  useEffect(() => {
+    setIsInitialLoading(true);
+    if (!current && roles.length > 0 && id) {
+      const find = roles.find((d) => d._id == id);
+      if (find && find.name && find.code) {
+        dispatch(setCurrentRolePermission(find));
+        setFormData({
+          name: find.name,
+          code: find.code,
+          permissions: find.permissions || [],
+          canCreateRole: find.canCreateRole || [],
+          type: (find.type as "internal" | "external") || "internal",
+          canMultipleTenants: find.canMultipleTenants || false,
+        });
+      }
+    } else if (current?.name && current?.code) {
+      setFormData({
+        name: current.name,
+        code: current.code,
+        permissions: current.permissions || [],
+        canCreateRole: current.canCreateRole || [],
+        type: (current.type as "internal" | "external") || "internal",
+        canMultipleTenants: current.canMultipleTenants || false,
+      });
+    }
+
+    setTimeout(() => setIsInitialLoading(false), 300);
+  }, [roles, id, current, dispatch]);
 
   const categorized = useMemo(() => categorizePermissions(ALL_PERMISSIONS), []);
   const allSelectedCount = formData.permissions.length;
@@ -145,6 +215,15 @@ export default function RolesPersmissionForm() {
       permissions: prev.permissions.includes(permission)
         ? prev.permissions.filter((p) => p !== permission)
         : [...prev.permissions, permission],
+    }));
+  };
+
+  const toggleCanCreateRole = (roleCode: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      canCreateRole: prev.canCreateRole.includes(roleCode)
+        ? prev.canCreateRole.filter((r) => r !== roleCode)
+        : [...prev.canCreateRole, roleCode],
     }));
   };
 
@@ -223,33 +302,31 @@ export default function RolesPersmissionForm() {
       miniToast("Role Code is required");
       return false;
     }
-    // optional: enforce slug format
-    // if (!/^[a-z0-9_]+$/.test(formData.code.trim())) {
-    //   miniToast("Role Code must be lowercase with underscores only");
-    //   return false;
-    // }
     return true;
   };
 
-  // ✅ Replace this endpoint with your real API
   const saveRole = async () => {
     if (!validate()) return false;
 
     setIsSaving(true);
     try {
-      const res = await fetch("/api/admin/roles", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      if (id) {
+        dispatch(updateRolePermission(formData));
+      } else {
+        // const res = await fetch("/api/admin/roles", {
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify(formData),
+        // });
 
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        throw new Error(txt || "Save failed");
+        // if (!res.ok) {
+        //   const txt = await res.text().catch(() => "");
+        //   throw new Error(txt || "Save failed");
+        // }
+
+        miniToast("Role saved successfully ✅");
+        return true;
       }
-
-      miniToast("Role saved successfully ✅");
-      return true;
     } catch (e: any) {
       miniToast(e?.message || "Something went wrong");
       return false;
@@ -267,6 +344,27 @@ export default function RolesPersmissionForm() {
     if (ok) router.push("/admin/rolesandpermission");
   };
 
+  if (isInitialLoading) {
+    return (
+      <div className="w-full pb-24">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
+          <BreadCrumbPage />
+        </div>
+
+        <Card className="overflow-hidden">
+          <CardContent className="p-4 md:p-6">
+            <div className="flex flex-col items-center justify-center py-12 gap-4">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <p className="text-sm text-muted-foreground">
+                Loading role permissions...
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full pb-24">
       {/* HEADER */}
@@ -274,51 +372,47 @@ export default function RolesPersmissionForm() {
         <BreadCrumbPage />
 
         <div className="flex flex-wrap items-center gap-2">
-
           <Badge variant="secondary" className="gap-2">
             <Layers className="h-4 w-4" />
             Selected: {allSelectedCount}/{totalCount}
           </Badge>
 
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={onSave}
+            disabled={isSaving}
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="mr-2 h-4 w-4" />
+                Save Role
+              </>
+            )}
+          </Button>
 
-             <Button
-                type="button"
-                variant="secondary"
-                onClick={onSave}
-                disabled={isSaving}
-     
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Role
-                  </>
-                )}
-              </Button>
+          <Button type="button" onClick={onSaveAndClose} disabled={isSaving}>
+            {isSaving ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              "Save & Close"
+            )}
+          </Button>
 
-              <Button
-                type="button"
-                onClick={onSaveAndClose}
-                disabled={isSaving}
-   
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save & Close"
-                )}
-              </Button>
-
-
-          <Button type="button" variant="secondary" onClick={selectAll} className="gap-2">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={selectAll}
+            className="gap-2"
+          >
             <CheckCircle2 className="h-4 w-4" />
             Select all
           </Button>
@@ -338,65 +432,188 @@ export default function RolesPersmissionForm() {
       {/* MAIN */}
       <Card className="overflow-hidden">
         <CardContent className="p-4 md:p-6 space-y-6">
-          {/* Role fields */}
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Role Name</label>
-              <Input
-                value={formData.name}
-                onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
-                placeholder="e.g. Super Admin"
-              />
-              <p className="text-xs text-muted-foreground">
-                A readable name for admins to identify the role.
-              </p>
-            </div>
+          {/* Basic Role Information */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Role Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, name: e.target.value }))
+                  }
+                  placeholder="e.g. Super Admin"
+                />
+                <p className="text-xs text-muted-foreground">
+                  A readable name for admins to identify the role.
+                </p>
+              </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Role Code</label>
-              <Input
-                value={formData.code}
-                onChange={(e) => setFormData((p) => ({ ...p, code: e.target.value }))}
-                placeholder="e.g. super_admin"
-              />
-              <p className="text-xs text-muted-foreground">
-                A unique slug used internally (lowercase + underscores).
-              </p>
+              <div className="space-y-2">
+                <Label htmlFor="code">Role Code</Label>
+                <Input
+                  id="code"
+                  value={formData.code}
+                  onChange={(e) =>
+                    setFormData((p) => ({ ...p, code: e.target.value }))
+                  }
+                  placeholder="e.g. super_admin"
+                />
+                <p className="text-xs text-muted-foreground">
+                  A unique slug used internally (lowercase + underscores).
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="type">Role Type</Label>
+                <Select
+                  value={formData.type}
+                  onValueChange={(value: "internal" | "external") =>
+                    setFormData((p) => ({ ...p, type: value }))
+                  }
+                >
+                  <SelectTrigger id="type">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="internal">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Internal
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="external">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-4 w-4" />
+                        External
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Internal roles are for organization members, external for
+                  clients/partners.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="multitenants">Multiple Tenants</Label>
+                  <Switch
+                    id="multitenants"
+                    checked={formData.canMultipleTenants}
+                    onCheckedChange={(checked) =>
+                      setFormData((p) => ({
+                        ...p,
+                        canMultipleTenants: checked,
+                      }))
+                    }
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Enable if this role can be assigned across multiple tenants.
+                </p>
+              </div>
             </div>
           </div>
 
           <Separator />
 
-          {/* Permission tools */}
-          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div className="relative w-full md:max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search modules… (dashboard, media, product)"
-                className="pl-9"
-              />
+          {/* Can Create Roles */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <h3 className="text-lg font-semibold">
+                Role Creation Permissions
+              </h3>
+              <Badge variant="outline">
+                {formData.canCreateRole.length} selected
+              </Badge>
             </div>
+            <p className="text-sm text-muted-foreground mb-4">
+              Select which roles this role can create. This determines what user
+              roles can be assigned by someone with this role.
+            </p>
 
-            <div className="flex flex-wrap items-center gap-2">
-              {ACTIONS.map((a) => {
-                const active = actionFilter.size === 0 ? true : actionFilter.has(a);
-                return (
-                  <Button
-                    key={a}
-                    type="button"
-                    variant={active ? "secondary" : "outline"}
-                    onClick={() => toggleActionFilter(a)}
-                    className="h-9"
-                  >
-                    {ACTION_META[a].label}
-                  </Button>
-                );
-              })}
-              <Button type="button" onClick={() => setActionFilter(new Set())} className="h-9">
-                Reset filter
-              </Button>
+            {availableRolesForCreation.length > 0 ? (
+              <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                {availableRolesForCreation.map((role) => {
+                  const isSelected = formData.canCreateRole.includes(role.code);
+                  return (
+                    <label
+                      key={role.code}
+                      className={cn(
+                        "flex items-center gap-3 rounded-lg border px-4 py-3",
+                        "hover:bg-muted/40 transition cursor-pointer",
+                        isSelected && "border-primary bg-primary/5"
+                      )}
+                    >
+                      <Checkbox
+                        checked={isSelected}
+                        onCheckedChange={() => toggleCanCreateRole(role.code)}
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{role.name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {role.code}
+                        </div>
+                      </div>
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="rounded-lg border border-dashed p-6 text-center">
+                <Users className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">
+                  No other roles available. Create additional roles to enable
+                  role creation permissions.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
+          {/* Permission tools */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Module Permissions</h3>
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <div className="relative w-full md:max-w-sm">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search modules… (dashboard, media, product)"
+                  className="pl-9"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                {ACTIONS.map((a) => {
+                  const active =
+                    actionFilter.size === 0 ? true : actionFilter.has(a);
+                  return (
+                    <Button
+                      key={a}
+                      type="button"
+                      variant={active ? "secondary" : "outline"}
+                      onClick={() => toggleActionFilter(a)}
+                      className="h-9"
+                    >
+                      {ACTION_META[a].label}
+                    </Button>
+                  );
+                })}
+                <Button
+                  type="button"
+                  onClick={() => setActionFilter(new Set())}
+                  className="h-9"
+                >
+                  Reset filter
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -413,7 +630,9 @@ export default function RolesPersmissionForm() {
                     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <div className="text-base font-semibold">{titleCase(category)}</div>
+                          <div className="text-base font-semibold">
+                            {titleCase(category)}
+                          </div>
                           <Badge variant="secondary">
                             {selectedInCat}/{totalInCat}
                           </Badge>
@@ -440,21 +659,23 @@ export default function RolesPersmissionForm() {
                     <div className="flex flex-wrap gap-3">
                       {actions.map((action) => {
                         const permission = `${category}:${action}`;
-                        const checked = formData.permissions.includes(permission);
+                        const checked =
+                          formData.permissions.includes(permission);
 
                         return (
                           <label
                             key={permission}
                             className={cn(
                               "flex items-center gap-3 rounded-md border px-3 py-2",
-                              " flex-1 md:flex-none",
+                              "flex-1 md:flex-none",
                               "hover:bg-muted/40 transition cursor-pointer"
                             )}
                           >
-                            {/* min-w-[180px] */}
                             <Checkbox
                               checked={checked}
-                              onCheckedChange={() => togglePermission(permission)}
+                              onCheckedChange={() =>
+                                togglePermission(permission)
+                              }
                             />
                             <div className="flex items-center gap-2">
                               <Badge
@@ -463,7 +684,6 @@ export default function RolesPersmissionForm() {
                               >
                                 {ACTION_META[action].badge}
                               </Badge>
-                              {/* <span className="text-sm font-medium">{ACTION_META[action].label}</span> */}
                             </div>
                           </label>
                         );
@@ -483,10 +703,14 @@ export default function RolesPersmissionForm() {
 
           {/* Preview */}
           <div className="rounded-xl border bg-muted/30 p-4">
-            <div className="text-sm font-semibold mb-2">Preview (selected)</div>
+            <div className="text-sm font-semibold mb-2">
+              Preview (selected permissions)
+            </div>
             <div className="flex flex-wrap gap-2">
               {formData.permissions.length === 0 ? (
-                <span className="text-sm text-muted-foreground">No permissions selected.</span>
+                <span className="text-sm text-muted-foreground">
+                  No permissions selected.
+                </span>
               ) : (
                 formData.permissions
                   .slice()
@@ -501,67 +725,6 @@ export default function RolesPersmissionForm() {
           </div>
         </CardContent>
       </Card>
-
-      {/* ✅ STICKY SAVE OPTIONS BAR */}
-      {/* <div className="fixed bottom-4 left-0 right-0 z-50 px-4">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-2xl border bg-white/95 backdrop-blur px-3 py-3 shadow-lg">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <span className="font-medium text-zinc-900">Unsaved changes</span>
-              <span className="hidden sm:inline">•</span>
-              <span>Don’t forget to save.</span>
-            </div>
-
-            <div className="flex flex-wrap items-center justify-end gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                className="h-10"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Cancel
-              </Button>
-
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onSave}
-                disabled={isSaving}
-                className="h-10"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Role
-                  </>
-                )}
-              </Button>
-
-              <Button
-                type="button"
-                onClick={onSaveAndClose}
-                disabled={isSaving}
-                className="h-10"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  "Save & Close"
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 }
