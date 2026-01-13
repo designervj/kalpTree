@@ -15,6 +15,8 @@ import {
 
     Plus,
 } from "lucide-react";
+import { useRouter } from 'next/navigation';
+import { IBusiness } from '@/models/business';
 
 function SiteIcon({ style }: { style?: "wp" | "code" }) {
     const isWP = style === "wp";
@@ -65,8 +67,13 @@ function PillButton({
     );
 }
 const ShowListOfBusiness = () => {
-
+   const router = useRouter()
     const { allBusiness } = useSelector((state: RootState) => state.business)
+
+    const handleClick = (site: IBusiness) => {
+        
+        router.push(`/admin/businesses/${site._id}`)
+    }
     return (
         <>
             <div className="space-y-4">
@@ -169,7 +176,8 @@ const ShowListOfBusiness = () => {
                                                 <Button
                                                     variant="outline"
                                                     className="h-10 rounded-xl px-5 text-sm font-semibold bg-primary text-white hover:text-white hover:bg-primary hover:no-underline"
-                                                >
+                                                 onClick= {()=>handleClick(site)}
+                                               >
                                                     Dashboard
                                                 </Button>
                                             </div>

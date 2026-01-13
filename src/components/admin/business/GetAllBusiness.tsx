@@ -7,15 +7,15 @@ import { useDispatch, useSelector } from 'react-redux'
 
 
 const GetAllBusiness = () => {
-    const dispatch=useDispatch<AppDispatch>()
-    const { hasFetchedBusiness}=useSelector((state: RootState) => state.business)
-  
-  
-    useEffect(() => {
-         if(!hasFetchedBusiness){
-             dispatch(fetchAllBusinesses())
-         }
-    }, [hasFetchedBusiness])
+  const dispatch = useDispatch<AppDispatch>()
+  const { hasFetchedBusiness } = useSelector((state: RootState) => state.business)
+
+
+  useEffect(() => {
+    if (!hasFetchedBusiness) {
+      dispatch(fetchAllBusinesses({ page: 1, itemsperpage: 30 }))
+    }
+  }, [hasFetchedBusiness])
   return (
     null
   )

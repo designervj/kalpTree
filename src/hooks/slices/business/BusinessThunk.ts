@@ -78,7 +78,7 @@ export const fetchAllBusinesses = createAsyncThunk(
   ) => {
     try {
       const response = await fetch(
-        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}`
+        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business`
       );
 
       if (!response.ok) {
@@ -102,7 +102,7 @@ export const fetchBusinessById = createAsyncThunk(
   async (businessId: string, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `/api/admin/business?businessId=${businessId}`
+        `/api/admin/business?id=${businessId}`
       );
 
       if (!response.ok) {
@@ -110,7 +110,11 @@ export const fetchBusinessById = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data.business as IBusiness;
+      return {
+        business:data.data as IBusiness[],
+        businessId:businessId,
+        
+      }
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch business");
     }

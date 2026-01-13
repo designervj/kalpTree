@@ -25,6 +25,7 @@ export interface Pagination {
 interface BusinessState {
   allBusiness: IBusiness[];
   allSelectedBusiness: IBusiness[];
+  businessWebsite: IBusiness|null;
   currentBusiness: IBusiness | null;
   hasFetchedBusiness: boolean;
   isLoading: boolean;
@@ -35,6 +36,7 @@ interface BusinessState {
 const initialState: BusinessState = {
   allBusiness: [],
   allSelectedBusiness: [],
+  businessWebsite: null,
   currentBusiness: null,
   hasFetchedBusiness: false,
   isLoading: false,
@@ -95,15 +97,15 @@ const businessSlice = createSlice({
       })
       .addCase(fetchBusinessById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentBusiness = action.payload;
+
+        const {businessId,business}= action.payload
+        state.allBusiness= business
         // Also update in allBusiness array if it exists
         const index = state.allBusiness.findIndex(
-          (b) => b._id?.toString() === action.payload._id?.toString()
+          (b) => b._id?.toString() === businessId.toString()
         );
         if (index !== -1) {
-          state.allBusiness[index] = action.payload;
-        } else {
-          state.allBusiness.push(action.payload);
+          state.businessWebsite= business[index]
         }
       })
       .addCase(fetchBusinessById.rejected, (state, action) => {

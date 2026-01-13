@@ -15,10 +15,11 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const page = Number(searchParams.get("page")) || 1;
         const type = searchParams.get("type") || "business";
+        console.log(type)
         const ITEMS_PER_PAGE = Number(searchParams.get("itemsperpage") || 30);
 
         const skip = (page - 1) * ITEMS_PER_PAGE;
-
+    
         const tenantcoll = await getCollection("tenants");
 
         let filter: Record<string, any> = {};
