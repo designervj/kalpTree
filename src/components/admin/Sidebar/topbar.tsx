@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 type TopbarProps = {
   currentWebsite: Website | null;
@@ -38,20 +39,24 @@ export function Topbar({
   onToggleCollapse,
 }: TopbarProps) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleSignOut = async () => {
+    debugger;
     try {
       resetRedux();
       localStorage.clear();
       sessionStorage.clear();
+      router.push("/");
 
-      const res = await fetch("/api/appshell-data", {
-        method: "POST",
-      });
-      const result = await res.json();
-      if (result.success) {
-        await signOut({ callbackUrl: "/", redirect: true });
-      }
+      // const res = await fetch("/api/appshell-data", {
+      //   method: "POST",
+      // });
+      // const result = await res.json();
+      // console.log("result", result)
+      // if (result.success) {
+      //   await signOut({ callbackUrl: "/", redirect: true });
+      // }
     } catch (error) {
       console.error("Error during sign out:", error);
       await signOut({ callbackUrl: "/" });

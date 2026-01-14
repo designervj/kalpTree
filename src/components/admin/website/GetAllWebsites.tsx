@@ -8,12 +8,18 @@ const GetAllWebsites = () => {
 
     const {hasfetched}= useSelector((state: RootState)=>state.websites)
     const dispatch = useDispatch<AppDispatch>()
-
+   const {user }=useSelector((state: RootState) => state.user) 
+   const {allBusiness}=useSelector((state: RootState)=>state.business)
     useEffect(()=>{
-        if(!hasfetched){
+        if(!hasfetched && user && user.role==='superadmin'){
             dispatch(getAllWebsites({tenantId: ""}))
         }
-    },[hasfetched])
+    },[hasfetched, user])
+    useEffect(()=>{
+        if(user && user.role==='agency' && allBusiness && allBusiness[0]?._id   ){
+            dispatch(getAllWebsites({tenantId: allBusiness[0]?._id}))
+        }
+    },[user,allBusiness])
   return (
   null
   )

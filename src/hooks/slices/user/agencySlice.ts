@@ -52,8 +52,8 @@ export const fetchSingleAgency = createAsyncThunk<
       throw new Error(data?.error || `HTTP ${res.status}`);
     }
     const data = await res.json();
-
-    return data;
+    console.log("data agency", data.data);
+    return data.data;
   } catch (err: any) {
     return rejectWithValue(err?.message || "Failed to fetch agencies");
   }
@@ -88,6 +88,7 @@ const agencySlice = createSlice({
       state.agencies = action.payload;
       state.hasfetched = true;
     },
+ 
     setAgencyLoading(state, action: PayloadAction<boolean>) {
       state.isAgencyLoading = action.payload;
     },
@@ -108,6 +109,7 @@ const agencySlice = createSlice({
       .addCase(fetchAllAgencies.fulfilled, (state, action) => {
         state.isAgencyLoading = false;
         state.allAgencies = action.payload;
+        // state.agencies=action.payload
         state.hasfetched = true;
       })
       .addCase(fetchAllAgencies.rejected, (state) => {
@@ -142,8 +144,10 @@ const agencySlice = createSlice({
         state.isAgencyLoading = true;
       })
       .addCase(fetchSingleAgency.fulfilled, (state, action) => {
-        const { data } = action.payload;
+        const data = action.payload;
+        state.allAgencies=[data]
         state.curretAgency = data;
+         state.hasfetched = true;
       })
       .addCase(fetchSingleAgency.rejected, (state, action) => {
         state.isAgencyLoading = false;
