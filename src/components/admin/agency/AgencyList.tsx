@@ -16,9 +16,10 @@ import AgencyGrid from "./AgencyGrid";
 import Link from "next/link";
 const AgencyList = () => {
   const { user } = useSelector((state: RootState) => state.user);
-  const { agencies, isAgencyLoading } = useSelector(
+  const { allAgencies, isAgencyLoading } = useSelector(
     (state: RootState) => state.agency
   );
+
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
@@ -34,9 +35,6 @@ const AgencyList = () => {
       render: (value: any) => (value ? new Date(value).toLocaleString() : "-"),
     },
   ];
-
-  // Memoize data for table
-  const data = useMemo(() => agencies || [], [agencies]);
 
   const handleAdd = () => {
     if (user?.role === "superadmin") {
@@ -78,29 +76,25 @@ const AgencyList = () => {
     <>
       <div className="flex items-center justify-between">
         {/* <div className="text-xl font-semibold">{title} </div> */}
-      <div className="flex items-center gap-2 justify-between w-full">
+        <div className="flex items-center gap-2 justify-between w-full">
           <BreadCrumbPage />
-         <Link href="/admin/agencies/create"><Button
-              size="sm"
-              className="py-2 rounded-sm px-4 py-2"
-             
-            >
-              Create New 
-            </Button> 
-            </Link>
+          <Link href="/admin/agencies/create">
+            <Button size="sm" className="py-2 rounded-sm px-4 py-2">
+              Create New
+            </Button>
+          </Link>
         </div>
       </div>
-      
+
       <Tabs defaultValue="account">
         <TabsList className="flex justify-end items-center me-auto">
-          
           <TabsTrigger value="account">List</TabsTrigger>
           <TabsTrigger value="password">Grid</TabsTrigger>
         </TabsList>
         <TabsContent value="account">
           <DataTableExt
             title="Agencies"
-            data={data}
+            data={allAgencies}
             onCreate={handleAdd}
             initialColumns={columns}
             opentab={() => handleBusiness}
@@ -109,11 +103,9 @@ const AgencyList = () => {
         </TabsContent>
 
         <TabsContent value="password">
-          <AgencyGrid/>
+          <AgencyGrid />
         </TabsContent>
       </Tabs>
-
-  
     </>
   );
 };

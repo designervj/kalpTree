@@ -803,9 +803,9 @@ export function AppShell({
         <div className="flex items-center gap-4">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="h-10 w-15 rounded-full   flex items-center justify-center text-white text-xs font-semibold">
+            <div className="h-10 w-15 rounded-full flex items-center justify-center text-white text-xs font-semibold">
               <img
-                src="../kalptree-favicon.svg"
+                src="/kalptree-favicon.svg"
                 alt="KalpTree"
                 className="h-18 w-18"
               />

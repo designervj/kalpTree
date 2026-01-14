@@ -4,7 +4,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ReduxProvider from "../store/ReduxProvider";
-import { Toaster } from "@/components/ui/sonner";
 import { AdminThemeProvider } from "@/components/admin/ThemeProvider";
 
 const inter = Inter({
