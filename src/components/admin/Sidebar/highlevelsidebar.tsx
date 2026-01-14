@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { Activity } from "react";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Globe,
   CreditCard,
-  
+
   Package,
   ChevronRight,
   ChevronDown,
@@ -22,6 +22,11 @@ import {
   LogOut,
   Bell,
   Palette,
+  Settings2,
+  Blocks,
+  Webhook,
+  Download,
+  ShieldCheck,
 } from "lucide-react";
 import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
 
@@ -103,6 +108,23 @@ const navigationItems = [
     submenuItems: [
       { label: "Marketplace", href: "/admin/all-services/marketplace" },
       { label: "AI tools", href: "/admin/all-services/ai-tools" },
+    ],
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    icon: Settings2,
+    href: "/admin/setting/general",
+    hasSubmenu: true,
+    submenuItems: [
+      { label: "General", href: "/admin/settings/general" },
+      { label: "Domain & DNS", href: "/admin/settings/domain-dns" },
+      { label: "Billing & Plans", href: "/admin/settings/billing-plans" },
+      { label: "Usage & Limits", href: "/admin/settings/usage-limits" },
+      { label: "Integrations", href: "/admin/settings/integrations" },
+      { label: "Webhooks", href: "/admin/settings/webhooks" },
+      { label: "Data Export", href: "/admin/settings/data-export" },
+      { label: "Security", href: "/admin/setting/security" },
     ],
   },
   {
@@ -191,7 +213,7 @@ export function HighLevelSidebar({
   };
 
 
- 
+
   return (
     <div
       className={cn(
@@ -232,7 +254,7 @@ export function HighLevelSidebar({
                           item.hasSubmenu && setHoverItemId(item.id)
                         }
                         onMouseLeave={() => setHoverItemId(null)}
-                        onClick={() => handleClick(item.href)}
+                        onClick={() => handleClick(item?.href)}
                       >
                         {/* <Link href={item.href}> */}
                         <button

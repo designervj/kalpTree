@@ -48,7 +48,7 @@ export const authConfig: NextAuthConfig = {
             id: user._id.toString(),
             email: user.email,
             name: user.name,
-            tenantId: user.role === "superadmin" ? "superadmin" : user.tenantId!.toString(),
+            tenantId: user.tenantId!.toString(),
             role: user.role,
             permissions: user.permissions,
             createdById: user.createdById?.toString(), // Handle optional createdById

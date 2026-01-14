@@ -18,13 +18,13 @@ const initialState: LLMSettingState = {
 
 export const fetchLLMSettings = createAsyncThunk<
   LLMModel[],
- {websiteId:string},
+ {tenantId:string},
   { state: { llmSetting: LLMSettingState }; rejectValue: string }
 >(
   "llmSetting/fetchLLMSettings",
-  async ({websiteId}, { rejectWithValue }) => {
+  async ({tenantId}, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/admin/llmSetting?websiteId=${websiteId}`);
+      const res = await fetch(`/api/admin/llmSetting?tenantId=${tenantId}`);
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         return rejectWithValue(body?.error || `HTTP ${res.status}`);
