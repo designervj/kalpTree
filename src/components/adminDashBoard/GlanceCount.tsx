@@ -30,20 +30,15 @@ const GlanceCount = () => {
     },[allBusiness,user])
 
 
-    const allWebsitesBasedOnAgency = useMemo(()=>{
-        if(user?.role === "agency"){
-            return websites.filter((website)=>website.tenantId === user?.tenantId)
-        }
-        return websites
-    },[websites,user])
+  
 
-    console.log("alllagenxy ",allBusinessBasedOnAgency)
+  
     const allStats: QuickStat[] = [
         { title: "Agencies", value: allAgencies?.length || 0, href: "/admin/agencies", icon: FileText },
         { title: "Businesses", value: user?.role === "agency" ? allBusinessBasedOnAgency?.length : allBusiness?.length || 0, href: "/admin/businesses", icon: Globe },
         {
             title: "Website",
-            value: user?.role === "agency" ? allWebsitesBasedOnAgency?.length : websites?.length || 0,
+            value:  websites?.length || 0,
             href: "/admin/websites",
             icon: Globe,
         },

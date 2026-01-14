@@ -13,7 +13,7 @@ import {
   ChevronsUpDown,
   LayoutDashboard,
   UserCircle,
-  Network ,
+  Network,
   Shield,
   Building2,
   BriefcaseBusiness,
@@ -38,8 +38,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 
 const navigationItems = [
@@ -57,7 +57,7 @@ const navigationItems = [
     ],
   },
 
-    {
+  {
     id: "businesses",
     label: "Businesses",
     icon: Network,
@@ -68,7 +68,7 @@ const navigationItems = [
       { label: "Add New Business", href: "/admin/businesses/create" },
     ],
   },
-  
+
   {
     id: "domains",
     label: "Domains",
@@ -118,7 +118,7 @@ const navigationItems = [
     href: "/admin/rolesandpermission",
   },
 
-    {
+  {
     id: "themes",
     label: "Themes",
     icon: Palette,
@@ -155,32 +155,43 @@ export function HighLevelSidebar({
   const toggleItem = (id: string) => {
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-
+  console.log("user---", user)
   const router = useRouter();
-  const dispatch= useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
+
+  // Filter navigation items based on user role
+  const filteredNavigationItems = React.useMemo(() => {
+    if (user?.role === "agency") {
+      return navigationItems.filter(item => item.id !== "agencies");
+    }
+    return navigationItems;
+  }, [user?.role]);
+
   const getRoleAvatarClass = (role?: string) => {
-  const r = (role || "").toLowerCase().trim();
+    const r = (role || "").toLowerCase().trim();
 
-  if (r === "super admin" || r === "superadmin" || r === "admin") {
-    return "bg-red-500 text-white";
-  }
-  if (r === "business") {
-    return "bg-green-600 text-white";
-  }
-  if (r === "agency") {
-    return "bg-yellow-400 text-black";
-  }
+    if (r === "super admin" || r === "superadmin" || r === "admin") {
+      return "bg-red-500 text-white";
+    }
+    if (r === "business") {
+      return "bg-green-600 text-white";
+    }
+    if (r === "agency") {
+      return "bg-yellow-400 text-black";
+    }
 
-  // fallback
-  return "bg-primary text-white";
-};
+    // fallback
+    return "bg-primary text-white";
+  };
 
-const handleClick = (href: string) => {
-  dispatch(setCurrentBusiness(null));
-  console.log("href", href);
-  router.push(href);
-};
+  const handleClick = (href: string) => {
+    dispatch(setCurrentBusiness(null));
+    console.log("href", href);
+    router.push(href);
+  };
 
+
+ 
   return (
     <div
       className={cn(
@@ -206,7 +217,7 @@ const handleClick = (href: string) => {
               )}
             >
               <div className="space-y-1">
-                {navigationItems.map((item) => {
+                {filteredNavigationItems.map((item) => {
                   const Icon = item.icon as any;
                   const isOpen = !!openItems[item.id];
                   const isActive = pathname === item.href;
@@ -221,35 +232,35 @@ const handleClick = (href: string) => {
                           item.hasSubmenu && setHoverItemId(item.id)
                         }
                         onMouseLeave={() => setHoverItemId(null)}
-                         onClick={() => handleClick(item.href)}
+                        onClick={() => handleClick(item.href)}
                       >
                         {/* <Link href={item.href}> */}
-                          <button
-                            type="button"
-                            className={cn(
-                              "w-full flex items-center justify-center relative",
-                              "h-11 rounded-md transition border",
-                              "border-[color:var(--admin-sidebar-border)]",
-                              isActive
-                                ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm"
-                                : "bg-white/50 hover:bg-[var(--admin-sidebar-hover)]"
-                            )}
-                           
-                          >
-                            <Icon className="h-5 w-5 opacity-80" />
-                            {(item as any).badge && (
-                              <span
-                                className="absolute -top-1 -right-1 text-[9px] rounded-full px-1.5 py-0.5 font-semibold border"
-                                style={{
-                                  background: "var(--admin-sidebar-badge-bg)",
-                                  color: "var(--admin-sidebar-badge-fg)",
-                                  borderColor: "var(--admin-sidebar-border)",
-                                }}
-                              >
-                                {(item as any).badge}
-                              </span>
-                            )}
-                          </button>
+                        <button
+                          type="button"
+                          className={cn(
+                            "w-full flex items-center justify-center relative",
+                            "h-11 rounded-md transition border",
+                            "border-[color:var(--admin-sidebar-border)]",
+                            isActive
+                              ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm"
+                              : "bg-white/50 hover:bg-[var(--admin-sidebar-hover)]"
+                          )}
+
+                        >
+                          <Icon className="h-5 w-5 opacity-80" />
+                          {(item as any).badge && (
+                            <span
+                              className="absolute -top-1 -right-1 text-[9px] rounded-full px-1.5 py-0.5 font-semibold border"
+                              style={{
+                                background: "var(--admin-sidebar-badge-bg)",
+                                color: "var(--admin-sidebar-badge-fg)",
+                                borderColor: "var(--admin-sidebar-border)",
+                              }}
+                            >
+                              {(item as any).badge}
+                            </span>
+                          )}
+                        </button>
                         {/* </Link> */}
 
                         <AnimatePresence>
@@ -302,8 +313,8 @@ const handleClick = (href: string) => {
                   // ✅ Expanded view
                   return (
                     <div key={item.id}>
-                    
-                  
+
+
                       <div
                         className={cn(
                           "w-full flex items-center gap-3 rounded-md px-3 py-2.5",
@@ -406,7 +417,7 @@ const handleClick = (href: string) => {
                       <>
                         <div className="flex flex-col flex-1 text-left leading-tight">
                           <span className="text-sm font-medium capitalize">
-                           {user?.name || user?.role}
+                            {user?.name || user?.role}
                           </span>
                           <span className="text-xs text-[color:var(--admin-sidebar-muted)]">
                             {user?.email || "m@example.com"}
@@ -425,7 +436,7 @@ const handleClick = (href: string) => {
                   className="w-56 rounded-xl border bg-background shadow-lg p-1"
                 >
                   <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-                    
+
                     {/* <Avatar className="h-8 w-8 ">
                       <AvatarFallback className="font-semibold">
                         {user?.name?.[0]?.toUpperCase() || "SC"}
@@ -433,16 +444,16 @@ const handleClick = (href: string) => {
                     </Avatar> */}
 
                     <Avatar className="h-7 w-7">
-                            <AvatarFallback
-                              className={cn(
-                                "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
-                                getRoleAvatarClass(user?.role)
-                              )}
-                            >
-                              
-                              {user?.email?.charAt(0).toUpperCase() || "U"}
-                            </AvatarFallback>
-                          </Avatar>
+                      <AvatarFallback
+                        className={cn(
+                          "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
+                          getRoleAvatarClass(user?.role)
+                        )}
+                      >
+
+                        {user?.email?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
 
                     <div className="flex flex-col leading-tight">
                       <span className=" font-medium capitalize">

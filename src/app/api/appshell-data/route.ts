@@ -85,13 +85,26 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
   } else if (user?.role == "agency") {
+     agencies = await agencyColl
+      .find({ type: "agency" , _id:new ObjectId(user.tenantId) })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+      })
+      .toArray();
+
+      console.log(  "agenc login ---", agencies)
     business = await agencyColl
       .find({ tenantId: new ObjectId(user.tenantId) })
       .project({
         name: 1,
         _id: 1,
+         tenantId: 1,
       })
       .toArray();
+
+      console.log("allbusiness",business)
     websites = await websiteColl
       .find({
         tenantId: {

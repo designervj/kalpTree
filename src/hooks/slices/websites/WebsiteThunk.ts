@@ -1,5 +1,6 @@
 import { Website } from "@/components/admin/AppShell";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { ObjectId } from "mongodb";
 
 // Thunk to create a Website (createD Website)
 export const createWebsite = createAsyncThunk<
@@ -30,7 +31,7 @@ export const createWebsite = createAsyncThunk<
 // Thunk to get all Websites for a tenant/user
 export const getAllWebsites = createAsyncThunk<
   Website[],
-  { tenantId?: string },
+  { tenantId?: string | ObjectId },
   { rejectValue: string }
 >(
   "websites/getAllWebsites",

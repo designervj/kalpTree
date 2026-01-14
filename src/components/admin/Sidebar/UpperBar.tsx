@@ -36,10 +36,18 @@ export const UpperBar = () => {
   }, [allSelectedBusiness, ])
 
 
+  const updatedAllWebsites = useMemo(() => {
+    return selectedWebsites
+  }, [selectedWebsites])
+
+  const updatedCurrentWebsite = useMemo(() => {
+    return currentWebsite
+  }, [currentWebsite])
+
 
   const handleAgencyChange = (agencyId: string) => {
     const agency = agencies.find(a => a._id?.toString() === agencyId);
-    console.log("agency", agency)
+
     dispatch(setCurretAgency(agency || null));
 
     const allBus = allBusiness.filter(item => item.tenantId === agency?._id)
@@ -47,7 +55,7 @@ export const UpperBar = () => {
      if (allBus.length === 1) {
       dispatch(setSelectedBusiness(allBus))
       dispatch(setCurrentBusiness(allBus[0]))
-      const allWeb = websites.filter(item => item.tenantId === allBus[0]?.tenantId)
+      const allWeb = websites.filter(item => item.tenantId === allBus[0]?._id)
       console.log("allWeb", allWeb)
       if (allWeb) {
         dispatch(setSelectedWebsite(allWeb))
@@ -160,9 +168,9 @@ export const UpperBar = () => {
 
       {/* ================= Website ================= */}
       {
-        selectedWebsites.length > 0 && (
+        updatedAllWebsites.length > 0 && (
           <Select
-            value={currentWebsite?._id?.toString() ?? ""}
+            value={updatedCurrentWebsite?._id?.toString() ?? ""}
             onValueChange={(websiteId) => {
               handleWebsiteChange(websiteId)
             }}
