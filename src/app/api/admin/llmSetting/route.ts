@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/db/mongodb';
 
-const COLLECTION_NAME = 'llmSetting';
+const COLLECTION_NAME = 'setting_llm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,12 +12,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const tenantId = new ObjectId(session.user.tenantId);
+     const searchParams = request.nextUrl.searchParams;
+     const tenantId = searchParams.get('tenantId');
+
+     console.log("teannat id ",tenantId)
     const db = await getDatabase();
     
     const llmSettings = await db
       .collection(COLLECTION_NAME)
-      .find({ tenantId })
+      .find({ tenantId:tenantId })
       .toArray();
 
     return NextResponse.json({ data: llmSettings });

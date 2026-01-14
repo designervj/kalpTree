@@ -13,24 +13,24 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 
-// interface LLMFormProps {
-//   initialData?: LLMModel;
-//   onSubmit: (data: LLMModel) => void | Promise<void>;
-//   onCancel?: () => void;
-//   isLoading?: boolean;
-// }
+interface LLMFormProps {
+  initialData?: LLMModel;
+  onSubmit: (data: LLMModel) => void | Promise<void>;
+  onCancel?: () => void;
+  isLoading?: boolean;
+}
 
-const LLmForm = ({
-  // initialData,
-  // onSubmit,
-  // onCancel,
-  // isLoading = false,
+const LLmForm: React.FC<LLMFormProps> = ({
+  initialData,
+  onSubmit,
+  onCancel,
+  isLoading = false,
 }) => {
   const [formData, setFormData] = useState<LLMModel>({
-    name: "",
-    secreteKey: "",
-    isActive: true,
-    model: "",
+    name: initialData?.name || "",
+    secreteKey: initialData?.secreteKey || "",
+    isActive: initialData?.isActive ?? true,
+    model: initialData?.model || "",
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof LLMModel, string>>>({});
@@ -41,7 +41,7 @@ const LLmForm = ({
   const [testResult, setTestResult] = useState("");
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle");
-const [isLoading, setIsLoading] = useState(false);
+
   const LLMModelType = ["ChatGPT", "Gemini"];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,11 +124,11 @@ const [isLoading, setIsLoading] = useState(false);
     
     const data = {
       ...formData, 
-      // tenantId: user?.tenantId,
-      // websiteId: currentWebsite._id
+      tenantId: user?.tenantId,
+      websiteId: currentWebsite._id
     };
     
-   
+    await onSubmit(data);
   };
 
   const handleTestAPI = async () => {
@@ -178,14 +178,10 @@ const [isLoading, setIsLoading] = useState(false);
     }
   };
 
-
-  const onCancel = () => {
-    
-  };
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>{"Add LLM Model"}</CardTitle>
+        <CardTitle>{initialData?._id ? "Edit LLM Model" : "Add LLM Model"}</CardTitle>
         <CardDescription>
           Configure your Language Model settings
         </CardDescription>
@@ -378,7 +374,7 @@ const [isLoading, setIsLoading] = useState(false);
             </Button>
           )}
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : "Save"}
+            {isLoading ? "Saving..." : initialData?._id ? "Update" : "Save"}
           </Button>
         </CardFooter>
       </form>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,15 +23,12 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import LLmForm from '../form/LLmForm';
 import { LLMModel } from '../type/LLMModel';
-import { useRouter } from 'next/navigation';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 
 const LLMtable = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<LLMModel | undefined>(undefined);
-  // const [llmModels, setLlmModels] = useState<LLMModel[]>([]);
+  const [llmModels, setLlmModels] = useState<LLMModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
@@ -48,46 +45,37 @@ const LLMtable = () => {
     });
   };
 
-  const {listLLMSettings,hasFetched}= useSelector((state: RootState) => state.llmSetting);
-
-
-  const llmModels=useMemo(() => listLLMSettings || [], [listLLMSettings]);
   // Fetch LLM models on component mount
-  // useEffect(() => {
-  //   fetchLLMModels();
-  // }, []);
+  useEffect(() => {
+    fetchLLMModels();
+  }, []);
 
-  // const fetchLLMModels = async () => {
-  //   try {
-  //     setIsFetching(true);
-  //     const response = await fetch('/api/admin/llmSetting');
+  const fetchLLMModels = async () => {
+    try {
+      setIsFetching(true);
+      const response = await fetch('/api/admin/llmSetting');
       
-  //     if (!response.ok) {
-  //       throw new Error('Failed to fetch LLM settings');
-  //     }
+      if (!response.ok) {
+        throw new Error('Failed to fetch LLM settings');
+      }
 
-  //     const result = await response.json();
-  //     setLlmModels(result.data || []);
-  //   } catch (error) {
-  //     console.error('Error fetching LLM models:', error);
-  //     toast({
-  //       title: 'Error',
-  //       description: 'Failed to load LLM models',
-  //       variant: 'destructive',
-  //     });
-  //   } finally {
-  //     setIsFetching(false);
-  //   }
-  // };
+      const result = await response.json();
+      setLlmModels(result.data || []);
+    } catch (error) {
+      console.error('Error fetching LLM models:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to load LLM models',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
-
-
-  const router = useRouter();
   const handleAddNew = () => {
     setEditingModel(undefined);
-    // setIsDialogOpen(true);
-    router.push('/admin/settings/integrations/llm/create');
-    
+    setIsDialogOpen(true);
   };
 
   const handleEdit = (model: LLMModel) => {
@@ -115,7 +103,7 @@ const LLMtable = () => {
       });
 
       // Remove from local state
-   
+      setLlmModels(llmModels.filter(model => model._id !== id));
     } catch (error) {
       console.error('Error deleting LLM model:', error);
       toast({
@@ -152,7 +140,9 @@ const LLMtable = () => {
         const result = await response.json();
         
         // Update local state
-       
+        setLlmModels(llmModels.map(model => 
+          model._id === editingModel._id ? { ...model, ...data } : model
+        ));
 
         toast({
           title: 'Success',
@@ -182,7 +172,7 @@ const LLMtable = () => {
         const result = await response.json();
         
         // Add to local state
-      //  setLlmModels([...llmModels, result.data]);
+        setLlmModels([...llmModels, result.data]);
 
         toast({
           title: 'Success',
@@ -220,7 +210,7 @@ const LLMtable = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {!hasFetched ? (
+          {isFetching ? (
             <div className="text-center py-8 text-muted-foreground">
               Loading LLM models...
             </div>
@@ -300,7 +290,7 @@ const LLMtable = () => {
           )}
         </CardContent>
       </Card>
-{/* 
+
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -318,7 +308,7 @@ const LLMtable = () => {
             isLoading={isLoading}
           />
         </DialogContent>
-      </Dialog> */}
+      </Dialog>
     </>
   );
 };

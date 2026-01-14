@@ -19,15 +19,15 @@ export const BusinesswithID = () => {
   }, [businessWebsite])
 
   // Handle null case
-  // if (!upadatedBusiness || !user) {
-  //   return (
-  //     <div className="p-6 text-sm text-slate-600">
-  //       {!user ? "User not found" : "Business not found"}
-  //       <GetBusinessById />
-  //       <GetAllWebsites/>
-  //     </div>
-  //   );
-  // }
+  if (!upadatedBusiness || !user) {
+    return (
+      <div className="p-6 text-sm text-slate-600">
+        {!user ? "User not found" : "Business not found"}
+        <GetBusinessById />
+        <GetAllWebsites/>
+      </div>
+    );
+  }
 
   return (
     <>

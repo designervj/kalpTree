@@ -115,9 +115,7 @@ const ShowBusiness = () => {
 
   const handleOpenDashboard = (business: IBusiness) => {
     dispatch(setBusinessWebsite(business));
-    // setTimeout(() => {
     router.push(`/admin/businesses/${business._id}`);
-    // }, 100);
   };
   return (
     <div className="w-full space-y-6">
