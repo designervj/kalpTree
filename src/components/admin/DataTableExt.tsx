@@ -418,7 +418,7 @@ export function DataTableExt({
 
   return (
     <div className="space-y-4">
-      {/* <div className="flex items-center gap-2 justify-end w-full">
+      <div className="flex items-center gap-2 justify-end w-full">
         {onCreate ? (
           <Button
             size="sm"
@@ -434,7 +434,7 @@ export function DataTableExt({
             </Button>
           </Link>
         ) : null}
-      </div> */}
+      </div>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">
