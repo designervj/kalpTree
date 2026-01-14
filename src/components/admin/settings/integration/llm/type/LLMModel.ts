@@ -2,8 +2,8 @@ import { ObjectId } from "mongodb";
 
 export interface LLMModel{
     _id?:string| ObjectId;
-    tenantId?:string;
-    websiteId?:string;
+    tenantId?:string|ObjectId;
+    // websiteId?:string|ObjectId;
     name?:string
     secreteKey?:string;
     isActive?:boolean

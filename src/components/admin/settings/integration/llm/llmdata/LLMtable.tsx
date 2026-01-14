@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Pencil, Trash2, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,15 +23,28 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import LLmForm from '../form/LLmForm';
 import { LLMModel } from '../type/LLMModel';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
+import {  setCurrentLLMSetting } from '@/hooks/slices/setting/llmSetting/LLMSettingSlice';
+import { deleteLLMSetting } from '@/hooks/slices/setting/llmSetting/LLMSettingThunk';
 
 const LLMtable = () => {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingModel, setEditingModel] = useState<LLMModel | undefined>(undefined);
-  const [llmModels, setLlmModels] = useState<LLMModel[]>([]);
+  //const [llmModels, setLlmModels] = useState<LLMModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
+
+  const {listLLMSettings, hasFetched} = useSelector((state: RootState) => state.llmSetting);
+  const router= useRouter();
+   const dispatch = useDispatch<AppDispatch>();
+  const llmModels= useMemo(()=>{
+    return listLLMSettings;
+  },[listLLMSettings])
+
 
   const toggleKeyVisibility = (id: string) => {
     setVisibleKeys(prev => {
@@ -45,154 +58,29 @@ const LLMtable = () => {
     });
   };
 
-  // Fetch LLM models on component mount
-  useEffect(() => {
-    fetchLLMModels();
-  }, []);
 
-  const fetchLLMModels = async () => {
-    try {
-      setIsFetching(true);
-      const response = await fetch('/api/admin/llmSetting');
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch LLM settings');
-      }
-
-      const result = await response.json();
-      setLlmModels(result.data || []);
-    } catch (error) {
-      console.error('Error fetching LLM models:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load LLM models',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsFetching(false);
-    }
-  };
 
   const handleAddNew = () => {
-    setEditingModel(undefined);
-    setIsDialogOpen(true);
+       router.push('/admin/settings/integrations/llm/create');
   };
 
   const handleEdit = (model: LLMModel) => {
-    setEditingModel(model);
-    setIsDialogOpen(true);
+    dispatch(setCurrentLLMSetting(model))
+    router.push(`/admin/settings/integrations/llm/${model._id}`);
+    // setEditingModel(model);
+    // setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this LLM model?')) {
       return;
     }
-
-    try {
-      const response = await fetch(`/api/admin/llmSetting?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete LLM setting');
-      }
-
-      toast({
-        title: 'Success',
-        description: 'LLM model deleted successfully',
-      });
-
-      // Remove from local state
-      setLlmModels(llmModels.filter(model => model._id !== id));
-    } catch (error) {
-      console.error('Error deleting LLM model:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to delete LLM model',
-        variant: 'destructive',
-      });
-    }
+    await dispatch(deleteLLMSetting(id)).unwrap();
+ 
+  
   };
 
-  const handleSubmit = async (data: LLMModel) => {
-    try {
-      setIsLoading(true);
-
-      if (editingModel?._id) {
-        // Update existing model
-        const response = await fetch('/api/admin/llmSetting', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            _id: editingModel._id,
-            name: data.name,
-            secreteKey: data.secreteKey,
-            isActive: data.isActive,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to update LLM setting');
-        }
-
-        const result = await response.json();
-        
-        // Update local state
-        setLlmModels(llmModels.map(model => 
-          model._id === editingModel._id ? { ...model, ...data } : model
-        ));
-
-        toast({
-          title: 'Success',
-          description: 'LLM model updated successfully',
-        });
-      } else {
-        // Create new model
-        const response = await fetch('/api/admin/llmSetting', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            
-            name: data.name,
-            model:data.model,
-            websiteId:data.websiteId,
-            secreteKey: data.secreteKey,
-            isActive: data.isActive,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to create LLM setting');
-        }
-
-        const result = await response.json();
-        
-        // Add to local state
-        setLlmModels([...llmModels, result.data]);
-
-        toast({
-          title: 'Success',
-          description: 'LLM model added successfully',
-        });
-      }
-
-      setIsDialogOpen(false);
-      setEditingModel(undefined);
-    } catch (error) {
-      console.error('Error saving LLM model:', error);
-      toast({
-        title: 'Error',
-        description: editingModel?._id ? 'Failed to update LLM model' : 'Failed to create LLM model',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ 
 
   return (
     <>
@@ -210,7 +98,7 @@ const LLMtable = () => {
           </div>
         </CardHeader>
         <CardContent>
-          {isFetching ? (
+          {!hasFetched ? (
             <div className="text-center py-8 text-muted-foreground">
               Loading LLM models...
             </div>
@@ -291,24 +179,6 @@ const LLMtable = () => {
         </CardContent>
       </Card>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>
-              {editingModel ? 'Edit LLM Model' : 'Add New LLM Model'}
-            </DialogTitle>
-            <DialogDescription>
-              Configure your language model integration settings
-            </DialogDescription>
-          </DialogHeader>
-          <LLmForm
-            initialData={editingModel}
-            onSubmit={handleSubmit}
-            onCancel={() => setIsDialogOpen(false)}
-            isLoading={isLoading}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

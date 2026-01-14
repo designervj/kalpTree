@@ -1,4 +1,5 @@
-import { fetchLLMSettings } from '@/hooks/slices/setting/llmSetting/LLMSettingSlice';
+
+import { fetchLLMSettings } from '@/hooks/slices/setting/llmSetting/LLMSettingThunk';
 import { AppDispatch, RootState } from '@/store/store';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,7 +15,7 @@ const GetAllIIMData = () => {
   useEffect(() => {
     if (!hasFetched && 
         user?.tenantId) {
-          console.log("tenantId fetch.  ",user?.tenantId)
+        
       dispatch(fetchLLMSettings({tenantId:user?.tenantId}));
     }
   }, [hasFetched, isLLMSettingLoading, user,dispatch,currentWebsite]);
