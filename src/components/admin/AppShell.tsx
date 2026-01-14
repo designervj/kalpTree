@@ -810,7 +810,7 @@ export function AppShell({
                 className="h-18 w-18"
               />
             </div>
-            <button
+            {/* <button
               type="button"
               onClick={() => setCollapsed((v) => !v)}
               className={cn(
@@ -827,7 +827,7 @@ export function AppShell({
                   <GoSidebarCollapse size={20} />
                 )}
               </span>
-            </button>
+            </button> */}
           </div>
         </div>
         {isHighLevelCollapsed && <UpperBar />}

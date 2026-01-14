@@ -235,7 +235,7 @@ export default function BusinessCreatePage({
 
   return (
     <div className="min-h-screen bg-transparent p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className=" mx-auto">
         <div className="mb-8">
           <BreadCrumbPage />
 

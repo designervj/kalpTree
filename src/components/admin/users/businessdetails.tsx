@@ -1,6 +1,35 @@
-import { Building2, MapPin, Eye, EyeOff } from "lucide-react";
+import { Building2, MapPin, Eye, EyeOff, Globe, LayoutGrid, ShoppingCart, Megaphone } from "lucide-react";
 import { usePathname } from "next/navigation";
 import IndustryRadioList from "./IndustryRadioList";
+
+
+
+const SERVICE_OPTIONS = [
+  {
+    value: "WEBSITE_ONLY",
+    title: "Website Only",
+    desc: "Basic website hosting and management with space 1GB",
+    Icon: Globe,
+  },
+  {
+    value: "WEBSITE_CATALOGUE",
+    title: "Website and Catalogue",
+    desc: "Website hosting and catalogue with space 2GB",
+    Icon: LayoutGrid,
+  },
+  {
+    value: "WEBSITE_CATALOGUE_ECOMMERCE",
+    title: "Website, Catalogue and E-commerce",
+    desc: "Website hosting + catalogue + e-commerce with space 3GB",
+    Icon: ShoppingCart,
+  },
+  {
+    value: "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING",
+    title: "Website, Catalogue, E-commerce and Marketing",
+    desc: "Everything included with space 5GB and marketing",
+    Icon: Megaphone,
+  },
+];
 
 export const Businessdetails = ({
   handleInputChange,
@@ -16,6 +45,8 @@ export const Businessdetails = ({
   ],
 }: any) => {
   const path = usePathname();
+
+    const selected = formData?.businessdetails?.service ?? "";
 
   return (
     <div className="space-y-6">
@@ -122,120 +153,77 @@ export const Businessdetails = ({
         </div>
 
         <hr />
+   <div className="mt-4">
+      <label className="block text-sm font-semibold text-gray-700 mb-3">
+        Service Type
+      </label>
 
-        <div className="mt-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-3">
-            Service Type
-          </label>
-          <div className="space-y-3">
-            <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
-                formData.service === "WEBSITE_ONLY"
-                  ? "border-primary-500 bg-white"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="businessdetails.service"
-                value="WEBSITE_ONLY"
-                checked={formData.businessdetails.service === "WEBSITE_ONLY"}
-                onChange={handleInputChange}
-                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
-              />
-              <div className="ml-3">
-                <div className="font-semibold text-gray-900">Website Only</div>
-                <div className="text-sm text-gray-600">
-                  Basic website hosting and management with space 1GB
-                </div>
-              </div>
-            </label>
+      {/* 3 per row like screenshot */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {SERVICE_OPTIONS.map((opt, idx) => {
+          const checked = selected === opt.value;
+          const id = `service_${idx}_${opt.value}`;
+          const Icon = opt.Icon;
 
+          return (
             <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
-                formData.service === "WEBSITE_CATALOGUE"
-                  ? "border-primary-500 bg-gray-100"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
+              key={opt.value}
+              htmlFor={id}
+              className={[
+                "relative  flex items-start gap-4 rounded-xl border  p-5 cursor-pointer transition-all",
+                "hover:shadow-sm",
+                checked
+                  ? "border-0 ring-1 ring-primary bg-blue-50"
+                  : "border-gray-200 hover:border-gray-300 bg-white",
+              ].join(" ")}
             >
+              {/* Hidden radio (card click selects) */}
               <input
+                id={id}
                 type="radio"
                 name="businessdetails.service"
-                value="WEBSITE_CATALOGUE"
-                checked={
-                  formData.businessdetails.service === "WEBSITE_CATALOGUE"
-                }
+                value={opt.value}
+                checked={checked}
                 onChange={handleInputChange}
-                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
+                className="sr-only"
               />
-              <div className="ml-3">
-                <div className="font-semibold text-gray-900">
-                  Website and Catalogue
-                </div>
-                <div className="text-sm text-gray-600">
-                  website hosting and catalogue with space 2GB
-                </div>
-              </div>
-            </label>
 
-            <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
-                formData.service === "WEBSITE_CATALOGUE_ECOMMERCE"
-                  ? "border-primary-500 bg-gray-100"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="businessdetails.service"
-                value="WEBSITE_CATALOGUE_ECOMMERCE"
-                checked={
-                  formData.businessdetails.service ===
-                  "WEBSITE_CATALOGUE_ECOMMERCE"
-                }
-                onChange={handleInputChange}
-                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
-              />
-              <div className="ml-3">
-                <div className="font-semibold text-gray-900">
-                  Website ,Catalogue and E-commerce
-                </div>
-                <div className="text-sm text-gray-600">
-                  website hosting and catalogue with e-commerce functionality
-                  with space 3GB
-                </div>
+              {/* Icon bubble */}
+              <div
+                className={[
+                  "flex h-12 w-12 items-center justify-center rounded-xl",
+                  checked ? "bg-primary-50" : "bg-gray-50",
+                ].join(" ")}
+              >
+                <Icon
+                  className={[
+                    "h-6 w-6",
+                    checked ? "text-primary-600" : "text-primary-600",
+                  ].join(" ")}
+                />
               </div>
-            </label>
-            <label
-              className={`flex items-start p-4 rounded-md border-2 cursor-pointer bg-white transition-all ${
-                formData.service === "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
-                  ? "border-primary-500 bg-gray-100"
-                  : "border-gray-200 hover:border-gray-300"
-              }`}
-            >
-              <input
-                type="radio"
-                name="businessdetails.service"
-                value="WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
-                checked={
-                  formData.businessdetails.service ===
-                  "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING"
-                }
-                onChange={handleInputChange}
-                className="mt-1 w-4 h-4 text-primary-600 focus:ring-primary-500"
-              />
-              <div className="ml-3">
-                <div className="font-semibold text-gray-900">
-                  Website ,Catalogue , E-commerce and Marketing
+
+              {/* Text */}
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900">
+                  {opt.title}
                 </div>
-                <div className="text-sm text-gray-600">
-                  website hosting and catalogue with e-commerce functionality
-                  with space 5GB and marketing
-                </div>
+                <div className="text-[11px] text-gray-500 mt-0.5">{opt.desc}</div>
               </div>
+
+              {/* Selected pill top-right */}
+              {checked && (
+                <span className="absolute right-3 top-3 rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-semibold text-primary-700 border border-primary-200">
+                  Selected
+                </span>
+              )}
             </label>
-          </div>
-        </div>
+          );
+        })}
+      </div>
+    </div>
+
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 mt-4">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -355,7 +343,11 @@ export const Businessdetails = ({
 
         
 
-          <div className="md:col-span-2">
+         
+        </div>
+      </div>
+
+       <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               About / Bio
             </label>
@@ -372,8 +364,6 @@ export const Businessdetails = ({
               {formData.businessdetails.about.length}/500 characters
             </div>
           </div>
-        </div>
-      </div>
 
       <div className="bg-white p-6 rounded-md border border-blue-100">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
