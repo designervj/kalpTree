@@ -55,6 +55,9 @@ const businessSlice = createSlice({
     setSelectedBusiness: (state, action) => {
       state.allSelectedBusiness = action.payload;
     },
+    setBusinessWebsite: (state, action) => {
+      state.businessWebsite = action.payload;
+    },
     setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
       state.currentBusiness = action.payload;
     },
@@ -266,6 +269,7 @@ export const {
   clearBusinesses,
   setCurrentBusiness,
   setSelectedBusiness,
+  setBusinessWebsite,
   setLoading,
   setError,
 } = businessSlice.actions;

@@ -1,7 +1,7 @@
 "use client"
-import { RootState } from '@/store/store'
+import { AppDispatch, RootState } from '@/store/store'
 import React, { ElementType } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { IBusiness } from '@/models/business';
+import { setBusinessWebsite } from '@/hooks/slices/business/BusinessSlice';
 
 function SiteIcon({ style }: { style?: "wp" | "code" }) {
     const isWP = style === "wp";
@@ -69,9 +70,9 @@ function PillButton({
 const ShowListOfBusiness = () => {
    const router = useRouter()
     const { allBusiness } = useSelector((state: RootState) => state.business)
-
+     const dispatch= useDispatch<AppDispatch>()
     const handleClick = (site: IBusiness) => {
-        
+        dispatch(setBusinessWebsite(site))
         router.push(`/admin/businesses/${site._id}`)
     }
     return (
