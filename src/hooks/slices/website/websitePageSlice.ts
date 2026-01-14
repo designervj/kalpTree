@@ -3,7 +3,7 @@ import axios from "axios";
 // Thunks for CRUD operations
 export const fetchWebsitePages = createAsyncThunk<
   WebsitePageModel[],
-  string,
+  string|ObjectId,
   { rejectValue: string }
 >("websitePage/fetchWebsitePages", async (websiteId, { rejectWithValue }) => {
   try {
@@ -82,6 +82,7 @@ export const deleteWebsitePage = createAsyncThunk<
   }
 });
 import { WebsitePageModel } from "../../../components/admin/website/websitePage/WebsitePageType";
+import { ObjectId } from "mongodb";
 
 interface WebsitePageState {
   websitePages: WebsitePageModel[];
