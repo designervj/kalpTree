@@ -5,7 +5,15 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { setUser } from "@/hooks/slices/user/userSlice";
-import { ShieldCheck, ArrowRight, Lock, Mail, Globe, Eye, EyeOff } from "lucide-react"; 
+import {
+  ShieldCheck,
+  ArrowRight,
+  Lock,
+  Mail,
+  Globe,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 function SignInForm() {
   const dispatch = useDispatch<AppDispatch>();
@@ -35,20 +43,25 @@ function SignInForm() {
       if (result && (result as any).error) {
         throw new Error((result as any).error || "Sign-in failed");
       }
-  console.log("cutomer login result-- ", result)
+      console.log("cutomer login result-- ", result);
       const session = await getSession();
 
       if (session?.user) {
-         console.log("cutomer login session-- ", session)
+        console.log("cutomer login session-- ", session);
         const mappedUser = {
           email: session.user.email,
           name: session.user.name,
-          tenanId:session.user.tenantId,
+          tenanId: session.user.tenantId,
           ...(session.user as any),
         };
         dispatch(setUser(mappedUser));
       }
-      router.push("/admin");
+      console.log(session);
+      if (session && ["agency", "superadmin"].includes(session?.user?.role)) {
+        router.push("/admin");
+      } else {
+        router.push("/admin/websites");
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Sign-in failed";
       setError(msg);
@@ -59,26 +72,29 @@ function SignInForm() {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background text-foreground">
-      
       {/* LEFT PANEL: Branding & Info 
           Uses bg-primary (Plum) and text-white (Gold) for contrast 
       */}
       <div className="hidden md:flex md:w-1/2 bg-primary relative overflow-hidden p-12 flex-col justify-between border-r border-border">
         {/* Decorative Background - Using Secondary (Gold/Sand) for glow */}
-     
 
         <div className="relative z-10">
           {/* Logo brightness inverted to look white on the dark primary background */}
-          <img src="/kalptree-white-logo.svg" alt="KalpTree" className="w-36 brightness-0 invert my-6" />
-          
+          <img
+            src="/kalptree-white-logo.svg"
+            alt="KalpTree"
+            className="w-36 brightness-0 invert my-6"
+          />
+
           <h2 className="text-4xl lg:text-[72px] font-bold text-primary-foreground leading-tight mb-6">
             Enterprise <br />
             {/* Using Secondary Color for Emphasis */}
             <span className="text-white">Admin Portal</span>
           </h2>
-          
+
           <p className="text-primary-foreground/80 text-lg max-w-md">
-            Secure access to your franchise management tools, white-label settings, and global analytics.
+            Secure access to your franchise management tools, white-label
+            settings, and global analytics.
           </p>
         </div>
 
@@ -98,8 +114,12 @@ function SignInForm() {
       <div className="flex-1 flex items-center justify-center p-8 lg:p-16 bg-background">
         <div className="w-full max-w-[400px]">
           <div className="mb-10 text-center md:text-left">
-            <h1 className="text-3xl font-bold text-foreground mb-2">Welcome </h1>
-            <p className="text-muted-foreground font-medium">Please enter your details to sign in.</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Welcome{" "}
+            </h1>
+            <p className="text-muted-foreground font-medium">
+              Please enter your details to sign in.
+            </p>
           </div>
 
           <form onSubmit={onSubmit} className="space-y-5">
@@ -119,7 +139,9 @@ function SignInForm() {
 
             {/* Email Input */}
             <div>
-              <label className="block text-sm font-bold text-foreground mb-2">Email Address</label>
+              <label className="block text-sm font-bold text-foreground mb-2">
+                Email Address
+              </label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input
@@ -136,8 +158,15 @@ function SignInForm() {
             {/* Password Input */}
             <div>
               <div className="flex justify-between mb-2">
-                <label className="text-sm font-bold text-foreground">Password</label>
-                <a href="#" className="text-xs font-bold text-primary hover:text-primary/80 hover:underline">Forgot?</a>
+                <label className="text-sm font-bold text-foreground">
+                  Password
+                </label>
+                <a
+                  href="#"
+                  className="text-xs font-bold text-primary hover:text-primary/80 hover:underline"
+                >
+                  Forgot?
+                </a>
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -181,7 +210,10 @@ function SignInForm() {
           </form>
 
           <p className="mt-8 text-center text-muted-foreground text-sm">
-            Don't have an account? <a href="#" className="font-bold text-primary hover:underline">Contact Admin</a>
+            Don't have an account?{" "}
+            <a href="#" className="font-bold text-primary hover:underline">
+              Contact Admin
+            </a>
           </p>
         </div>
       </div>
@@ -191,7 +223,13 @@ function SignInForm() {
 
 export default function SignInPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-background text-primary font-medium">Loading Application...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background text-primary font-medium">
+          Loading Application...
+        </div>
+      }
+    >
       <SignInForm />
     </Suspense>
   );

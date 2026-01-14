@@ -83,7 +83,8 @@ function Pill({
         "inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold",
         cls,
         className
-      )}>
+      )}
+    >
       {children}
     </span>
   );
@@ -108,11 +109,11 @@ export default function AgencyList() {
   const { toast } = useToast();
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { agencies, isAgencyLoading } = useSelector(
+  const { allAgencies, isAgencyLoading } = useSelector(
     (state: RootState) => state.agency
   );
-
-
+  const { allBusiness } = useSelector((state: RootState) => state.business);
+  console.log(allBusiness);
 
   // topbar state
   const [q, setQ] = useState("");
@@ -122,13 +123,8 @@ export default function AgencyList() {
   const [status, setStatus] = useState<string>("__all__");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name">("newest");
 
-  const data = useMemo<Agency[]>(
-    () => (agencies || []) as Agency[],
-    [agencies]
-  );
-
   const filtered = useMemo(() => {
-    let list = [...data];
+    let list = [...allAgencies];
 
     const query = q.trim().toLowerCase();
     if (query) {
@@ -153,7 +149,7 @@ export default function AgencyList() {
     });
 
     return list;
-  }, [data, q, status, sortBy]);
+  }, [allAgencies, q, status, sortBy]);
 
   const handleCreate = () => {
     if (user?.role === "superadmin") router.push("/admin/agencies/create");
@@ -228,7 +224,8 @@ export default function AgencyList() {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-14 rounded-xl px-6 text-base font-semibold">
+                  className="h-14 rounded-xl px-6 text-base font-semibold"
+                >
                   <SlidersHorizontal className="mr-2 h-5 w-5" />
                   Filters
                 </Button>
@@ -261,7 +258,8 @@ export default function AgencyList() {
                       value={sortBy}
                       onValueChange={(v) =>
                         setSortBy(v as "newest" | "oldest" | "name")
-                      }>
+                      }
+                    >
                       <SelectTrigger className="h-11">
                         <SelectValue placeholder="Newest" />
                       </SelectTrigger>
@@ -279,13 +277,15 @@ export default function AgencyList() {
                     <Button
                       variant="secondary"
                       className="flex-1"
-                      onClick={() => setFiltersOpen(false)}>
+                      onClick={() => setFiltersOpen(false)}
+                    >
                       Apply
                     </Button>
                     <Button
                       variant="outline"
                       className="flex-1"
-                      onClick={resetFilters}>
+                      onClick={resetFilters}
+                    >
                       Reset
                     </Button>
                   </div>
@@ -293,7 +293,7 @@ export default function AgencyList() {
                   <div className="text-xs text-muted-foreground">
                     Showing{" "}
                     <span className="font-semibold">{filtered.length}</span> of{" "}
-                    <span className="font-semibold">{data.length}</span>
+                    <span className="font-semibold">{allAgencies.length}</span>
                   </div>
                 </div>
               </SheetContent>
@@ -347,10 +347,15 @@ export default function AgencyList() {
               ? new Date(a.createdAt).toLocaleString()
               : "-";
 
+            const totalBusiness = allBusiness.filter((d) => {
+              return d.tenantId == a._id;
+            }).length;
+
             return (
               <Card
                 key={a._id}
-                className="rounded-xl border bg-white shadow-sm">
+                className="rounded-xl border bg-white shadow-sm"
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -359,7 +364,8 @@ export default function AgencyList() {
                         className={cn(
                           "h-16 w-16 rounded-xl grid place-items-center text-white",
                           tone
-                        )}>
+                        )}
+                      >
                         <UsersRound className="h-7 w-7" />
                       </div>
 
@@ -371,12 +377,17 @@ export default function AgencyList() {
 
                           <Link
                             href="/admin/agencies/id"
-                            className="text-slate-400 hover:text-slate-600">
+                            className="text-slate-400 hover:text-slate-600"
+                          >
                             <ExternalLink className="h-5 w-5" />
                           </Link>
 
                           <Pill variant={roleVariant(a.role)}>
                             {(a.role || "agency").toString()}
+                          </Pill>
+
+                          <Pill variant={roleVariant(String(totalBusiness))}>
+                            Total Business: {(totalBusiness || 0).toString()}
                           </Pill>
 
                           <Pill variant={statusVariant(a.status)}>
@@ -392,14 +403,16 @@ export default function AgencyList() {
                         <div className="mt-4 flex flex-wrap items-center gap-2">
                           <ShadBadge
                             variant="outline"
-                            className="h-10 rounded-xl px-4 text-sm font-semibold">
+                            className="h-10 rounded-xl px-4 text-sm font-semibold"
+                          >
                             <Mail className="mr-2 h-4 w-4" />
                             {a.email || "-"}
                           </ShadBadge>
 
                           <ShadBadge
                             variant="outline"
-                            className="h-10 rounded-xl px-4 text-sm font-semibold">
+                            className="h-10 rounded-xl px-4 text-sm font-semibold"
+                          >
                             <Calendar className="mr-2 h-4 w-4" />
                             {created}
                           </ShadBadge>
@@ -414,13 +427,15 @@ export default function AgencyList() {
                         className="h-11 rounded-xl px-5 text-sm font-semibold"
                         onClick={() =>
                           router.push(`/admin/agencies/${a._id}/settings`)
-                        }>
+                        }
+                      >
                         Settings
                       </Button>
 
                       <Button
                         className="h-11 rounded-xl px-5 text-sm font-semibold"
-                        onClick={() => handleOpen(a._id)}>
+                        onClick={() => handleOpen(String(a._id))}
+                      >
                         Open Dashboard
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
@@ -431,7 +446,8 @@ export default function AgencyList() {
                         size="icon"
                         className="h-11 w-11 rounded-xl"
                         onClick={() => handleDelete(a)}
-                        title="Delete">
+                        title="Delete"
+                      >
                         <Trash2 className="h-5 w-5 text-rose-600" />
                       </Button>
                     </div>
