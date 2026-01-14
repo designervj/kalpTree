@@ -1,7 +1,5 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
-import { IBusiness } from "@/models/business";
-import { CheckCircle2, XCircle } from "lucide-react";
+
 import ShowBussinesById from "@/components/admin/business/businessID/ShowBussinesById";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
@@ -21,20 +19,22 @@ export const BusinesswithID = () => {
   }, [businessWebsite])
 
   // Handle null case
-  if (!upadatedBusiness || !user) {
-    return (
-      <div className="p-6 text-sm text-slate-600">
-        {!user ? "User not found" : "Business not found"}
-        <GetBusinessById />
-        <GetAllWebsites/>
-      </div>
-    );
-  }
+  // if (!upadatedBusiness || !user) {
+  //   return (
+  //     <div className="p-6 text-sm text-slate-600">
+  //       {!user ? "User not found" : "Business not found"}
+  //       <GetBusinessById />
+  //       <GetAllWebsites/>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
-    
-      <ShowBussinesById user={user} business={upadatedBusiness} />
+    {user && upadatedBusiness ?( <ShowBussinesById user={user} business={upadatedBusiness} />):(
+      <h2>Loading ....</h2>
+    )
+     }
     </>
   );
 }

@@ -14,26 +14,29 @@ export async function GET(req: Request) {
 
         const { searchParams } = new URL(req.url);
         const page = Number(searchParams.get("page")) || 1;
+
+        const tenantId = searchParams.get("tenantId");
         const type = searchParams.get("type") || "business";
         console.log(type)
         const ITEMS_PER_PAGE = Number(searchParams.get("itemsperpage") || 30);
 
         const skip = (page - 1) * ITEMS_PER_PAGE;
-    
+
         const tenantcoll = await getCollection("tenants");
 
         let filter: Record<string, any> = {};
 
-        // if (user.role === "agency") {
-        //     filter.createdById = new ObjectId(user.id);
-        // }
+        if (user.role === "agency" && tenantId) {
+            filter.tenantId = new ObjectId(tenantId);
+            filter.type = "business";
+        }
 
         if (user.role === "superadmin") {
             filter.type = type;
-        }   
+        }
 
         const [businesses, totalCount] = await Promise.all([
-            tenantcoll.find(filter).skip(skip).limit(ITEMS_PER_PAGE).toArray(),
+            tenantcoll.find(filter).sort({ _id: -1 }).skip(skip).limit(ITEMS_PER_PAGE).toArray(),
             tenantcoll.countDocuments(filter),
         ]);
 

@@ -31,6 +31,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { BusinessModal } from "./BusinessModal";
 import { IUser } from "@/models/user";
+import GetAllAgency from "../../agency/GetAllAgency";
+import GetAllBusiness from "../GetAllBusiness";
+import GetAllWebsites from "../../website/GetAllWebsites";
 
 type Props = {
   business: IBusiness;
@@ -110,14 +113,18 @@ const ShowBussinesById = ({ business, user }: Props) => {
     }
     setOpen(true);
   };
-
+  console.log("user---", user)
 
   const bussinessWebsite= useMemo(()=>{
-    return websites.filter((website)=>website.tenantId===businessWebsite?.tenantId)
+    return websites.filter((website)=>website.tenantId===businessWebsite?._id)
   },[websites,businessWebsite])
- 
+   console.log("bussinessWebsite",bussinessWebsite)
   return (
     <>
+
+       <GetAllAgency />
+      <GetAllBusiness />
+      <GetAllWebsites/>
       <BusinessModal
         open={open}
         data={business}
@@ -335,16 +342,20 @@ const ShowBussinesById = ({ business, user }: Props) => {
               <CardContent className="p-5 pt-0 space-y-3">
                 {bussinessWebsite.length ? (
                   bussinessWebsite.map((w: any, idx: number) => {
+                    console.log("website www  ",w)
                     const dom = w.primaryDomain?.[0] || "—";
                     const domain = w.primaryDomain.find((d: string) =>
                       d.includes("kalptree.xyz")
                     );
+                    const agencyId = user.role==="agency"? user.tenantId?.toString() ?? null:w.tenantId?.toString() ?? null;
                     let href = toCreateHref(
                       domain,
-                      business?._id?.toString() ?? null,
-                      business?.tenantId?.toString() ?? null,
+                      w?._id?.toString() ?? null,
+                      agencyId,
                       user?.role!
                     );
+
+                    console.log("href", href);
                     return (
                       <div
                         key={`${w.name || "website"}-${idx}`}

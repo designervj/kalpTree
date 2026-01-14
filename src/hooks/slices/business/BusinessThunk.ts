@@ -70,15 +70,18 @@ export const fetchAllBusinesses = createAsyncThunk(
     {
       page = 1,
       itemsperpage = 30,
+      tenantId
     }: {
       page: number;
       itemsperpage: number;
+      tenantId?: string;
     },
+    
     { rejectWithValue }
   ) => {
     try {
       const response = await fetch(
-        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business`
+        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business&tenantId=${tenantId}`
       );
 
       if (!response.ok) {

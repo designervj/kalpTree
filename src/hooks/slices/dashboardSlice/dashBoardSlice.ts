@@ -85,7 +85,7 @@ export const savedashboardDetailsThunk = createAsyncThunk(
       const data = await response.json();
 
       if (!response.ok) throw new Error("Failed to save page");
-
+       console.log("all save dashbioard", data)
       return data;
     } catch (error) {
       // Optionally handle error (e.g., show toast)

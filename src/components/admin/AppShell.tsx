@@ -766,6 +766,7 @@ export function AppShell({
   // const isHighLevelCollapsed = !params.website ? false : true;
   // const isHighLevelCollapsed = true
   const handleSignOut = async () => {
+    debugger
     try {
       resetRedux();
       localStorage.clear();
