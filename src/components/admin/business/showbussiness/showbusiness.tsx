@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { setBusinessWebsite, setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { IBusiness } from "@/models/business";
 
 
@@ -40,7 +40,7 @@ interface Pagination {
   hasPrevPage: boolean;
 }
 
-const   ShowBusiness = () => {
+const ShowBusiness = () => {
   const { allBusiness, pagination } = useSelector(
     (state: RootState) => state.business
   );
@@ -114,9 +114,10 @@ const   ShowBusiness = () => {
 
 
   const handleOpenDashboard = (business: IBusiness) => {
-    console.log(business);
-    dispatch(setCurrentBusiness(business));
+    dispatch(setBusinessWebsite(business));
+    // setTimeout(() => {
     router.push(`/admin/businesses/${business._id}`);
+    // }, 100);
   };
   return (
     <div className="w-full space-y-6">
@@ -207,22 +208,20 @@ const   ShowBusiness = () => {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div className="flex items-start gap-5">
                   <div
-                    className={`h-12 w-12 rounded-lg grid place-items-center ${
-                      idx % 3 === 0
+                    className={`h-12 w-12 rounded-lg grid place-items-center ${idx % 3 === 0
                         ? "bg-blue-100"
                         : idx % 3 === 1
-                        ? "bg-slate-100"
-                        : "bg-purple-100"
-                    }`}
+                          ? "bg-slate-100"
+                          : "bg-purple-100"
+                      }`}
                   >
                     <span
-                      className={`text-lg font-bold ${
-                        idx % 3 === 0
+                      className={`text-lg font-bold ${idx % 3 === 0
                           ? "text-blue-600"
                           : idx % 3 === 1
-                          ? "text-slate-600"
-                          : "text-purple-600"
-                      }`}
+                            ? "text-slate-600"
+                            : "text-purple-600"
+                        }`}
                     >
                       {b.name.substring(0, 2).toUpperCase()}
                     </span>
@@ -291,11 +290,11 @@ const   ShowBusiness = () => {
                     </Link>
                   </Button>
 
-                  <Button 
-                  onClick={()=>handleOpenDashboard(b)}
+                  <Button
+                    onClick={() => handleOpenDashboard(b)}
                   >
                     {/* <Link href={`/admin/businesses/${b._id}`}> */}
-                      Open Dashboard
+                    Open Dashboard
                     {/* </Link> */}
                   </Button>
                 </div>
