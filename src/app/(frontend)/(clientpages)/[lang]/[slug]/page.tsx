@@ -43,7 +43,7 @@ export default async function PageTemplate({
     currentWebsite = {
       ...websitedata,
       _id: websitedata._id.toString(),
-      tenantId: websitedata.tenantId.toString(),
+      tenantId: websitedata.tenandId ? websitedata.tenantId.toString() : null,
     };
   }
 
@@ -60,11 +60,11 @@ export default async function PageTemplate({
     websiteId: String(website.websiteId),
   };
 
-  console.log("===>>>", currentWebsite);
-
   const EditButton = (await import("../../EditButton")).default;
 
   const name = "Himanshu";
+
+  console.log(currentWebsite)
 
   const processedHtml = html ? html.replace(/\{\{name\}\}/g, name) : "";
 

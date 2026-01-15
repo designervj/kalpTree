@@ -64,8 +64,6 @@ export default function WpAdminEditorBar({
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
-  console.log(currentWebsite)
-
   // ✅ Fix: pageData.id may not exist in your type
   const pageId =
     (pageData as any)?._id ??
@@ -74,8 +72,12 @@ export default function WpAdminEditorBar({
     "";
 
   const handleEditInBuilder = () => {
+    console.log("lang");
     dispatch(setPageEdit(pageData));
-    router.push(pageData?.slug ? `/${pageData.slug}/builder` : "/builder");
+    let lang = currentWebsite.lang ? currentWebsite.lang[0].name : "en";
+    router.push(
+      pageData?.slug ? `/${lang}/${pageData.slug}/builder` : "/builder"
+    );
   };
 
   const handleEditInAdmin = () => {

@@ -1,8 +1,19 @@
-import { Building2, MapPin, Eye, EyeOff, Globe, LayoutGrid, ShoppingCart, Megaphone } from "lucide-react";
+import {
+  Building2,
+  MapPin,
+  Eye,
+  EyeOff,
+  Globe,
+  LayoutGrid,
+  ShoppingCart,
+  Megaphone,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 import IndustryRadioList from "./IndustryRadioList";
-
-
+import { formatBrandSlug } from "@/lib/utils";
+import { useEffect } from "react";
+import { setrelatedtowebsites } from "../../../../utils/helperSet";
+import { toast } from "sonner";
 
 const SERVICE_OPTIONS = [
   {
@@ -46,7 +57,24 @@ export const Businessdetails = ({
 }: any) => {
   const path = usePathname();
 
-    const selected = formData?.businessdetails?.service ?? "";
+  useEffect(() => {
+    (async () => {
+      const req = await fetch("/api/websites");
+      const res = await req.json();
+    })();
+  }, []);
+
+  const handleCheck = async (websitename: string) => {
+    const url = `${websitename}.kalptree.xyz`;
+    console.log(url);
+    const req = await fetch("/api/websites", {
+      method: "POST",
+      body: JSON.stringify({ website: url }),
+    });
+    const res = await req.json();
+  };
+
+  const selected = formData?.businessdetails?.service ?? "";
 
   return (
     <div className="space-y-6">
@@ -123,124 +151,58 @@ export const Businessdetails = ({
 
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Brand Name
+              </label>
+              <input
+                type="text"
+                name="businessdetails.brand_name"
+                value={formData.businessdetails.brand_name}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
+                placeholder="KaplTree"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Website URL
               </label>
               <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 bg-white">
                 <input
                   type="text"
                   name="businessdetails.businsess_url"
-                  value={formData.businessdetails.businsess_url}
-                  onChange={handleInputChange}
+                  value={formatBrandSlug(formData.businessdetails.brand_name)}
+                  // onChange={handleInputChange}
                   className="flex-1 px-3 py-3 outline-none"
                   placeholder="kalptree"
+                  disabled={true}
                 />
                 <span className="px-2 text-gray-500">.kalptree.com</span>
                 <button
                   type="button"
-                  onClick={() => {
-                    console.log(
-                      "Check URL:",
-                      formData.businessdetails.businsess_url
-                    );
-                  }}
+                  onClick={() =>
+                    handleCheck(
+                      formatBrandSlug(formData.businessdetails.brand_name)
+                    )
+                  }
                   className="px-4 py-3 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
                 >
                   Check
                 </button>
               </div>
+
+              {formData.businessdetails.brand_name && (
+                <p className="mt-2">
+                  Complete URL: https://
+                  {formatBrandSlug(formData.businessdetails.brand_name)}
+                  .kalptree.xyz
+                </p>
+              )}
             </div>
           </div>
         </div>
 
-        <hr />
-   <div className="mt-4">
-      <label className="block text-sm font-semibold text-gray-700 mb-3">
-        Service Type
-      </label>
-
-      {/* 3 per row like screenshot */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {SERVICE_OPTIONS.map((opt, idx) => {
-          const checked = selected === opt.value;
-          const id = `service_${idx}_${opt.value}`;
-          const Icon = opt.Icon;
-
-          return (
-            <label
-              key={opt.value}
-              htmlFor={id}
-              className={[
-                "relative  flex items-start gap-4 rounded-xl border  p-5 cursor-pointer transition-all",
-                "hover:shadow-sm",
-                checked
-                  ? "border-0 ring-1 ring-primary bg-blue-50"
-                  : "border-gray-200 hover:border-gray-300 bg-white",
-              ].join(" ")}
-            >
-              {/* Hidden radio (card click selects) */}
-              <input
-                id={id}
-                type="radio"
-                name="businessdetails.service"
-                value={opt.value}
-                checked={checked}
-                onChange={handleInputChange}
-                className="sr-only"
-              />
-
-              {/* Icon bubble */}
-              <div
-                className={[
-                  "flex h-12 w-12 items-center justify-center rounded-xl",
-                  checked ? "bg-primary-50" : "bg-gray-50",
-                ].join(" ")}
-              >
-                <Icon
-                  className={[
-                    "h-6 w-6",
-                    checked ? "text-primary-600" : "text-primary-600",
-                  ].join(" ")}
-                />
-              </div>
-
-              {/* Text */}
-              <div className="min-w-0">
-                <div className="text-sm font-semibold text-gray-900">
-                  {opt.title}
-                </div>
-                <div className="text-[11px] text-gray-500 mt-0.5">{opt.desc}</div>
-              </div>
-
-              {/* Selected pill top-right */}
-              {checked && (
-                <span className="absolute right-3 top-3 rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-semibold text-primary-700 border border-primary-200">
-                  Selected
-                </span>
-              )}
-            </label>
-          );
-        })}
-      </div>
-    </div>
-
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2 mt-4">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Brand Name
-            </label>
-            <input
-              type="text"
-              name="businessdetails.business_name"
-              value={formData.businessdetails.business_name}
-              onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
-              placeholder="KaplTree"
-              disabled={true}
-              readOnly={true}
-            />
-          </div>
-
           <div className="md:col-span-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Tagline / Slogan
@@ -255,115 +217,109 @@ export const Businessdetails = ({
             />
           </div>
 
+          <hr className="col-span-2" />
+
           <div className="md:col-span-2">
-            {/* <label className="block text-sm font-semibold text-gray-700 mb-3">
-              Industry 
-            </label> */}
-            {/* <div className="space-y-3">
-              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <input
-                  type="radio"
-                  name="businessdetails.industry"
-                  value="Architecture"
-                  checked={formData.businessdetails.industry === "Architecture"}
-                  onChange={handleInputChange}
-                  className="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <div className="ml-3">
-                  <div className="font-medium text-gray-900">Architecture</div>
-                  <div className="text-sm text-gray-500">
-                    Design and construction services
-                  </div>
-                </div>
-              </label>
-
-              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <input
-                  type="radio"
-                  name="businessdetails.industry"
-                  value="Interior Design"
-                  checked={
-                    formData.businessdetails.industry === "Interior Design"
-                  }
-                  onChange={handleInputChange}
-                  className="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <div className="ml-3">
-                  <div className="font-medium text-gray-900">
-                    Interior Design
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    Interior space planning and decoration
-                  </div>
-                </div>
-              </label>
-
-              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <input
-                  type="radio"
-                  name="businessdetails.industry"
-                  value="Real Estate"
-                  checked={formData.businessdetails.industry === "Real Estate"}
-                  onChange={handleInputChange}
-                  className="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <div className="ml-3">
-                  <div className="font-medium text-gray-900">Real Estate</div>
-                  <div className="text-sm text-gray-500">
-                    Property sales and management
-                  </div>
-                </div>
-              </label>
-
-              <label className="flex items-start p-4 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
-                <input
-                  type="radio"
-                  name="businessdetails.industry"
-                  value="Technology"
-                  checked={formData.businessdetails.industry === "Technology"}
-                  onChange={handleInputChange}
-                  className="mt-0.5 w-4 h-4 text-indigo-600 focus:ring-indigo-500"
-                />
-                <div className="ml-3">
-                  <div className="font-medium text-gray-900">Technology</div>
-                  <div className="text-sm text-gray-500">
-                    Software and tech solutions
-                  </div>
-                </div>
-              </label>
-            </div> */}
-
             <IndustryRadioList
-            formData={formData}
-            handleInputChange={handleInputChange}
-            // industries={yourDynamicIndustryArray} // optional (if you have API data)
-          />
-
+              formData={formData}
+              handleInputChange={handleInputChange}
+              // industries={yourDynamicIndustryArray} // optional (if you have API data)
+            />
           </div>
+        </div>
 
-        
+        <hr className="col-span-2 mt-8" />
 
-         
+        <div className="mt-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Service Type
+          </label>
+
+          {/* 3 per row like screenshot */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SERVICE_OPTIONS.map((opt, idx) => {
+              const checked = selected === opt.value;
+              const id = `service_${idx}_${opt.value}`;
+              const Icon = opt.Icon;
+
+              return (
+                <label
+                  key={opt.value}
+                  htmlFor={id}
+                  className={[
+                    "relative  flex items-start gap-4 rounded-xl border  p-5 cursor-pointer transition-all",
+                    "hover:shadow-sm",
+                    checked
+                      ? "border-0 ring-1 ring-primary bg-blue-50"
+                      : "border-gray-200 hover:border-gray-300 bg-white",
+                  ].join(" ")}
+                >
+                  {/* Hidden radio (card click selects) */}
+                  <input
+                    id={id}
+                    type="radio"
+                    name="businessdetails.service"
+                    value={opt.value}
+                    checked={checked}
+                    onChange={handleInputChange}
+                    className="sr-only"
+                  />
+
+                  {/* Icon bubble */}
+                  <div
+                    className={[
+                      "flex h-12 w-12 items-center justify-center rounded-xl",
+                      checked ? "bg-primary-50" : "bg-gray-50",
+                    ].join(" ")}
+                  >
+                    <Icon
+                      className={[
+                        "h-6 w-6",
+                        checked ? "text-primary-600" : "text-primary-600",
+                      ].join(" ")}
+                    />
+                  </div>
+
+                  {/* Text */}
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold text-gray-900">
+                      {opt.title}
+                    </div>
+                    <div className="text-[11px] text-gray-500 mt-0.5">
+                      {opt.desc}
+                    </div>
+                  </div>
+
+                  {/* Selected pill top-right */}
+                  {checked && (
+                    <span className="absolute right-3 top-3 rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-semibold text-primary-700 border border-primary-200">
+                      Selected
+                    </span>
+                  )}
+                </label>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-       <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              About / Bio
-            </label>
-            <textarea
-              name="businessdetails.about"
-              value={formData.businessdetails.about}
-              onChange={handleInputChange}
-              rows={4}
-              maxLength={500}
-              className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white resize-none"
-              placeholder="KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering."
-            />
-            <div className="text-xs text-gray-500 mt-1 text-right">
-              {formData.businessdetails.about.length}/500 characters
-            </div>
-          </div>
+      <div className="md:col-span-2">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          About / Bio
+        </label>
+        <textarea
+          name="businessdetails.about"
+          value={formData.businessdetails.about}
+          onChange={handleInputChange}
+          rows={4}
+          maxLength={500}
+          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white resize-none"
+          placeholder="KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering."
+        />
+        <div className="text-xs text-gray-500 mt-1 text-right">
+          {formData.businessdetails.about.length}/500 characters
+        </div>
+      </div>
 
       <div className="bg-white p-6 rounded-md border border-blue-100">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">

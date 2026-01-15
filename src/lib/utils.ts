@@ -84,3 +84,21 @@ export const buildWebsiteHref = (
 
   return `/admin/websites/${websiteId}${clean}${final}`;
 };
+
+export function formatBrandSlug(brand: string) {
+  if (!brand) return "";
+
+  // Convert to lowercase
+  let cleaned = brand.toLowerCase();
+
+  // Replace special characters with space (keep letters & numbers)
+  cleaned = cleaned.replace(/[^a-z0-9]+/g, " ");
+
+  // Split into words
+  const words = cleaned.trim().split(/\s+/);
+
+  // Take last two meaningful parts
+  const result = words.join("-");
+
+  return result;
+}

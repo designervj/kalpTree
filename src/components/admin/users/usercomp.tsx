@@ -76,6 +76,7 @@ export default function BusinessCreatePage({
       public_email: "",
       phone: "",
       headquarters: "",
+      brand_name: "",
     },
 
     branding: {
