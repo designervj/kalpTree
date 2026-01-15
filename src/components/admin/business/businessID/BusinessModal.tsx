@@ -49,9 +49,17 @@ export const BusinessModal = ({
           invoicesEnabled: business?.features?.invoicesEnabled ?? false,
         },
       });
+    } else if (type == "createwebsite") {
+      setFormData({
+        name: "",
+        primaryDomain: [],
+        _id: "",
+        status: "",
+        systemSubdomain: "",
+        serviceType: "",
+      });
     } else {
       const website = businesswebsites?.find((d: any) => d._id === type);
-
       if (website) {
         setFormData({
           name: website.name || "",

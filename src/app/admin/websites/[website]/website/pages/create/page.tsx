@@ -1,8 +1,7 @@
 import { cookies as cookiesFn, headers as headersFn } from "next/headers";
 import PageCreator, { FieldConfig } from "@/components/admin/Creator";
 import { auth } from "@/auth";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+
 
 export default async function NewPage() {
   const session = await auth();

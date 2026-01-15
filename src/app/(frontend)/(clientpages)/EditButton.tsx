@@ -38,7 +38,13 @@ import {
   Wrench,
   Sparkles,
 } from "lucide-react";
-import { BsBoxArrowRight, BsGear, BsPersonCircle, BsSpeedometer2, BsStars } from "react-icons/bs";
+import {
+  BsBoxArrowRight,
+  BsGear,
+  BsPersonCircle,
+  BsSpeedometer2,
+  BsStars,
+} from "react-icons/bs";
 import { IUser } from "@/models/user";
 import { Website } from "@/components/admin/AppShell";
 import { useRouter } from "next/navigation";
@@ -47,24 +53,29 @@ import { AppDispatch } from "@/store/store";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 
 export default function WpAdminEditorBar({
-  pageData,user,currentWebsite
+  pageData,
+  user,
+  currentWebsite,
 }: {
   pageData: WebsitePageModel;
-  user:IUser
-  currentWebsite: Website
+  user: IUser;
+  currentWebsite: Website;
 }) {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
 
-const router= useRouter()
-  const dispatch=useDispatch<AppDispatch>()
+  console.log(currentWebsite)
 
   // ✅ Fix: pageData.id may not exist in your type
   const pageId =
-    (pageData as any)?._id ?? (pageData as any)?.id ?? (pageData as any)?.pageId ?? "";
-
+    (pageData as any)?._id ??
+    (pageData as any)?.id ??
+    (pageData as any)?.pageId ??
+    "";
 
   const handleEditInBuilder = () => {
-     dispatch(setPageEdit(pageData));
-     router.push(pageData?.slug ? `/${pageData.slug}/builder` : "/builder");
+    dispatch(setPageEdit(pageData));
+    router.push(pageData?.slug ? `/${pageData.slug}/builder` : "/builder");
   };
 
   const handleEditInAdmin = () => {
@@ -94,7 +105,10 @@ const router= useRouter()
               className="w-[28px] h-[28px]"
             />
 
-            <Separator orientation="vertical" className="h-4 bg-white/10 mx-1" />
+            <Separator
+              orientation="vertical"
+              className="h-4 bg-white/10 mx-1"
+            />
 
             {/* NEW */}
             <DropdownMenu>
@@ -216,7 +230,10 @@ const router= useRouter()
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <div>
-                  <BarIconOnly label="Search" icon={<Search className="h-4 w-4" />} />
+                  <BarIconOnly
+                    label="Search"
+                    icon={<Search className="h-4 w-4" />}
+                  />
                 </div>
               </DropdownMenuTrigger>
 
@@ -251,52 +268,52 @@ const router= useRouter()
 
               <DropdownMenuContent align="end" className="w-56">
                 {/* <Link href="/admin/dashboard"> */}
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">
-                    {currentWebsite?.name}
-                  </DropdownMenuLabel>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  {currentWebsite?.name}
+                </DropdownMenuLabel>
                 {/* </Link> */}
 
-             
-              <Link href="/admin/dashboard">
-  <DropdownMenuItem className="gap-2 font-semibold">
-    <BsSpeedometer2 className="text-[16px] opacity-90" />
-    Dashboard
-  </DropdownMenuItem>
-</Link>
+                <Link href="/admin/dashboard">
+                  <DropdownMenuItem className="gap-2 font-semibold">
+                    <BsSpeedometer2 className="text-[16px] opacity-90" />
+                    Dashboard
+                  </DropdownMenuItem>
+                </Link>
 
-<DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-<Link href="/admin/profile">
-  <DropdownMenuItem className="gap-2 font-semibold">
-    <BsPersonCircle className="text-[16px] opacity-90" />
-    Profile
-  </DropdownMenuItem>
-</Link>
+                <Link href="/admin/profile">
+                  <DropdownMenuItem className="gap-2 font-semibold">
+                    <BsPersonCircle className="text-[16px] opacity-90" />
+                    Profile
+                  </DropdownMenuItem>
+                </Link>
 
-<DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-<Link href={`/admin/websites/${pageData?.websiteId || ""}/settings`}>
-  <DropdownMenuItem className="gap-2 font-semibold">
-    <BsGear className="text-[16px] opacity-90" />
-    Website Settings
-  </DropdownMenuItem>
-</Link>
+                <Link
+                  href={`/admin/websites/${pageData?.websiteId || ""}/settings`}
+                >
+                  <DropdownMenuItem className="gap-2 font-semibold">
+                    <BsGear className="text-[16px] opacity-90" />
+                    Website Settings
+                  </DropdownMenuItem>
+                </Link>
 
-<DropdownMenuItem className="gap-2 font-semibold">
-  <BsStars className="text-[16px] opacity-90" />
-  LLM Setting:
-  <span className="ml-1 text-xs opacity-80">
-    {/* {currentLLMSetting ? "Loaded" : "Not loaded"} */}
-  </span>
-</DropdownMenuItem>
+                <DropdownMenuItem className="gap-2 font-semibold">
+                  <BsStars className="text-[16px] opacity-90" />
+                  LLM Setting:
+                  <span className="ml-1 text-xs opacity-80">
+                    {/* {currentLLMSetting ? "Loaded" : "Not loaded"} */}
+                  </span>
+                </DropdownMenuItem>
 
-<DropdownMenuSeparator />
+                <DropdownMenuSeparator />
 
-<DropdownMenuItem className="gap-2 text-red-600 font-semibold">
-  <BsBoxArrowRight className="text-[16px] opacity-90" />
-  Log Out
-</DropdownMenuItem>
-
+                <DropdownMenuItem className="gap-2 text-red-600 font-semibold">
+                  <BsBoxArrowRight className="text-[16px] opacity-90" />
+                  Log Out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -331,5 +348,3 @@ function BarIconOnly({
     </Tooltip>
   );
 }
-
-

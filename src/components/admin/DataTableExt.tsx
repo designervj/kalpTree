@@ -385,9 +385,9 @@ export function DataTableExt({
   ///admin/websites extract website
 
   const pageName = pathname.split("/")[5];
-  console.log("pageName",pageName)
+  console.log("pageName", pageName);
 
-    const handleBuilderEdit =async(
+  const handleBuilderEdit = async (
     e: React.MouseEvent,
     row: {
       slug?: string;
@@ -418,7 +418,7 @@ export function DataTableExt({
 
   return (
     <div className="space-y-4">
-      {/* <div className="flex items-center gap-2 justify-end w-full">
+      <div className="flex items-center gap-2 justify-end w-full">
         {onCreate ? (
           <Button
             size="sm"
@@ -434,7 +434,7 @@ export function DataTableExt({
             </Button>
           </Link>
         ) : null}
-      </div> */}
+      </div>
 
       <div className="flex items-center gap-2">
         <div className="flex-1">

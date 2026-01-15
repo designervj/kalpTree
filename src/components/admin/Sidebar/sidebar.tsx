@@ -91,7 +91,7 @@ export function Sidebar({
           })),
       }))
       .filter((section) => section.items.length > 0);
-  }, [hasPermission]);
+  }, [hasPermission, params, searchParams]);
 
   // open/close groups (dropdown like "Income" in screenshot)
   const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
@@ -128,8 +128,7 @@ export function Sidebar({
     <TooltipProvider>
       <div
         className={cn(
-          "relative hidden md:flex h-screen  max-h-[80vh] md:max-h-[90vh] lg:max-h-[92vh] overflow-y-auto bg-[#f5f6f7]        w-[450px]",
- 
+          "relative hidden md:flex h-screen  max-h-[80vh] md:max-h-[90vh] lg:max-h-[92vh] overflow-y-auto bg-[#f5f6f7]        w-[450px]"
         )}
       >
         {/* ✅ soft container like screenshot */}

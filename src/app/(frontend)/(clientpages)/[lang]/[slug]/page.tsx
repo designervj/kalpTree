@@ -16,7 +16,7 @@ export default async function PageTemplate({
   let websiteData = jar.get("current_website_data")?.value || null;
   let website = websiteData ? JSON.parse(websiteData) : null;
   const currentWebsiteData = jar.get("current_website")?.value || null;
-  const currentWebsite = currentWebsiteData
+  let currentWebsite = currentWebsiteData
     ? JSON.parse(currentWebsiteData)
     : null;
 
@@ -36,10 +36,15 @@ export default async function PageTemplate({
       slug: slug,
     });
 
-    if (!lang) {
+    if (!lang && websitedata.lang) {
       lang = websitedata.lang.find((d: any) => d.default == true)?.name;
     }
     website = page;
+    currentWebsite = {
+      ...websitedata,
+      _id: websitedata._id.toString(),
+      tenantId: websitedata.tenantId.toString(),
+    };
   }
 
   const html = website?.content2 ? website.content2[lang!] : website.content;
@@ -47,6 +52,15 @@ export default async function PageTemplate({
   if (!html) {
     return <NotFound />;
   }
+
+  website = {
+    ...website,
+    _id: String(website._id),
+    tenantId: String(website.tenantId),
+    websiteId: String(website.websiteId),
+  };
+
+  console.log("===>>>", currentWebsite);
 
   const EditButton = (await import("../../EditButton")).default;
 
