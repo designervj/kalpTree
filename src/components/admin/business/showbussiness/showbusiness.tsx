@@ -166,36 +166,7 @@ const ShowBusiness = () => {
       </Card>
 
       {/* Items per page selector */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Show</span>
-          <Select
-            value={String(itemsperpage)}
-            onValueChange={handleItemsPerPageChange}
-            
-          >
-            
-            <SelectTrigger className="w-[80px] bg-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              <SelectItem value="5">5</SelectItem>
-              <SelectItem value="30">30</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-              <SelectItem value="75">75</SelectItem>
-              <SelectItem value="100">100</SelectItem>
-            </SelectContent>
-          </Select>
-          <span className="text-sm text-muted-foreground">per page</span>
-        </div>
-
-        {pagination.totalCount > 0 && (
-          <div className="text-sm text-muted-foreground">
-            Showing {startIndex} to {endIndex} of {pagination.totalCount}{" "}
-            {pagination.totalCount === 1 ? "business" : "businesses"}
-          </div>
-        )}
-      </div>
+     
 
       {/* Business List */}
       <div className="space-y-4">
@@ -302,6 +273,38 @@ const ShowBusiness = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+
+       <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Show</span>
+          <Select
+            value={String(itemsperpage)}
+            onValueChange={handleItemsPerPageChange}
+            
+          >
+            
+            <SelectTrigger className="w-[80px] bg-white">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-white">
+              <SelectItem value="5">5</SelectItem>
+              <SelectItem value="30">30</SelectItem>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="75">75</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+            </SelectContent>
+          </Select>
+          <span className="text-sm text-muted-foreground">per page</span>
+        </div>
+
+        {pagination.totalCount > 0 && (
+          <div className="text-sm text-muted-foreground">
+            Showing {startIndex} to {endIndex} of {pagination.totalCount}{" "}
+            {pagination.totalCount === 1 ? "business" : "businesses"}
+          </div>
+        )}
       </div>
 
       {/* Pagination Controls */}

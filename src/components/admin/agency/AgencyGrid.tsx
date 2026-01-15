@@ -271,7 +271,7 @@ export default function AgencyList() {
   return (
     <div className="w-full space-y-4">
       {/* Top bar (Search + Filters) */}
-      <Card className="rounded-xl border bg-white shadow-sm">
+      <Card className="rounded-xl border bg-white shadow-sm py-2">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             {/* Search */}
@@ -284,16 +284,16 @@ export default function AgencyList() {
                   setPage(1);
                 }}
                 placeholder="Search"
-                className="h-14 rounded-xl pl-12 text-base"
+                className="h-11 rounded-md pl-12 text-base"
               />
             </div>
 
             {/* Filters */}
             <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <SheetTrigger asChild>
-                <Button
+                <Button 
                   variant="outline"
-                  className="h-14 rounded-xl px-6 text-base font-semibold"
+                  className="h-11 rounded-md px-6 text-base font-semibold"
                 >
                   <SlidersHorizontal className="mr-2 h-5 w-5" />
                   Filters
@@ -315,8 +315,8 @@ export default function AgencyList() {
                         setPage(1);
                       }}
                     >
-                      <SelectTrigger className="h-11">
-                        <SelectValue placeholder="All" />
+                      <SelectTrigger className="h-11 w-full">
+                        <SelectValue placeholder="All " />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="__all__">All</SelectItem>
@@ -336,7 +336,7 @@ export default function AgencyList() {
                         setPage(1);
                       }}
                     >
-                      <SelectTrigger className="h-11">
+                      <SelectTrigger className="h-11 w-full">
                         <SelectValue placeholder="Newest" />
                       </SelectTrigger>
                       <SelectContent>
@@ -351,7 +351,7 @@ export default function AgencyList() {
 
                   <div className="flex items-center gap-2">
                     <Button
-                      variant="secondary"
+                    
                       className="flex-1"
                       onClick={() => setFiltersOpen(false)}
                     >
@@ -383,7 +383,7 @@ export default function AgencyList() {
         {isAgencyLoading ? (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="rounded-xl border bg-white shadow-sm">
+              <Card key={i} className="rounded-xl border bg-white shadow-sm py-0 p-0">
                 <CardContent className="p-6">
                   <div className="h-6 w-52 rounded bg-muted" />
                   <div className="mt-3 h-4 w-80 rounded bg-muted" />
