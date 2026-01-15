@@ -19,7 +19,7 @@ import {
 
 export default function RootClientPage() {
   const router = useRouter();
-  const { user } = useSelector((state: RootState) => state.user);
+  const user = useSelector((state: RootState) => state.user.user);
 
   const handleLogin = () => {
     if (user) router.push("/admin");
@@ -207,19 +207,19 @@ export default function RootClientPage() {
               quote="The level of customization KalpTree offers is unmatched. We managed to stay 100% on-brand while scaling to 40 new locations."
               author="Sarah Jenkins"
               role="CTO @ BuildRight"
-              // Image="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=6d455a&color=fff"
+            // Image="https://ui-avatars.com/api/?name=Sarah+Jenkins&background=6d455a&color=fff"
             />
             <TestimonialCard
               quote="Security was our top priority. The RBAC architecture here is robust, granular, and incredibly easy to manage globally."
               author="Michael Chen"
               role="Operations Head @ LuxHome"
-              // image="https://ui-avatars.com/api/?name=Michael+Chen&background=6d455a&color=fff"
+            // image="https://ui-avatars.com/api/?name=Michael+Chen&background=6d455a&color=fff"
             />
             <TestimonialCard
               quote="Finally, a dashboard that understands architectural aesthetics. It's not just a tool; it's a premium experience for our team."
               author="Elena Rodriguez"
               role="Design Director @ ArchiGroup"
-              // Image="https://ui-avatars.com/api/?name=Elena+R&background=6d455a&color=fff"
+            // Image="https://ui-avatars.com/api/?name=Elena+R&background=6d455a&color=fff"
             />
           </div>
         </div>

@@ -20,6 +20,7 @@ import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/W
 import { IBusiness } from "@/models/business";
 import { useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { setCurrentHeader } from "@/hooks/slices/header/HeaderSlice";
 
 export const UpperBar = () => {
 
@@ -86,7 +87,7 @@ export const UpperBar = () => {
 
   const handleAgencyChange = (agencyId: string) => {
     const agency = agencies.find(a => a._id?.toString() === agencyId);
-
+     dispatch(setCurrentHeader(null));
     dispatch(setCurretAgency(agency || null));
 
     const allBus = allBusiness.filter(item => item.tenantId === agency?._id)

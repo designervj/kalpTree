@@ -48,9 +48,10 @@ import {
 import { IUser } from "@/models/user";
 import { Website } from "@/components/admin/AppShell";
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
+import { fetchCurrentHeaders } from "@/hooks/slices/header/HeaderThunk";
 
 export default function WpAdminEditorBar({
   pageData,
@@ -86,6 +87,16 @@ export default function WpAdminEditorBar({
     // router.push(`/admin/websites/pages/${pageId}`);
   };
 
+    const { currentHeader } = useSelector((state: RootState) => state.header);
+
+        React.useEffect(() => {
+            if (currentHeader == null &&
+                currentWebsite &&
+                currentWebsite._id &&
+                currentWebsite.tenantId) {
+                dispatch(fetchCurrentHeaders({ tenantId: currentWebsite.tenantId , websiteId: currentWebsite._id     }));
+            }
+        }, [currentHeader, currentWebsite]);
   return (
     <TooltipProvider delayDuration={120}>
       <header

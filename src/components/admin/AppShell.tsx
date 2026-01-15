@@ -83,7 +83,7 @@ import { Sidebar } from "./Sidebar/sidebar";
 import { Topbar } from "./Sidebar/topbar";
 import { MobileSidebar } from "./Sidebar/mobileSidebar";
 import { HighLevelSidebar } from "./Sidebar/highlevelsidebar";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "../ui/button";
 import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
@@ -755,7 +755,7 @@ export function AppShell({
   );
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
-
+ const router = useRouter();
   React.useEffect(() => {
     if (currentBusiness && currentBusiness._id) {
       setIsHighLevelCollapsed(true);
@@ -771,14 +771,14 @@ export function AppShell({
       resetRedux();
       localStorage.clear();
       sessionStorage.clear();
-
-      const res = await fetch("/api/appshell-data", {
-        method: "POST",
-      });
-      const result = await res.json();
-      if (result.success) {
-        await signOut({ callbackUrl: "/", redirect: true });
-      }
+      router.push("/");
+      // const res = await fetch("/api/appshell-data", {
+      //   method: "POST",
+      // });
+      // const result = await res.json();
+      // if (result.success) {
+      //   await signOut({ callbackUrl: "/", redirect: true });
+      // }
     } catch (error) {
       console.error("Error during sign out:", error);
       await signOut({ callbackUrl: "/" });
