@@ -9,6 +9,11 @@ export interface IBusiness {
   subscriptionStatus: "active" | "paused" | "cancelled";
   customDomainVerified: boolean;
   branding?: {
+    primary_color?: string;
+    secondary_color?: string;
+    tertiary_color?: string;
+    typography?: string;
+    logo?: string;
     colors?: {
       primary?: string;
       secondary?: string;
@@ -32,28 +37,26 @@ export interface IBusiness {
   createdById: string;
   type?: "business" | "franchise" | "agency";
   tenantId?: string;
-    websitesCount?: number;
+  websitesCount?: number;
   membersCount?: number;
-  websites?: Array<{ 
+  websites?: Array<{
     name?: string;
     primaryDomain?: string[];
     serviceType?: string;
     status?: string;
     createdAt?: string;
     updatedAt?: string;
-  
   }>;
-  businessdetails?:BussinessDetailModel
+  businessdetails?: BussinessDetailModel;
 }
 
-
-export interface BussinessDetailModel{
-  business_website_url:string
-  tagline:string
-  industry:string
-  founded_year:string
-  about:string
-  public_email:string
-phone:string
-headquarters:string
+export interface BussinessDetailModel {
+  business_website_url: string;
+  tagline: string;
+  industry: string;
+  founded_year: string;
+  about: string;
+  public_email: string;
+  phone: string;
+  headquarters: string;
 }
