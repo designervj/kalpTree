@@ -101,6 +101,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
     (state: RootState) => state.websites
   );
   const { businessWebsite } = useSelector((state: RootState) => state.business);
+  const {curretAgency} = useSelector((state: RootState) => state.agency);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const primary = business.branding?.colors?.primary || "#111827";
@@ -353,7 +354,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     const agencyId =
                       user.role === "agency"
                         ? user.tenantId?.toString() ?? null
-                        : w.tenantId?.toString() ?? null;
+                        : w._id?.toString() ?? null;
                     let href = toCreateHref(
                       domain,
                       w?._id?.toString() ?? null,

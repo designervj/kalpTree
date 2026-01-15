@@ -18,18 +18,41 @@ import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
 import { setCurrentBusiness, setSelectedBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { IBusiness } from "@/models/business";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export const UpperBar = () => {
 
-
-
-  const { user } = useSelector((state: RootState) => state.user)
+ const { user } = useSelector((state: RootState) => state.user)
   const { agencies, curretAgency } = useSelector((state: RootState) => state.agency)
   const { allBusiness, currentBusiness, allSelectedBusiness } = useSelector((state: RootState) => state.business)
   const { websites, currentWebsite, selectedWebsites } = useSelector((state: RootState) => state.websites)
   const dispatch = useDispatch<AppDispatch>();
 
+
+  const pathName = usePathname()
+  console.log("pathName", pathName)
+  const searchParams = useSearchParams()
+  const agencyId = searchParams.get("agencyid")
+  const businessId = searchParams.get("businessid")
+  console.log("agencyId", agencyId)
+  console.log("businessId", businessId)
+
+  useEffect(() => {
+    if (agencyId && agencies  && agencies.length > 0) {
+       console.log("agencyId-->", agencyId)
+       console.log("agencies-->", agencies)
+      const currentAgency = agencies.find(a => a._id === agencyId)
+      console.log("currentAgency----", currentAgency)
+      if (currentAgency) {
+        dispatch(setCurretAgency(currentAgency))
+      
+   
+    }
+  }
+  }, [agencyId,agencies])
+
+ 
 
   const updatedAllBusiness= useMemo(() => {
     return allSelectedBusiness
