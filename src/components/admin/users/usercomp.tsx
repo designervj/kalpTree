@@ -17,6 +17,7 @@ import Link from "next/link";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { formatBrandSlug } from "@/lib/utils";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
@@ -67,8 +68,7 @@ export default function BusinessCreatePage({
       password: "",
       service: "ECOMMERCE",
       business_name: "",
-      businsess_url: "",
-      business_website_url: "",
+      business_url: "",
       tagline: "",
       industry: "Architecture",
       founded_year: "2023",
@@ -77,6 +77,7 @@ export default function BusinessCreatePage({
       phone: "",
       headquarters: "",
       brand_name: "",
+      lang: [],
     },
 
     branding: {
@@ -106,6 +107,14 @@ export default function BusinessCreatePage({
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
 
+    if (name == "businessdetails.brand_name") {
+      let newvalu = formatBrandSlug(value);
+      console.log(newvalu);
+      const cloned = structuredClone(formData);
+      cloned.businessdetails.business_url = newvalu;
+      setFormData(cloned);
+    }
+
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setFormData((prev: any) => ({
@@ -118,27 +127,16 @@ export default function BusinessCreatePage({
       return;
     }
 
-    if (name === "business_name") {
-      if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
+    // if (name === "agency_name") {
+    //   if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
 
-      setFormData((prev: any) => ({
-        ...prev,
-        business_name: value,
-        businsess_url: slugify(value),
-      }));
-      return;
-    }
-
-    if (name === "agency_name") {
-      if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
-
-      setFormData((prev: any) => ({
-        ...prev,
-        agency_name: value,
-        agency_url_suffix: slugify(value),
-      }));
-      return;
-    }
+    //   setFormData((prev: any) => ({
+    //     ...prev,
+    //     agency_name: value,
+    //     agency_url_suffix: slugify(value),
+    //   }));
+    //   return;
+    // }
 
     if (type === "file") {
       const file = files?.[0];

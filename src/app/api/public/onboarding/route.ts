@@ -20,8 +20,24 @@ export async function POST(req: Request) {
       formData.get("businessdetails") as string
     );
 
-    const { email, password, service, business_name, businsess_url, tenantId } =
-      businessdetails;
+    const {
+      email,
+      password,
+      service,
+      business_name,
+      business_website_url,
+      tagline,
+      industry,
+      founded_year,
+      about,
+      public_email,
+      phone,
+      headquarters,
+      brand_name,
+      tenantId,
+      lang,
+      business_url,
+    } = businessdetails;
 
     const branding = JSON.parse(formData.get("branding") as string);
     const logo = formData.get("logo") as File | null;
@@ -45,7 +61,16 @@ export async function POST(req: Request) {
         plan: "trial",
         createdById: createdById,
         branding: branding,
-        businessdetails: businessdetails,
+        businessdetails: {
+          tagline,
+          industry,
+          founded_year,
+          about,
+          public_email,
+          phone,
+          headquarters,
+          brand_name,
+        },
         type: "agency",
       });
 
@@ -98,7 +123,16 @@ export async function POST(req: Request) {
       plan: "trial",
       createdById: createdById,
       branding: branding,
-      businessdetails: businessdetails,
+      businessdetails: {
+        tagline,
+        industry,
+        founded_year,
+        about,
+        public_email,
+        phone,
+        headquarters,
+        brand_name,
+      },
       type: "business",
       tenantId: createByTenant,
     });
@@ -142,24 +176,15 @@ export async function POST(req: Request) {
       tenantId: tenant._id,
     });
 
-    const urlDefault = businsess_url
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, "")
-      .replace(/\s+/g, "-");
-
-    const primaryDomain = [
-      `${urlDefault}.localhost:55803`,
-      `${urlDefault}.kalptree.xyz`,
-      businsess_url,
-    ];
+    const primaryDomain = [`${business_url}.kalptree.xyz`];
 
     const website = await websiteService.create({
       tenantId: tenant._id,
       name: business_name,
       serviceType: service ?? "WEBSITE_ONLY",
       primaryDomain: primaryDomain,
-      systemSubdomain: `${urlDefault}.kalptree.xyz`,
+      systemSubdomain: `${business_url}.kalptree.xyz`,
+      lang,
     });
 
     return NextResponse.json({

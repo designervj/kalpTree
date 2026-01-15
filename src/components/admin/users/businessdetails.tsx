@@ -7,13 +7,17 @@ import {
   LayoutGrid,
   ShoppingCart,
   Megaphone,
+  CheckCheck,
+  X,
+  CircleDotDashed,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import IndustryRadioList from "./IndustryRadioList";
 import { formatBrandSlug } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { setrelatedtowebsites } from "../../../../utils/helperSet";
 import { toast } from "sonner";
+import { LanguageSelector } from "./languageSupport";
 
 const SERVICE_OPTIONS = [
   {
@@ -65,14 +69,19 @@ export const Businessdetails = ({
   }, []);
 
   const handleCheck = async (websitename: string) => {
+    if (!websitename) {
+      return;
+    }
     const url = `${websitename}.kalptree.xyz`;
-    console.log(url);
     const req = await fetch("/api/websites", {
       method: "POST",
       body: JSON.stringify({ website: url }),
     });
     const res = await req.json();
+    setChecked(res.success);
   };
+
+  const [checked, setChecked] = useState<null | Boolean>(null);
 
   const selected = formData?.businessdetails?.service ?? "";
 
@@ -164,31 +173,63 @@ export const Businessdetails = ({
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 mb-2">
                 Website URL
+                {
+                  {
+                    true: (
+                      <>
+                        <CheckCheck className="text-green-600" size={16} />
+                        <span className="text-xs font-medium text-green-600">
+                          Website available
+                        </span>
+                      </>
+                    ),
+                    false: (
+                      <>
+                        <X className="text-red-600" size={16} />
+                        <span className="text-xs font-medium text-red-600">
+                          Website already exists
+                        </span>
+                      </>
+                    ),
+                    pending: (
+                      <CircleDotDashed className="text-orange-500" size={16} />
+                    ),
+                  }[
+                    checked === true
+                      ? "true"
+                      : checked === false
+                      ? "false"
+                      : "pending"
+                  ]
+                }
               </label>
+
               <div className="flex items-center border border-gray-300 rounded-md overflow-hidden focus-within:ring-2 focus-within:ring-primary-500 bg-white">
                 <input
                   type="text"
                   name="businessdetails.businsess_url"
-                  value={formatBrandSlug(formData.businessdetails.brand_name)}
+                  value={formData.businessdetails.business_url}
                   // onChange={handleInputChange}
                   className="flex-1 px-3 py-3 outline-none"
                   placeholder="kalptree"
                   disabled={true}
                 />
                 <span className="px-2 text-gray-500">.kalptree.com</span>
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleCheck(
-                      formatBrandSlug(formData.businessdetails.brand_name)
-                    )
-                  }
-                  className="px-4 py-3 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
-                >
-                  Check
-                </button>
+                {!checked && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleCheck(
+                        formatBrandSlug(formData.businessdetails.brand_name)
+                      )
+                    }
+                    className="px-4 py-3.5 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
+                  >
+                    Check
+                  </button>
+                )}
               </div>
 
               {formData.businessdetails.brand_name && (
@@ -301,6 +342,13 @@ export const Businessdetails = ({
             })}
           </div>
         </div>
+
+        <hr className="col-span-2 mt-8" />
+
+        <LanguageSelector
+          formData={formData}
+          handleInputChange={handleInputChange}
+        />
       </div>
 
       <div className="md:col-span-2">

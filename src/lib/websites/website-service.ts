@@ -29,6 +29,7 @@ export interface WebsiteDoc {
   };
   createdAt: Date;
   updatedAt: Date;
+  lang: any[];
 }
 
 function slugify(input: string) {
@@ -167,6 +168,7 @@ export class WebsiteService {
     serviceType: string;
     primaryDomain?: string[] | null;
     systemSubdomain?: string;
+    lang: any[];
   }) {
     const c = await this.col();
     const tid =
@@ -186,6 +188,7 @@ export class WebsiteService {
       createdAt: now,
       updatedAt: now,
       systemSubdomain: params.systemSubdomain,
+      lang: params.lang,
     };
     const r = await c.insertOne(doc as WebsiteDoc);
     return { ...doc, _id: r.insertedId } as WebsiteDoc;
