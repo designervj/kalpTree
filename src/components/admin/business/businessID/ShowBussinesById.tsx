@@ -34,6 +34,7 @@ import { IUser } from "@/models/user";
 import GetAllAgency from "../../agency/GetAllAgency";
 import GetAllBusiness from "../GetAllBusiness";
 import GetAllWebsites from "../../website/GetAllWebsites";
+import { Website } from "../../AppShell";
 
 type Props = {
   business: IBusiness;
@@ -100,8 +101,8 @@ const ShowBussinesById = ({ business, user }: Props) => {
   const { hasfetched, websites } = useSelector(
     (state: RootState) => state.websites
   );
-  const { businessWebsite } = useSelector((state: RootState) => state.business);
-  const {curretAgency} = useSelector((state: RootState) => state.agency);
+  const { businessWebsite ,allBusiness} = useSelector((state: RootState) => state.business);
+  const {curretAgency, allAgencies} = useSelector((state: RootState) => state.agency);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const primary = business.branding?.colors?.primary || "#111827";
@@ -117,11 +118,20 @@ const ShowBussinesById = ({ business, user }: Props) => {
     setOpen(true);
   };
 
-  const bussinessWebsite = useMemo(() => {
+  const bussinessWebsite : Website[] = useMemo(() => {
     return websites.filter(
       (website) => website.tenantId === businessWebsite?._id
     );
   }, [websites, businessWebsite]);
+
+console.log("bussinessWebsite--->",bussinessWebsite)
+  const currentAgencyId = useMemo(() => {
+    if(bussinessWebsite &&bussinessWebsite.length > 0 && allBusiness && allBusiness.length > 0 ){
+       return allBusiness.find((agency) => agency._id=== bussinessWebsite[0]?.tenantId)?.tenantId;
+    }
+  
+  }, [bussinessWebsite, allBusiness]);
+
 
   return (
     <>
@@ -354,10 +364,10 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     const agencyId =
                       user.role === "agency"
                         ? user.tenantId?.toString() ?? null
-                        : w._id?.toString() ?? null;
+                        : currentAgencyId ?? null;
                     let href = toCreateHref(
                       domain,
-                      w?._id?.toString() ?? null,
+                      w?.tenantId?.toString() ?? null,
                       agencyId,
                       user?.role!
                     );

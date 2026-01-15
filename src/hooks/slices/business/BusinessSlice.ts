@@ -253,7 +253,7 @@ const businessSlice = createSlice({
             (item: IBusiness) => item.tenantId === agencies[0]._id
           );
           state.allSelectedBusiness = allBus;
-          state.currentBusiness = allBus[0];
+           state.currentBusiness = allBus[0];
           state.hasFetchedBusiness = true;
         }
       })

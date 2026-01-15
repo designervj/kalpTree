@@ -1,6 +1,6 @@
 "use client";
 
-import LLMHome from '@/components/admin/settingsI/integration/llm/LLMHome';
+import LLMHome from '@/components/admin/settings/integration/llm/LLMHome';
 
 export default function LLMIntegrationPage() {
   return (
