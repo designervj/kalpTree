@@ -126,6 +126,9 @@ export type Website = {
   systemSubdomain?: string;
   serviceType: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
+  lang?: [
+    {name: string; code: string}
+  ];
 };
 
 export type User = {

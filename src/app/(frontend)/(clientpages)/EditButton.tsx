@@ -75,7 +75,7 @@ export default function WpAdminEditorBar({
   const handleEditInBuilder = () => {
     console.log("lang");
     dispatch(setPageEdit(pageData));
-    let lang = currentWebsite.lang ? currentWebsite.lang[0].name : "en";
+    let lang = currentWebsite?.lang ? currentWebsite.lang[0].name : "en";
     router.push(
       pageData?.slug ? `/${lang}/${pageData.slug}/builder` : "/builder"
     );
