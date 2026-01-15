@@ -1,5 +1,6 @@
-import LLmForm from '@/components/admin/settingsI/integration/llm/form/LLmForm'
-import React from 'react'
+"use client"
+
+import LLmForm from "@/components/admin/settings/integration/llm/form/LLmForm"
 
 const page = () => {
   return (
@@ -7,4 +8,4 @@ const page = () => {
   )
 }
 
-export default page
+export default page 

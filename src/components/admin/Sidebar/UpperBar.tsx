@@ -19,44 +19,60 @@ import { setCurrentBusiness, setSelectedBusiness } from "@/hooks/slices/business
 import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { IBusiness } from "@/models/business";
 import { useEffect, useMemo } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const UpperBar = () => {
 
- const { user } = useSelector((state: RootState) => state.user)
+  const { user } = useSelector((state: RootState) => state.user)
   const { agencies, curretAgency } = useSelector((state: RootState) => state.agency)
   const { allBusiness, currentBusiness, allSelectedBusiness } = useSelector((state: RootState) => state.business)
   const { websites, currentWebsite, selectedWebsites } = useSelector((state: RootState) => state.websites)
   const dispatch = useDispatch<AppDispatch>();
 
 
+  const router = useRouter()
   const pathName = usePathname()
   console.log("pathName", pathName)
   const searchParams = useSearchParams()
   const agencyId = searchParams.get("agencyid")
   const businessId = searchParams.get("businessid")
-  console.log("agencyId", agencyId)
-  console.log("businessId", businessId)
+
 
   useEffect(() => {
-    if (agencyId && agencies  && agencies.length > 0) {
-       console.log("agencyId-->", agencyId)
-       console.log("agencies-->", agencies)
+    if (agencyId &&
+      agencies &&
+      agencies.length > 0 &&
+      businessId &&
+      allBusiness &&
+      allBusiness.length > 0 &&
+      websites &&
+      websites.length > 0
+    ) {
+
       const currentAgency = agencies.find(a => a._id === agencyId)
-      console.log("currentAgency----", currentAgency)
+
       if (currentAgency) {
         dispatch(setCurretAgency(currentAgency))
-      
-   
+        const currentBusiness = allBusiness.find(b => b._id === businessId)
+
+        if (currentBusiness) {
+          dispatch(setCurrentBusiness(currentBusiness))
+        }
+        const currentWebsite = websites.find(w => w.tenantId === currentBusiness?._id)
+
+        if (currentWebsite) {
+          dispatch(setCurrentWebsite(currentWebsite))
+        }
+
+      }
     }
-  }
-  }, [agencyId,agencies])
+  }, [agencyId, agencies, businessId, allBusiness, websites])
 
- 
 
-  const updatedAllBusiness= useMemo(() => {
+
+  const updatedAllBusiness = useMemo(() => {
     return allSelectedBusiness
-  }, [allSelectedBusiness, ])
+  }, [allSelectedBusiness,])
 
 
   const updatedAllWebsites = useMemo(() => {
@@ -74,27 +90,41 @@ export const UpperBar = () => {
     dispatch(setCurretAgency(agency || null));
 
     const allBus = allBusiness.filter(item => item.tenantId === agency?._id)
-    console.log("allBus", allBus)
-     if (allBus.length === 1) {
+
+    if (allBus.length === 1) {
       dispatch(setSelectedBusiness(allBus))
-      dispatch(setCurrentBusiness(allBus[0]))
+     // dispatch(setCurrentBusiness(allBus[0]))
       const allWeb = websites.filter(item => item.tenantId === allBus[0]?._id)
-      console.log("allWeb", allWeb)
       if (allWeb) {
         dispatch(setSelectedWebsite(allWeb))
-        dispatch(setCurrentWebsite(allWeb[0]))
+         
+        //dispatch(setCurrentWebsite(allWeb[0]))
       }
+
+      // Update URL search params
+const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
+   
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('agencyid', agencyId)
+      params.set('businessid', allBus[0]._id?.toString() || '')
+
+router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)
     }
-   else  if (allBus.length > 1) {
+    else if (allBus.length > 1) {
       dispatch(setSelectedBusiness(allBus))
-      dispatch(setCurrentBusiness(allBus[0]))
+     // dispatch(setCurrentBusiness(allBus[0]))
       const allWeb = websites.filter(item => item.tenantId === allBus[0]?.tenantId)
-      console.log("allWeb", allWeb)
       if (allWeb) {
         dispatch(setSelectedWebsite(allWeb))
-        dispatch(setCurrentWebsite(allWeb[0]))
+       // dispatch(setCurrentWebsite(allWeb[0]))
       }
-    } 
+const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
+      // Update URL search params
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('agencyid', agencyId)
+      params.set('businessid', allBus[0]._id?.toString() || '')
+      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)
+    }
   }
 
   const handleBusinessChange = (tenantId: string) => {
