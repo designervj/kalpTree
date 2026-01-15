@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LLMModel, GPTModels } from "../type/LLMModel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,41 +9,47 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { toast } from "sonner";
+import { createLLMSetting } from "@/hooks/slices/setting/llmSetting/LLMSettingThunk";
+import { useRouter } from "next/navigation";
 
-interface LLMFormProps {
-  initialData?: LLMModel;
-  onSubmit: (data: LLMModel) => void | Promise<void>;
-  onCancel?: () => void;
-  isLoading?: boolean;
-}
 
-const LLmForm: React.FC<LLMFormProps> = ({
-  initialData,
-  onSubmit,
-  onCancel,
-  isLoading = false,
-}) => {
+
+const LLmForm = () => {
   const [formData, setFormData] = useState<LLMModel>({
-    name: initialData?.name || "",
-    secreteKey: initialData?.secreteKey || "",
-    isActive: initialData?.isActive ?? true,
-    model: initialData?.model || "",
+    name: "",
+    secreteKey: "",
+    isActive: true,
+    model: "",
   });
-
+  const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof LLMModel, string>>>({});
   const { user } = useSelector((state: RootState) => state.user);
-  const currentWebsite = useSelector((state: RootState) => state.websites.currentWebsite);
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentLLMSetting } = useSelector((state: RootState) => state.llmSetting);
   // Test API Key states
   const [testPrompt, setTestPrompt] = useState("");
   const [testResult, setTestResult] = useState("");
   const [isTestLoading, setIsTestLoading] = useState(false);
   const [testStatus, setTestStatus] = useState<"idle" | "success" | "error">("idle");
-
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
   const LLMModelType = ["ChatGPT", "Gemini"];
 
+
+  useEffect(() => {
+    if (currentLLMSetting) {
+      setFormData({
+        name: currentLLMSetting.name || "",
+        secreteKey: currentLLMSetting.secreteKey || "",
+        isActive: currentLLMSetting.isActive ?? true,
+        model: currentLLMSetting.model || "",
+      });
+    }
+  }, [currentLLMSetting]);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -109,26 +115,35 @@ const LLmForm: React.FC<LLMFormProps> = ({
   };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validate()) {
       return;
     }
-    
-    if (!currentWebsite?._id) {
-      setErrors((prev) => ({
-        ...prev,
-        name: "No website selected",
-      }));
-      return;
-    }
-    
+    // Validation ensures name and secreteKey are not empty strings
     const data = {
-      ...formData, 
+      name: formData.name!,
+      secreteKey: formData.secreteKey!,
       tenantId: user?.tenantId,
-      websiteId: currentWebsite._id
+      ...(formData.model && { model: formData.model }),
+      ...(formData.isActive !== undefined && { isActive: formData.isActive }),
     };
-    
-    await onSubmit(data);
+
+    try {
+      setIsLoading(true);
+
+
+      const respone = await dispatch(createLLMSetting(data)).unwrap();
+      if (respone && respone.success) {
+        toast('LLM model updated successfully');
+        router.push('/admin/settings/integrations/llm');
+      }
+
+    } catch (error) {
+      console.error('Error saving LLM model:', error);
+      toast('Failed to update LLM model');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleTestAPI = async () => {
@@ -178,10 +193,13 @@ const LLmForm: React.FC<LLMFormProps> = ({
     }
   };
 
+  const onCancel = () => {
+    router.push('/admin/settings/integrations/llm');
+  }
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle>{initialData?._id ? "Edit LLM Model" : "Add LLM Model"}</CardTitle>
+        <CardTitle>{"Add LLM Model"}</CardTitle>
         <CardDescription>
           Configure your Language Model settings
         </CardDescription>
@@ -322,13 +340,12 @@ const LLmForm: React.FC<LLMFormProps> = ({
 
             {/* Test Result Section */}
             {(testStatus !== "idle" || testResult) && (
-              <div className={`p-4 rounded-md border ${
-                testStatus === "success" 
-                  ? "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800" 
-                  : testStatus === "error"
+              <div className={`p-4 rounded-md border ${testStatus === "success"
+                ? "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"
+                : testStatus === "error"
                   ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
                   : "bg-muted"
-              }`}>
+                }`}>
                 <div className="flex items-start gap-2">
                   {testStatus === "success" && (
                     <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
@@ -337,22 +354,20 @@ const LLmForm: React.FC<LLMFormProps> = ({
                     <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                   )}
                   <div className="flex-1">
-                    <h5 className={`text-sm font-medium mb-1 ${
-                      testStatus === "success" 
-                        ? "text-green-900 dark:text-green-100" 
-                        : testStatus === "error"
+                    <h5 className={`text-sm font-medium mb-1 ${testStatus === "success"
+                      ? "text-green-900 dark:text-green-100"
+                      : testStatus === "error"
                         ? "text-red-900 dark:text-red-100"
                         : ""
-                    }`}>
+                      }`}>
                       {testStatus === "success" ? "Success" : testStatus === "error" ? "Error" : "Result"}
                     </h5>
-                    <p className={`text-sm whitespace-pre-wrap ${
-                      testStatus === "success" 
-                        ? "text-green-800 dark:text-green-200" 
-                        : testStatus === "error"
+                    <p className={`text-sm whitespace-pre-wrap ${testStatus === "success"
+                      ? "text-green-800 dark:text-green-200"
+                      : testStatus === "error"
                         ? "text-red-800 dark:text-red-200"
                         : "text-muted-foreground"
-                    }`}>
+                      }`}>
                       {testResult}
                     </p>
                   </div>
@@ -374,7 +389,7 @@ const LLmForm: React.FC<LLMFormProps> = ({
             </Button>
           )}
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Saving..." : initialData?._id ? "Update" : "Save"}
+            {isLoading ? "Saving..." : "Save"}
           </Button>
         </CardFooter>
       </form>

@@ -1,4 +1,5 @@
-import LLmForm from '@/components/admin/settingsI/integration/llm/form/LLmForm'
+
+import LLmForm from '@/components/admin/settings/integration/llm/form/LLmForm'
 import React from 'react'
 
 const page = () => {

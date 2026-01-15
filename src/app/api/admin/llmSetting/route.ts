@@ -37,8 +37,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = new ObjectId(session.user.id);
-    const tenantId = new ObjectId(session.user.tenantId);
     const body = await request.json();
 
     // Validate required fields
@@ -55,10 +53,8 @@ export async function POST(request: NextRequest) {
       name: body.name,
        model:body.model,
       secreteKey: body.secreteKey,
-      tenantId,
-      websiteId:body.websiteId,
-     
-      createdBy: userId,
+      tenantId:body.tenantId, 
+      createdBy: session?.user?.id,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -82,9 +78,8 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = new ObjectId(session.user.id);
-    const tenantId = new ObjectId(session.user.tenantId);
     const body = await request.json();
+    const tenantId = body.tenantId;
 
     if (!body._id) {
       return NextResponse.json({ error: 'LLM setting ID is required' }, { status: 400 });
@@ -94,7 +89,7 @@ export async function PUT(request: NextRequest) {
     
     const updateData: any = {
       updatedAt: new Date(),
-      updatedBy: userId,
+      updatedBy: session?.user?.id,
     };
 
     if (body.name) updateData.name = body.name;
@@ -123,9 +118,8 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const tenantId = new ObjectId(session.user.tenantId);
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
+   const body= await request.json();
+   const id= body.id;
 
     if (!id) {
       return NextResponse.json({ error: 'LLM setting ID is required' }, { status: 400 });
@@ -135,7 +129,6 @@ export async function DELETE(request: NextRequest) {
     
     const result = await db.collection(COLLECTION_NAME).deleteOne({
       _id: new ObjectId(id),
-      tenantId,
     });
 
     if (result.deletedCount === 0) {
