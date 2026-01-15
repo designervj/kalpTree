@@ -6,7 +6,7 @@ import { AppDispatch } from '@/store/store';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-const Page = ({ params }: { params: { id: string } }) => {
+const Page = () => {
     // const dispatch = useDispatch<AppDispatch>();
 
     // useEffect(() => {
