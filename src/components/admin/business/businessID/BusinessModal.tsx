@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { X } from "lucide-react";
 
 import {
   Dialog,
@@ -13,39 +12,45 @@ import { Button } from "@/components/ui/button";
 
 interface ModalProps {
   open: boolean;
-  data: any;
+  business: any;
   onClose: () => void;
   type: string | null;
+  businesswebsites: any;
 }
 
-export const BusinessModal = ({ open, data, onClose, type }: ModalProps) => {
+export const BusinessModal = ({
+  open,
+  business,
+  businesswebsites,
+  onClose,
+  type,
+}: ModalProps) => {
   const [formData, setFormData] = React.useState<any>(null);
-
   React.useEffect(() => {
-    if (!data || !open) return;
+    if (!business || !open) return;
 
     // RESET when type changes
     setFormData(null);
 
     if (type === "business") {
       setFormData({
-        name: data.name || "",
-        email: data.email || "",
-        plan: data.plan || "trial",
-        status: data.status || "active",
+        name: business.name || "",
+        email: business.email || "",
+        plan: business.plan || "trial",
+        status: business.status || "active",
         branding: {
-          primary: data?.branding?.colors?.primary || "#3b82f6",
-          secondary: data?.branding?.colors?.secondary || "#f4e04f",
+          primary: business?.branding?.colors?.primary || "#3b82f6",
+          secondary: business?.branding?.colors?.secondary || "#f4e04f",
         },
         features: {
-          websiteEnabled: data?.features?.websiteEnabled ?? false,
-          ecommerceEnabled: data?.features?.ecommerceEnabled ?? false,
-          blogEnabled: data?.features?.blogEnabled ?? false,
-          invoicesEnabled: data?.features?.invoicesEnabled ?? false,
+          websiteEnabled: business?.features?.websiteEnabled ?? false,
+          ecommerceEnabled: business?.features?.ecommerceEnabled ?? false,
+          blogEnabled: business?.features?.blogEnabled ?? false,
+          invoicesEnabled: business?.features?.invoicesEnabled ?? false,
         },
       });
     } else {
-      const website = data.websites?.find((d: any) => d._id === type);
+      const website = businesswebsites?.find((d: any) => d._id === type);
 
       if (website) {
         setFormData({
@@ -58,9 +63,9 @@ export const BusinessModal = ({ open, data, onClose, type }: ModalProps) => {
         });
       }
     }
-  }, [data, open, type]);
 
-  console.log(data, formData);
+    () => setFormData({});
+  }, [business, open, businesswebsites, type]);
 
   if (!formData) return null;
 
@@ -86,8 +91,7 @@ export const BusinessModal = ({ open, data, onClose, type }: ModalProps) => {
       let url = "";
       let res;
       if (type == "business") {
-        url = `/api/admin/business/${data._id}`;
-
+        url = `/api/admin/business/${business._id}`;
         const req = await fetch(url, {
           method: "PUT",
           body: JSON.stringify(formData),
@@ -101,7 +105,6 @@ export const BusinessModal = ({ open, data, onClose, type }: ModalProps) => {
           method: "PUT",
           body: JSON.stringify(formData),
         });
-
         res = await req.json();
       }
 
