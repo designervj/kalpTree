@@ -4,6 +4,7 @@ import React from "react";
 import { Plus, Trash2, ArrowRight } from "lucide-react";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Page() {
   const redirects = [
@@ -29,51 +30,18 @@ export default function Page() {
           {/* <h1 className="text-3xl font-semibold">Redirects</h1> */}
           <BreadCrumbPage />
           <p className="text-gray-500 mt-1">
-            Manage URL redirects for your website
+            Manage URL redirects for your website 
           </p>
         </div>
 
-        <Button >
+       <Link href="/admin/website/redirects/create">
+       <Button >
           <Plus size={18} />
-          Add Redirect
-        </Button>
+          Add Redirect 
+        </Button></Link>
       </div>
 
-      {/* ADD REDIRECT FORM */}
-      <div className="bg-white border rounded-xl p-6 mb-8 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">
-          Create New Redirect
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <input
-            type="text"
-            placeholder="/from-url"
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <div className="flex items-center justify-center text-gray-400">
-            <ArrowRight />
-          </div>
-
-          <input
-            type="text"
-            placeholder="/to-url"
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-
-          <select className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option>301 Permanent</option>
-            <option>302 Temporary</option>
-          </select>
-        </div>
-
-        <div className="mt-4 text-right">
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-            Save Redirect
-          </button>
-        </div>
-      </div>
+     
 
       {/* REDIRECTS TABLE */}
       <div className="bg-white border rounded-xl shadow-sm overflow-hidden">

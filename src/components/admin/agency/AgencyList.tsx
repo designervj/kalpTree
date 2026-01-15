@@ -86,7 +86,7 @@ const AgencyList = () => {
         </div>
       </div>
 
-      <Tabs defaultValue="account">
+      {/* <Tabs defaultValue="account">
         <TabsList className="flex justify-end items-center me-auto">
           <TabsTrigger value="account">List</TabsTrigger>
           <TabsTrigger value="password">Grid</TabsTrigger>
@@ -105,7 +105,9 @@ const AgencyList = () => {
         <TabsContent value="password">
           <AgencyGrid />
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
+
+         <AgencyGrid />
     </>
   );
 };

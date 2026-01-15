@@ -174,6 +174,7 @@ const ShowBusiness = () => {
             onValueChange={handleItemsPerPageChange}
             
           >
+            
             <SelectTrigger className="w-[80px] bg-white">
               <SelectValue />
             </SelectTrigger>

@@ -170,31 +170,31 @@ export const currentWebsiteSections: NavSection[] = [
       { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
       {
         label: "Analytics",
-        href: "/admin/analytics",
+        href: "/admin/overview/analytics",
         icon: BarChart3,
         permission: "dashboard:update",
       },
       {
         label: "Activity Log",
-        href: "/admin/activity-log",
+        href: "/admin/overview/activity-log",
         icon: Activity,
         permission: "analytics:read",
       },
       {
         label: "Notifications",
-        href: "/admin/notifications",
+        href: "/admin/overview/notifications",
         icon: Bell,
         permission: "security:read",
       },
       {
         label: "System Health",
-        href: "/admin/system-health",
+        href: "/admin/overview/system-health",
         icon: HeartPulse,
         permission: "security:read",
       },
       {
         label: "Quick Actions",
-        href: "/admin/quick-actions",
+        href: "/admin/overview/quick-actions",
         icon: Zap,
         permission: "security:read",
       },
@@ -954,7 +954,7 @@ export function AppShell({
 
         <div className="flex  flex-col w-full">
           <div className=" px-3 py-4 md:px-6 md:py-6 overflow-auto ">
-            <div className="mx-auto ">{children}</div>
+            <div className="mx-auto">{children}</div>
           </div>
         </div>
 
