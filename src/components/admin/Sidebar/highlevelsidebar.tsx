@@ -46,6 +46,7 @@ import { Button } from "@/components/ui/button";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 
 const navigationItems = [
   { id: "home", label: "Home", icon: Home, href: "/admin" },
@@ -215,21 +216,49 @@ export function HighLevelSidebar({
 
 
   return (
+    <>
+   
     <div
       className={cn(
         "relative hidden md:flex h-screen transition-all duration-200 flex-shrink-0",
-        collapsed ? "w-[84px]" : "w-[320px]"
+        collapsed ? "w-[84px]" : "w-[280px]"
       )}
     >
+
+     
+
       <div className="w-full">
         <div
           className={cn(
             "h-full border",
-            "bg-[var(--admin-sidebar-bg)] text-[color:var(--admin-sidebar-fg)]",
+            "bg-[var(--admin-sidebar-bg)] text-[color:var(--admin-sidebar-fg)] relative",
             "border-[color:var(--admin-sidebar-border)]",
             "shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
           )}
         >
+
+               <div >
+            
+                  <button
+              
+                       onClick={() => setCollapsed((v) => !v)}
+                       className={cn(
+                         " rounded-full transition  absolute bottom-[150px] z-50 -right-5 bg-primary w-10 h-10 hover:bg-primary w-[40px] h-[40px] border-none",
+                         collapsed
+                           ? "h-10 flex items-center justify-center"
+                           : "h-10 flex items-center justify-between px-3"
+                       )}
+                     >
+                       <span className="text-black/70">
+                         {collapsed ? (
+                           <GoSidebarExpand size={15} className="text-white"/>
+                         ) : (
+                           <GoSidebarCollapse size={15} className="text-white" />
+                         )}
+                       </span>
+                     </button>
+               </div>
+
           <div className="flex h-[93vh] flex-col">
             {/* Navigation */}
             <div
@@ -531,5 +560,6 @@ export function HighLevelSidebar({
         </div>
       </div>
     </div>
+    </>
   );
 }

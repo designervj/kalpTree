@@ -146,7 +146,7 @@ const agencySlice = createSlice({
       .addCase(fetchSingleAgency.fulfilled, (state, action) => {
         const data = action.payload;
         state.allAgencies=[data]
-        state.curretAgency = data;
+        // state.curretAgency = data;
          state.hasfetched = true;
       })
       .addCase(fetchSingleAgency.rejected, (state, action) => {
