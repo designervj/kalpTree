@@ -39,9 +39,10 @@ import {
   Mail,
   Calendar,
   ArrowRight,
-  MoreVertical,
   Trash2,
   ExternalLink,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -113,7 +114,6 @@ export default function AgencyList() {
     (state: RootState) => state.agency
   );
   const { allBusiness } = useSelector((state: RootState) => state.business);
-  console.log(allBusiness);
 
   // topbar state
   const [q, setQ] = useState("");
@@ -123,34 +123,107 @@ export default function AgencyList() {
   const [status, setStatus] = useState<string>("__all__");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name">("newest");
 
+  // =========================
+  // Pagination state (ADDED)
+  // =========================
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(30);
+
   const filtered = useMemo(() => {
-    let list = [...allAgencies];
-
-    const query = q.trim().toLowerCase();
-    if (query) {
-      list = list.filter((a) => {
-        const name = (a.name || "").toLowerCase();
-        const email = (a.email || "").toLowerCase();
-        return name.includes(query) || email.includes(query);
-      });
-    }
-
-    if (status !== "__all__") {
-      list = list.filter((a) => (a.status || "").toLowerCase() === status);
-    }
-
-    list.sort((a, b) => {
-      if (sortBy === "name") {
-        return String(a.name || "").localeCompare(String(b.name || ""));
+      let list = [...(allAgencies || [])] as Agency[];
+  
+      const query = q.trim().toLowerCase();
+      if (query) {
+        list = list.filter((a: Agency) => {
+          const name = (a.name || "").toLowerCase();
+          const email = (a.email || "").toLowerCase();
+          return name.includes(query) || email.includes(query);
+        });
       }
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return sortBy === "newest" ? bTime - aTime : aTime - bTime;
-    });
+  
+      if (status !== "__all__") {
+        list = list.filter((a: Agency) => (a.status || "").toLowerCase() === status);
+      }
+  
+      list.sort((a: Agency, b: Agency) => {
+        if (sortBy === "name") {
+          return String(a.name || "").localeCompare(String(b.name || ""));
+        }
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return sortBy === "newest" ? bTime - aTime : aTime - bTime;
+      });
+  
+      return list;
+    }, [allAgencies, q, status, sortBy]);
 
-    return list;
-  }, [allAgencies, q, status, sortBy]);
+  // =========================
+  // Pagination derived values
+  // =========================
+  const pagination = useMemo(() => {
+    const totalCount = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(totalCount / itemsPerPage));
+    const safePage = Math.min(Math.max(page, 1), totalPages);
 
+    const startIndex0 = totalCount === 0 ? 0 : (safePage - 1) * itemsPerPage;
+    const endIndex0 = Math.min(startIndex0 + itemsPerPage, totalCount);
+
+    return {
+      page: safePage,
+      perPage: itemsPerPage,
+      totalCount,
+      totalPages,
+      hasPrevPage: safePage > 1,
+      hasNextPage: safePage < totalPages,
+      startIndex0,
+      endIndex0,
+    };
+  }, [filtered.length, itemsPerPage, page]);
+
+  const startIndex = pagination.totalCount === 0 ? 0 : pagination.startIndex0 + 1;
+  const endIndex = pagination.endIndex0;
+
+  const paginatedList = useMemo(() => {
+    return filtered.slice(pagination.startIndex0, pagination.endIndex0);
+  }, [filtered, pagination.startIndex0, pagination.endIndex0]);
+
+  const handleItemsPerPageChange = (value: string) => {
+    const n = Number(value);
+    setItemsPerPage(Number.isFinite(n) && n > 0 ? n : 30);
+    setPage(1);
+  };
+
+  const handlePageChange = (next: number) => {
+    setPage(Math.min(Math.max(1, next), pagination.totalPages));
+  };
+
+  const getPageNumbers = () => {
+    const total = pagination.totalPages;
+    const current = pagination.page;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+    const pages: (number | "...")[] = [];
+    const add = (p: number | "...") => pages.push(p);
+
+    add(1);
+
+    const left = Math.max(2, current - 1);
+    const right = Math.min(total - 1, current + 1);
+
+    if (left > 2) add("...");
+
+    for (let p = left; p <= right; p++) add(p);
+
+    if (right < total - 1) add("...");
+
+    add(total);
+
+    return pages;
+  };
+
+  // =========================
+  // Existing actions
+  // =========================
   const handleCreate = () => {
     if (user?.role === "superadmin") router.push("/admin/agencies/create");
     else {
@@ -192,19 +265,12 @@ export default function AgencyList() {
   const resetFilters = () => {
     setStatus("__all__");
     setSortBy("newest");
+    setPage(1);
   };
 
-  // {agencies .map((b, idx) => {
-  // const planBadge = getPlanBadge(b.plan);
-  // const statusBadge = getStatusBadge(b.status);
-  // const subtext = getSubtext(b.type);
-  // const href = `/admin/agencies/${b._id}`;
-
   return (
-    <div className="w-full space-y-4 ">
-      {/* Page header row */}
-
-      {/* Top bar (Search + Filters) — like your screenshot */}
+    <div className="w-full space-y-4">
+      {/* Top bar (Search + Filters) */}
       <Card className="rounded-xl border bg-white shadow-sm">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
@@ -213,7 +279,10 @@ export default function AgencyList() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  setPage(1);
+                }}
                 placeholder="Search"
                 className="h-14 rounded-xl pl-12 text-base"
               />
@@ -239,7 +308,13 @@ export default function AgencyList() {
                 <div className="mt-6 space-y-5">
                   <div className="space-y-2">
                     <Label>Status</Label>
-                    <Select value={status} onValueChange={setStatus}>
+                    <Select
+                      value={status}
+                      onValueChange={(v) => {
+                        setStatus(v);
+                        setPage(1);
+                      }}
+                    >
                       <SelectTrigger className="h-11">
                         <SelectValue placeholder="All" />
                       </SelectTrigger>
@@ -256,9 +331,10 @@ export default function AgencyList() {
                     <Label>Sort</Label>
                     <Select
                       value={sortBy}
-                      onValueChange={(v) =>
-                        setSortBy(v as "newest" | "oldest" | "name")
-                      }
+                      onValueChange={(v) => {
+                        setSortBy(v as "newest" | "oldest" | "name");
+                        setPage(1);
+                      }}
                     >
                       <SelectTrigger className="h-11">
                         <SelectValue placeholder="Newest" />
@@ -303,7 +379,7 @@ export default function AgencyList() {
       </Card>
 
       {/* List */}
-      <div className="space-y-4 border-2 ">
+      <div className="space-y-4 border-0">
         {isAgencyLoading ? (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
@@ -341,21 +417,17 @@ export default function AgencyList() {
             </CardContent>
           </Card>
         ) : (
-          filtered.map((a, idx) => {
+          // ✅ Only change here: use paginatedList instead of filtered
+          paginatedList.map((a, idx) => {
             const tone = idx % 2 === 0 ? "bg-[#0b6d8e]" : "bg-slate-900";
-            const created = a.createdAt
-              ? new Date(a.createdAt).toLocaleString()
-              : "-";
+            const created = a.createdAt ? new Date(a.createdAt).toLocaleString() : "-";
 
-            const totalBusiness = allBusiness.filter((d) => {
+            const totalBusiness = (allBusiness || []).filter((d: any) => {
               return d.tenantId == a._id;
             }).length;
 
             return (
-              <Card
-                key={a._id}
-                className="rounded-xl border bg-white shadow-sm"
-              >
+              <Card key={a._id} className="rounded-xl border bg-white shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -386,7 +458,7 @@ export default function AgencyList() {
                             {(a.role || "agency").toString()}
                           </Pill>
 
-                          <Pill variant={roleVariant(String(totalBusiness))}>
+                          <Pill variant="neutral">
                             Total Business: {(totalBusiness || 0).toString()}
                           </Pill>
 
@@ -425,9 +497,7 @@ export default function AgencyList() {
                       <Button
                         variant="outline"
                         className="h-11 rounded-xl px-5 text-sm font-semibold"
-                        onClick={() =>
-                          router.push(`/admin/agencies/${a._id}/settings`)
-                        }
+                        onClick={() => router.push(`/admin/agencies/${a._id}/settings`)}
                       >
                         Settings
                       </Button>
@@ -458,6 +528,92 @@ export default function AgencyList() {
           })
         )}
       </div>
+
+      {/* ✅ Bottom bar (same screenshot style): Show X per page + Showing A to B of N businesses */}
+      {!isAgencyLoading && filtered.length > 0 && (
+        <div className="flex items-center justify-between pt-2">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Show</span>
+            <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+              <SelectTrigger className="w-[90px] bg-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="75">75</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
+            <span className="text-sm text-muted-foreground">per page</span>
+          </div>
+
+          {pagination.totalCount > 0 && (
+            <div className="text-sm text-muted-foreground">
+              Showing {startIndex} to {endIndex} of {pagination.totalCount}{" "}
+              {pagination.totalCount === 1 ? "business" : "businesses"}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ✅ Pagination Controls */}
+      {!isAgencyLoading && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="text-sm text-muted-foreground">
+            Page {pagination.page} of {pagination.totalPages}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={!pagination.hasPrevPage}
+              className="rounded-md"
+            >
+              <ChevronLeft className="h-4 w-4 mr-1" />
+              Previous
+            </Button>
+
+            <div className="flex items-center gap-1">
+              {getPageNumbers().map((p, idx) => {
+                if (p === "...") {
+                  return (
+                    <span key={`ellipsis-${idx}`} className="px-2 text-muted-foreground">
+                      ...
+                    </span>
+                  );
+                }
+
+                return (
+                  <Button
+                    key={p}
+                    variant={pagination.page === p ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => handlePageChange(p as number)}
+                    className="rounded-md w-10 h-10 p-0"
+                  >
+                    {p}
+                  </Button>
+                );
+              })}
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={!pagination.hasNextPage}
+              className="rounded-md"
+            >
+              Next
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

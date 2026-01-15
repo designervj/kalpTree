@@ -15,7 +15,7 @@ export default function Page() {
       </div>
 
       {/* FORM CARD */}
-      <div className="max-w-3xl bg-white rounded-2xl border shadow-sm p-8">
+      <div className=" bg-white rounded-2xl border shadow-sm p-8">
         <h2 className="text-xl font-semibold mb-6">
           Contact Form
         </h2>

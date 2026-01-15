@@ -22,7 +22,7 @@ export default function Page() {
       </div>
 
       {/* MAIN GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
         {/* LEFT – IMAGE UPLOAD */}
         <div className="bg-white rounded-xl border p-6">
@@ -62,11 +62,14 @@ export default function Page() {
           </button>
         </div>
 
-        {/* RIGHT – DETECTED SEGMENTS */}
-        <div className="bg-white rounded-xl border p-6">
+     
+      </div>
+
+         {/* RIGHT – DETECTED SEGMENTS */}
+        <div className="bg-white rounded-xl border p-6 mt-6">
           <h2 className="font-semibold mb-4 flex items-center gap-2">
             <Layers size={18} />
-            Detected Segments
+            Detected Segments 
           </h2>
 
           <div className="space-y-3">
@@ -87,7 +90,7 @@ export default function Page() {
             Clear Segments
           </button>
         </div>
-      </div>
+
     </div>
   );
 }
