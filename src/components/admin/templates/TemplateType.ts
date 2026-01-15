@@ -4,7 +4,7 @@ import { ObjectId } from 'mongodb';
  * Template document schema for MongoDB "templates" collection
  */
 export interface TemplateDocument {
-    _id?: ObjectId;
+    _id?: ObjectId | string;
     id?: string;
     slug?: string;
     templateId?: string;
@@ -18,11 +18,15 @@ export interface TemplateDocument {
     attributes?: Record<string, any>;
     thumbnail?: string | null;
     version?: string;
+    // Multi-tenant fields
+    tenantId?: ObjectId | string;
+    websiteId?: ObjectId | string;
+    createdBy?: ObjectId | string;
     // Metadata
     status?: 'active' | 'inactive' | 'draft';
     isPublic?: boolean;
     isPremium?: boolean;
-    tags?: string;
+    tags?: string[];
     notes?: string;
     // Timestamps
     createdAt?: Date;

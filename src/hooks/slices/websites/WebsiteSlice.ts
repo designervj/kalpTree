@@ -72,7 +72,7 @@ const websitesSlice = createSlice({
           const allwebsites = websites.filter((item: Website) => item.tenantId === business[0]?._id)
           if (allwebsites) {
             state.selectedWebsites = allwebsites
-            state.currentWebsite = allwebsites[0]
+           // state.currentWebsite = allwebsites[0]
           }
         }
       })

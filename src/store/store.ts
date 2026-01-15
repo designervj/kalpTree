@@ -15,23 +15,26 @@ import agencyReducer from "../hooks/slices/user/agencySlice";
 import rolePermissionReducer from "../hooks/slices/RolePermissions/rolePermissionSlice";
 import businessReducer from "../hooks/slices/business/BusinessSlice";
 import templateReducer from "../hooks/slices/templates/TemplateSlice";
-
+import headerReducer from "../hooks/slices/header/HeaderSlice";
 export const store = configureStore({
   reducer: {
     user: userSlice,
     agency: agencyReducer,
     business: businessReducer,
+    websites: websitesReducer,
+    websitePage: websitePageReducer,
+    header: headerReducer,
     pageEdit: pageEditReducer,
     category: categoryReducer,
     brand: brandReducer,
     template: templateReducer,
     attribute: attributeReducer,
     product: productReducer,
-    websites: websitesReducer,
+   
     tenants: tenantsReducer,
     llmSetting: llmSettingReducer,
     block: BlockReducer,
-    websitePage: websitePageReducer,
+
     rolePermission: rolePermissionReducer,
     account: accountReducer,
   },

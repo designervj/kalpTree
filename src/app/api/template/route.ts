@@ -50,9 +50,10 @@ export async function GET(req: NextRequest) {
             const templates = await TemplateService.getTemplatesByCategory(category);
             return NextResponse.json({ templates });
         }
-
+  
         // Fetch all active public templates
         const templates = await TemplateService.getAllTemplates();
+        console.log("template --", templates.length)
         return NextResponse.json({ templates });
     } catch (error) {
         console.error('GET /api/template error:', error);

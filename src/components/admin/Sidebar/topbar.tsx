@@ -42,12 +42,12 @@ export function Topbar({
   const router = useRouter();
 
   const handleSignOut = async () => {
-    debugger;
+  
     try {
       resetRedux();
       localStorage.clear();
       sessionStorage.clear();
-      router.push("/");
+       router.push("/");
 
       // const res = await fetch("/api/appshell-data", {
       //   method: "POST",

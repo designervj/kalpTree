@@ -2,6 +2,7 @@ import { getCollection } from "@/app/api/tenants/[id]/route";
 import NotFound from "@/app/not-found";
 import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
+import RenderHtml from "./RenderHtml";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -67,7 +68,7 @@ export default async function PageTemplate({
   console.log(currentWebsite)
 
   const processedHtml = html ? html.replace(/\{\{name\}\}/g, name) : "";
-
+     console.log("my html ---",processedHtml)
   return (
     <div>
       <EditButton
@@ -75,10 +76,7 @@ export default async function PageTemplate({
         currentWebsite={currentWebsite}
         user={session?.user || {}}
       />
-      <div
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: processedHtml }}
-      />
+      <RenderHtml html={processedHtml} />
     </div>
   );
 }
