@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 
 
 
-const LLmForm = ({ id }: { id?: string }) => {
+const LLmForm = () => {
   const [formData, setFormData] = useState<LLMModel>({
     name: "",
     secreteKey: "",
@@ -124,7 +124,7 @@ const LLmForm = ({ id }: { id?: string }) => {
       setIsLoading(true);
 
       // Check if we're in edit mode (id exists and currentLLMSetting has _id)
-      const isEditMode = id && currentLLMSetting?._id;
+      const isEditMode =  currentLLMSetting?._id;
 
       if (isEditMode) {
         // Update existing LLM setting
