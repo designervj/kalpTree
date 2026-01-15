@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
-import { createLLMSetting, updateLLMSetting } from "@/hooks/slices/setting/llmSetting/LLMSettingThunk";
+import { createLLMSetting } from "@/hooks/slices/setting/llmSetting/LLMSettingThunk";
 import { useRouter } from "next/navigation";
 
 
@@ -119,46 +119,28 @@ const LLmForm = () => {
     if (!validate()) {
       return;
     }
+    // Validation ensures name and secreteKey are not empty strings
+    const data = {
+      name: formData.name!,
+      secreteKey: formData.secreteKey!,
+      tenantId: user?.tenantId,
+      ...(formData.model && { model: formData.model }),
+      ...(formData.isActive !== undefined && { isActive: formData.isActive }),
+    };
 
     try {
       setIsLoading(true);
 
-      // Check if we're in edit mode (id exists and currentLLMSetting has _id)
-      const isEditMode =  currentLLMSetting?._id;
 
-      if (isEditMode) {
-        // Update existing LLM setting
-        const updateData = {
-          _id: currentLLMSetting._id as string,
-          name: formData.name!,
-          secreteKey: formData.secreteKey!,
-          tenantId: user?.tenantId,
-          ...(formData.model && { model: formData.model }),
-          ...(formData.isActive !== undefined && { isActive: formData.isActive }),
-        };
-
-        const response = await dispatch(updateLLMSetting(updateData)).unwrap();
+      const respone = await dispatch(createLLMSetting(data)).unwrap();
+      if (respone && respone.success) {
         toast('LLM model updated successfully');
         router.push('/admin/settings/integrations/llm');
-      } else {
-        // Create new LLM setting
-        const createData = {
-          name: formData.name!,
-          secreteKey: formData.secreteKey!,
-          tenantId: user?.tenantId,
-          ...(formData.model && { model: formData.model }),
-          ...(formData.isActive !== undefined && { isActive: formData.isActive }),
-        };
-
-        const response = await dispatch(createLLMSetting(createData)).unwrap();
-        if (response && response.success) {
-          toast('LLM model created successfully');
-          router.push('/admin/settings/integrations/llm');
-        }
       }
+
     } catch (error) {
       console.error('Error saving LLM model:', error);
-      toast('Failed to save LLM model');
+      toast('Failed to update LLM model');
     } finally {
       setIsLoading(false);
     }
