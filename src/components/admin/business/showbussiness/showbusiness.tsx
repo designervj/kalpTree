@@ -172,11 +172,12 @@ const ShowBusiness = () => {
           <Select
             value={String(itemsperpage)}
             onValueChange={handleItemsPerPageChange}
+            
           >
-            <SelectTrigger className="w-[80px]">
+            <SelectTrigger className="w-[80px] bg-white">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               <SelectItem value="5">5</SelectItem>
               <SelectItem value="30">30</SelectItem>
               <SelectItem value="50">50</SelectItem>

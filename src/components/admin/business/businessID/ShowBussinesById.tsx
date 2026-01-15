@@ -97,8 +97,10 @@ const ROLE_MAP = {
 
 type Role = keyof typeof ROLE_MAP;
 const ShowBussinesById = ({ business, user }: Props) => {
-  const {hasfetched, websites}= useSelector((state: RootState)=>state.websites)
-  const {businessWebsite}= useSelector((state:RootState)=>state.business)
+  const { hasfetched, websites } = useSelector(
+    (state: RootState) => state.websites
+  );
+  const { businessWebsite } = useSelector((state: RootState) => state.business);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const primary = business.branding?.colors?.primary || "#111827";
@@ -113,21 +115,22 @@ const ShowBussinesById = ({ business, user }: Props) => {
     }
     setOpen(true);
   };
-  console.log("user---", user)
 
-  const bussinessWebsite= useMemo(()=>{
-    return websites.filter((website)=>website.tenantId===businessWebsite?._id)
-  },[websites,businessWebsite])
-   console.log("bussinessWebsite",bussinessWebsite)
+  const bussinessWebsite = useMemo(() => {
+    return websites.filter(
+      (website) => website.tenantId === businessWebsite?._id
+    );
+  }, [websites, businessWebsite]);
+
   return (
     <>
-
-       <GetAllAgency />
+      <GetAllAgency />
       <GetAllBusiness />
-      <GetAllWebsites/>
+      <GetAllWebsites />
       <BusinessModal
         open={open}
-        data={business}
+        business={business}
+        businesswebsites={bussinessWebsite}
         onClose={() => setOpen(false)}
         type={modal}
       />
@@ -342,12 +345,15 @@ const ShowBussinesById = ({ business, user }: Props) => {
               <CardContent className="p-5 pt-0 space-y-3">
                 {bussinessWebsite.length ? (
                   bussinessWebsite.map((w: any, idx: number) => {
-                    console.log("website www  ",w)
+                    console.log("website www  ", w);
                     const dom = w.primaryDomain?.[0] || "—";
                     const domain = w.primaryDomain.find((d: string) =>
                       d.includes("kalptree.xyz")
                     );
-                    const agencyId = user.role==="agency"? user.tenantId?.toString() ?? null:w.tenantId?.toString() ?? null;
+                    const agencyId =
+                      user.role === "agency"
+                        ? user.tenantId?.toString() ?? null
+                        : w.tenantId?.toString() ?? null;
                     let href = toCreateHref(
                       domain,
                       w?._id?.toString() ?? null,
@@ -374,7 +380,10 @@ const ShowBussinesById = ({ business, user }: Props) => {
                               >
                                 {w.serviceType || "—"}
                               </Badge>
-                              <Badge onClick={() => handleOpenModal(w._id)}>
+                              <Badge
+                                className="cursor-pointer"
+                                onClick={() => handleOpenModal(w._id)}
+                              >
                                 Edit
                               </Badge>
                             </div>

@@ -33,7 +33,7 @@ export default async function PageTemplate({
 
     let websitedata = await websiteColl.findOne({
       primaryDomain: {
-        $in: [host],
+        $in: [host],  
       },
     });
     let page = await pagecoll.findOne({
@@ -65,3 +65,4 @@ export default async function PageTemplate({
     </div>
   );
 }
+
