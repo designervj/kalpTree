@@ -132,6 +132,7 @@ export async function POST(req: Request) {
         phone,
         headquarters,
         brand_name,
+        business_website_url
       },
       type: "business",
       tenantId: createByTenant,

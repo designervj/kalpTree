@@ -13,6 +13,9 @@ export default async function PageTemplate({
   const param = await params;
   const header = await headers();
   const host = header.get("host");
+
+  console.log(host);
+
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
   let website = websiteData ? JSON.parse(websiteData) : null;
@@ -32,6 +35,7 @@ export default async function PageTemplate({
         $in: [host],
       },
     });
+    console.log(websitedata);
     let page = await pagecoll.findOne({
       websiteId: websitedata._id,
       slug: slug,
@@ -65,10 +69,10 @@ export default async function PageTemplate({
 
   const name = "Himanshu";
 
-  console.log(currentWebsite)
+  console.log(currentWebsite);
 
   const processedHtml = html ? html.replace(/\{\{name\}\}/g, name) : "";
-     console.log("my html ---",processedHtml)
+  console.log("my html ---", processedHtml);
   return (
     <div>
       <EditButton
