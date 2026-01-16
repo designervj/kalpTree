@@ -39,12 +39,13 @@ export default function GrapesJSEditor() {
     return inner ? inner[1] : "";
   }).join("\n");
 }
-
+   const isCalled= useRef<boolean>(false)
   // update the page content into editor
   useEffect(() => {
-  if (state.editor && page?.content) {
-    state.editor.setComponents(page.content);
-     setEditorHtml(page.content);
+  if (state.editor && page?.content && !isCalled.current) {
+    const data = page.content.replace(/\\n/g, '');
+    state.editor.setComponents(data);
+     setEditorHtml(data);
     // const css= extractCssFromHtml(page.content)
     // console.log("css---", css)
     // state.editor.setStyle(css)

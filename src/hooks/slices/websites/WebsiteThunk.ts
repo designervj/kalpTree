@@ -31,7 +31,7 @@ export const createWebsite = createAsyncThunk<
 // Thunk to get all Websites for a tenant/user
 export const getAllWebsites = createAsyncThunk<
   Website[],
-  { tenantId?: string | ObjectId },
+  { tenantId?: string | ObjectId},
   { rejectValue: string }
 >(
   "websites/getAllWebsites",
@@ -49,7 +49,26 @@ export const getAllWebsites = createAsyncThunk<
     }
   }
 );
-
+export const getCurrentWebsites = createAsyncThunk<
+  Website[],
+  { id?: string | ObjectId},
+  { rejectValue: string }
+>(
+  "websites/getCurrentWebsites",
+  async ({ id }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`/api/domain/website?id=${id}`);
+      if (!res.ok) {
+        const error = await res.json();
+        return rejectWithValue(error.error || "Failed to fetch websites");
+      }
+      const data = await res.json();
+      return data.item as Website[];
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to fetch websites");
+    }
+  }
+);
 // Thunk to delete a Website by _id (ObjectId)
 export const deleteWebsite = createAsyncThunk<
   string, // returns deleted _id
