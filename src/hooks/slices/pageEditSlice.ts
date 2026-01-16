@@ -6,6 +6,7 @@ import { AppDispatch, RootState } from '@/store/store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { pageService } from '@/modules/website/page-service';
 import { fetchFooterById } from './footer/FooterThunk';
+import { ObjectId } from 'mongodb';
 interface PageEditState {
   page: PageModel|null;
   updatePage: PageModel|null;
@@ -20,7 +21,7 @@ const initialState: PageEditState = {
 // Thunk to save page via API
 export const savePageThunk = createAsyncThunk(
   'pageEdit/savePage',
-  async (payload: { id: string; tenantId:string,content: string }, { getState, dispatch }) => {
+  async (payload: { id: string|ObjectId; tenantId:string|ObjectId,content: string }, { getState, dispatch }) => {
    const data={
     id:payload.id,
     tenantId:payload.tenantId, 

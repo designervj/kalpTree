@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const tenantIdParam = searchParams.get("tenantId");
+    const websiteIdParam = searchParams.get("websiteId");
+    const idParam = searchParams.get("id");
     const db = await getDatabase();
   const collection = db.collection("websites");
 
@@ -15,7 +17,15 @@ export async function GET(req: NextRequest) {
     if (tenantIdParam!=="" && tenantIdParam!==null) {
         const tenantId = new ObjectId(tenantIdParam);
         websites = await collection.find({ tenantId: tenantId }).toArray();
-    } else {
+    } else if (websiteIdParam!=="" && websiteIdParam!==null) {
+        const websiteId = new ObjectId(websiteIdParam);
+        websites = await collection.find({ _id: websiteId }).toArray();
+    }
+    else if (idParam!=="" && idParam!==null) {
+        const id = new ObjectId(idParam);
+        websites = await collection.find({ _id: id }).toArray();
+    }
+    else {
         websites = await collection.find({}).toArray();
     }
 

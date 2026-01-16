@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 // Adjust the import path for Website if needed
 import { Website } from "@/components/admin/AppShell";
 import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
-import { getAllWebsites } from "./WebsiteThunk";
+import { getAllWebsites, getCurrentWebsites } from "./WebsiteThunk";
 
 interface WebsitesState {
   websites: Website[];
@@ -62,7 +62,7 @@ const websitesSlice = createSlice({
       .addCase(savedashboardDetailsThunk.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+.addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
         const { websites, user, business } = action.payload;
         if (websites && business) {
@@ -72,13 +72,22 @@ const websitesSlice = createSlice({
           const allwebsites = websites.filter((item: Website) => item.tenantId === business[0]?._id)
           if (allwebsites) {
             state.selectedWebsites = allwebsites
+            state.currentWebsite = allwebsites[0]
            // state.currentWebsite = allwebsites[0]
           }
         }
       })
       .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
         state.isLoading = false
-      });
+      })
+
+      //get current website
+   
+      .addCase(getCurrentWebsites.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentWebsite = action.payload[0]
+      })
+      ;
   },
 });
 

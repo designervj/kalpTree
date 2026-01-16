@@ -52,13 +52,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 import { fetchCurrentHeaders } from "@/hooks/slices/header/HeaderThunk";
+import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export default function WpAdminEditorBar({
   pageData,
   user,
   currentWebsite,
 }: {
-  pageData: WebsitePageModel;
+  pageData: WebsitePageModel| TemplateDocument;
   user: IUser;
   currentWebsite: Website;
 }) {
@@ -73,13 +74,12 @@ export default function WpAdminEditorBar({
     "";
 
   const handleEditInBuilder = () => {
-    console.log("lang");
     dispatch(setPageEdit(pageData));
     let lang = currentWebsite?.lang ? currentWebsite.lang[0].name : "en";
     router.push(
       pageData?.slug ? `/${lang}/${pageData.slug}/builder` : "/builder"
     );
-  };
+  }
 
   const handleEditInAdmin = () => {
     // // adjust as per your admin route
