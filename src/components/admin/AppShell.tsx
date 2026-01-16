@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import {
+  Menu,
   LayoutDashboard,
   Globe2,
   FileText,
@@ -113,6 +114,7 @@ import { Label } from "../ui/label";
 import { UpperBar } from "./Sidebar/UpperBar";
 import { ObjectId } from "mongodb";
 import { IUser } from "@/models/user";
+import { IoMdClose } from "react-icons/io";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -744,6 +746,8 @@ export function AppShell({
   //   (state: RootState) => state.dashboardDetails
   // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
+  // Used inside mobile off-canvas (we don't allow collapsing there)
+  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
@@ -794,6 +798,18 @@ export function AppShell({
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
         {/* LEFT */}
         <div className="flex items-center gap-4">
+          {/* Mobile menu button */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileSidebarOpen(true)}
+            aria-label="Open navigation"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div className="h-10 w-15 rounded-full flex items-center justify-center text-white text-xs font-semibold">
@@ -827,7 +843,7 @@ export function AppShell({
         {/* RIGHT */}
         <div className="flex items-center gap-3">
           {/* Search */}
-          <div className="relative">
+          <div className="relative hidden md:block">
             <FiSearch className="absolute left-3 top-[9px] text-gray-400 text-sm" />
             <Input
               placeholder="Search"
@@ -836,13 +852,13 @@ export function AppShell({
           </div>
 
           {/* Notification */}
-          <div className="relative cursor-pointer">
+          <div className="relative cursor-pointer hidden md:block">
             <FiBell className="text-gray-600 text-[18px]" />
             <span className="absolute -top-1 -right-1 h-[6px] w-[6px] bg-red-500 rounded-full" />
           </div>
 
           {/* AI Assistant */}
-          <Button size="sm" className="text-xs">
+          <Button size="sm" className="text-xs ">
             <Sparkles className="h-3 w-3 " />
             Ai Assistant
           </Button>
@@ -952,21 +968,64 @@ export function AppShell({
         </div>
 
         <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
-          <SheetContent side="left" className="p-0 w-72">
-            <SheetHeader className="border-b px-4 py-3">
-              <SheetTitle className="text-sm font-semibold">
-                Navigation
-              </SheetTitle>
-            </SheetHeader>
-            <MobileSidebar
-              websites={websites}
-              currentWebsite={currentWebsite}
-              user={user}
-              onWebsiteChange={(websiteId) => {
-                onWebsiteChange(websiteId);
-                setMobileSidebarOpen(false);
-              }}
-            />
+          <SheetContent side="left" className="p-0 w-[320px] sm:w-80">
+            {/* Off-canvas header */}
+            <div className="h-16 border-b px-4 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/kalptree-favicon.svg"
+                  alt="KalpTree"
+                  className="h-9 w-9"
+                />
+                <div className="leading-tight">
+                  <div className="text-sm font-semibold">KalpTree</div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Navigation
+                  </div>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                // size="icon"
+                className="bg-white flex itms-center justify-center rounded-md p-2 hover:bg-gray-100 shadow z-50 absolute top-4 right-4 z-50"
+                onClick={() => setMobileSidebarOpen(false)}
+                aria-label="Close"
+              >
+                <IoMdClose className="w-[28px]"/>
+              </Button>
+            </div>
+
+            {/* Main navigation (High-level sidebar) */}
+            <div className="h-[calc(100vh-64px)] flex flex-col">
+              <HighLevelSidebar
+                user={user}
+                collapsed={false}
+                setCollapsed={noopSetCollapsed as any}
+                showSidebar={showSidebar}
+                setShowSidebar={setShowSidebar}
+                variant="mobile"
+                onNavigate={() => setMobileSidebarOpen(false)}
+              />
+
+              {/* Optional: website-specific menu (existing mobile sidebar) */}
+              <div className="border-t">
+                <SheetHeader className="px-4 py-3">
+                  <SheetTitle className="text-sm font-semibold">
+                    Website
+                  </SheetTitle>
+                </SheetHeader>
+
+                <MobileSidebar
+                  websites={websites}
+                  currentWebsite={currentWebsite}
+                  user={user}
+                  onWebsiteChange={(websiteId) => {
+                    onWebsiteChange(websiteId);
+                    setMobileSidebarOpen(false);
+                  }}
+                />
+              </div>
+            </div>
           </SheetContent>
         </Sheet>
       </div>

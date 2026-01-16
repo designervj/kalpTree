@@ -1,34 +1,26 @@
 "use client";
 
-import React, { Activity } from "react";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Globe,
   CreditCard,
-
   Package,
   ChevronRight,
   ChevronDown,
   ChevronsUpDown,
-  LayoutDashboard,
   UserCircle,
   Network,
   Shield,
   Building2,
-  BriefcaseBusiness,
   User,
   Sparkles,
   LogOut,
   Bell,
   Palette,
   Settings2,
-  Blocks,
-  Webhook,
-  Download,
-  ShieldCheck,
 } from "lucide-react";
-import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
@@ -42,9 +34,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "@/store/store";
 import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 
@@ -140,7 +131,6 @@ const navigationItems = [
     icon: Shield,
     href: "/admin/rolesandpermission",
   },
-
   {
     id: "themes",
     label: "Themes",
@@ -161,6 +151,13 @@ type HighLevelSidebarProps = {
   setCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   showSidebar: boolean;
   setShowSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * desktop: current behavior (hidden on mobile)
+   * mobile: for Sheet/off-canvas
+   */
+  variant?: "desktop" | "mobile";
+  /** Close the Sheet after navigation (mobile) */
+  onNavigate?: () => void;
 };
 
 export function HighLevelSidebar({
@@ -169,23 +166,24 @@ export function HighLevelSidebar({
   setCollapsed,
   showSidebar,
   setShowSidebar,
+  variant = "desktop",
+  onNavigate,
 }: HighLevelSidebarProps) {
   const pathname = usePathname();
-  const params = useParams();
   const [openItems, setOpenItems] = React.useState<Record<string, boolean>>({});
   const [hoverItemId, setHoverItemId] = React.useState<string | null>(null);
+
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
 
   const toggleItem = (id: string) => {
     setOpenItems((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-  console.log("user---", user)
-  const router = useRouter();
-  const dispatch = useDispatch<AppDispatch>();
 
   // Filter navigation items based on user role
   const filteredNavigationItems = React.useMemo(() => {
     if (user?.role === "agency") {
-      return navigationItems.filter(item => item.id !== "agencies");
+      return navigationItems.filter((item) => item.id !== "agencies");
     }
     return navigationItems;
   }, [user?.role]);
@@ -202,64 +200,56 @@ export function HighLevelSidebar({
     if (r === "agency") {
       return "bg-yellow-400 text-black";
     }
-
-    // fallback
     return "bg-primary text-white";
   };
 
   const handleClick = (href: string) => {
     dispatch(setCurrentBusiness(null));
-    console.log("href", href);
     router.push(href);
+    onNavigate?.();
   };
 
-
+  const containerClass = cn(
+    "relative flex transition-all duration-200 flex-shrink-0",
+    variant === "desktop" ? "hidden md:flex h-screen" : "flex h-full",
+    collapsed ? "w-[84px]" : "w-[100%] md:w-[280px]"
+  );
 
   return (
-    <>
-   
-    <div
-      className={cn(
-        "relative hidden md:flex h-screen transition-all duration-200 flex-shrink-0",
-        collapsed ? "w-[84px]" : "w-[280px]"
-      )}
-    >
-
-     
-
-      <div className="w-full">
+    <div className={containerClass}>
+      <div className="w-full ">
         <div
           className={cn(
-            "h-full border",
+            "h-[93%] border",
             "bg-[var(--admin-sidebar-bg)] text-[color:var(--admin-sidebar-fg)] relative",
             "border-[color:var(--admin-sidebar-border)]",
             "shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
           )}
         >
+          {/* Collapse toggle (desktop only) */}
+          {variant === "desktop" && (
+            <div>
+              <button
+                onClick={() => setCollapsed((v) => !v)}
+                className={cn(
+                  "rounded-full transition absolute bottom-[150px] z-50 -right-5 bg-primary w-[40px] h-[40px] border-none hover:bg-primary",
+                  collapsed
+                    ? "flex items-center justify-center"
+                    : "flex items-center justify-between px-3"
+                )}
+              >
+                <span className="text-black/70">
+                  {collapsed ? (
+                    <GoSidebarExpand size={15} className="text-white" />
+                  ) : (
+                    <GoSidebarCollapse size={15} className="text-white" />
+                  )}
+                </span>
+              </button>
+            </div>
+          )}
 
-               <div >
-            
-                  <button
-              
-                       onClick={() => setCollapsed((v) => !v)}
-                       className={cn(
-                         " rounded-full transition  absolute bottom-[150px] z-50 -right-5 bg-primary w-10 h-10 hover:bg-primary w-[40px] h-[40px] border-none",
-                         collapsed
-                           ? "h-10 flex items-center justify-center"
-                           : "h-10 flex items-center justify-between px-3"
-                       )}
-                     >
-                       <span className="text-black/70">
-                         {collapsed ? (
-                           <GoSidebarExpand size={15} className="text-white"/>
-                         ) : (
-                           <GoSidebarCollapse size={15} className="text-white" />
-                         )}
-                       </span>
-                     </button>
-               </div>
-
-          <div className="flex h-[93vh] flex-col">
+          <div className="flex h-full flex-col">
             {/* Navigation */}
             <div
               className={cn(
@@ -273,19 +263,22 @@ export function HighLevelSidebar({
                   const isOpen = !!openItems[item.id];
                   const isActive = pathname === item.href;
 
-                  // ✅ Collapsed view
+                  // Collapsed view (hover submenu - desktop)
                   if (collapsed) {
                     return (
                       <div
                         key={item.id}
                         className="relative"
                         onMouseEnter={() =>
-                          item.hasSubmenu && setHoverItemId(item.id)
+                          variant === "desktop" && item.hasSubmenu
+                            ? setHoverItemId(item.id)
+                            : null
                         }
-                        onMouseLeave={() => setHoverItemId(null)}
-                        onClick={() => handleClick(item?.href)}
+                        onMouseLeave={() =>
+                          variant === "desktop" ? setHoverItemId(null) : null
+                        }
+                        onClick={() => handleClick(item.href)}
                       >
-                        {/* <Link href={item.href}> */}
                         <button
                           type="button"
                           className={cn(
@@ -296,7 +289,6 @@ export function HighLevelSidebar({
                               ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm"
                               : "bg-white/50 hover:bg-[var(--admin-sidebar-hover)]"
                           )}
-
                         >
                           <Icon className="h-5 w-5 opacity-80" />
                           {(item as any).badge && (
@@ -312,61 +304,62 @@ export function HighLevelSidebar({
                             </span>
                           )}
                         </button>
-                        {/* </Link> */}
 
                         <AnimatePresence>
-                          {hoverItemId === item.id && item.hasSubmenu && (
-                            <motion.div
-                              initial={{ opacity: 0, x: 10 }}
-                              animate={{
-                                opacity: 1,
-                                x: 0,
-                                transition: { duration: 0.18, ease },
-                              }}
-                              exit={{
-                                opacity: 0,
-                                x: 10,
-                                transition: { duration: 0.14, ease },
-                              }}
-                              className="absolute left-[92px] top-0 z-50 w-[240px]"
-                            >
-                              <div className="rounded-md bg-white border shadow-[0_25px_60px_rgba(0,0,0,0.18)] p-3">
-                                <div className="flex items-center justify-between px-2 pb-2">
-                                  <div className="text-sm font-semibold text-black/80">
-                                    {item.label}
+                          {variant === "desktop" &&
+                            hoverItemId === item.id &&
+                            item.hasSubmenu && (
+                              <motion.div
+                                initial={{ opacity: 0, x: 10 }}
+                                animate={{
+                                  opacity: 1,
+                                  x: 0,
+                                  transition: { duration: 0.18, ease },
+                                }}
+                                exit={{
+                                  opacity: 0,
+                                  x: 10,
+                                  transition: { duration: 0.14, ease },
+                                }}
+                                className="absolute left-[92px] top-0 z-50 w-[240px]"
+                              >
+                                <div className="rounded-md bg-white border shadow-[0_25px_60px_rgba(0,0,0,0.18)] p-3">
+                                  <div className="flex items-center justify-between px-2 pb-2">
+                                    <div className="text-sm font-semibold text-black/80">
+                                      {item.label}
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    {item.submenuItems?.map((subItem) => (
+                                      <button
+                                        key={subItem.href}
+                                        type="button"
+                                        onClick={() => handleClick(subItem.href)}
+                                        className="w-full text-left"
+                                      >
+                                        <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-black/70 hover:bg-[#f6f7f8]">
+                                          <span className="truncate flex-1">
+                                            {subItem.label}
+                                          </span>
+                                          <ChevronRight className="h-4 w-4 opacity-40" />
+                                        </div>
+                                      </button>
+                                    ))}
                                   </div>
                                 </div>
-
-                                <div className="space-y-1">
-                                  {item.submenuItems?.map((subItem) => (
-                                    <Link
-                                      key={subItem.href}
-                                      href={subItem.href}
-                                      className="block"
-                                    >
-                                      <div className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-black/70 hover:bg-[#f6f7f8]">
-                                        <span className="truncate flex-1">
-                                          {subItem.label}
-                                        </span>
-                                        <ChevronRight className="h-4 w-4 opacity-40" />
-                                      </div>
-                                    </Link>
-                                  ))}
-                                </div>
-                              </div>
-                            </motion.div>
-                          )}
+                              </motion.div>
+                            )}
                         </AnimatePresence>
                       </div>
                     );
                   }
 
-                  // ✅ Expanded view
+                  // Expanded view
                   return (
                     <div key={item.id}>
-
-
-                      <div
+                      <button
+                        type="button"
                         className={cn(
                           "w-full flex items-center gap-3 rounded-md px-3 py-2.5",
                           "text-left transition border border-transparent",
@@ -374,34 +367,26 @@ export function HighLevelSidebar({
                             ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm border-[color:var(--admin-sidebar-border)]"
                             : "hover:bg-[var(--admin-sidebar-hover)]"
                         )}
+                        onClick={() =>
+                          item.hasSubmenu ? toggleItem(item.id) : handleClick(item.href)
+                        }
                       >
                         <Icon className="h-5 w-5 opacity-80" />
 
-                        <Link
-                          href={item.href}
-                          className="text-[13px] font-medium flex-1"
-                        >
+                        <span className="text-[13px] font-medium flex-1">
                           {item.label}
-                        </Link>
+                        </span>
 
                         {item.hasSubmenu && (
-                          <button
-                            type="button"
-                            className="opacity-60"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              toggleItem(item.id);
-                            }}
-                          >
+                          <span className="opacity-60">
                             {isOpen ? (
                               <ChevronDown className="h-4 w-4" />
                             ) : (
                               <ChevronRight className="h-4 w-4" />
                             )}
-                          </button>
+                          </span>
                         )}
-                      </div>
+                      </button>
 
                       {/* Submenu */}
                       <AnimatePresence initial={false}>
@@ -423,17 +408,18 @@ export function HighLevelSidebar({
                             <div className="pl-11 pr-1 pt-1 pb-1">
                               <div className="space-y-0.5">
                                 {item.submenuItems?.map((subItem) => (
-                                  <Link
+                                  <button
                                     key={subItem.href}
-                                    href={subItem.href}
-                                    className="block"
+                                    type="button"
+                                    onClick={() => handleClick(subItem.href)}
+                                    className="w-full text-left"
                                   >
                                     <div className="flex items-center gap-3 rounded-md px-3 py-2 text-[13px] text-[color:var(--admin-sidebar-muted)] hover:bg-[var(--admin-sidebar-hover)]">
                                       <span className="truncate flex-1">
                                         {subItem.label}
                                       </span>
                                     </div>
-                                  </Link>
+                                  </button>
                                 ))}
                               </div>
                             </div>
@@ -481,19 +467,12 @@ export function HighLevelSidebar({
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent
-                  side="right"
-                  align="start"
+                  side={variant === "mobile" ? "bottom" : "right"}
+                  align={variant === "mobile" ? "start" : "start"}
                   sideOffset={12}
                   className="w-56 rounded-xl border bg-background shadow-lg p-1"
                 >
                   <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-
-                    {/* <Avatar className="h-8 w-8 ">
-                      <AvatarFallback className="font-semibold">
-                        {user?.name?.[0]?.toUpperCase() || "SC"}
-                      </AvatarFallback>
-                    </Avatar> */}
-
                     <Avatar className="h-7 w-7">
                       <AvatarFallback
                         className={cn(
@@ -501,13 +480,12 @@ export function HighLevelSidebar({
                           getRoleAvatarClass(user?.role)
                         )}
                       >
-
                         {user?.email?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
 
                     <div className="flex flex-col leading-tight">
-                      <span className=" font-medium capitalize">
+                      <span className="font-medium capitalize">
                         {user?.name || user?.role}
                       </span>
                       <span className="text-xs text-muted-foreground truncate">
@@ -525,22 +503,32 @@ export function HighLevelSidebar({
 
                   <DropdownMenuSeparator className="my-1" />
 
-                  <Link href="/admin/themes" className="no-underline cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => handleClick("/admin/themes")}
+                    className="w-full text-left"
+                  >
                     <DropdownMenuItem className="rounded-md font-normal">
                       <Palette className="mr-2 h-4 w-4" />
                       Themes
                     </DropdownMenuItem>
-                  </Link>
+                  </button>
 
                   <DropdownMenuItem className="rounded-md">
                     <User className="mr-2 h-4 w-4" />
                     Account
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem className="rounded-md">
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Billing
-                  </DropdownMenuItem>
+                  <button
+                    type="button"
+                    onClick={() => handleClick("/admin/billing")}
+                    className="w-full text-left"
+                  >
+                    <DropdownMenuItem className="rounded-md">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Billing
+                    </DropdownMenuItem>
+                  </button>
 
                   <DropdownMenuItem className="rounded-md">
                     <Bell className="mr-2 h-4 w-4" />
@@ -560,6 +548,5 @@ export function HighLevelSidebar({
         </div>
       </div>
     </div>
-    </>
   );
 }

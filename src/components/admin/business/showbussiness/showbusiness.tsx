@@ -21,6 +21,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  Search,
+  SlidersHorizontal,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -28,6 +30,10 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { setBusinessWebsite, setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { IBusiness } from "@/models/business";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 
 
 
@@ -50,6 +56,10 @@ const ShowBusiness = () => {
 
   const dispatch = useDispatch<AppDispatch>();
 
+
+  const [filtersOpen, setFiltersOpen] = useState(false);
+
+  const [q, setQ] = useState("");
 
   const handlePageChange = (newPage: number) => {
     //   setPagination((prev) => ({
@@ -117,6 +127,8 @@ const ShowBusiness = () => {
     dispatch(setBusinessWebsite(business));
     router.push(`/admin/businesses/${business._id}`);
   };
+
+  
   return (
     <div className="w-full space-y-6">
       {/* Header */}
@@ -166,6 +178,114 @@ const ShowBusiness = () => {
       </Card>
 
       {/* Items per page selector */}
+
+
+        <Card className="rounded-xl border bg-white shadow-sm py-2">
+        <CardContent className="p-4">
+          <div className="flex items-center gap-3">
+            {/* Search */}
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                value={q}
+                onChange={(e) => {
+                  setQ(e.target.value);
+                  // setPage(1);
+                }}
+                placeholder="Search"
+                className="h-11 rounded-md pl-12 text-base"
+              />
+            </div>
+
+            {/* Filters */}
+            <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
+              <SheetTrigger asChild>
+                <Button 
+                  variant="outline"
+                  className="h-11 rounded-md px-6 text-base font-semibold"
+                >
+                  <SlidersHorizontal className="mr-2 h-5 w-5" />
+                  Filters
+                </Button>
+              </SheetTrigger>
+
+              <SheetContent side="right" className="w-[380px] sm:w-[420px]">
+                <SheetHeader>
+                  <SheetTitle>Filters</SheetTitle>
+                </SheetHeader>
+
+                <div className="mt-6 space-y-5">
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select
+                      value={status}
+                      // onValueChange={(v) => {
+                      //   setStatus(v);
+                      //   setPage(1);
+                      // }}
+                    >
+                      <SelectTrigger className="h-11 w-full">
+                        <SelectValue placeholder="All " />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="__all__">All</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="paused">Paused</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Sort</Label>
+                    <Select
+                      // value={sortBy}
+                      // onValueChange={(v) => {
+                      //   setSortBy(v as "newest" | "oldest" | "name");
+                      //   setPage(1);
+                      // }}
+                    >
+                      <SelectTrigger className="h-11 w-full">
+                        <SelectValue placeholder="Newest" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="newest">Newest</SelectItem>
+                        <SelectItem value="oldest">Oldest</SelectItem>
+                        <SelectItem value="name">Name (A-Z)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <Separator />
+
+                  <div className="flex items-center gap-2">
+                    <Button
+                    
+                      className="flex-1"
+                      onClick={() => setFiltersOpen(false)}
+                    >
+                      Apply
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      // onClick={resetFilters}
+                    >
+                      Reset
+                    </Button>
+                  </div>
+
+                  <div className="text-xs text-muted-foreground">
+                    Showing{" "}
+                    {/* <span className="font-semibold">{filtered.length}</span> of{" "} */}
+                    {/* <span className="font-semibold">{allAgencies.length}</span> */}
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </CardContent>
+      </Card>
      
 
       {/* Business List */}

@@ -521,10 +521,10 @@ export default function AddTemplatePage() {
       </form>
 
       {/* Dev hint */}
-      <p className="mt-6 text-xs text-muted-foreground">
+      {/* <p className="mt-6 text-xs text-muted-foreground">
         Note: image is saved as <b>base64 dataUrl</b> right now. Production me
         S3/Supabase upload karke url store karna best hai.
-      </p>
+      </p> */}
     </div>
   );
 }

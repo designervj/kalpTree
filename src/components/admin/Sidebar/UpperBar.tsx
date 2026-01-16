@@ -164,7 +164,7 @@ export const UpperBar = () => {
             handleAgencyChange(agencyId);
           }}
         >
-          <SelectTrigger className="h-12 min-w-[240px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
+          <SelectTrigger className="h-10 py-4 min-w-[240px] rounded-md border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
             <div className="flex items-center justify-between w-full gap-2">
               <div className="flex items-center gap-2 truncate">
                 <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -172,7 +172,7 @@ export const UpperBar = () => {
                   {curretAgency?.name || "Select Agency"}
                 </span>
               </div>
-              <ChevronDown className="h-4 w-4 opacity-60" />
+              {/* <ChevronDown className="h-4 w-4 opacity-60" /> */}
             </div>
           </SelectTrigger>
 
@@ -189,7 +189,7 @@ export const UpperBar = () => {
               </SelectItem>
             ))}
           </SelectContent>
-        </Select>
+        </Select> 
       )}
 
       {/* ================= Business ================= */}
@@ -202,7 +202,7 @@ export const UpperBar = () => {
 
             }}
           >
-            <SelectTrigger className="h-12 min-w-[240px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
+            <SelectTrigger className="h-10 min-w-[240px] rounded-md border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
               <div className="flex items-center justify-between w-full gap-2">
                 <div className="flex items-center gap-2 truncate">
                   <Building2 className="h-4 w-4 text-muted-foreground" />
@@ -210,7 +210,7 @@ export const UpperBar = () => {
                     {currentBusiness?.name || "Select Business"}
                   </span>
                 </div>
-                <ChevronDown className="h-4 w-4 opacity-60" />
+                {/* <ChevronDown className="h-4 w-4 opacity-60" /> */}
               </div>
             </SelectTrigger>
 
@@ -239,7 +239,7 @@ export const UpperBar = () => {
               handleWebsiteChange(websiteId)
             }}
           >
-            <SelectTrigger className="h-12 min-w-[260px] rounded-lg border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
+            <SelectTrigger className="h-10 min-w-[260px] rounded-md border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
               <div className="flex items-center justify-between w-full gap-2">
                 <div className="flex items-center gap-2 truncate">
                   <Globe2 className="h-4 w-4 text-muted-foreground" />
@@ -247,11 +247,11 @@ export const UpperBar = () => {
                     {currentWebsite?.name || "Select Website"}
                   </span>
                 </div>
-                <ChevronDown className="h-4 w-4 opacity-60" />
+                {/* <ChevronDown className="h-4 w-4 opacity-60" /> */}
               </div>
             </SelectTrigger>
 
-            <SelectContent className="w-[300px]">
+            <SelectContent className="w-auto">
               <div className="px-3 py-2 text-xs text-muted-foreground">
                 Websites
               </div>
