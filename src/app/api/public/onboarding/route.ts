@@ -6,6 +6,9 @@ import { websiteService } from "@/lib/websites/website-service";
 import { generateFileName, s3 } from "@/lib/utils";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { auth } from "@/auth";
+import { getCollection } from "../../tenants/[id]/route";
+import { demoPages } from "../../../../../utils/utlis";
+import { ObjectId } from "mongodb";
 
 export async function POST(req: Request) {
   try {
@@ -132,7 +135,7 @@ export async function POST(req: Request) {
         phone,
         headquarters,
         brand_name,
-        business_website_url
+        business_website_url,
       },
       type: "business",
       tenantId: createByTenant,
@@ -177,7 +180,10 @@ export async function POST(req: Request) {
       tenantId: tenant._id,
     });
 
-    const primaryDomain = [`${business_url}.kalptree.xyz`];
+    const primaryDomain = [
+      `${business_url}.kalptree.xyz`,
+      `${business_url}.localhost:55803`,
+    ];
 
     const website = await websiteService.create({
       tenantId: tenant._id,
@@ -188,12 +194,25 @@ export async function POST(req: Request) {
       lang,
     });
 
+    const pageColl = await getCollection("pages");
+
+    const mappedValue = demoPages.map((d) => {
+      return {
+        ...d,
+        tenantId: new ObjectId(String(tenant._id)),
+        websiteId: new ObjectId(String(website._id)),
+      };
+    });
+
+    const page = await pageColl.insertMany(mappedValue);
+
     return NextResponse.json({
       ok: true,
       tenantId: String(tenant._id),
       tenantSlug: tenant.slug,
       websiteId: website.websiteId,
       message: `${message}Business Created`,
+      page: page.insertedCount,
     });
   } catch (e) {
     return NextResponse.json(
