@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { savePageThunk } from "./slices/pageEditSlice";
 import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
+import { updateHeader } from "./slices/header/HeaderThunk";
 
 
 
@@ -871,6 +872,24 @@ export function useEditor(containerId: string) {
         })).unwrap();
         if (response) {
           toast.success("Footer content updated successfully!");
+        }
+      }else if(type === "header"){
+
+
+        console.log("header", {
+          ...page,
+          _id: page._id?.toString() ?? "",
+          tenantId: page.tenantId ?? "",
+          content: fullHtml
+        })
+        const response = await dispatch(updateHeader({
+          ...page,
+          _id: page._id?.toString() ?? "",
+          tenantId: page.tenantId ?? "",
+          content: fullHtml
+        })).unwrap();
+        if (response) {
+          toast.success("Header content updated successfully!");
         }
       }
       else {

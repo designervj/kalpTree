@@ -8,7 +8,7 @@ import { TemplateDocument } from '../templates/TemplateType';
 import { setPageEdit } from '@/hooks/slices/pageEditSlice';
 
 const GetWebsiteFooter = () => {
-    const { currentFooter } = useSelector((state: RootState) => state.footer);
+    const { currentFooter , hasFetched} = useSelector((state: RootState) => state.footer);
     const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
     const dispatch = useDispatch<AppDispatch>();
@@ -24,7 +24,10 @@ const GetWebsiteFooter = () => {
     }, [currentFooter, currentWebsite]);
 
     const handleBuilderEdit = async(footer: TemplateDocument) => {
-           dispatch(setPageEdit(footer));
+           dispatch(setPageEdit({
+            page: footer,
+            type: 'footer'
+           }));
         
            //  router.push(`/${copied.slug}`);
            window.open(`/footer?id=${footer._id} &websiteId=${footer.websiteId}`, "_blank", "noopener,noreferrer");
@@ -37,7 +40,12 @@ const GetWebsiteFooter = () => {
 
     return (
         <div>
-            {currentFooter && currentFooter._id && currentFooter._id.toString() && currentFooter.content && (
+              {!hasFetched && (
+                <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500">Loading...</p>
+                </div>
+            )}
+            {hasFetched &&currentFooter && currentFooter._id && currentFooter._id.toString() && currentFooter.content ? (
                 <div className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
                     {/* Header with action buttons */}
                     <div className="flex items-center justify-between gap-2 p-2 border-b bg-gray-50">
@@ -75,6 +83,10 @@ const GetWebsiteFooter = () => {
                             }}
                         />
                     </div>
+                </div>
+            ):(
+                <div className="flex items-center justify-center h-full">
+                    <p className="text-gray-500">No Footer link with this website</p>
                 </div>
             )}
         </div>

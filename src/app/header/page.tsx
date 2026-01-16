@@ -1,8 +1,11 @@
-import React from 'react'
+import React, { Suspense } from 'react'
+import HeaderContent from './HeaderContent'
 
 const page = () => {
   return (
-    <div>page</div>
+    <Suspense fallback={<div className="p-4">Loading footer...</div>}>
+      <HeaderContent />
+    </Suspense>
   )
 }
 

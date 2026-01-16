@@ -138,7 +138,7 @@ export async function PUT(request: NextRequest) {
             updatedBy: session?.user?.id,
         };
 
-        if (body.slug) updateData.slug = body.slug;
+      
         if (body.content !== undefined) updateData.content = body.content;
         if (body.websiteId) updateData.websiteId = body.websiteId;
         if (body.tenantId) updateData.tenantId = body.tenantId;

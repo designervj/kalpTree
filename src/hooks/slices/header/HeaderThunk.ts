@@ -6,16 +6,17 @@ import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export const fetchHeaders = createAsyncThunk<
     TemplateDocument[],
-    { websiteId?: string; tenantId?: string },
+    { websiteId?: string; tenantId?: string, id?: string },
     { state: { header: HeaderState }; rejectValue: string }
 >(
     "header/fetchHeaders",
-    async ({ websiteId, tenantId }, { rejectWithValue }) => {
+    async ({ websiteId, tenantId, id }, { rejectWithValue }) => {
         try {
             let url = `/api/admin/header`;
             const params = new URLSearchParams();
             if (websiteId) params.append('websiteId', websiteId);
             if (tenantId) params.append('tenantId', tenantId);
+            if (id) params.append('id', id);
             if (params.toString()) url += `?${params.toString()}`;
 
             const res = await fetch(url);
@@ -46,16 +47,17 @@ export const fetchHeaders = createAsyncThunk<
 );
 export const fetchCurrentHeaders = createAsyncThunk<
     TemplateDocument[],
-    { websiteId?: string|ObjectId; tenantId?: string|ObjectId },
+    { websiteId?: string|ObjectId; tenantId?: string|ObjectId, id?: string },
     { state: { header: HeaderState }; rejectValue: string }
 >(
     "header/fetchCurrentHeaders",
-    async ({ websiteId, tenantId }, { rejectWithValue }) => {
+    async ({ websiteId, tenantId, id }, { rejectWithValue }) => {
         try {
             let url = `/api/admin/header`;
             const params = new URLSearchParams();
             if (websiteId) params.append('websiteId', websiteId.toString());
             if (tenantId) params.append('tenantId', tenantId.toString());
+            if (id) params.append('id', id.toString());
             if (params.toString()) url += `?${params.toString()}`;
 
             const res = await fetch(url);

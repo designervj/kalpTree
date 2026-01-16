@@ -7,6 +7,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { pageService } from '@/modules/website/page-service';
 import { fetchFooterById } from './footer/FooterThunk';
 import { ObjectId } from 'mongodb';
+import { fetchCurrentHeaders } from './header/HeaderThunk';
 interface PageEditState {
   page: PageModel|null;
   updatePage: PageModel|null;
@@ -76,6 +77,12 @@ export const pageEditSlice = createSlice({
     builder.addCase(fetchFooterById.fulfilled, (state, action) => {
       state.page = action.payload;
       state.type="footer"
+    });
+
+    // fetch header by id
+    builder.addCase(fetchCurrentHeaders.fulfilled, (state, action) => {
+      state.page = action.payload[0];
+      state.type="header"
     });
   },
 });
