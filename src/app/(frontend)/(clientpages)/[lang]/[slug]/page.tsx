@@ -35,7 +35,6 @@ export default async function PageTemplate({
         $in: [host],
       },
     });
-    console.log(websitedata);
     let page = await pagecoll.findOne({
       websiteId: websitedata._id,
       slug: slug,
@@ -69,10 +68,8 @@ export default async function PageTemplate({
 
   const name = "Himanshu";
 
-  console.log(currentWebsite);
-
   const processedHtml = html ? html.replace(/\{\{name\}\}/g, name) : "";
-  console.log("my html ---", processedHtml);
+  // console.log("my html ---", processedHtml);
   return (
     <div>
       <EditButton
