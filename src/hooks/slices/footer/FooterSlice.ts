@@ -90,11 +90,11 @@ const footerSlice = createSlice({
             .addCase(
                 fetchFooters.fulfilled,
                 (state, action: PayloadAction<TemplateDocument[]>) => {
-                    if (action.payload && action.payload.length) {
+                    
                        state.currentFooter = action.payload[0];
                         state.hasFetched = true;
                         state.isLoading = false;
-                    }
+                    
                 }
             )
             .addCase(fetchFooters.rejected, (state) => {

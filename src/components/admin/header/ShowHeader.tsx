@@ -45,7 +45,7 @@ const ShowHeader = () => {
             websiteId: currentWebsite._id,
             content: header.content
         }
-        console.log("data---->", data)
+      
 
         try {
             const result = await dispatch(createHeader(data));
@@ -67,7 +67,7 @@ const ShowHeader = () => {
         <div className="space-y-6">
 
             <ShowCurrentHeader />
-            <button onClick={() => handleOpenModal()}>Show all Headers</button>
+            <Button onClick={() => handleOpenModal()}>Show all Headers</Button>
 
             {/* Modal */}
             {isModalOpen && allHeader && allHeader.length > 0 && (
@@ -98,10 +98,12 @@ const ShowHeader = () => {
 
                         {/* Modal Body */}
                         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)] space-y-6">
-                            {allHeader.map((header) => (
+                            {allHeader.map((header) =>{ 
+                                 const fixedContent = header?.content?.replace(/\\n/g, '');
+                                return(
                                 <div key={header._id?.toString()} className="border rounded-lg p-4 space-y-4">
                                     <div
-                                        dangerouslySetInnerHTML={{ __html: header.content! }}
+                                        dangerouslySetInnerHTML={{ __html: fixedContent! }}
                                     />
                                     <div className="flex justify-end">
                                         <Button
@@ -135,7 +137,8 @@ const ShowHeader = () => {
                                         </Button>
                                     </div>
                                 </div>
-                            ))}
+                            )
+                            })}
                         </div>
 
                         {/* Modal Footer */}

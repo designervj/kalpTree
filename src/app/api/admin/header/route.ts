@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
         const websiteId = searchParams.get('websiteId');
         const slug = searchParams.get('slug');
         const tenantId = searchParams.get('tenantId');
+        const id = searchParams.get('id');
 
         const db = await getDatabase();
 
@@ -25,16 +26,13 @@ export async function GET(request: NextRequest) {
         if (websiteId) filter.websiteId = websiteId;
         if (slug) filter.slug = slug;
         if (tenantId) filter.tenantId = tenantId;
-
-        console.log('Filter:', filter); // Debug log
+        if (id) filter._id = typeof id === 'string' ? new ObjectId(id) : id;
 
         const headers = await db
             .collection(COLLECTION_NAME)
             .find(filter)
             .sort({ createdAt: -1 })
             .toArray();
-
-        console.log('Found headers:', headers.length); // Debug log
 
         return NextResponse.json({ items: headers });
     } catch (error) {
@@ -53,9 +51,9 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         // Validate required fields
-        if (!body.slug || !body.websiteId || !body.tenantId) {
+        if (!body.websiteId || !body.tenantId) {
             return NextResponse.json(
-                { error: 'Slug, websiteId, and tenantId are required' },
+                { error: 'websiteId and tenantId are required' },
                 { status: 400 }
             );
         }
@@ -135,14 +133,14 @@ export async function PUT(request: NextRequest) {
             updatedBy: session?.user?.id,
         };
 
-        if (body.slug) updateData.slug = body.slug;
+      
         if (body.content !== undefined) updateData.content = body.content;
         if (body.websiteId) updateData.websiteId = body.websiteId;
         if (body.tenantId) updateData.tenantId = body.tenantId;
 
         const result = await db.collection(COLLECTION_NAME).updateOne(
-            { _id: new ObjectId(body._id) },
-            { $set: updateData }
+            { _id: typeof body._id === 'string' ? new ObjectId(body._id) : body._id },
+            { $set: {content: body.content, updatedAt: new Date(), updatedBy: session?.user?.id} }
         );
 
         if (result.matchedCount === 0) {

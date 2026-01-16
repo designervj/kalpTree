@@ -111,6 +111,7 @@ const headerSlice = createSlice({
                 fetchCurrentHeaders.fulfilled,
                 (state, action: PayloadAction<TemplateDocument[]>) => {
                     state.currentHeader = action.payload[0];
+                    state.hasFetched = true;
                     state.isLoading = false;
                 }
             )
