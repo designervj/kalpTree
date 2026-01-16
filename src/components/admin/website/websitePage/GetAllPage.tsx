@@ -16,6 +16,7 @@ const GetAllPage = () => {
         websitePages && 
         websitePages.length==0&&
         currentWebsite && currentWebsite._id) {
+          console.log("fetching pages with website id",currentWebsite._id);
       dispatch(fetchWebsitePages(currentWebsite._id));
     }
   }, [hasFetched, websitePages,currentWebsite]);

@@ -13,6 +13,7 @@ export const fetchWebsitePages = createAsyncThunk<
       throw new Error(errorData.message || "Failed to fetch pages");
     }
     const data = await response.json();
+    console.log("data web pages", data);
     return data;
   } catch (err: any) {
     return rejectWithValue(err.message || "Failed to fetch pages");
