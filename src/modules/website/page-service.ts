@@ -134,9 +134,10 @@ export class PageService {
     // );
 
     const result = await collection.updateOne(
-      { _id: oid, tenantId: tid },
+      { _id: oid },
       { $set: { content: updates } }
     );
+    console.log("result ",result)
     return result.modifiedCount > 0;
   }
 

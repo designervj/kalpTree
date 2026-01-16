@@ -54,6 +54,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  console.log("id ",id)
   const json = await req.json();
 
   const ok = await pageService.updatePage(id, json.tenantId, json.content);

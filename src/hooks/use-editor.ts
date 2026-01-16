@@ -159,11 +159,11 @@ export function useEditor(containerId: string) {
 
         // Add fallback methods if needed
         if (typeof (editor as any).setJs !== "function") {
-          console.log("Adding custom setJs method");
+
           (editor as any).setJs = (js: string) => {
             // Store JS in editor's storage
             editor.StorageManager.store({
-              jsCode: js,
+              jsCode: js
             });
 
             // Find or create script component
@@ -866,6 +866,7 @@ export function useEditor(containerId: string) {
         const response = await dispatch(updateFooter({
           ...page,
           _id: page._id?.toString() ?? "",
+          tenantId: page.tenantId ?? "",
           content: fullHtml
         })).unwrap();
         if (response) {
@@ -1034,48 +1035,83 @@ export function useEditor(containerId: string) {
 
     updateStyle: (property: string, value: string) => {
       try {
-        console.log("Selcted Editor")
+        console.log("Selcted Editor", state.selectedElement)
         if (state.selectedElement) {
-          // Create a new style object with the updated property
-          const style = { [property]: value };
+          // Get existing styles and merge with the new property
+          const currentStyles = state.selectedElement.getStyle() || {};
+          const updatedStyles = { ...currentStyles, [property]: value };
 
-          // Apply the style to the element
-          state.selectedElement.setStyle(style);
+          // Apply the merged styles to the element
+          state.selectedElement.setStyle(updatedStyles);
 
           // Update local state based on property type
           setState((prev) => {
-            const newStyles = { ...prev.styles };
-
             // Handle typography properties
             if (property === "font-family") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                fontFamily: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    fontFamily: value,
+                  },
+                },
               };
             } else if (property === "font-size") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                fontSize: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    fontSize: value,
+                  },
+                },
               };
             } else if (property === "font-weight") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                fontWeight: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    fontWeight: value,
+                  },
+                },
               };
             } else if (property === "font-style") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                fontStyle: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    fontStyle: value,
+                  },
+                },
               };
             } else if (property === "color") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                color: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    color: value,
+                  },
+                },
               };
             } else if (property === "text-align") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                textAlign: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    textAlign: value,
+                  },
+                },
               };
             } else if (property === "line-height") {
               // Ensure line-height is properly formatted
@@ -1097,24 +1133,48 @@ export function useEditor(containerId: string) {
                 formattedValue = Number.parseFloat(value).toString();
               }
 
-              newStyles.typography = {
-                ...newStyles.typography,
-                lineHeight: formattedValue,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    lineHeight: formattedValue,
+                  },
+                },
               };
             } else if (property === "letter-spacing") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                letterSpacing: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    letterSpacing: value,
+                  },
+                },
               };
             } else if (property === "text-decoration") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                textDecoration: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    textDecoration: value,
+                  },
+                },
               };
             } else if (property === "text-transform") {
-              newStyles.typography = {
-                ...newStyles.typography,
-                textTransform: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  typography: {
+                    ...prev.styles.typography,
+                    textTransform: value,
+                  },
+                },
               };
             } else if (property === "text-shadow") {
               // Parse text-shadow value to update all shadow properties
@@ -1132,25 +1192,43 @@ export function useEditor(containerId: string) {
                   textShadowColor = textShadowParts.slice(3).join(" ");
                 }
 
-                newStyles.typography = {
-                  ...newStyles.typography,
-                  textShadowX,
-                  textShadowY,
-                  textShadowBlur,
-                  textShadowColor,
+                return {
+                  ...prev,
+                  styles: {
+                    ...prev.styles,
+                    typography: {
+                      ...prev.styles.typography,
+                      textShadowX,
+                      textShadowY,
+                      textShadowBlur,
+                      textShadowColor,
+                    },
+                  },
                 };
               }
             }
             // Handle spacing properties
             else if (property === "padding") {
-              newStyles.spacing = {
-                ...newStyles.spacing,
-                padding: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  spacing: {
+                    ...prev.styles.spacing,
+                    padding: value,
+                  },
+                },
               };
             } else if (property === "margin") {
-              newStyles.spacing = {
-                ...newStyles.spacing,
-                margin: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  spacing: {
+                    ...prev.styles.spacing,
+                    margin: value,
+                  },
+                },
               };
             } else if (property === "border-radius") {
               // Extract numeric value from border-radius
@@ -1160,42 +1238,84 @@ export function useEditor(containerId: string) {
                 .replace("em", "");
               const borderRadius = Number.parseFloat(radiusValue) || 0;
 
-              newStyles.spacing = {
-                ...newStyles.spacing,
-                borderRadius: borderRadius,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  spacing: {
+                    ...prev.styles.spacing,
+                    borderRadius: borderRadius,
+                  },
+                },
               };
             }
             // Handle color properties
             else if (property === "background-color") {
-              newStyles.colors = {
-                ...newStyles.colors,
-                backgroundColor: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  colors: {
+                    ...prev.styles.colors,
+                    backgroundColor: value,
+                  },
+                },
               };
             } else if (property === "border-color") {
-              newStyles.colors = {
-                ...newStyles.colors,
-                borderColor: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  colors: {
+                    ...prev.styles.colors,
+                    borderColor: value,
+                  },
+                },
               };
             } else if (property === "border-width") {
-              newStyles.colors = {
-                ...newStyles.colors,
-                borderWidth: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  colors: {
+                    ...prev.styles.colors,
+                    borderWidth: value,
+                  },
+                },
               };
             } else if (property === "border-style") {
-              newStyles.colors = {
-                ...newStyles.colors,
-                borderStyle: value,
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  colors: {
+                    ...prev.styles.colors,
+                    borderStyle: value,
+                  },
+                },
+              };
+            }
+            // Handle layout properties
+            else if (property === "display") {
+              return {
+                ...prev,
+                styles: {
+                  ...prev.styles,
+                  layout: {
+                    ...prev.styles.layout,
+                    display: value,
+                  },
+                },
               };
             }
 
-            return {
-              ...prev,
-              styles: newStyles,
-            };
+            // If no property matched, return prev unchanged
+            return prev;
           });
 
           // Trigger editor refresh to update the view
           if (editorRef.current) {
+            console.log("editorRef.current", editorRef.current)
             try {
               // Use a timeout to ensure the state is updated first
               setTimeout(() => {

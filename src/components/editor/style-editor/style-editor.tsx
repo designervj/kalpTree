@@ -28,7 +28,7 @@ import {
   Underline,
 } from "lucide-react";
 import { StyleState } from "../../../../types/editor";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Common interfaces
 interface StyleEditorProps {
@@ -36,7 +36,7 @@ interface StyleEditorProps {
   onStyleChange: (property: string, value: string) => void;
 }
 
-interface SectionProps extends StyleEditorProps {}
+interface SectionProps extends StyleEditorProps { }
 
 // Typography section component
 function TypographySection({ styles, onStyleChange }: SectionProps) {
@@ -80,21 +80,24 @@ function ColorsSection({ styles, onStyleChange }: SectionProps) {
 
 // Typography Controls
 function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
-  const [fontFamilyvalue, setFontFamilyValue]= useState<string>("")
+  const [fontFamilyvalue, setFontFamilyValue] = useState<string>(styles.typography.fontFamily || "Arial, sans-serif")
 
-  const hadleFontFamily=(data:string)=>{
+  // Sync local state with props when styles change
+  useEffect(() => {
+    setFontFamilyValue(styles.typography.fontFamily || "Arial, sans-serif");
+  }, [styles.typography.fontFamily]);
+
+  const hadleFontFamily = (data: string) => {
     setFontFamilyValue(data)
-  onStyleChange("font-family", data)
-   
+    onStyleChange("font-family", data)
   }
+
   return (
     <div className="space-y-1.5">
       <Label className="text-xs">Font Family</Label>
       <Select
-      value={fontFamilyvalue}
-        // value={styles.typography.fontFamily || "Arial, sans-serif"}
-        // onValueChange={(value) => onStyleChange("font-family", value)}
-        onValueChange={(value)=>hadleFontFamily(value)}
+        value={fontFamilyvalue}
+        onValueChange={(value) => hadleFontFamily(value)}
       >
         <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700">
           <SelectValue placeholder="Select font" />
@@ -187,8 +190,8 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
     return styles.typography.fontSize.includes("rem")
       ? "rem"
       : styles.typography.fontSize.includes("em")
-      ? "em"
-      : "px";
+        ? "em"
+        : "px";
   };
 
   const handleValueChange = (value: string) => {
@@ -960,7 +963,7 @@ function LayoutSection({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-3">
       <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
-    
+
     </div>
   );
 }
@@ -990,11 +993,10 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
 
 
 
-
 // Main StyleEditor component
 export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
-  
-  console.log("styles,styles",styles)
+
+  console.log("styles,styles", styles)
   return (
     <Accordion
       type="single"

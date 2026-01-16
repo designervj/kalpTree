@@ -21,7 +21,7 @@ const initialState: PageEditState = {
 // Thunk to save page via API
 export const savePageThunk = createAsyncThunk(
   'pageEdit/savePage',
-  async (payload: { id: string|ObjectId; tenantId:string|ObjectId,content: string }, { getState, dispatch }) => {
+  async (payload: { id: string|ObjectId; tenantId?:string|ObjectId,content: string }, { getState, dispatch }) => {
    const data={
     id:payload.id,
     tenantId:payload.tenantId, 
