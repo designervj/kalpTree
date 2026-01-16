@@ -4,12 +4,13 @@ import { getToken } from "next-auth/jwt";
 
 export async function proxy(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  console.log("===>>", token);
   const { pathname, origin } = req.nextUrl;
 
   // Auth guard for admin and protected APIs (exclude /api/public/* and /api/auth/*)
   const isProtectedApi = /^\/api\/(?!(public|auth)\b)/.test(pathname);
-  // const isProtected = pathname.startsWith("/admin") || isProtectedApi;
-  const isProtected = pathname.startsWith("/admin");
+  const isProtected = pathname.startsWith("/admin") || isProtectedApi;
+  // const isProtected = pathname.startsWith("/admin");
 
   if (pathname.includes("signup")) {
     const check = await fetch(`${process.env.NEXTAUTH_URL}/api/dev/check`);

@@ -134,10 +134,10 @@ export function Sidebar({
         {/* ✅ soft container like screenshot */}
         <div className="w-full ">
           <div
-            // className={cn(
-            //   "h-full  border bg-[#f5f6f7] text-[#111]",
-            //   "shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
-            // )}
+          // className={cn(
+          //   "h-full  border bg-[#f5f6f7] text-[#111]",
+          //   "shadow-[0_10px_35px_rgba(0,0,0,0.08)]"
+          // )}
           >
             <div className="flex h-full flex-col">
               <ScrollArea

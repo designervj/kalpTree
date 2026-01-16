@@ -354,7 +354,7 @@ export const currentWebsiteSections: NavSection[] = [
         permission: ["product:read", "product:update", "product:delete"],
       },
       {
-        label: "Attributes",
+        label: "Attribute Sets",
         href: "/admin/attributes-list",
         icon: Component,
         permission: ["product:read", "product:update", "product:delete"],
