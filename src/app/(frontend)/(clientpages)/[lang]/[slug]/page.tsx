@@ -13,7 +13,6 @@ export default async function PageTemplate({
   const param = await params;
   const header = await headers();
   const host = header.get("host");
-
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
   let website = websiteData ? JSON.parse(websiteData) : null;
@@ -45,7 +44,7 @@ export default async function PageTemplate({
     currentWebsite = {
       ...websitedata,
       _id: websitedata._id.toString(),
-      tenantId: websitedata.tenandId ? websitedata.tenantId.toString() : null,
+      tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
     };
   }
 

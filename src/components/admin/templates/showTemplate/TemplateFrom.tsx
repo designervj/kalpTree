@@ -98,7 +98,7 @@ const PostSchema = z.object({
 
   // suggested extra fields
   description: z.string(),
-  tags: z.string(), // comma-separated
+  tags: z.string().array(), // comma-separated
   demo: z.string(),
   category: z.string(),
   version: z.string(),
@@ -132,10 +132,10 @@ export default function AddTemplatePage() {
       slug: "",
       templateType: "",
       pageType: "",
-      content: "",
+      content: "<h1> Hello World </h1>",
       imageDataUrl: "",
       description: "",
-      tags: "",
+      tags: ["tag1", "tag2", "tag3"],
       category: "",
       version: "1.0.0",
       isPublic: true,

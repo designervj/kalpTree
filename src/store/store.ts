@@ -16,6 +16,7 @@ import rolePermissionReducer from "../hooks/slices/RolePermissions/rolePermissio
 import businessReducer from "../hooks/slices/business/BusinessSlice";
 import templateReducer from "../hooks/slices/templates/TemplateSlice";
 import headerReducer from "../hooks/slices/header/HeaderSlice";
+import footerReducer from "../hooks/slices/footer/FooterSlice";
 export const store = configureStore({
   reducer: {
     user: userSlice,
@@ -24,6 +25,7 @@ export const store = configureStore({
     websites: websitesReducer,
     websitePage: websitePageReducer,
     header: headerReducer,
+    footer: footerReducer,
     pageEdit: pageEditReducer,
     category: categoryReducer,
     brand: brandReducer,

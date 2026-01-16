@@ -5,14 +5,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppDispatch, RootState } from '@/store/store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { pageService } from '@/modules/website/page-service';
+import { fetchFooterById } from './footer/FooterThunk';
 interface PageEditState {
   page: PageModel|null;
   updatePage: PageModel|null;
+  type:string;
 }
 
 const initialState: PageEditState = {
   page: null,
-  updatePage:null
+  updatePage:null, 
+  type:""
 }
 // Thunk to save page via API
 export const savePageThunk = createAsyncThunk(
@@ -51,16 +54,28 @@ export const pageEditSlice = createSlice({
   initialState,
   reducers: {
     setPageEdit: (state, action) => {
-      state.page = action.payload;
+      const {page, type} = action.payload;
+      state.page = page;
+      state.type=type
     },
     updatePage:(state,action)=>{
-      state.updatePage=action.payload
+      const {page, type} = action.payload;
+      state.updatePage=page
+      state.type=type
 
     },
 
     clearPageEdit: (state) => {
       state.page = null;
+      state.type=""
     },
+  },
+  extraReducers: (builder) => {
+    //fetchFooterById 
+    builder.addCase(fetchFooterById.fulfilled, (state, action) => {
+      state.page = action.payload;
+      state.type="footer"
+    });
   },
 });
 
