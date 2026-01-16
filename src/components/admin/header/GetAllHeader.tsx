@@ -11,11 +11,7 @@ const GetAllHeader = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { hasFetched, allHeader } = useSelector((state: RootState) => state.header);
     const { allTemplate } = useSelector((state: RootState) => state.template);
-    // useEffect(() => {
-    //     if (!hasFetched) {
-    //         dispatch(fetchHeaders({tenantId:"6965e74f0552bf15baa45962" }));
-    //     }
-    // }, [hasFetched]);
+
     useEffect(() => {
         if (allHeader &&
             allTemplate &&
