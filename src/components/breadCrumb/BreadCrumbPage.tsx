@@ -22,17 +22,16 @@ const BreadCrumbPage = () => {
         // Split pathname and filter out empty strings
         const pathSegments = pathname.split("/").filter(segment => segment !== "");
         setUrlPath(pathSegments);
-        console.log("urlPath", pathSegments);
+
     }, [pathname]);
 
 
-    console.log(pathname)
 
 
     return (
         <>
             <div className=" items-center gap-3 ">
-               
+
 
                 <Breadcrumb>
                     <BreadcrumbList>
@@ -48,31 +47,35 @@ const BreadCrumbPage = () => {
                         {/* <span className="mx-0 select-none">-</span> */}
 
                         {/* Websites */}
-                        {urlPath &&urlPath.length > 2 && <BreadcrumbItem>
+                        {urlPath && urlPath.length > 2 && <BreadcrumbItem>
                             <BreadcrumbLink>
                                 <Link href={`/admin/${urlPath[urlPath.length - 2]}`} className="text-muted-foreground font-normal capitalize">{urlPath[urlPath.length - 2]}</Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
                         }
-                 
+
 
                         {/* Current */}
-                    {urlPath &&urlPath.length > 1  && 
-                    <>
-                           <span className="mx-0 select-none">-</span>
-                     <BreadcrumbItem>
-                            <BreadcrumbLink>
-                                <Link href={`/admin/${urlPath[urlPath.length - 1]}`} className="text-muted-foreground font-normal capitalize">{urlPath[urlPath.length - 1]}</Link>
-                            </BreadcrumbLink>
-                        </BreadcrumbItem>
-                    </>
-                   
+                        {urlPath && urlPath.length > 1 &&
+                            <>
+                                <span className="mx-0 select-none">-</span>
+                                <BreadcrumbItem>
+                                    <BreadcrumbLink>
+                                        <Link href={`/admin/${urlPath[urlPath.length - 1]}`} className="text-muted-foreground font-normal capitalize">{urlPath[urlPath.length - 1]}</Link>
+                                    </BreadcrumbLink>
+                                </BreadcrumbItem>
+                            </>
+
                         }
                     </BreadcrumbList>
                 </Breadcrumb>
 
-                 {/* <h1 className="text-2xl font-bold tracking-tight border-r  pe-4">{urlPath[urlPath.length - 1]?.charAt(0).toUpperCase() + urlPath[urlPath.length - 1]?.slice(1)}</h1> */}
-                 <h1 className="text-2xl font-bold tracking-tight  pe-4">{urlPath[urlPath.length - 1]?.charAt(0).toUpperCase() + urlPath[urlPath.length - 1]?.slice(1)}</h1>
+                {/* <h1 className="text-2xl font-bold tracking-tight border-r  pe-4">{urlPath[urlPath.length - 1]?.charAt(0).toUpperCase() + urlPath[urlPath.length - 1]?.slice(1)}</h1> */}
+                {urlPath.length > 0 && urlPath[urlPath.length - 1] && (
+                    <h1 className="text-2xl font-bold tracking-tight  pe-4">
+                        {urlPath[urlPath.length - 1].charAt(0).toUpperCase() + urlPath[urlPath.length - 1].slice(1)}
+                    </h1>
+                )}
 
             </div>
         </>

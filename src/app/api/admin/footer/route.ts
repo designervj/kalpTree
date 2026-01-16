@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/db/mongodb';
 
-const COLLECTION_NAME = 'templates_header';
+const COLLECTION_NAME = 'templates_footer';
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
         const websiteId = searchParams.get('websiteId');
         const slug = searchParams.get('slug');
         const tenantId = searchParams.get('tenantId');
-
+    const id=   searchParams.get('id');
         const db = await getDatabase();
 
         // Build filter based on query parameters
@@ -25,20 +25,20 @@ export async function GET(request: NextRequest) {
         if (websiteId) filter.websiteId = websiteId;
         if (slug) filter.slug = slug;
         if (tenantId) filter.tenantId = tenantId;
-
+        if (id) filter._id = typeof id === 'string' ? new ObjectId(id) : id;    
         console.log('Filter:', filter); // Debug log
 
-        const headers = await db
+        const footers = await db
             .collection(COLLECTION_NAME)
             .find(filter)
             .sort({ createdAt: -1 })
             .toArray();
 
-        console.log('Found headers:', headers.length); // Debug log
+        console.log('Found footers:', footers.length); // Debug log
 
-        return NextResponse.json({ items: headers });
+        return NextResponse.json({ items: footers });
     } catch (error) {
-        console.error('Error fetching headers:', error);
+        console.error('Error fetching footers:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -53,46 +53,49 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
 
         // Validate required fields
-        if (!body.slug || !body.websiteId || !body.tenantId) {
+        if (!body.websiteId || !body.tenantId || !body.category || !body.content) {
             return NextResponse.json(
-                { error: 'Slug, websiteId, and tenantId are required' },
+                { error: 'websiteId, tenantId, category, and content are required' },
                 { status: 400 }
             );
         }
 
         const db = await getDatabase();
 
-        // Check if header with the given websiteId already exists
-        const existingHeader = await db.collection(COLLECTION_NAME).findOne({
+        // Check if footer with the given websiteId already exists
+        const existingFooter = await db.collection(COLLECTION_NAME).findOne({
             websiteId: body.websiteId,
         });
 
-        if (existingHeader) {
+        if (existingFooter) {
             // Update only content and updatedAt
             const updateResult = await db.collection(COLLECTION_NAME).updateOne(
                 { websiteId: body.websiteId },
                 {
                     $set: {
-                        content: body.content || '',
+                        content: body.content,
                         updatedAt: new Date(),
                     },
                 }
             );
 
             // Fetch the updated document
-            const updatedHeader = await db.collection(COLLECTION_NAME).findOne({
+            const updatedFooter = await db.collection(COLLECTION_NAME).findOne({
                 websiteId: body.websiteId,
             });
 
             return NextResponse.json({
                 success: true,
-                data: updatedHeader,
-                message: 'Header updated successfully',
+                data: updatedFooter,
+                message: 'Footer updated successfully',
             }, { status: 200 });
         } else {
-            // Create new header
-            const newHeader = {
+            // Create new footer
+            const newFooter = {
                 slug: body.slug,
+                templateId: body.templateId,
+                label: body.label,
+                category: body.category,
                 tenantId: body.tenantId,
                 websiteId: body.websiteId,
                 content: body.content || '',
@@ -101,16 +104,16 @@ export async function POST(request: NextRequest) {
                 updatedAt: new Date(),
             };
 
-            const result = await db.collection(COLLECTION_NAME).insertOne(newHeader);
+            const result = await db.collection(COLLECTION_NAME).insertOne(newFooter);
 
             return NextResponse.json({
                 success: true,
-                data: { _id: result.insertedId, ...newHeader },
-                message: 'Header created successfully',
+                data: { _id: result.insertedId, ...newFooter },
+                message: 'Footer created successfully',
             }, { status: 201 });
         }
     } catch (error) {
-        console.error('Error creating/updating header:', error);
+        console.error('Error creating/updating footer:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -125,7 +128,7 @@ export async function PUT(request: NextRequest) {
         const body = await request.json();
 
         if (!body._id) {
-            return NextResponse.json({ error: 'Header ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'Footer ID is required' }, { status: 400 });
         }
 
         const db = await getDatabase();
@@ -146,17 +149,17 @@ export async function PUT(request: NextRequest) {
         );
 
         if (result.matchedCount === 0) {
-            return NextResponse.json({ error: 'Header not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Footer not found' }, { status: 404 });
         }
 
         // Fetch and return the updated document
-        const updatedHeader = await db.collection(COLLECTION_NAME).findOne({
+        const updatedFooter = await db.collection(COLLECTION_NAME).findOne({
             _id: new ObjectId(body._id),
         });
 
-        return NextResponse.json({ success: true, data: updatedHeader });
+        return NextResponse.json({ success: true, data: updatedFooter });
     } catch (error) {
-        console.error('Error updating header:', error);
+        console.error('Error updating footer:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
@@ -172,7 +175,7 @@ export async function DELETE(request: NextRequest) {
         const id = body.id;
 
         if (!id) {
-            return NextResponse.json({ error: 'Header ID is required' }, { status: 400 });
+            return NextResponse.json({ error: 'Footer ID is required' }, { status: 400 });
         }
 
         const db = await getDatabase();
@@ -182,12 +185,12 @@ export async function DELETE(request: NextRequest) {
         });
 
         if (result.deletedCount === 0) {
-            return NextResponse.json({ error: 'Header not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Footer not found' }, { status: 404 });
         }
 
         return NextResponse.json({ success: true });
     } catch (error) {
-        console.error('Error deleting header:', error);
+        console.error('Error deleting footer:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
