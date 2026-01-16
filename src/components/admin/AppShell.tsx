@@ -126,9 +126,7 @@ export type Website = {
   systemSubdomain?: string;
   serviceType: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
-  lang?: [
-    {name: string; code: string}
-  ];
+  lang?: [{ name: string; code: string }];
 };
 
 export type User = {
@@ -758,7 +756,7 @@ export function AppShell({
   );
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
- const router = useRouter();
+  const router = useRouter();
   React.useEffect(() => {
     if (currentBusiness && currentBusiness._id) {
       setIsHighLevelCollapsed(true);
@@ -769,22 +767,14 @@ export function AppShell({
   // const isHighLevelCollapsed = !params.website ? false : true;
   // const isHighLevelCollapsed = true
   const handleSignOut = async () => {
-    debugger
     try {
       resetRedux();
       localStorage.clear();
       sessionStorage.clear();
-      router.push("/");
-      // const res = await fetch("/api/appshell-data", {
-      //   method: "POST",
-      // });
-      // const result = await res.json();
-      // if (result.success) {
-      //   await signOut({ callbackUrl: "/", redirect: true });
-      // }
+      await signOut({ callbackUrl: "/auth/signin" });
     } catch (error) {
       console.error("Error during sign out:", error);
-      await signOut({ callbackUrl: "/" });
+      // await signOut({ callbackUrl: "/" });
     }
   };
 

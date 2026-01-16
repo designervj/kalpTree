@@ -132,24 +132,6 @@ export default function PageCreator({
       setMsg("Create failed");
       toast.error("Create failed");
     }
-
-    // start(async () => {
-    //   const res = await fetch(apiEndpoint, {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(formData),
-    //   });
-    //   const data= await res.json();
-    //    console.log("response of page create", data)
-    //   if (res.ok && data) {
-    //     dispatch(updateWebsitePages(data))
-    //     toast.success("Created successfully!");
-    //     router.push("/admin/website/pages");
-
-    //   } else {
-    //     toast.error("Create failed");
-    //   }
-    // });
   };
 
   const handleCancel = () => {

@@ -2,7 +2,6 @@ import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
-
 // GET: Get a page by id or slug (with websiteId)
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -18,7 +17,7 @@ export async function GET(req: Request) {
     filter.websiteId = websiteId;
   }
   const data = await collection.find(filter).sort({ name: 1 }).toArray();
-  console.log("datat---", data)
+  console.log("datat---", data);
   return NextResponse.json(data);
 }
 
@@ -28,18 +27,26 @@ export async function POST(req: Request) {
     const db = await getDatabase();
     const collection = db.collection("pages");
     const body = await req.json();
+    body.tenantId = new ObjectId(body.tenantId);
+    body.websiteId = new ObjectId(body.websiteId);
     // Optionally validate body here
     const now = new Date().toISOString();
     const newPage = {
       ...body,
       createdAt: now,
       updatedAt: now,
-      publishedAt: body.status === 'published' ? now : null,
+      publishedAt: body.status === "published" ? now : null,
     };
     const result = await collection.insertOne(newPage);
-    return NextResponse.json({ ...newPage, _id: result.insertedId }, { status: 201 });
+    return NextResponse.json(
+      { ...newPage, _id: result.insertedId },
+      { status: 201 }
+    );
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Failed to create page' }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Failed to create page" },
+      { status: 500 }
+    );
   }
 }
 
@@ -51,10 +58,10 @@ export async function PUT(req: Request) {
     const body = await req.json();
     // Handle both {_id: "..."} and {_id: { $oid: "..." }}
     if (!body._id) {
-      return NextResponse.json({ error: 'Missing _id' }, { status: 400 });
+      return NextResponse.json({ error: "Missing _id" }, { status: 400 });
     }
     let id;
-    if (typeof body._id === 'object' && body._id.$oid) {
+    if (typeof body._id === "object" && body._id.$oid) {
       id = new ObjectId(body._id.$oid);
     } else {
       id = new ObjectId(String(body._id));
@@ -65,7 +72,7 @@ export async function PUT(req: Request) {
     const updateDoc = {
       ...body,
       updatedAt: now,
-      publishedAt: body.status === 'published' ? (body.publishedAt || now) : null,
+      publishedAt: body.status === "published" ? body.publishedAt || now : null,
     };
     delete updateDoc._id;
     const updateResult = await collection.updateOne(
@@ -73,13 +80,16 @@ export async function PUT(req: Request) {
       { $set: updateDoc }
     );
     if (updateResult.matchedCount === 0) {
-      return NextResponse.json({ error: 'Page not found' }, { status: 404 });
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
     const updated = await collection.findOne({ _id: id });
     return NextResponse.json(updated);
   } catch (err: any) {
     console.error("PUT error:", err);
-    return NextResponse.json({ error: err.message || 'Failed to update page' }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Failed to update page" },
+      { status: 500 }
+    );
   }
 }
 
@@ -88,21 +98,23 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
-     console.log("deleet id", id)
+    console.log("deleet id", id);
     if (!id) {
-      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+      return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
     const db = await getDatabase();
     const collection = db.collection("pages");
-    const result = await collection.deleteOne({ _id: new ObjectId(String(id)) });
+    const result = await collection.deleteOne({
+      _id: new ObjectId(String(id)),
+    });
     if (result.deletedCount === 0) {
-      return NextResponse.json({ error: 'Page not found' }, { status: 404 });
+      return NextResponse.json({ error: "Page not found" }, { status: 404 });
     }
     return NextResponse.json({ success: true });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Failed to delete page' }, { status: 500 });
+    return NextResponse.json(
+      { error: err.message || "Failed to delete page" },
+      { status: 500 }
+    );
   }
 }
-
-
-

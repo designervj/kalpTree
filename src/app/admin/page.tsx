@@ -27,6 +27,7 @@ import QuickTool from "@/components/adminDashBoard/QuickTool";
 import GlanceCount from "@/components/adminDashBoard/GlanceCount";
 import GetAllWebsites from "@/components/admin/website/GetAllWebsites";
 import AdminHeader from "@/components/adminDashBoard/AdminHeader";
+import { auth } from "@/auth";
 
 /* ------------------------------------------
    Helpers
@@ -115,8 +116,8 @@ async function fetchWebsites(): Promise<BusinessSite[]> {
         wordpressAdminHref:
           platform === "wordpress"
             ? `/admin/wordpress?website=${encodeURIComponent(
-              String(w._id || w.id || "")
-            )}`
+                String(w._id || w.id || "")
+              )}`
             : undefined,
         iconStyle: platform === "wordpress" ? "wp" : "code",
       } satisfies BusinessSite;
@@ -237,16 +238,7 @@ function PillButton({
 ------------------------------------------ */
 
 export default async function AdminIndex() {
-  // const [agencies, businesses, websitesData, orders, categories, tags] =
-  //   await Promise.all([
-  //     fetchCount("/api/agencies"),
-  //     fetchCount("/api/businesses"),
-  //     fetchCount("/api/websites"),
-  //     fetchCount("/api/orders"),
-  //     fetchCount("/api/categories"),
-  //     fetchCount("/api/blog_tags"),
-  //   ]);
-
+  const session = await auth();
 
   const actions: ActionCard[] = [
     {
@@ -283,11 +275,11 @@ export default async function AdminIndex() {
     <>
       <GetAllAgency />
       <GetAllBusiness />
-      <GetAllWebsites/>
+      <GetAllWebsites />
       <div className="w-full space-y-10">
         {/* Header */}
-        <AdminHeader/>
-        
+        <AdminHeader />
+
         {/* Top Row: Promo + Quick Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Promo */}
@@ -305,9 +297,9 @@ export default async function AdminIndex() {
               </h3>
 
               <p className="mt-3 max-w-2xl text-white/80 leading-relaxed">
-                Host up to 300 sites on one plan with full site isolation, per-site
-                access control, and 24/7 priority support — built to save you time
-                and costs.
+                Host up to 300 sites on one plan with full site isolation,
+                per-site access control, and 24/7 priority support — built to
+                save you time and costs.
               </p>
 
               <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -343,18 +335,13 @@ export default async function AdminIndex() {
 
           {/* Quick Tools (right) */}
           <QuickTool />
-
         </div>
 
-
         {/* ✅ AT A GLANCE (counts moved here so "Your business" stays like screenshot) */}
-         <GlanceCount/>
-
+        <GlanceCount />
 
         {/* ✅ YOUR BUSINESS (Hostinger-like list design) */}
         <ShowListOfBusiness />
-
-
 
         {/* Action Center */}
         <div className="space-y-4">
@@ -423,14 +410,22 @@ export default async function AdminIndex() {
               </div>
 
               <div className="flex flex-wrap gap-2">
-                <Button variant="secondary" className="rounded-md text-white" asChild>
+                <Button
+                  variant="secondary"
+                  className="rounded-md text-white"
+                  asChild
+                >
                   <Link href="/admin/domains">
                     <Globe className="mr-2 h-4 w-4" />
                     Manage domain
                   </Link>
                 </Button>
 
-                <Button variant="secondary" className="rounded-md text-white" asChild>
+                <Button
+                  variant="secondary"
+                  className="rounded-md text-white"
+                  asChild
+                >
                   <Link href="/admin/emails">
                     <Mail className="mr-2 h-4 w-4" />
                     Manage email
@@ -451,5 +446,3 @@ export default async function AdminIndex() {
     </>
   );
 }
-
-

@@ -11,10 +11,5 @@ export default async function MainHomePage({
 }: {
   params?: Promise<{ slug: string; lang: string }>;
 }) {
-  const header = await headers();
-  const host = header.get("host");
-
-  console.log(host);
-
   return <PageTemplate params={params} />;
 }

@@ -14,8 +14,6 @@ export default async function PageTemplate({
   const header = await headers();
   const host = header.get("host");
 
-  console.log(host);
-
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
   let website = websiteData ? JSON.parse(websiteData) : null;
