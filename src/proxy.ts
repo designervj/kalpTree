@@ -58,7 +58,7 @@ export async function proxy(req: NextRequest) {
   const token = await getToken({
     req,
     secret: process.env.NEXTAUTH_SECRET,
-    // secureCookie: true,
+    secureCookie: process.env.NODE_ENV == "production" ? true : false,
   });
 
   console.log("HOST:", host);
