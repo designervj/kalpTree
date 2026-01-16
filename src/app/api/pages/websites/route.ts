@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   const filter: any = {};
   if (websiteId) {
     // websiteId is stored as string in the database, not ObjectId
-    filter.websiteId = websiteId;
+    filter.websiteId = typeof websiteId === "string" ? new ObjectId(websiteId) : websiteId;
   }
   const data = await collection.find(filter).sort({ name: 1 }).toArray();
   console.log("datat---", data);

@@ -1,6 +1,6 @@
 "use client";
 import { AppDispatch, RootState } from "@/store/store";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -46,8 +46,10 @@ export default function PageCreator({
   onCreateRedirect = "/admin/pages",
 }: PageCreatorProps) {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const {currentBusiness} = useSelector((state: RootState) => state.business);
+  const {curretAgency} = useSelector((state: RootState) => state.agency);
   // const {currentbusiness,currentWebsite} = useSelector((state: RootState) => state.dashboardDetails);
-
+const searchParams = useSearchParams()
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   // Single state object for all form data
@@ -126,6 +128,11 @@ export default function PageCreator({
 
     if (createWebsitePage.fulfilled.match(result)) {
       setMsg("Created successfully!");
+    const params = new URLSearchParams(searchParams.toString())
+      params.set('agencyid', curretAgency?._id?.toString()??"")
+      params.set('businessid', currentBusiness?._id?.toString()??"")
+    const primaryBusiness = currentWebsite?.primaryDomain?.[0]??null
+      router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`)  
       // router.push("/admin/website/pages");
       toast.success("Created successfully!");
     } else {
