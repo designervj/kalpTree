@@ -33,7 +33,7 @@ export const UpperBar = () => {
 
   const router = useRouter()
   const pathName = usePathname()
-  console.log("pathName", pathName)
+
   const searchParams = useSearchParams()
   const agencyId = searchParams.get("agencyid")
   const businessId = searchParams.get("businessid")
@@ -87,39 +87,39 @@ export const UpperBar = () => {
 
   const handleAgencyChange = (agencyId: string) => {
     const agency = agencies.find(a => a._id?.toString() === agencyId);
-     dispatch(setCurrentHeader(null));
+    dispatch(setCurrentHeader(null));
     dispatch(setCurretAgency(agency || null));
 
     const allBus = allBusiness.filter(item => item.tenantId === agency?._id)
 
     if (allBus.length === 1) {
       dispatch(setSelectedBusiness(allBus))
-     // dispatch(setCurrentBusiness(allBus[0]))
+      // dispatch(setCurrentBusiness(allBus[0]))
       const allWeb = websites.filter(item => item.tenantId === allBus[0]?._id)
       if (allWeb) {
         dispatch(setSelectedWebsite(allWeb))
-         
+
         //dispatch(setCurrentWebsite(allWeb[0]))
       }
 
       // Update URL search params
-const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
-   
+      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
+
       const params = new URLSearchParams(searchParams.toString())
       params.set('agencyid', agencyId)
       params.set('businessid', allBus[0]._id?.toString() || '')
 
-router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)
+      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)
     }
     else if (allBus.length > 1) {
       dispatch(setSelectedBusiness(allBus))
-     // dispatch(setCurrentBusiness(allBus[0]))
+      // dispatch(setCurrentBusiness(allBus[0]))
       const allWeb = websites.filter(item => item.tenantId === allBus[0]?.tenantId)
       if (allWeb) {
         dispatch(setSelectedWebsite(allWeb))
-       // dispatch(setCurrentWebsite(allWeb[0]))
+        // dispatch(setCurrentWebsite(allWeb[0]))
       }
-const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
+      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
       // Update URL search params
       const params = new URLSearchParams(searchParams.toString())
       params.set('agencyid', agencyId)
@@ -129,18 +129,28 @@ const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
   }
 
   const handleBusinessChange = (tenantId: string) => {
+    const params = new URLSearchParams(searchParams.toString())
     const business = allBusiness.find(b => b._id?.toString() === tenantId);
+    params.set('businessid', business?._id?.toString() || '')
+   params.set('agencyid', business?.tenantId?.toString() || '')
     dispatch(setCurrentBusiness(business || null));
     const allWeb = websites.filter(item => item.tenantId === business?._id)
     if (allWeb) {
       dispatch(setSelectedWebsite(allWeb))
       dispatch(setCurrentWebsite(allWeb[0]))
+      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null
+      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)
     }
   }
 
   const handleWebsiteChange = (websiteId: string) => {
     const website = websites.find(w => w._id?.toString() === websiteId);
     dispatch(setCurrentWebsite(website || null));
+    const params = new URLSearchParams(searchParams.toString())
+     const primaryBusiness = website?.primaryDomain?.[0] ?? null
+     params.set('businessid', currentBusiness?._id?.toString() || '')
+   params.set('agencyid', curretAgency?._id?.toString() || '')
+    router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)  
 
   }
 
