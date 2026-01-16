@@ -117,7 +117,7 @@ export const authConfig: NextAuthConfig = {
         domain:
           process.env.NODE_ENV === "production"
             ? ".kalptree.xyz" // 👈 FIXES www vs non-www
-            : ".localhost",
+            : undefined,
       },
     },
   },

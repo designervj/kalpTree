@@ -3,6 +3,7 @@ import NotFound from "@/app/not-found";
 import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
 import RenderHtml from "./RenderHtml";
+import { demoProduct, processedHTML } from "../../../../../../utils/utlis";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -22,8 +23,16 @@ export default async function PageTemplate({
     : null;
 
   const session = await auth();
-  let slug = param?.slug ? param.slug : "home";
+  let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
+
+  if (lang && lang.length > 2 && !slug) {
+    slug = lang;
+    lang = null;
+  } else if (!slug) {
+    slug = "home";
+  }
+
   if (!website) {
     const websiteColl = await getCollection("websites");
     const pagecoll = await getCollection("pages");
@@ -32,11 +41,11 @@ export default async function PageTemplate({
         $in: [host],
       },
     });
+
     let page = await pagecoll.findOne({
       websiteId: websitedata._id,
       slug: slug,
     });
-
     if (!lang && websitedata.lang) {
       lang = websitedata.lang.find((d: any) => d.default == true)?.name;
     }
@@ -46,6 +55,10 @@ export default async function PageTemplate({
       _id: websitedata._id.toString(),
       tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
     };
+  }
+
+  if (!website) {
+    return <NotFound />;
   }
 
   const html = website?.content2 ? website.content2[lang!] : website.content;
@@ -65,7 +78,7 @@ export default async function PageTemplate({
 
   const name = "Himanshu";
 
-  const processedHtml = html ? html.replace(/\{\{name\}\}/g, name) : "";
+  const processedHtml = html;
   // console.log("my html ---", processedHtml);
   return (
     <div>

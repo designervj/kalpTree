@@ -61,13 +61,6 @@ export async function proxy(req: NextRequest) {
     secureCookie: process.env.NODE_ENV == "production" ? true : false,
   });
 
-  console.log("HOST:", host);
-  console.log(
-    "COOKIES:",
-    req.cookies.getAll().map((c) => c.name)
-  );
-  console.log("TOKEN:", token);
-
   const { pathname } = req.nextUrl;
   const isProtected =
     pathname.startsWith("/admin") ||

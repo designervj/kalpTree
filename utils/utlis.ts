@@ -2078,3 +2078,586 @@ img{max-width:100%;display:block}
     tenantId: "",
   },
 ];
+
+export const demoProduct = [
+  {
+    id: "prod-womens-denim-jeans",
+    name: "Women's High Waist Skinny Jeans",
+    slug: "womens-high-waist-skinny-jeans",
+    description:
+      "Comfortable stretch denim jeans with high waist design and flattering skinny fit.",
+    categoryId: "cat-women-jeans",
+    brandId: "brand-denim-co",
+    segment: "B2C",
+    basePrice: 1499,
+    currency: "INR",
+    attributeSetId: "attrset-clothing",
+    attributes: {
+      fit: "fit-skinny",
+      fabric: "fabric-denim",
+      waist: "waist-high",
+      style: "style-casual",
+    },
+    images: [
+      {
+        id: "img-jeans-blue-front",
+        url: "https://example.com/images/jeans-blue-front.jpg",
+        role: "main",
+      },
+      {
+        id: "img-jeans-blue-back",
+        url: "https://example.com/images/jeans-blue-back.jpg",
+        role: "gallery",
+      },
+      {
+        id: "img-jeans-black-front",
+        url: "https://example.com/images/jeans-black-front.jpg",
+        role: "gallery",
+      },
+    ],
+    tags: ["trending", "bestseller"],
+    variants: [
+      {
+        id: "var-jeans-blue-28",
+        sku: "JEANS-BLU-28",
+        attributes: {
+          size: "size-28",
+          color: "color-blue",
+        },
+        price: 1499,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 18,
+        },
+        imageId: "img-jeans-blue-front",
+      },
+      {
+        id: "var-jeans-blue-30",
+        sku: "JEANS-BLU-30",
+        attributes: {
+          size: "size-30",
+          color: "color-blue",
+        },
+        price: 1499,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 22,
+        },
+        imageId: "img-jeans-blue-front",
+      },
+      {
+        id: "var-jeans-blue-32",
+        sku: "JEANS-BLU-32",
+        attributes: {
+          size: "size-32",
+          color: "color-blue",
+        },
+        price: 1499,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 15,
+        },
+        imageId: "img-jeans-blue-front",
+      },
+      {
+        id: "var-jeans-black-30",
+        sku: "JEANS-BLK-30",
+        attributes: {
+          size: "size-30",
+          color: "color-black",
+        },
+        price: 1549,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 12,
+        },
+        imageId: "img-jeans-black-front",
+      },
+    ],
+  },
+  {
+    id: "prod-unisex-hoodie",
+    name: "Unisex Cotton Blend Hoodie",
+    slug: "unisex-cotton-blend-hoodie",
+    description:
+      "Warm and cozy cotton-polyester blend hoodie with kangaroo pocket and adjustable drawstring hood.",
+    categoryId: "cat-unisex-hoodies",
+    brandId: "brand-streetwear",
+    segment: "B2C",
+    basePrice: 1299,
+    currency: "INR",
+    attributeSetId: "attrset-clothing",
+    attributes: {
+      fit: "fit-regular",
+      fabric: "fabric-cotton-blend",
+      sleeve_type: "sleeve-full",
+      style: "style-casual",
+    },
+    images: [
+      {
+        id: "img-hoodie-gray-front",
+        url: "https://example.com/images/hoodie-gray-front.jpg",
+        role: "main",
+      },
+      {
+        id: "img-hoodie-gray-side",
+        url: "https://example.com/images/hoodie-gray-side.jpg",
+        role: "gallery",
+      },
+      {
+        id: "img-hoodie-maroon-front",
+        url: "https://example.com/images/hoodie-maroon-front.jpg",
+        role: "gallery",
+      },
+    ],
+    tags: ["new", "winter-collection"],
+    variants: [
+      {
+        id: "var-hoodie-gray-s",
+        sku: "HOODIE-GRY-S",
+        attributes: {
+          size: "size-s",
+          color: "color-gray",
+        },
+        price: 1299,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 20,
+        },
+        imageId: "img-hoodie-gray-front",
+      },
+      {
+        id: "var-hoodie-gray-m",
+        sku: "HOODIE-GRY-M",
+        attributes: {
+          size: "size-m",
+          color: "color-gray",
+        },
+        price: 1299,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 35,
+        },
+        imageId: "img-hoodie-gray-front",
+      },
+      {
+        id: "var-hoodie-gray-l",
+        sku: "HOODIE-GRY-L",
+        attributes: {
+          size: "size-l",
+          color: "color-gray",
+        },
+        price: 1299,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 28,
+        },
+        imageId: "img-hoodie-gray-front",
+      },
+      {
+        id: "var-hoodie-maroon-m",
+        sku: "HOODIE-MAR-M",
+        attributes: {
+          size: "size-m",
+          color: "color-maroon",
+        },
+        price: 1349,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 18,
+        },
+        imageId: "img-hoodie-maroon-front",
+      },
+      {
+        id: "var-hoodie-black-xl",
+        sku: "HOODIE-BLK-XL",
+        attributes: {
+          size: "size-xl",
+          color: "color-black",
+        },
+        price: 1299,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 14,
+        },
+      },
+    ],
+  },
+  {
+    id: "prod-mens-formal-shirt",
+    name: "Men's Formal Cotton Shirt",
+    slug: "mens-formal-cotton-shirt",
+    description:
+      "Classic formal shirt in premium cotton fabric with wrinkle-resistant finish, perfect for office wear.",
+    categoryId: "cat-men-shirts",
+    brandId: "brand-premium-formals",
+    segment: "B2C",
+    basePrice: 1199,
+    currency: "INR",
+    attributeSetId: "attrset-clothing",
+    attributes: {
+      fit: "fit-regular",
+      fabric: "fabric-cotton",
+      sleeve_type: "sleeve-full",
+      collar_type: "collar-spread",
+    },
+    images: [
+      {
+        id: "img-shirt-white-front",
+        url: "https://example.com/images/shirt-white-front.jpg",
+        role: "main",
+      },
+      {
+        id: "img-shirt-white-detail",
+        url: "https://example.com/images/shirt-white-detail.jpg",
+        role: "gallery",
+      },
+      {
+        id: "img-shirt-skyblue-front",
+        url: "https://example.com/images/shirt-skyblue-front.jpg",
+        role: "gallery",
+      },
+    ],
+    tags: ["formal", "office-wear"],
+    variants: [
+      {
+        id: "var-shirt-white-38",
+        sku: "SHIRT-WHT-38",
+        attributes: {
+          size: "size-38",
+          color: "color-white",
+        },
+        price: 1199,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 25,
+        },
+        imageId: "img-shirt-white-front",
+      },
+      {
+        id: "var-shirt-white-40",
+        sku: "SHIRT-WHT-40",
+        attributes: {
+          size: "size-40",
+          color: "color-white",
+        },
+        price: 1199,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 30,
+        },
+        imageId: "img-shirt-white-front",
+      },
+      {
+        id: "var-shirt-white-42",
+        sku: "SHIRT-WHT-42",
+        attributes: {
+          size: "size-42",
+          color: "color-white",
+        },
+        price: 1199,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 22,
+        },
+        imageId: "img-shirt-white-front",
+      },
+      {
+        id: "var-shirt-skyblue-40",
+        sku: "SHIRT-SKY-40",
+        attributes: {
+          size: "size-40",
+          color: "color-skyblue",
+        },
+        price: 1249,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 16,
+        },
+        imageId: "img-shirt-skyblue-front",
+      },
+      {
+        id: "var-shirt-pink-40",
+        sku: "SHIRT-PNK-40",
+        attributes: {
+          size: "size-40",
+          color: "color-pink",
+        },
+        price: 1249,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 12,
+        },
+      },
+    ],
+  },
+  {
+    id: "prod-womens-kurta",
+    name: "Women's Cotton Printed Kurta",
+    slug: "womens-cotton-printed-kurta",
+    description:
+      "Beautiful ethnic kurta with vibrant prints, perfect for casual and festive occasions.",
+    categoryId: "cat-women-ethnic",
+    brandId: "brand-ethnic-wear",
+    segment: "B2C",
+    basePrice: 899,
+    currency: "INR",
+    attributeSetId: "attrset-clothing",
+    attributes: {
+      fit: "fit-regular",
+      fabric: "fabric-cotton",
+      sleeve_type: "sleeve-three-quarter",
+      pattern: "pattern-printed",
+    },
+    images: [
+      {
+        id: "img-kurta-floral-front",
+        url: "https://example.com/images/kurta-floral-front.jpg",
+        role: "main",
+      },
+      {
+        id: "img-kurta-floral-back",
+        url: "https://example.com/images/kurta-floral-back.jpg",
+        role: "gallery",
+      },
+      {
+        id: "img-kurta-geometric-front",
+        url: "https://example.com/images/kurta-geometric-front.jpg",
+        role: "gallery",
+      },
+    ],
+    tags: ["ethnic", "trending", "bestseller"],
+    variants: [
+      {
+        id: "var-kurta-floral-s",
+        sku: "KURTA-FLR-S",
+        attributes: {
+          size: "size-s",
+          color: "color-multicolor",
+        },
+        price: 899,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 28,
+        },
+        imageId: "img-kurta-floral-front",
+      },
+      {
+        id: "var-kurta-floral-m",
+        sku: "KURTA-FLR-M",
+        attributes: {
+          size: "size-m",
+          color: "color-multicolor",
+        },
+        price: 899,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 35,
+        },
+        imageId: "img-kurta-floral-front",
+      },
+      {
+        id: "var-kurta-floral-l",
+        sku: "KURTA-FLR-L",
+        attributes: {
+          size: "size-l",
+          color: "color-multicolor",
+        },
+        price: 899,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 24,
+        },
+        imageId: "img-kurta-floral-front",
+      },
+      {
+        id: "var-kurta-geometric-m",
+        sku: "KURTA-GEO-M",
+        attributes: {
+          size: "size-m",
+          color: "color-blue",
+        },
+        price: 949,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 20,
+        },
+        imageId: "img-kurta-geometric-front",
+      },
+      {
+        id: "var-kurta-solid-xl",
+        sku: "KURTA-SLD-XL",
+        attributes: {
+          size: "size-xl",
+          color: "color-maroon",
+        },
+        price: 849,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 15,
+        },
+      },
+    ],
+  },
+  {
+    id: "prod-mens-running-shoes",
+    name: "Men's Lightweight Running Shoes",
+    slug: "mens-lightweight-running-shoes",
+    description:
+      "Breathable mesh running shoes with cushioned sole for maximum comfort during workouts.",
+    categoryId: "cat-men-footwear",
+    brandId: "brand-sporty",
+    segment: "B2C",
+    basePrice: 1999,
+    currency: "INR",
+    attributeSetId: "attrset-footwear",
+    attributes: {
+      type: "type-running",
+      material: "material-mesh",
+      sole_type: "sole-eva",
+      closure: "closure-lace",
+    },
+    images: [
+      {
+        id: "img-shoes-black-side",
+        url: "https://example.com/images/shoes-black-side.jpg",
+        role: "main",
+      },
+      {
+        id: "img-shoes-black-top",
+        url: "https://example.com/images/shoes-black-top.jpg",
+        role: "gallery",
+      },
+      {
+        id: "img-shoes-blue-side",
+        url: "https://example.com/images/shoes-blue-side.jpg",
+        role: "gallery",
+      },
+    ],
+    tags: ["sports", "new", "running"],
+    variants: [
+      {
+        id: "var-shoes-black-8",
+        sku: "SHOES-BLK-8",
+        attributes: {
+          size: "size-8",
+          color: "color-black",
+        },
+        price: 1999,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 15,
+        },
+        imageId: "img-shoes-black-side",
+      },
+      {
+        id: "var-shoes-black-9",
+        sku: "SHOES-BLK-9",
+        attributes: {
+          size: "size-9",
+          color: "color-black",
+        },
+        price: 1999,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 22,
+        },
+        imageId: "img-shoes-black-side",
+      },
+      {
+        id: "var-shoes-black-10",
+        sku: "SHOES-BLK-10",
+        attributes: {
+          size: "size-10",
+          color: "color-black",
+        },
+        price: 1999,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 18,
+        },
+        imageId: "img-shoes-black-side",
+      },
+      {
+        id: "var-shoes-blue-9",
+        sku: "SHOES-BLU-9",
+        attributes: {
+          size: "size-9",
+          color: "color-blue",
+        },
+        price: 2099,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 12,
+        },
+        imageId: "img-shoes-blue-side",
+      },
+      {
+        id: "var-shoes-gray-10",
+        sku: "SHOES-GRY-10",
+        attributes: {
+          size: "size-10",
+          color: "color-gray",
+        },
+        price: 1999,
+        currency: "INR",
+        inventory: {
+          manageStock: true,
+          quantity: 10,
+        },
+      },
+    ],
+  },
+];
+
+export const processedHTML = (html: string, products: any[]) => {
+  let processedHtml = html;
+
+  for (let i = 0; i < products.length; i++) {
+    const product = products[i];
+    const index = i + 1; // Since placeholders are 1-indexed (product_name_1, etc.)
+
+    // Replace product name
+    processedHtml = processedHtml.replace(
+      new RegExp(`\\{\\{product_name_${index}\\}\\}`, "g"),
+      product.name
+    );
+
+    // Replace product price
+    processedHtml = processedHtml.replace(
+      new RegExp(`\\{\\{product_price_${index}\\}\\}`, "g"),
+      product.basePrice.toString()
+    );
+
+    // Replace product image
+    processedHtml = processedHtml.replace(
+      new RegExp(`\\{\\{product_image_${index}\\}\\}`, "g"),
+      "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    );
+  }
+
+  return processedHtml;
+};
