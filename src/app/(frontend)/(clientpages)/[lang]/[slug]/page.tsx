@@ -20,11 +20,11 @@ export default async function PageTemplate({
   const EditButton = (await import("../../EditButton")).default;
   console.log("host--", host)
 
-  // Check if it's localhost (any port) or the main KalpTree domain
+  // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
   const isLocalhost = host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
-  const isKalpTree = host?.includes("kalptree.xyz");
+  const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
-  if (isLocalhost || isKalpTree) {
+  if (isLocalhost || isMainKalpTree) {
     const session = await auth();
     const getHomePage = await db.collection("pages").findOne({
       slug: "home-kalptree"
