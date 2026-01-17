@@ -64,12 +64,12 @@ const websitesSlice = createSlice({
       })
 .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { websites, user, business } = action.payload;
-        if (websites && business) {
+        const { websites, user, business ,businessid } = action.payload;
+        if (websites && business && businessid) {
           state.websites = websites;
 
           state.hasfetched = true
-          const allwebsites = websites.filter((item: Website) => item.tenantId === business[0]?._id)
+          const allwebsites = websites.filter((item: Website) => item.tenantId === businessid)
           if (allwebsites) {
             state.selectedWebsites = allwebsites
             state.currentWebsite = allwebsites[0]

@@ -28,10 +28,10 @@ const GetDashBoardDetails = () => {
     : params.website;
 
   useEffect(() => {
-    if (agencies.length == 0 && !hasfetched && agencyid) {
-      dispatch(savedashboardDetailsThunk());
+    if (agencies.length == 0 && !hasfetched && agencyid && businessid) {
+      dispatch(savedashboardDetailsThunk({agencyid,businessid}));
     }
-  }, [agencies,hasfetched,agencyid]);
+  }, [agencies,hasfetched,agencyid,businessid]);
 
   // useEffect(() => {
   //   if (totalwebsites.length > 0 || websites.length > 0) {
