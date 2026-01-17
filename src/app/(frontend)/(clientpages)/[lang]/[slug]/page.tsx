@@ -18,7 +18,7 @@ export default async function PageTemplate({
     const db = await getDatabase();
     
     const EditButton = (await import("../../EditButton")).default;
-
+  console.log("host--",host)
   if(host==="localhost:55803"||host==="127.0.0.1:55803"||host==="https://kalptree.xyz"||host==="http://kalptree.xyz"){
     const session=await auth();
     const getHomePage=await db.collection("pages").findOne({
