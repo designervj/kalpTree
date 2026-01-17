@@ -4,11 +4,14 @@ import { ArrowRight, FileText, ImageIcon, Link as LinkIcon, Palette, ShoppingCar
 import React from 'react'
 import { Card, CardContent } from '../ui/card';
 import Link from 'next/link';
+import { useSelector } from 'react-redux'
+import { RootState } from '@/store/store'
 
 const QuickTool = () => {
+        const {user} = useSelector((state: RootState) => state.user);
     return (
         <>
-            <Card className="rounded-2xl border bg-white shadow-sm">
+           { user?.role != "business" && <Card className="rounded-2xl border bg-white shadow-sm">
                 <CardContent className="p-6">
                     <div className="flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-slate-700" />
@@ -44,7 +47,7 @@ const QuickTool = () => {
                         })}
                     </div>
                 </CardContent>
-            </Card>
+            </Card>}
         </>
     )
 }
