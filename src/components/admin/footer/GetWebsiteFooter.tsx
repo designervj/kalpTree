@@ -30,7 +30,7 @@ const GetWebsiteFooter = () => {
            }));
         
            //  router.push(`/${copied.slug}`);
-           window.open(`/footer?id=${footer._id} &websiteId=${footer.websiteId}`, "_blank", "noopener,noreferrer");
+           window.open(`/footer?id=${footer._id}&websiteId=${footer.websiteId}`, "_blank", "noopener,noreferrer");
     };
 
     const handleDelete = () => {

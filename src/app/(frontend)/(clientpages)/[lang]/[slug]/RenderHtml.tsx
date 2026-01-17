@@ -1,53 +1,53 @@
 "use client";
-import { fetchFooters } from '@/hooks/slices/footer/FooterThunk';
-import { AppDispatch, RootState } from '@/store/store';
-import React, { useEffect } from 'react'
+import { Website } from '@/components/admin/AppShell';
+import { TemplateDocument } from '@/components/admin/templates/TemplateType';
+import React from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 
 type props = {
     html: string
+    currentWebsite: Website | null
+    headerData: TemplateDocument | null
+    footerData: TemplateDocument | null
 }
-const RenderHtml = ({ html }: props) => {
-
-    const { currentHeader } = useSelector((state: RootState) => state.header);
-    const { currentFooter } = useSelector((state: RootState) => state.footer);
-
-    const dispatch = useDispatch<AppDispatch>();
-
-    // fetch the current footer based on tenantId
-    useEffect(() => {
-        if (currentFooter == null &&
-            currentHeader &&
-            currentHeader.websiteId &&
-                currentHeader.tenantId) {
-            dispatch(fetchFooters({ tenantId: currentHeader.tenantId, websiteId: currentHeader.websiteId }));
-        }
-    }, [currentFooter, currentHeader]);
+const RenderHtml = ({ html, currentWebsite, footerData, headerData }: props) => {
+    localStorage.setItem("current_website", JSON.stringify(currentWebsite));
+    localStorage.setItem("current_header", JSON.stringify(headerData));
+    localStorage.setItem("current_footer", JSON.stringify(footerData));
+    console.log("current_website", currentWebsite);
+    console.log("current_header", headerData);
+    console.log("html", html);
 
     return (
-        <>
-        <div>
-            {/* Render header at the top if currentHeader exists */}
-            {currentHeader && currentHeader.content && (
-                <div
-                    suppressHydrationWarning
-                    dangerouslySetInnerHTML={{ __html: currentHeader.content }}
-                />
+        <div >
+            {/* Render header at the top if headerData exists */}
+            {headerData && headerData.content && (
+            
+                    <div
+                        suppressHydrationWarning
+                        dangerouslySetInnerHTML={{ __html: headerData.content.replace(/\\n/g, '') || '' }}
+                    />
+             
             )}
 
             {/* Render main page content */}
-            <div
-                suppressHydrationWarning
-                dangerouslySetInnerHTML={{ __html: html }}
-            />  
-        </div>
-        {currentFooter && currentFooter.content && (
+            <main>
                 <div
                     suppressHydrationWarning
-                    dangerouslySetInnerHTML={{ __html: currentFooter.content }}
+                    dangerouslySetInnerHTML={{ __html: html }}
                 />
+            </main>
+
+            {/* Render footer at the bottom if footerData exists */}
+            {footerData && footerData.content && (
+             
+                    <div
+                        suppressHydrationWarning
+                        dangerouslySetInnerHTML={{ __html: footerData.content.replace(/\\n/g, '') || '' }}
+                    />
+           
             )}
-        </>
+        </div>
     )
 }
 

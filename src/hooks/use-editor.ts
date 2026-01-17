@@ -100,7 +100,8 @@ export function useEditor(containerId: string) {
 
   const dispatch = useDispatch<AppDispatch>()
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
-
+ const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   useEffect(() => {
     const initEditor = async () => {
       try {
@@ -460,18 +461,57 @@ export function useEditor(containerId: string) {
       if (!component.get("interactions")) {
         component.set("interactions", []);
       }
-    });
 
-    editor.on("component:update", (component: any) => {
-      if (
-        state.selectedElement &&
-        component &&
-        component.cid === state.selectedElement.cid
-      ) {
-        // Update styles when the currently selected component is updated
-        updateStylesFromComponent(component);
+      // Add custom toolbar button only if it doesn't already exist
+      const defaultToolbar = component.get('toolbar');
+      const hasAiChatButton = defaultToolbar.some((btn: any) =>
+        btn.attributes?.title === 'AI Chat'
+      );
+
+      if (!hasAiChatButton) {
+        const customToolbar = [
+          ...defaultToolbar,
+          {
+            attributes: { title: 'AI Chat' },
+            label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              <circle cx="9" cy="10" r="1"></circle>
+              <circle cx="15" cy="10" r="1"></circle>
+              <path d="M9 14s1 1 3 1 3-1 3-1"></path>
+            </svg>`,
+            command: (editor: any) => {
+              console.log('AI Chat button clicked!', component);
+
+              // Get component HTML
+              const componentHtml = component.toHTML();
+              // console.log('Component HTML:', componentHtml);
+
+              // Store component with its HTML
+              setSelectedComponentForAi({
+                component,
+                html: componentHtml,
+                type: component.get('type'),
+                tagName: component.get('tagName')
+              });
+              setIsAiChatOpen(true);
+            },
+          },
+        ];
+        component.set('toolbar', customToolbar);
       }
     });
+
+    // Commented out to prevent excessive state updates
+    // editor.on("component:update", (component: any) => {
+    //   if (
+    //     state.selectedElement &&
+    //     component &&
+    //     component.cid === state.selectedElement.cid
+    //   ) {
+    //     // Update styles when the currently selected component is updated
+    //     updateStylesFromComponent(component);
+    //   }
+    // });
 
     editor.on("component:deselected", () => {
       setState((prev) => ({
@@ -570,8 +610,8 @@ export function useEditor(containerId: string) {
       }
     });
 
-    // Component changes
-    editor.on("component:update", () => updateLayers(editor));
+    // Component changes - commented out component:update to prevent excessive updates
+    // editor.on("component:update", () => updateLayers(editor));
     editor.on("component:add", () => updateLayers(editor));
     editor.on("component:remove", () => updateLayers(editor));
   };
@@ -1588,5 +1628,8 @@ export function useEditor(containerId: string) {
   return {
     state,
     actions,
+      isAiChatOpen,
+    setIsAiChatOpen,
+    selectedComponentForAi,
   };
 }

@@ -6,7 +6,7 @@ import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export const fetchHeaders = createAsyncThunk<
     TemplateDocument[],
-    { websiteId?: string; tenantId?: string, id?: string },
+    { websiteId?: string|ObjectId; tenantId?: string|ObjectId, id?: string },
     { state: { header: HeaderState }; rejectValue: string }
 >(
     "header/fetchHeaders",
@@ -14,8 +14,8 @@ export const fetchHeaders = createAsyncThunk<
         try {
             let url = `/api/admin/header`;
             const params = new URLSearchParams();
-            if (websiteId) params.append('websiteId', websiteId);
-            if (tenantId) params.append('tenantId', tenantId);
+            if (websiteId) params.append('websiteId', websiteId.toString());
+            if (tenantId) params.append('tenantId', tenantId.toString());
             if (id) params.append('id', id);
             if (params.toString()) url += `?${params.toString()}`;
 

@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
 import RenderHtml from "./RenderHtml";
 import { demoProduct, processedHTML } from "../../../../../../utils/utlis";
+import { getDatabase } from "@/lib/db/mongodb";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -14,7 +15,35 @@ export default async function PageTemplate({
   const param = await params;
   const header = await headers();
   const host = header.get("host");
-  const jar = await cookies();
+    const db = await getDatabase();
+    
+    const EditButton = (await import("../../EditButton")).default;
+  if(host==="localhost:55803"||host==="127.0.0.1:55803"||host==="kalptree.xyz"){
+    const session=await auth();
+    const getHomePage=await db.collection("pages").findOne({
+      slug:"home-kalptree"
+    })
+     if(!getHomePage){
+      return <NotFound />
+     }
+     const html=getHomePage.content
+
+     return  <div>
+      { <EditButton
+        pageData={getHomePage}
+        currentWebsite={null}
+        user={session?.user||null}
+        type="page"
+      />}
+      <RenderHtml html={html}
+        currentWebsite={null}
+        headerData={null}
+        footerData={null}
+      />
+    </div>
+     
+  }else{
+     const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
   let website = websiteData ? JSON.parse(websiteData) : null;
   const currentWebsiteData = jar.get("current_website")?.value || null;
@@ -33,9 +62,15 @@ export default async function PageTemplate({
     slug = "home";
   }
 
+  // Get header/footer collection (needed regardless of website source)
+
+  const allheader_coll = await db.collection("templates_header");
+  const allfooter_coll = await db.collection("templates_footer");
+
   if (!website) {
     const websiteColl = await getCollection("websites");
     const pagecoll = await getCollection("pages");
+
     let websitedata = await websiteColl.findOne({
       primaryDomain: {
         $in: [host],
@@ -73,8 +108,25 @@ export default async function PageTemplate({
     tenantId: String(website.tenantId),
     websiteId: String(website.websiteId),
   };
+  if (!allheader_coll) {
+    return <NotFound />;
+  }
+  if(!allfooter_coll){
+    return <NotFound />;
+  }
 
-  const EditButton = (await import("../../EditButton")).default;
+
+  const headerData = await allheader_coll.findOne({
+    websiteId: currentWebsite._id,
+ 
+  });
+
+  const footerData = await allfooter_coll.findOne({
+    websiteId: currentWebsite._id,
+   
+  });
+
+  
 
   const name = "Himanshu";
 
@@ -82,12 +134,21 @@ export default async function PageTemplate({
   // console.log("my html ---", processedHtml);
   return (
     <div>
-      <EditButton
+      {  session &&session.user &&<EditButton
         pageData={website}
         currentWebsite={currentWebsite}
         user={session?.user || {}}
+        type="page"
+      />}
+      <RenderHtml html={processedHtml}
+        currentWebsite={currentWebsite}
+        headerData={headerData || {}}
+        footerData={footerData || {}}
       />
-      <RenderHtml html={processedHtml} />
     </div>
   );
 }
+
+  }
+ 
+ 

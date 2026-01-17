@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
@@ -7,7 +7,8 @@ import { fetchFooterById } from '@/hooks/slices/footer/FooterThunk';
 import EditButton from '../(frontend)/(clientpages)/EditButton';
 import { getAllWebsites, getCurrentWebsites } from '@/hooks/slices/websites/WebsiteThunk';
 import { Website } from '@/components/admin/AppShell';
-import { fetchCurrentHeaders, fetchHeaders } from '@/hooks/slices/header/HeaderThunk';
+import { fetchCurrentHeaders, } from '@/hooks/slices/header/HeaderThunk';
+import { clearPageEdit } from '@/hooks/slices/pageEditSlice';
 
 
 const HeaderContent = () => {
@@ -20,36 +21,44 @@ const HeaderContent = () => {
     const { currentWebsite } = useSelector((state: RootState) => state.websites)
 
     useEffect(() => {
-        if (id && page == null) {
+        // Only fetch header if page is null OR if type is not 'footer'
+        if (id && (page == null || type !== 'header')) {
             dispatch(fetchCurrentHeaders({ id }))
         }
-    }, [id, page, updatePage, type, dispatch])
+    }, [id, page, type, dispatch])
+
+    const currentPage = useMemo(() => {
+        return page
+    }, [page])
 
     useEffect(() => {
         if (websiteId && currentWebsite == null) {
             dispatch(getCurrentWebsites({ id: websiteId }))
         }
-    }, [websiteId, currentWebsite, updatePage, type, dispatch])
+    }, [websiteId, currentWebsite, dispatch])
+
+
 
 
     return (
         <>
-        <h2>Hello</h2>
-            {page && (
+
+            {currentPage && (
                 <>
                     <EditButton
-                        pageData={page}
+                        pageData={currentPage}
                         currentWebsite={currentWebsite as Website}
                         user={user as any}
+                        type="header"
                     />
-                    {page.content && (
+                    {currentPage.content && (
                         <div
-                            key={page._id?.toString()}
+                            key={currentPage._id?.toString()}
                             className="p-4"
                         >
                             <div
                                 dangerouslySetInnerHTML={{
-                                    __html: page.content.replace(/\\n/g, '') || ''
+                                    __html: currentPage.content.replace(/\\n/g, '') || ''
                                 }}
                             />
                         </div>
