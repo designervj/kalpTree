@@ -24,32 +24,32 @@ export default async function PageTemplate({
   const isLocalhost = host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
   const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
-  if (isLocalhost || isMainKalpTree) {
-    const session = await auth();
-    const getHomePage = await db.collection("pages").findOne({
-      slug: "home-kalptree"
-    })
-    if (!getHomePage) {
-      return <NotFound />
-    }
-    const html = getHomePage.content
+  // if (isLocalhost || isMainKalpTree) {
+  //   const session = await auth();
+  //   const getHomePage = await db.collection("pages").findOne({
+  //     slug: "home-kalptree"
+  //   })
+  //   if (!getHomePage) {
+  //     return <NotFound />
+  //   }
+  //   const html = getHomePage.content
 
-    return <div>
-      {session && session.user && session.user.role == "superadmin" &&
-        <EditButton
-          pageData={getHomePage}
-          currentWebsite={null}
-          user={session?.user || null}
-          type="page"
-        />}
-      <RenderHtml html={html}
-        currentWebsite={null}
-        headerData={null}
-        footerData={null}
-      />
-    </div>
+  //   return <div>
+  //     {session && session.user && session.user.role == "superadmin" &&
+  //       <EditButton
+  //         pageData={getHomePage}
+  //         currentWebsite={null}
+  //         user={session?.user || null}
+  //         type="page"
+  //       />}
+  //     <RenderHtml html={html}
+  //       currentWebsite={null}
+  //       headerData={null}
+  //       footerData={null}
+  //     />
+  //   </div>
 
-  } else {
+  // } else {
     const jar = await cookies();
     let websiteData = jar.get("current_website_data")?.value || null;
     let website = websiteData ? JSON.parse(websiteData) : null;
@@ -147,5 +147,5 @@ export default async function PageTemplate({
     }
   }
 
-}
+// }
 
