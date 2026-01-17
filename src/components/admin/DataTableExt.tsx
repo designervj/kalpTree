@@ -41,6 +41,7 @@ import BreadCrumbPage from "../breadCrumb/BreadCrumbPage";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
+import { WebsitePageModel } from "./website/websitePage/WebsitePageType";
 
 export type ColumnConfig = {
   key: string;
@@ -388,32 +389,43 @@ export function DataTableExt({
   console.log("pageName", pageName);
 
   const handleBuilderEdit = async (
-    e: React.MouseEvent,
-    row: {
-      slug?: string;
-      primaryDomain?: string[];
-      content?: string;
-      website?: any;
-    }
+   row: WebsitePageModel
   ) => {
-    const copied = structuredClone(row);
-    delete copied.website;
-    dispatch(setPageEdit(copied));
-    try {
-      const res = await fetch(`/api/session/website`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ website: copied, currentWebsite }),
-      });
-      const data = await res.json();
-      console.log("data--", data);
-    } catch (e) {
-      console.log("e--", e);
+        const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
+      ? currentWebsite?.primaryDomain[0]
+      : currentWebsite?.primaryDomain;
+    const localsub =
+      typeof currentSubdomain === "string"
+        ? currentSubdomain.split(".")[0]
+        : "";
+    const isLocalHost = window.location.hostname.includes("localhost");
+
+    if (isLocalHost) {
+      const url = `http://${localsub}.localhost:55803/${row.slug}`;
+
+      window.open(url, "_blank");
+    } else {
+      const url = `https://${currentSubdomain}/${row.slug}`;
+      window.open(url, "_blank");
     }
-    //  router.push(`/${copied.slug}`);
-    window.open(`/${copied.slug}`, "_blank", "noopener,noreferrer");
+    // const copied = structuredClone(row);
+    // delete copied.website;
+    // dispatch(setPageEdit(copied));
+    // try {
+    //   const res = await fetch(`/api/session/website`, {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ website: copied, currentWebsite }),
+    //   });
+    //   const data = await res.json();
+    //   console.log("data--", data);
+    // } catch (e) {
+    //   console.log("e--", e);
+    // }
+    // //  router.push(`/${copied.slug}`);
+    // window.open(`/${copied.slug}`, "_blank", "noopener,noreferrer");
   };
 
   return (
@@ -700,7 +712,7 @@ export function DataTableExt({
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
-                          onClick={(e) => handleBuilderEdit(e, row)}
+                          onClick={() => handleBuilderEdit( row)}
                           title="Builder"
                         >
                           <Layout className="h-4 w-4" />

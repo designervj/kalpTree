@@ -52,6 +52,7 @@ export default async function PageTemplate({
   // } else {
     const jar = await cookies();
     let websiteData = jar.get("current_website_data")?.value || null;
+    console.log("websiteData", websiteData)
     let website = websiteData ? JSON.parse(websiteData) : null;
     const currentWebsiteData = jar.get("current_website")?.value || null;
     let currentWebsite = currentWebsiteData
@@ -68,7 +69,10 @@ export default async function PageTemplate({
     } else if (!slug) {
       slug = "home";
     }
-
+   console.log("slug", slug)
+   console.log("lang", lang)
+   console.log("website", website)
+   console.log("currentWebsite", currentWebsite)
     // Get header/footer collection (needed regardless of website source)
     try {
       const allheader_coll = await db.collection("templates_header");
@@ -88,6 +92,9 @@ export default async function PageTemplate({
           websiteId: websitedata._id,
           slug: slug,
         });
+
+     
+        console.log("page--->", page)
         if (!lang && websitedata.lang) {
           lang = websitedata.lang.find((d: any) => d.default == true)?.name;
         }
