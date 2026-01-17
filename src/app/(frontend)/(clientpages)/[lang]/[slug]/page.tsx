@@ -18,7 +18,8 @@ export default async function PageTemplate({
     const db = await getDatabase();
     
     const EditButton = (await import("../../EditButton")).default;
-  if(host==="localhost:55803"||host==="127.0.0.1:55803"||host==="kalptree.xyz"){
+  console.log("host--",host)
+  if(host==="localhost:55803"||host==="127.0.0.1:55803"||host==="https://kalptree.xyz"||host==="http://kalptree.xyz"){
     const session=await auth();
     const getHomePage=await db.collection("pages").findOne({
       slug:"home-kalptree"
@@ -29,7 +30,8 @@ export default async function PageTemplate({
      const html=getHomePage.content
 
      return  <div>
-      { <EditButton
+      {session && session.user && session.user.role=="superadmin" &&
+       <EditButton
         pageData={getHomePage}
         currentWebsite={null}
         user={session?.user||null}
