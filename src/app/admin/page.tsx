@@ -28,6 +28,7 @@ import GlanceCount from "@/components/adminDashBoard/GlanceCount";
 import GetAllWebsites from "@/components/admin/website/GetAllWebsites";
 import AdminHeader from "@/components/adminDashBoard/AdminHeader";
 import { auth } from "@/auth";
+import Promo from "@/components/adminDashBoard/Promo";
 
 /* ------------------------------------------
    Helpers
@@ -283,7 +284,7 @@ export default async function AdminIndex() {
         {/* Top Row: Promo + Quick Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Promo */}
-         
+         <Promo />
 
           {/* Quick Tools (right) */}
           <QuickTool />
