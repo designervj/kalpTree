@@ -18,6 +18,7 @@ const GetDashBoardDetails = () => {
   //   currentAgency,
   // } = useSelector((state: RootState) => state.dashboardDetails);
   const {agencies,hasfetched}=useSelector((state: RootState)=>state.agency)
+  const {user}=useSelector((state: RootState)=>state.user)
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const query = useSearchParams();
@@ -28,16 +29,28 @@ const GetDashBoardDetails = () => {
     : params.website;
 
   useEffect(() => {
-    if (agencies.length == 0 && !hasfetched && agencyid && businessid) {
-      dispatch(savedashboardDetailsThunk({agencyid,businessid}));
+    if (agencies.length == 0 &&
+       !hasfetched && 
+       agencyid && 
+       businessid
+      && user) {
+      dispatch(savedashboardDetailsThunk({agencyid,businessid, user}));
     }
-  }, [agencies,hasfetched,agencyid,businessid]);
+  }, [agencies,hasfetched,agencyid,businessid, user]);
 
-  // useEffect(() => {
-  //   if (totalwebsites.length > 0 || websites.length > 0) {
-  //     dispatch(onParamsChange({ agencyid, businessid, url }));
-  //   }
-  // }, [totalwebsites]);
+ // if user is business get particular agenncy, business and website
+
+ useEffect(() => {
+  if (user?.role == "business" &&
+    user.tenantId &&
+    user.id &&
+    agencies.length == 0 &&
+       !hasfetched
+  ) {
+     dispatch(savedashboardDetailsThunk({agencyid:user?.tenantId.toString(),businessid:user?.id.toString(),user}));
+
+  }
+ }, [user,agencies, hasfetched]);
   
   return null;
 };

@@ -7,6 +7,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { pageService } from "@/modules/website/page-service";
 import { User, Website } from "@/components/admin/AppShell";
 import { IBusiness } from "@/models/business";
+import { IUser } from "@/models/user";
 
 const applyAgencyChange = (state: dashboardDetailsState, agencyId: string) => {
   const selectedAgency = state.agencies.find((d) => d._id === agencyId);
@@ -79,7 +80,7 @@ const initialState: dashboardDetailsState = {
 // Thunk to save page via API
 export const savedashboardDetailsThunk = createAsyncThunk(
   "dashboard/savedashboard",
-  async (payload: { agencyid: string; businessid: string }) => {
+  async (payload: { agencyid: string; businessid: string, user: IUser }) => {
     try {
       const response = await fetch(`/api/appshell-data`);
       const data = await response.json();
@@ -91,8 +92,8 @@ export const savedashboardDetailsThunk = createAsyncThunk(
           business:data.business,
           websites:data.websites,
           user:data.user,
-          agencyid:payload.agencyid,
-          businessid:payload.businessid};
+          agencyid:payload.user.role=="business"?data.agencies[0]._id:payload.agencyid,
+          businessid:payload.user.role=="business"?data.business[0]._id:payload.businessid};
     } catch (error) {
       // Optionally handle error (e.g., show toast)
       throw error;

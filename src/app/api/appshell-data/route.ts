@@ -39,15 +39,15 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   const user = session?.user
     ? {
-        id: session.user.id || "",
-        email: session.user.email || "",
-        role: session.user.role || "",
-        permissions: Array.isArray((session.user as any).permissions)
-          ? (session.user as any).permissions
-          : undefined,
-        createdById: session.user.createdById || "",
-        tenantId: session.user.tenantId || "",
-      }
+      id: session.user.id || "",
+      email: session.user.email || "",
+      role: session.user.role || "",
+      permissions: Array.isArray((session.user as any).permissions)
+        ? (session.user as any).permissions
+        : undefined,
+      createdById: session.user.createdById || "",
+      tenantId: session.user.tenantId || "",
+    }
     : null;
   let agencies: any[] = [];
   let business: any[] = [];
@@ -85,8 +85,8 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
   } else if (user?.role == "agency") {
-     agencies = await agencyColl
-      .find({ type: "agency" , _id:new ObjectId(user.tenantId) })
+    agencies = await agencyColl
+      .find({ type: "agency", _id: new ObjectId(user.tenantId) })
       .project({
         _id: 1,
         name: 1,
@@ -94,17 +94,17 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
 
-      console.log(  "agenc login ---", agencies)
+
     business = await agencyColl
       .find({ tenantId: new ObjectId(user.tenantId) })
       .project({
         name: 1,
         _id: 1,
-         tenantId: 1,
+        tenantId: 1,
       })
       .toArray();
 
-      console.log("allbusiness",business)
+    console.log("allbusiness", business)
     websites = await websiteColl
       .find({
         tenantId: {
@@ -119,6 +119,31 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
   } else if (user?.role == "business") {
+
+
+ 
+
+    business = await agencyColl
+      .find({ _id: new ObjectId(user.tenantId) })
+      .project({
+        name: 1,
+        _id: 1,
+        tenantId: 1,
+        email: 1,
+      })
+      .toArray();
+
+
+         agencies = await agencyColl
+      .find({ type: "agency", _id: new ObjectId(business[0].tenantId) })
+      .project({
+        _id: 1,
+        name: 1,
+        tenantId: 1,
+        email: 1,
+      })
+      .toArray();
+
     websites = await websiteColl
       .find({
         tenantId: new ObjectId(user.tenantId),

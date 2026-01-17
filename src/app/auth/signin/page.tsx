@@ -60,7 +60,7 @@ function SignInForm() {
       if (session && ["agency", "superadmin"].includes(session?.user?.role)) {
         router.push("/admin");
       } else {
-        router.push("/admin/websites");
+        router.push("/admin");
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Sign-in failed";

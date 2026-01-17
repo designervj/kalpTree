@@ -943,13 +943,13 @@ export function AppShell({
       </header>
 
       <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-        <HighLevelSidebar
+   {    user && user.role!= "business" && <HighLevelSidebar
           user={user}
           collapsed={collapsed}
           setCollapsed={setCollapsed}
           showSidebar={showSidebar}
           setShowSidebar={setShowSidebar}
-        />
+        />}
 
         {isHighLevelCollapsed && (
           <Sidebar
