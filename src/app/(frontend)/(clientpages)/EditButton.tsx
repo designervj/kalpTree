@@ -75,14 +75,19 @@ export default function WpAdminEditorBar({
     "";
 
   const handleEditInBuilder = () => {
-  const {user } = useSelector((state: RootState) => state.user);
+
     dispatch(setPageEdit({
       page:pageData,
       type:type
     }));
     let lang = currentWebsite?.lang ? currentWebsite.lang[0].name : "en";
+    console.log("lang", lang)
+    console.log("pageData", pageData)
+    console.log("currentWebsite", currentWebsite)
+    const slug = pageData?.slug ? pageData.slug : "";
+    console.log("slug", slug)
     router.push(
-      pageData?.slug ? `/${lang}/${pageData.slug}/builder` : "/builder"
+      slug ? `/${lang}/${slug}/builder` : "/builder"
     );
   }
 
