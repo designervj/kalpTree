@@ -1,0 +1,7 @@
+product_type,product_title,base_price,description,segment_type,category_id,brand,tags,option_id_1,option_value_1,option_unit_1,option_id_2,option_value_2,option_unit_2,option_id_3,option_value_3,option_unit_3,variant_sku,variant_price,variant_stock,attribute_id_1,attribute_value_1
+main-1,Trip Demo,200,Trip to Bhusan,Wall,travel,PPG,,destination-location,jaipur,km,source-location,kanpur,km,meal-plan,"0,1",,,,,,
+main-1,,,,,,,,,,,,,,,,,wasda,20,3,meal-plan,1
+main-1,,,,,,,,,,,,,,,,,asfa,20,3,meal-plan,0
+main-2,Trip Demo 2,200,Trip to Nepal,Wall,travel,PPG,,destination-location,kanpur,km,source-location,nepal,km,meal-plan,"0,1",,,,,,
+main-2,,,,,,,,,,,,,,,,,wasda,20,3,meal-plan,1
+main-2,,,,,,,,,,,,,,,,,asfa,20,3,meal-plan,0

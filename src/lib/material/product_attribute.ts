@@ -7,8 +7,7 @@ const COLLECTION = "product_attributes";
 const toObjectId = (id: string | ObjectId) =>
   typeof id === "string" ? new ObjectId(id) : id;
 
-const escapeRegExp = (s: string) =>
-  s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export async function getAttributeById(
   id: string | ObjectId
@@ -40,7 +39,6 @@ export async function updateAttribute(
   return col.findOne({ _id } as any);
 }
 
-
 export async function createAttribute(
   data: MaterialAttributes
 ): Promise<MaterialAttributes> {
@@ -52,15 +50,18 @@ export async function createAttribute(
   // prevent duplicate name (case-insensitive) for the same websiteId
   const exists = await col.findOne({
     name: { $regex: `^${escapeRegExp(data.name)}$`, $options: "i" },
-    websiteId: data.websiteId
+    websiteId: data.websiteId,
   } as any);
-  if (exists) throw new Error("Attribute with same name already exists for this website");
+  if (exists)
+    throw new Error("Attribute with same name already exists for this website");
 
   const now = new Date();
 
   const doc: any = {
     ...data,
- 
+    category_id: data.category_id?.map((d) => {
+      return new ObjectId(String(d));
+    }),
     name: data.name.trim(),
     createdAt: now,
     updatedAt: now,
@@ -70,10 +71,7 @@ export async function createAttribute(
   return { ...doc, _id: result.insertedId } as MaterialAttributes;
 }
 
-
-export async function deleteAttribute(
-  id: string | ObjectId
-): Promise<boolean> {
+export async function deleteAttribute(id: string | ObjectId): Promise<boolean> {
   const db = await getDatabase();
   const col = db.collection<MaterialAttributes>(COLLECTION);
 
@@ -82,8 +80,9 @@ export async function deleteAttribute(
   return result.deletedCount === 1;
 }
 
-
-export async function listAttributes(websiteId:string): Promise<MaterialAttributes[]> {
+export async function listAttributes(
+  websiteId: string
+): Promise<MaterialAttributes[]> {
   const db = await getDatabase();
   const col = db.collection<MaterialAttributes>(COLLECTION);
   const filter: any = {};
@@ -91,5 +90,6 @@ export async function listAttributes(websiteId:string): Promise<MaterialAttribut
     // websiteId is stored as string in the database, not ObjectId
     filter.websiteId = websiteId;
   }
-  return col.find(filter).sort({ name: 1 }).toArray();
+  // return col.find(filter).sort({ name: 1 }).toArray();
+  return col.find().sort({ name: 1 }).toArray();
 }

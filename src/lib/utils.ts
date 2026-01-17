@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { randomUUID } from "crypto";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -45,7 +46,7 @@ export function toCreateHref(
   url: string,
   tenantId: string | null = null,
   businessId: string | null = null,
-  role: string
+  role: string,
 ) {
   if (!(role in ROLE_MAP)) {
     throw new Error("Invalid role");
@@ -62,7 +63,7 @@ export function toCreateHref(
 export const buildWebsiteHref = (
   href: string,
   websiteId: string | undefined | string[],
-  arr: Record<string, string>
+  arr: Record<string, string>,
 ) => {
   if (!websiteId) return href;
 
@@ -102,3 +103,89 @@ export function formatBrandSlug(brand: string) {
 
   return result;
 }
+
+export async function uploadBase64ToS3(base64: string) {
+  const [meta, data] = base64.split(",");
+  const mime = meta.match(/:(.*?);/)?.[1];
+
+  if (!mime) throw new Error("Invalid base64 image");
+
+  const buffer = Buffer.from(data, "base64");
+  const ext = mime.split("/")[1];
+  const key = `products/${randomUUID()}.${ext}`;
+
+  await s3.send(
+    new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME!,
+      Key: key,
+      Body: buffer,
+      ContentType: mime,
+    }),
+  );
+
+  return `https://${process.env.AWS_BUCKET_NAME}.s3.amazonaws.com/${key}`;
+}
+
+export const CSVProcessing = (t: any) => {
+  let variant = t.filter((d: any) => !Boolean(d.product_title));
+  let product = t
+    .filter((d: any) => Boolean(d.product_title))
+    .map((product: any) => {
+      const options: any = [];
+
+      Object.keys(product).forEach((key) => {
+        if (key.startsWith("option_id_")) {
+          const index = key.split("_").pop(); // "1", "2", "3"
+
+          const id = product[`option_id_${index}`];
+          const value = product[`option_value_${index}`];
+          const unit = product[`option_unit_${index}`];
+
+          options.push({
+            id,
+            values: value?.includes(",") ? value.split(",") : value,
+            ...(unit ? { unit } : {}),
+          });
+        }
+      });
+
+      const filterVariantData = variant
+        .filter((d: any) => d.product_type == product.product_type)
+        .map((attr: any) => {
+          let attributes: any = [];
+
+          Object.keys(attr).forEach((key) => {
+            if (key.startsWith("attribute_id_")) {
+              const index = key.split("_").pop(); // "1", "2", "3"
+
+              const id = attr[`attribute_id_${index}`];
+              const value = attr[`attribute_value_${index}`];
+
+              attributes.push({
+                id,
+                value: value?.includes(",") ? value.split(",") : value,
+              });
+            }
+          });
+          return {
+            price: attr.variant_price,
+            stock: attr.variant_stock,
+            sku: attr.variant_sku,
+            attributes,
+          };
+        });
+
+      return {
+        title: product.product_title,
+        basePrice: product.base_price,
+        description: product.description,
+        segmentType: product.segment_type,
+        categories: product.category_id,
+        brands: product.brand,
+        options,
+        variant: filterVariantData,
+      };
+    });
+
+  return product;
+};

@@ -5,7 +5,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { DataTableExt } from "@/components/admin/DataTableExt";
 import { addProduct, removeProduct } from "@/hooks/slices/product/ProductSlice";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Papa from "papaparse";
 
 import {
   Dialog,
@@ -16,11 +17,16 @@ import {
 import { Button } from "@/components/ui/button";
 import ProductForm from "../forms/ProductForm";
 import { ProductModel } from "../type/ProductModel";
+import { buildWebsiteHref, CSVProcessing } from "@/lib/utils";
+import { CSVImportModal } from "../ImportCSV";
 
 const ProductTable = () => {
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const searchparams = Object.fromEntries(searchParams.entries());
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductModel | null>(
-    null
+    null,
   );
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newProduct, setNewProduct] = useState<ProductModel | null>(null);
@@ -28,7 +34,7 @@ const ProductTable = () => {
   const [isSaving, setIsSaving] = useState(false);
 
   const { listProduct, isProductLoading } = useSelector(
-    (state: RootState) => state.product
+    (state: RootState) => state.product,
   );
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listBrand } = useSelector((state: RootState) => state.brand);
@@ -47,16 +53,14 @@ const ProductTable = () => {
         const segmentId = item.material_segment_id;
 
         const category = listCategory.find(
-          (cat) => cat._id == categoryId
+          (cat) => cat._id == categoryId,
         )?.name;
         const brand = listBrand.find((b) => (b as any)._id == brandId)?.name;
-     
 
         return {
           ...item,
           category: category || "-",
           brand: brand || "-",
-         
         };
       });
     }
@@ -64,19 +68,25 @@ const ProductTable = () => {
   }, [listCategory, listBrand, listProduct]);
 
   const handleAdd = () => {
-    setNewProduct({
-      name: "",
-      brand_id: "",
-      product_category_id: "",
-      description: "",
-      photo: "",
-      base_price: 0,
-      product_variants: [],
-      websiteId: currentWebsite?._id,
-      tenantId: user?.tenantId,
-    });
-    setFieldErrors({});
-    setIsAddDialogOpen(true);
+    const href = buildWebsiteHref(
+      "/admin/products/createproduct",
+      params.website!,
+      searchparams,
+    );
+    router.push(href);
+    // setNewProduct({
+    //   name: "",
+    //   brand_id: "",
+    //   product_category_id: "",
+    //   description: "",
+    //   photo: "",
+    //   base_price: 0,
+    //   product_variants: [],
+    //   websiteId: currentWebsite?._id,
+    //   tenantId: user?.tenantId,
+    // });
+    // setFieldErrors({});
+    // setIsAddDialogOpen(true);
   };
 
   const handleSaveAdd = async () => {
@@ -229,6 +239,52 @@ const ProductTable = () => {
     { key: "createdAt", label: "Created" },
   ];
 
+  // const handleChange = (e: any) => {
+  //   const file = e.target.files;
+  //   Papa.parse(file[0], {
+  //     header: true,
+  //     skipEmptyLines: true,
+  //     complete: (result) => {
+  //       const cleanedData = result.data.map((row: Record<string, any>) => {
+  //         return Object.fromEntries(
+  //           Object.entries(row).filter(
+  //             ([_, value]) =>
+  //               value !== "" && value !== null && value !== undefined,
+  //           ),
+  //         );
+  //       });
+
+  //       let finalProduct = CSVProcessing(cleanedData);
+  //       console.log(finalProduct);
+  //     },
+  //   });
+  // };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleImport = async (data: any) => {
+    const websiteId = "696729dde1222ee82bdd906d";
+    try {
+      const res = await fetch(
+        `/api/product/bulk?websiteId=${websiteId}&tenantId=${user?.tenantId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        },
+      );
+      const result = await res.json();
+      console.log(result);
+      if (result.success) {
+        console.log(result);
+        return true;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   return (
     <div>
       <DataTableExt
@@ -239,6 +295,14 @@ const ProductTable = () => {
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
         opentab={() => {}}
+      />
+
+      <Button onClick={() => setIsModalOpen(true)}>Import Products</Button>
+
+      <CSVImportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onImport={handleImport}
       />
 
       {/* Add Product Dialog */}

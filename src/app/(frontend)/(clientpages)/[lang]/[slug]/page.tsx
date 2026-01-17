@@ -76,7 +76,6 @@ export default async function PageTemplate({
 
   const EditButton = (await import("../../EditButton")).default;
 
-  const name = "Himanshu";
 
   const processedHtml = html;
   // console.log("my html ---", processedHtml);
