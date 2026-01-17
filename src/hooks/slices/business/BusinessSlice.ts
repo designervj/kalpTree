@@ -245,12 +245,12 @@ const businessSlice = createSlice({
       })
       .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { business, user, agencies } = action.payload;
+        const { business, user, agencies ,agencyid,businessid} = action.payload;
 
-        if (business && agencies) {
+        if (business && agencies &&agencyid) {
           state.allBusiness = business;
           const allBus = business.filter(
-            (item: IBusiness) => item.tenantId === agencies[0]._id
+            (item: IBusiness) => item.tenantId === agencyid
           );
           state.allSelectedBusiness = allBus;
            state.currentBusiness = allBus[0];
