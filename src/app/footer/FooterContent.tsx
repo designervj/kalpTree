@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
@@ -7,6 +7,7 @@ import { fetchFooterById } from '@/hooks/slices/footer/FooterThunk';
 import EditButton from '../(frontend)/(clientpages)/EditButton';
 import { getAllWebsites, getCurrentWebsites } from '@/hooks/slices/websites/WebsiteThunk';
 import { Website } from '@/components/admin/AppShell';
+import { clearPageEdit } from '@/hooks/slices/pageEditSlice';
 
 
 const FooterContent = () => {
@@ -19,17 +20,25 @@ const FooterContent = () => {
     const { currentWebsite } = useSelector((state: RootState) => state.websites)
 
     useEffect(() => {
-        if (id && page == null) {
+        // Only fetch footer if page is null OR if type is not 'header'
+        if (id && (page == null || type !== 'footer')) {
             dispatch(fetchFooterById({ id }))
         }
-    }, [id, page, updatePage, type, dispatch])
+    }, [id, page, type, dispatch])
+
+
+
+    const currentPage = useMemo(() => {
+        return page
+    }, [page])
 
     useEffect(() => {
         if (websiteId && currentWebsite == null) {
             dispatch(getCurrentWebsites({ id: websiteId }))
         }
-    }, [websiteId, currentWebsite, updatePage, type, dispatch])
+    }, [websiteId, currentWebsite, dispatch])
 
+ 
 
     return (
         <>
@@ -39,15 +48,16 @@ const FooterContent = () => {
                         pageData={page}
                         currentWebsite={currentWebsite as Website}
                         user={user as any}
+                        type="footer"
                     />
-                    {page.content && (
+                    {currentPage && currentPage.content && (
                         <div
-                            key={page._id?.toString()}
+                            key={currentPage._id?.toString()}
                             className="p-4"
                         >
                             <div
                                 dangerouslySetInnerHTML={{
-                                    __html: page.content.replace(/\\n/g, '') || ''
+                                    __html: currentPage.content.replace(/\\n/g, '') || ''
                                 }}
                             />
                         </div>

@@ -13,10 +13,17 @@ import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
+import { AiChatModal } from "./aiChatModel/AiChatModal";
 
 export default function GrapesJSEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { state, actions } = useEditor("gjs-editor");
+  const {
+    state,
+    actions,
+    isAiChatOpen,
+    setIsAiChatOpen,
+    selectedComponentForAi,
+  } = useEditor("gjs-editor");
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
   const [customDevices, setCustomDevices] = useState<DeviceConfig[]>([]);
@@ -42,7 +49,7 @@ export default function GrapesJSEditor() {
    const isCalled= useRef<boolean>(false)
   // update the page content into editor
   useEffect(() => {
-  if (state.editor && page?.content && !isCalled.current) {
+  if (state.editor && page?.content) {
     const data = page.content.replace(/\\n/g, '');
     state.editor.setComponents(data);
      setEditorHtml(data);
@@ -441,6 +448,13 @@ export default function GrapesJSEditor() {
           onUpdateDevice={handleUpdateDevice}
         />
       </TooltipProvider>
+
+{/* AI Chat Modal */}
+        <AiChatModal
+        isOpen={isAiChatOpen}
+        onClose={() => setIsAiChatOpen(false)}
+        component={selectedComponentForAi}
+      />
     </div>
   );
 }

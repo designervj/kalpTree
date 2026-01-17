@@ -20,7 +20,7 @@ import {
 export default function RootClientPage() {
   const router = useRouter();
   const user = useSelector((state: RootState) => state.user.user);
-
+   console.log("calling. local page ")
   const handleLogin = () => {
     if (user) router.push("/admin");
     else router.push("/auth/signin");

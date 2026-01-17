@@ -51,17 +51,18 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
-import { fetchCurrentHeaders } from "@/hooks/slices/header/HeaderThunk";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export default function WpAdminEditorBar({
   pageData,
   user,
   currentWebsite,
+  type
 }: {
-  pageData: WebsitePageModel| TemplateDocument;
-  user: IUser;
-  currentWebsite: Website;
+  pageData: WebsitePageModel | TemplateDocument;
+  user: IUser|null;
+  currentWebsite: Website | null;
+  type: string;
 }) {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
@@ -73,12 +74,12 @@ export default function WpAdminEditorBar({
     (pageData as any)?.pageId ??
     "";
 
-  const   handleEditInBuilder = () => {
-
-    // dispatch(setPageEdit({
-    //   page:pageData,
-    //   type:"page"
-    // }));
+  const handleEditInBuilder = () => {
+  const {user } = useSelector((state: RootState) => state.user);
+    dispatch(setPageEdit({
+      page:pageData,
+      type:type
+    }));
     let lang = currentWebsite?.lang ? currentWebsite.lang[0].name : "en";
     router.push(
       pageData?.slug ? `/${lang}/${pageData.slug}/builder` : "/builder"
@@ -91,17 +92,10 @@ export default function WpAdminEditorBar({
     // router.push(`/admin/websites/pages/${pageId}`);
   };
 
-    const { currentHeader } = useSelector((state: RootState) => state.header);
 
-        React.useEffect(() => {
-            if (currentHeader == null &&
-                currentWebsite &&
-                currentWebsite._id &&
-                currentWebsite.tenantId) {
-                dispatch(fetchCurrentHeaders({ tenantId: currentWebsite.tenantId , websiteId: currentWebsite._id     }));
-            }
-        }, [currentHeader, currentWebsite]);
   return (
+    <>
+    {user && user.email&&
     <TooltipProvider delayDuration={120}>
       <header
         className="
@@ -118,7 +112,7 @@ export default function WpAdminEditorBar({
           <div className="flex items-center gap-1 min-w-0">
             <img
               src="/dzinly-favicon.svg"
-              alt="Dzinly"
+              alt="KalpTree"
               className="w-[28px] h-[28px]"
             />
 
@@ -336,7 +330,8 @@ export default function WpAdminEditorBar({
           </div>
         </div>
       </header>
-    </TooltipProvider>
+    </TooltipProvider>}
+     </>
   );
 }
 
@@ -363,5 +358,6 @@ function BarIconOnly({
       </TooltipTrigger>
       <TooltipContent className="text-xs">{label}</TooltipContent>
     </Tooltip>
+    
   );
 }

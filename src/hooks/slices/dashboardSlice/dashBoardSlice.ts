@@ -79,14 +79,20 @@ const initialState: dashboardDetailsState = {
 // Thunk to save page via API
 export const savedashboardDetailsThunk = createAsyncThunk(
   "dashboard/savedashboard",
-  async () => {
+  async (payload: { agencyid: string; businessid: string }) => {
     try {
       const response = await fetch(`/api/appshell-data`);
       const data = await response.json();
 
       if (!response.ok) throw new Error("Failed to save page");
-       console.log("all save dashbioard", data)
-      return data;
+        console.log("savedashboard",data);
+      return {
+          agencies:data.agencies,
+          business:data.business,
+          websites:data.websites,
+          user:data.user,
+          agencyid:payload.agencyid,
+          businessid:payload.businessid};
     } catch (error) {
       // Optionally handle error (e.g., show toast)
       throw error;

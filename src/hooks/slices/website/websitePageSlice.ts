@@ -115,6 +115,12 @@ const websitePageSlice = createSlice({
      updateWebsitePages: (state, action) => {
       state.websitePages.push(action.payload)
     },
+    clearWebsitePages:(state)=>{
+      state.websitePages=[]
+      state.hasFetched=false
+      state.isLoading=false
+      state.error=null
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -162,7 +168,8 @@ const websitePageSlice = createSlice({
 export const {
 updateCurrentPage,
  setAllWebsitePages,
- updateWebsitePages
+ updateWebsitePages,
+ clearWebsitePages
 } = websitePageSlice.actions;
 
 export default websitePageSlice.reducer;

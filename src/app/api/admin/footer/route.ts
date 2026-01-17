@@ -7,16 +7,17 @@ const COLLECTION_NAME = 'templates_footer';
 
 export async function GET(request: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // Authentication disabled for public footer fetching
+        // const session = await auth();
+        // if (!session?.user?.id) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         const searchParams = request.nextUrl.searchParams;
         const websiteId = searchParams.get('websiteId');
         const slug = searchParams.get('slug');
         const tenantId = searchParams.get('tenantId');
-    const id=   searchParams.get('id');
+        const id = searchParams.get('id');
         const db = await getDatabase();
 
         // Build filter based on query parameters
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
         if (websiteId) filter.websiteId = websiteId;
         if (slug) filter.slug = slug;
         if (tenantId) filter.tenantId = tenantId;
-        if (id) filter._id = typeof id === 'string' ? new ObjectId(id) : id;    
+        if (id) filter._id = typeof id === 'string' ? new ObjectId(id) : id;
         console.log('Filter:', filter); // Debug log
 
         const footers = await db
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
                 { websiteId: body.websiteId },
                 {
                     $set: {
+                        slug: "footer",
                         content: body.content,
                         updatedAt: new Date(),
                     },
@@ -138,7 +140,7 @@ export async function PUT(request: NextRequest) {
             updatedBy: session?.user?.id,
         };
 
-      
+
         if (body.content !== undefined) updateData.content = body.content;
         if (body.websiteId) updateData.websiteId = body.websiteId;
         if (body.tenantId) updateData.tenantId = body.tenantId;
