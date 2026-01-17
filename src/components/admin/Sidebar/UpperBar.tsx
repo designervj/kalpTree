@@ -20,7 +20,13 @@ import { setCurrentWebsite, setSelectedWebsite } from "@/hooks/slices/websites/W
 import { IBusiness } from "@/models/business";
 import { useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { setCurrentHeader } from "@/hooks/slices/header/HeaderSlice";
+import { clearHeaders, setCurrentHeader } from "@/hooks/slices/header/HeaderSlice";
+import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
+import { clearBrands } from "@/hooks/slices/brand/BrandSlice";
+import { clearCategories } from "@/hooks/slices/category/CategorySlice";
+import { clearFooters } from "@/hooks/slices/footer/FooterSlice";
+import { clearProducts } from "@/hooks/slices/product/ProductSlice";
+import { clearWebsitePages } from "@/hooks/slices/website/websitePageSlice";
 
 export const UpperBar = () => {
 
@@ -86,6 +92,7 @@ export const UpperBar = () => {
 
 
   const handleAgencyChange = (agencyId: string) => {
+     handleResetRedux()
     const agency = agencies.find(a => a._id?.toString() === agencyId);
     dispatch(setCurrentHeader(null));
     dispatch(setCurretAgency(agency || null));
@@ -152,6 +159,19 @@ export const UpperBar = () => {
    params.set('agencyid', curretAgency?._id?.toString() || '')
     router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`)  
 
+  }
+
+  const handleResetRedux=()=>{
+    dispatch(clearAttributes())
+
+      dispatch(clearBrands())
+        dispatch(clearCategories())
+          dispatch(clearFooters())
+            dispatch(clearHeaders())
+              // dispatch(clearMenus())
+                dispatch(clearProducts())
+                  dispatch(clearWebsitePages())
+                 
   }
 
   return (

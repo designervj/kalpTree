@@ -1,8 +1,10 @@
 "use client";
 
+import { RootState } from "@/store/store";
 import { Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
 
 // Dynamically import GrapesJS editor to ensure it only loads on the client side
 const GrapesJSEditor = dynamic(() => import("@/components/editor"), {
@@ -18,7 +20,7 @@ const GrapesJSEditor = dynamic(() => import("@/components/editor"), {
 export default function Builder() {
     const params = useParams();
     const slug = params.slug as string;
-
+ const { page } = useSelector((state: RootState) => state.pageEdit)
    
 
     return <GrapesJSEditor />;

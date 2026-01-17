@@ -7,10 +7,11 @@ const COLLECTION_NAME = 'templates_header';
 
 export async function GET(request: NextRequest) {
     try {
-        const session = await auth();
-        if (!session?.user?.id) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
+        // Authentication disabled for public header fetching
+        // const session = await auth();
+        // if (!session?.user?.id) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
 
         const searchParams = request.nextUrl.searchParams;
         const websiteId = searchParams.get('websiteId');
@@ -133,14 +134,14 @@ export async function PUT(request: NextRequest) {
             updatedBy: session?.user?.id,
         };
 
-      
+
         if (body.content !== undefined) updateData.content = body.content;
         if (body.websiteId) updateData.websiteId = body.websiteId;
         if (body.tenantId) updateData.tenantId = body.tenantId;
 
         const result = await db.collection(COLLECTION_NAME).updateOne(
             { _id: typeof body._id === 'string' ? new ObjectId(body._id) : body._id },
-            { $set: {content: body.content, updatedAt: new Date(), updatedBy: session?.user?.id} }
+            { $set: { content: body.content, updatedAt: new Date(), updatedBy: session?.user?.id } }
         );
 
         if (result.matchedCount === 0) {
