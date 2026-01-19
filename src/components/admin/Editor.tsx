@@ -2,13 +2,14 @@
 
 "use client";
 import { updateWebsitePage } from "@/hooks/slices/website/websitePageSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 
 import { useState, useTransition } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { WebsitePageModel } from "./website/websitePage/WebsitePageType";
 import { routeModule } from "next/dist/build/templates/pages";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 
 
 // Field configuration type
@@ -44,6 +45,11 @@ export default function PageEditor({
 
   const dispatch= useDispatch<AppDispatch>()
     const router = useRouter();
+    const searchParams = useSearchParams()
+
+      const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const {currentBusiness} = useSelector((state: RootState) => state.business);
+  const {curretAgency} = useSelector((state: RootState) => state.agency);
   // Single state object for all form data
   const [formData, setFormData] = useState(() => {
     const initialData: Record<string, any> = {};
@@ -140,10 +146,14 @@ export default function PageEditor({
       updatedAt: item.updatedAt ?? "",
       publishedAt: item.publishedAt ?? "",
     };
-   const response= await dispatch(updateWebsitePage(data)).unwrap;
+   const response= await dispatch(updateWebsitePage(data)).unwrap();
    if(response){
-    router.push("/admin/pages")
-   console.log("response--", response)
+   const params = new URLSearchParams(searchParams.toString())
+      params.set('agencyid', curretAgency?._id?.toString()??"")
+      params.set('businessid', currentBusiness?._id?.toString()??"")
+    const primaryBusiness = currentWebsite?.primaryDomain?.[0]??null
+      router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`)  
+     toast.success("Page Updated Successfully")
    }
    
   };

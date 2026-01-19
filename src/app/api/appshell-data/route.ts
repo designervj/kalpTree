@@ -68,11 +68,13 @@ export async function GET(req: NextRequest) {
 
     business = await agencyColl
       .find({ type: "business" })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-      })
+      // .project({
+      //   _id: 1,
+      //   name: 1,
+      //   tenantId: 1,
+      //   email: 1,
+
+      // })
       .toArray();
 
     websites = await websiteColl

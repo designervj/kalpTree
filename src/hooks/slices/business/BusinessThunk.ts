@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IBusiness } from "@/models/business";
 import { Pagination } from "./BusinessSlice";
+import { initialProfileData } from "@/app/admin/websites/[website]/branding/brand-profile/page";
 
 // Type definitions for Create and Update inputs
 export interface CreateBusinessInput {
@@ -76,7 +77,7 @@ export const fetchAllBusinesses = createAsyncThunk(
       itemsperpage: number;
       tenantId?: string;
     },
-    
+
     { rejectWithValue }
   ) => {
     try {
@@ -114,9 +115,9 @@ export const fetchBusinessById = createAsyncThunk(
 
       const data = await response.json();
       return {
-        business:data.data as IBusiness[],
-        businessId:businessId,
-        
+        business: data.data as IBusiness[],
+        businessId: businessId,
+
       }
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch business");
@@ -285,6 +286,32 @@ export const searchBusinesses = createAsyncThunk(
       return data.businesses as IBusiness[];
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to search businesses");
+    }
+  }
+);
+// create athunk to update business branding
+export const updateBusinessBranding = createAsyncThunk(
+  "business/updateBranding",
+  async (input: initialProfileData, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/admin/branding/brandingProfile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(input),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to update business branding");
+      }
+     
+      const data = await response.json();
+       console.log("response --- update branding", data);
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update business branding");
     }
   }
 );

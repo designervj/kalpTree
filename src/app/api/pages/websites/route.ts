@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     filter.websiteId = typeof websiteId === "string" ? new ObjectId(websiteId) : websiteId;
   }
   const data = await collection.find(filter).sort({ name: 1 }).toArray();
-  console.log("datat---", data);
+
   return NextResponse.json(data);
 }
 
@@ -56,7 +56,7 @@ export async function PUT(req: Request) {
     const db = await getDatabase();
     const collection = db.collection("pages");
     const body = await req.json();
-    // Handle both {_id: "..."} and {_id: { $oid: "..." }}
+
     if (!body._id) {
       return NextResponse.json({ error: "Missing _id" }, { status: 400 });
     }
@@ -68,6 +68,15 @@ export async function PUT(req: Request) {
     }
     // Trim name if present
     if (body.name) body.name = body.name.trim();
+
+    // Convert tenantId and websiteId to ObjectId if they exist
+    if (body.tenantId) {
+      body.tenantId = new ObjectId(body.tenantId);
+    }
+    if (body.websiteId) {
+      body.websiteId = new ObjectId(body.websiteId);
+    }
+
     const now = new Date().toISOString();
     const updateDoc = {
       ...body,

@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
-  Globe, 
-  Save, 
-  MapPin, 
-  Facebook, 
-  Instagram, 
-  Linkedin, 
-  Twitter 
+import {
+  Building2,
+  Mail,
+  Phone,
+  Globe,
+  Save,
+  MapPin,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,32 +28,125 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { UseDispatch, useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { updateBusinessBranding } from "@/hooks/slices/business/BusinessThunk";
+import { toast } from "sonner";
 
 // Scaffold Data
-const initialProfileData = {
-  brandName: "KalpTree",
-  tagline: "AI-Powered Architecture & Design",
-  description: "KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering.",
-  industry: "Architecture",
-  foundedYear: "2023",
-  website: "https://KalpTree.com",
-  email: "contact@KalpTree.com",
-  phone: "+1 (555) 123-4567",
-  address: "123 Innovation Dr, Tech City, CA",
+// const initialProfileData = {
+//   brandName: "KalpTree",
+//   tagline: "AI-Powered Architecture & Design",
+//   description: "KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering.",
+//   industry: "Architecture",
+//   foundedYear: "2023",
+//   website: "https://KalpTree.com",
+//   email: "contact@KalpTree.com",
+//   phone: "+1 (555) 123-4567",
+//   address: "123 Innovation Dr, Tech City, CA",
+//   socials: {
+//     facebook: "KalpTree",
+//     instagram: "KalpTree_ai",
+//     linkedin: "KalpTree-inc",
+//     twitter: "KalpTree_official",
+//   }
+// };
+
+export interface initialProfileData {
+  tenantId?: string,
+  brandName: string,
+  tagline: string,
+  description: string,
+  industry: string,
+  foundedYear: string,
+  website: string,
+  email: string,
+  phone: string,
+  address: string,
   socials: {
-    facebook: "KalpTree",
-    instagram: "KalpTree_ai",
-    linkedin: "KalpTree-inc",
-    twitter: "KalpTree_official",
+    facebook: string,
+    instagram: string,
+    linkedin: string,
+    twitter: string,
   }
 };
 
 export default function BrandProfilePage() {
-  const [formData, setFormData] = useState(initialProfileData);
+  const dispatch = useDispatch<AppDispatch>();
+  const [formData, setFormData] = useState<initialProfileData>({
+    tenantId: "",
+    brandName: "",
+    tagline: "",
+    description: "",
+    industry: "",
+    foundedYear: "",
+    website: "",
+    email: "",
+    phone: "",
+    address: "",
+    socials: {
+      facebook: "",
+      instagram: "",
+      linkedin: "",
+      twitter: "",
+    }
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
-  const handleSave = () => {
-    // API call logic here
-    console.log("Saving profile...", formData);
+  // Update the profile data from currentBusiness
+  useEffect(() => {
+    if (currentBusiness && currentWebsite) {
+      setFormData({
+        brandName: currentBusiness?.businessdetails?.brand_name || "",
+        tagline: currentBusiness?.businessdetails?.tagline || "",
+        description: currentBusiness?.businessdetails?.about || "",
+        industry: currentBusiness?.businessdetails?.industry || "",
+        foundedYear: currentBusiness?.businessdetails?.founded_year || "",
+        website: currentWebsite?.primaryDomain?.[0] || "",
+        email: currentBusiness?.email || "",
+        phone: currentBusiness?.businessdetails?.phone || "",
+        address: currentBusiness?.businessdetails?.headquarters || "",
+        socials: {
+          facebook: currentBusiness?.socialPresence?.facebook || "",
+          instagram: currentBusiness?.socialPresence?.instagram || "",
+          linkedin: currentBusiness?.socialPresence?.linkedin || "",
+          twitter: currentBusiness?.socialPresence?.twitter || "",
+        }
+      });
+    }
+  }, [currentBusiness, currentWebsite]);
+
+  const handleSave = async () => {
+    if (!currentBusiness?._id) {
+      setError("No business selected");
+      toast.error("No business selected");
+      return;
+    }
+    const tenantId = currentBusiness?._id.toString();
+    const data = { ...formData, tenantId };
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const updateBranding = await dispatch(updateBusinessBranding(data)).unwrap();
+      console.log("updateBranding", updateBranding);
+      if (updateBranding.success && updateBranding.message) {
+        toast.success(updateBranding.message);
+        setIsLoading(false);
+        setError(null);
+      } else {
+        toast.error(updateBranding.message || "Failed to update branding");
+        setIsLoading(false);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.message || "An error occurred while updating branding";
+      setError(errorMessage);
+      toast.error(errorMessage);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,10 +157,17 @@ export default function BrandProfilePage() {
           <h1 className="text-2xl font-bold tracking-tight">Brand Profile</h1>
           <p className="text-muted-foreground">Manage your brand's core identity and contact information.</p>
         </div>
-        <Button onClick={handleSave} className="gap-2">
-          <Save className="w-4 h-4" /> Save Changes
+        <Button onClick={handleSave} className="gap-2" disabled={isLoading}>
+          <Save className="w-4 h-4" /> {isLoading ? "Saving..." : "Save Changes"}
         </Button>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-destructive/10 text-destructive px-4 py-3 rounded-md border border-destructive/20">
+          <p className="text-sm font-medium">{error}</p>
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* General Information */}
@@ -84,26 +184,26 @@ export default function BrandProfilePage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="brandName">Brand Name</Label>
-              <Input 
-                id="brandName" 
-                value={formData.brandName} 
-                onChange={(e) => setFormData({...formData, brandName: e.target.value})} 
+              <Input
+                id="brandName"
+                value={formData.brandName}
+                onChange={(e) => setFormData({ ...formData, brandName: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="tagline">Tagline / Slogan</Label>
-              <Input 
-                id="tagline" 
+              <Input
+                id="tagline"
                 value={formData.tagline}
-                onChange={(e) => setFormData({...formData, tagline: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Industry</Label>
-                <Select defaultValue={formData.industry}>
+                <Select value={formData.industry} onValueChange={(value) => setFormData({ ...formData, industry: value })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
@@ -112,26 +212,27 @@ export default function BrandProfilePage() {
                     <SelectItem value="Interior Design">Interior Design</SelectItem>
                     <SelectItem value="Construction">Construction</SelectItem>
                     <SelectItem value="Real Estate">Real Estate</SelectItem>
+                    <SelectItem value="Marketing">Marketing</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="founded">Founded Year</Label>
-                <Input 
-                  id="founded" 
+                <Input
+                  id="founded"
                   value={formData.foundedYear}
-                  onChange={(e) => setFormData({...formData, foundedYear: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">About / Bio</Label>
-              <Textarea 
-                id="description" 
+              <Textarea
+                id="description"
                 className="h-32 resize-none"
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
               <p className="text-[11px] text-muted-foreground text-right">
                 {formData.description.length}/500 characters
@@ -152,24 +253,24 @@ export default function BrandProfilePage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Website URL</Label>
-                <Input value={formData.website} onChange={(e) => setFormData({...formData, website: e.target.value})} />
+                <Input value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Public Email</Label>
-                  <Input value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                  <Input value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone</Label>
-                  <Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                  <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Headquarters Address</Label>
-                <Textarea 
+                <Textarea
                   className="h-20 resize-none"
                   value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})} 
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 />
               </div>
             </CardContent>
@@ -183,19 +284,39 @@ export default function BrandProfilePage() {
             <CardContent className="space-y-4">
               <div className="relative">
                 <Facebook className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-9" placeholder="Facebook username" value={formData.socials.facebook} />
+                <Input
+                  className="pl-9"
+                  placeholder="Facebook username"
+                  value={formData.socials.facebook}
+                  onChange={(e) => setFormData({ ...formData, socials: { ...formData.socials, facebook: e.target.value } })}
+                />
               </div>
               <div className="relative">
                 <Instagram className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-9" placeholder="Instagram username" value={formData.socials.instagram} />
+                <Input
+                  className="pl-9"
+                  placeholder="Instagram username"
+                  value={formData.socials.instagram}
+                  onChange={(e) => setFormData({ ...formData, socials: { ...formData.socials, instagram: e.target.value } })}
+                />
               </div>
               <div className="relative">
                 <Linkedin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-9" placeholder="LinkedIn username" value={formData.socials.linkedin} />
+                <Input
+                  className="pl-9"
+                  placeholder="LinkedIn username"
+                  value={formData.socials.linkedin}
+                  onChange={(e) => setFormData({ ...formData, socials: { ...formData.socials, linkedin: e.target.value } })}
+                />
               </div>
               <div className="relative">
                 <Twitter className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input className="pl-9" placeholder="X (Twitter) handle" value={formData.socials.twitter} />
+                <Input
+                  className="pl-9"
+                  placeholder="X (Twitter) handle"
+                  value={formData.socials.twitter}
+                  onChange={(e) => setFormData({ ...formData, socials: { ...formData.socials, twitter: e.target.value } })}
+                />
               </div>
             </CardContent>
           </Card>
