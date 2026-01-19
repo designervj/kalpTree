@@ -10,6 +10,4 @@ export interface MaterialCategory {
   sort_order?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  parentCategoryId?: string | ObjectId;
-  slug?: string;
 }

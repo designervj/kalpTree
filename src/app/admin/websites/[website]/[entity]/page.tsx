@@ -7,7 +7,7 @@ import {
 
 export default async function EntityIndexPage(props: any) {
   const params = await props.params;
-  console.log(params);
+
   const { entity } = params as { entity: string };
 
   // Check if entity is valid

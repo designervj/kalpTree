@@ -3,72 +3,95 @@ import { AppDispatch, RootState } from "@/store/store";
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataTableExt } from "@/components/admin/DataTableExt";
-import {
-  addCategory,
-  removeCategory,
-} from "@/hooks/slices/category/CategorySlice";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { MaterialCategory } from "../types/CategoryModel";
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import CategoryForm from "../forms/CategoryForm";
 import { Button } from "@/components/ui/button";
+import AttributeSetForm, { AttributeSet } from "../forms/AttributeSetsForm";
+import {
+  addAttributeSet,
+  removeAttributeSet,
+} from "@/hooks/slices/attributessets/attributeSetsSlice";
+import { toast } from "sonner";
 
-const ListCategory = () => {
-  const { listCategory, isCategoryLoading } = useSelector(
-    (state: RootState) => state.category,
+const ListAttributeSets = () => {
+  const { listAttributeSets } = useSelector(
+    (state: RootState) => state.attributeSets,
   );
-
- 
   const { user } = useSelector((state: RootState) => state.user);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const dispatch = useDispatch<AppDispatch>();
-  const { toast } = useToast();
+  // const { toast } = useToast();
   const router = useRouter();
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] =
-    useState<MaterialCategory | null>(null);
+  const [editingAttributeSet, setEditingAttributeSet] =
+    useState<AttributeSet | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newCategory, setNewCategory] = useState<MaterialCategory | null>(null);
+  const [newAttributeSet, setNewAttributeSet] = useState<AttributeSet | null>(
+    null,
+  );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
+
   const handleAdd = () => {
-    setNewCategory({
+    setNewAttributeSet({
       name: "",
-      icon: "",
+      categoryId: "",
+      attributes: [],
       sort_order: 0,
-      websiteId: currentWebsite?._id,
+      websiteId: String(currentWebsite?._id),
       tenantId: user?.tenantId,
-      parentCategoryId: "",
     });
     setFieldErrors({});
     setIsAddDialogOpen(true);
   };
 
-  const handleSaveAdd = async () => {
-    if (!newCategory) return;
-    setFieldErrors({});
+  const validateAttributeSet = (attributeSet: AttributeSet) => {
     const errors: Record<string, string> = {};
-    if (!newCategory.name?.trim()) {
+
+    if (!attributeSet.name?.trim()) {
       errors.name = "Name is required";
     }
+
+    if (!attributeSet.categoryId) {
+      errors.categoryId = "Category is required";
+    }
+
+    if (!attributeSet.attributes || attributeSet.attributes.length === 0) {
+      errors.attributes = "At least one attribute is required";
+    }
+
+    return errors;
+  };
+
+  const handleSaveAdd = async () => {
+    if (!newAttributeSet) return;
+
+    setFieldErrors({});
+    const errors = validateAttributeSet(newAttributeSet);
+
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
+
     setIsSaving(true);
     try {
-      const res = await fetch(`/api/admin/category`, {
+      const res = await fetch(`/api/admin/attributessets`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCategory),
+        body: JSON.stringify(newAttributeSet),
       });
+
       const data = await res.json().catch(() => null);
+
       if (!res.ok) {
         const msg =
           data?.error ??
@@ -77,91 +100,80 @@ const ListCategory = () => {
           "Failed to create";
         throw new Error(msg);
       }
+
       const created = data?.item ?? data;
-      toast({
-        title: "Created",
-        description: `Category ${newCategory.name} created successfully`,
-      });
+
+      toast.success(
+        `Attribute Sets has been created with Name: ${newAttributeSet.name}`,
+      );
       setIsAddDialogOpen(false);
-      setNewCategory(null);
-      dispatch(addCategory(created));
-      // window.location.reload();
+      setNewAttributeSet(null);
+
+      dispatch(addAttributeSet(created));
     } catch (err: any) {
-      console.error("Failed to create category", err);
-      toast({
-        title: "Create failed",
-        description: String(err?.message || err),
-        variant: "destructive",
-      });
+      console.error("Failed to create attribute set", err);
+      toast.success(`${err}`);
     } finally {
       setIsSaving(false);
     }
   };
 
-  // const product_categories = useMemo(() => {
-  //   if (
-  //     currentWebsite &&
-  //     currentWebsite._id &&
-  //     listCategory &&
-  //     listCategory.length > 0
-  //   ) {
-  //     const list = listCategory.filter(
-  //       (item) => item.websiteId === currentWebsite._id,
-  //     );
-
-  //     return list.length > 0 ? list : listCategory;
-  //   }
-  //   return [];
-  // }, [currentWebsite, listCategory]);
+  const filteredAttributeSets = useMemo(() => {
+    if (
+      currentWebsite &&
+      currentWebsite._id &&
+      listAttributeSets &&
+      listAttributeSets.length > 0
+    ) {
+      const list = listAttributeSets.filter(
+        (item: any) => item.websiteId === currentWebsite._id,
+      );
+      return list.length > 0 ? list : listAttributeSets;
+    }
+    return [];
+  }, [currentWebsite, listAttributeSets]);
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) {
-      toast({ title: "Delete failed", description: "Missing id" });
+      toast.error(`Missing Id`);
       return;
     }
 
-    const ok = confirm(`Delete category "${row?.name ?? id}"?`);
+    const ok = confirm(`Delete attribute set "${row?.name ?? id}"?`);
     if (!ok) return;
 
     try {
-      const res = await fetch(`/api/admin/category?id=${id}`, {
+      const res = await fetch(`/api/admin/attribute-sets?id=${id}`, {
         method: "DELETE",
       });
+
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
-      dispatch(removeCategory(id));
-      toast({
-        title: "Deleted",
-        description: `Category ${row?.name ?? id} removed`,
-      });
+      dispatch(removeAttributeSet(id));
+
+      toast.success(`Attribute Set ${row?.name ?? id} removed`);
     } catch (err: any) {
-      console.error("Failed to delete category", err);
-      toast({
-        title: "Delete failed",
-        description: String(err?.message || err),
-      });
+      console.error("Failed to delete attribute set", err);
+      toast.error(err);
     }
   };
 
   const handleView = (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) return;
-    setEditingCategory(row);
+    setEditingAttributeSet(row);
     setFieldErrors({});
     setIsEditDialogOpen(true);
   };
+
   const handleSaveEdit = async () => {
-    if (!editingCategory) return;
+    if (!editingAttributeSet) return;
 
     setFieldErrors({});
-    const errors: Record<string, string> = {};
-
-    if (!editingCategory.name?.trim()) {
-      errors.name = "Name is required";
-    }
+    const errors = validateAttributeSet(editingAttributeSet);
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -170,10 +182,10 @@ const ListCategory = () => {
 
     setIsSaving(true);
     try {
-      const id = (editingCategory as any)._id ?? editingCategory.id;
-      const { _id, ...updateData } = editingCategory as any;
+      const id = (editingAttributeSet as any)._id ?? editingAttributeSet.id;
+      const { _id, ...updateData } = editingAttributeSet as any;
 
-      const res = await fetch(`/api/admin/category`, {
+      const res = await fetch(`/api/admin/attribute-sets`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...updateData, id }),
@@ -184,20 +196,15 @@ const ListCategory = () => {
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
 
-      toast({
-        title: "Updated",
-        description: `Category ${editingCategory.name} updated successfully`,
-      });
+      toast.success(
+        `Attribute Set ${editingAttributeSet.name} updated successfully`,
+      );
       setIsEditDialogOpen(false);
-      setEditingCategory(null);
+      setEditingAttributeSet(null);
       window.location.reload();
     } catch (err: any) {
-      console.error("Failed to update category", err);
-      toast({
-        title: "Update failed",
-        description: String(err?.message || err),
-        variant: "destructive",
-      });
+      console.error("Failed to update attribute set", err);
+      toast.error(String(err?.message || err));
     } finally {
       setIsSaving(false);
     }
@@ -207,37 +214,37 @@ const ListCategory = () => {
     { key: "_id", label: "ID", hidden: true },
     { key: "id", label: "ID", hidden: true },
     { key: "name", label: "Name" },
-    { key: "icon", label: "Icon" },
-    { key: "sort_order", label: "Sort Order" },
+    { key: "categoryId", label: "Category ID" },
     { key: "createdAt", label: "Created" },
   ];
 
   return (
     <div>
       <DataTableExt
-        title="Categories"
-        data={listCategory ?? []}
+        title="Attribute Sets"
+        data={filteredAttributeSets ?? []}
         onCreate={handleAdd}
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
         opentab={() => {}}
       />
-      {/* Add Category Dialog */}
+
+      {/* Add Attribute Set Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add Category</DialogTitle>
+            <DialogTitle>Add Attribute Set</DialogTitle>
           </DialogHeader>
-          {newCategory && (
+          {newAttributeSet && (
             <div className="space-y-4">
-              <CategoryForm
-                category={newCategory}
-                setCategory={(value) => {
+              <AttributeSetForm
+                attributeSet={newAttributeSet}
+                setAttributeSet={(value) => {
                   if (typeof value === "function") {
-                    setNewCategory((prev) => (prev ? value(prev) : prev));
+                    setNewAttributeSet((prev) => (prev ? value(prev) : prev));
                   } else {
-                    setNewCategory(value);
+                    setNewAttributeSet(value);
                   }
                 }}
                 fieldErrors={fieldErrors}
@@ -247,14 +254,14 @@ const ListCategory = () => {
                   variant="outline"
                   onClick={() => {
                     setIsAddDialogOpen(false);
-                    setNewCategory(null);
+                    setNewAttributeSet(null);
                   }}
                   disabled={isSaving}
                 >
                   Cancel
                 </Button>
                 <Button onClick={handleSaveAdd} disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Add Category"}
+                  {isSaving ? "Saving..." : "Add Attribute Set"}
                 </Button>
               </div>
             </div>
@@ -262,22 +269,24 @@ const ListCategory = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Category Dialog */}
+      {/* Edit Attribute Set Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Category</DialogTitle>
+            <DialogTitle>Edit Attribute Set</DialogTitle>
           </DialogHeader>
 
-          {editingCategory && (
+          {editingAttributeSet && (
             <div className="space-y-4">
-              <CategoryForm
-                category={editingCategory}
-                setCategory={(value) => {
+              <AttributeSetForm
+                attributeSet={editingAttributeSet}
+                setAttributeSet={(value) => {
                   if (typeof value === "function") {
-                    setEditingCategory((prev) => (prev ? value(prev) : null));
+                    setEditingAttributeSet((prev) =>
+                      prev ? value(prev) : null,
+                    );
                   } else {
-                    setEditingCategory(value);
+                    setEditingAttributeSet(value);
                   }
                 }}
                 fieldErrors={fieldErrors}
@@ -288,7 +297,7 @@ const ListCategory = () => {
                   variant="outline"
                   onClick={() => {
                     setIsEditDialogOpen(false);
-                    setEditingCategory(null);
+                    setEditingAttributeSet(null);
                   }}
                   disabled={isSaving}
                 >
@@ -306,4 +315,4 @@ const ListCategory = () => {
   );
 };
 
-export default ListCategory;
+export default ListAttributeSets;

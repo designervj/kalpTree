@@ -1,31 +1,29 @@
+import { AttributeSet } from "@/components/admin/attributessets/forms/AttributeSetsForm";
 import { MaterialCategory } from "@/components/admin/category/types/CategoryModel";
 import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 
-const COLLECTION = "product_categories";
+const COLLECTION = "product_attribute_sets";
 
 const toObjectId = (id: string | ObjectId) =>
   typeof id === "string" ? new ObjectId(id) : id;
 
 const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-export async function createCategory(
-  data: MaterialCategory,
-): Promise<MaterialCategory> {
+export async function createAttributessets(
+  data: AttributeSet,
+): Promise<AttributeSet> {
   if (!data?.name?.trim()) throw new Error("Name is required");
 
   const db = await getDatabase();
-  const col = db.collection<MaterialCategory>(COLLECTION);
-
-  // prevent duplicate name (case-insensitive)
-  // const exists = await col.findOne({
-  //   name: { $regex: `^${escapeRegExp(data.name)}$`, $options: "i" },
-  // });
-  // if (exists) throw new Error("Category with same name already exists");
+  const col = db.collection<AttributeSet>(COLLECTION);
 
   const now = new Date();
 
-  const doc: MaterialCategory = {
+  const { attributes, categoryId, name, sort_order, tenantId, websiteId } =
+    data;
+
+  const doc: AttributeSet = {
     ...data,
     name: data.name.trim(),
     createdAt: now,
@@ -37,38 +35,40 @@ export async function createCategory(
   return { ...doc, _id: result.insertedId };
 }
 
-export async function getCategoryById(
+export async function getAttributeSetsById(
   id: string | ObjectId,
-): Promise<MaterialCategory | null> {
+): Promise<AttributeSet | null> {
   const db = await getDatabase();
-  const col = db.collection<MaterialCategory>(COLLECTION);
+  const col = db.collection<AttributeSet>(COLLECTION);
 
   return col.findOne({ _id: toObjectId(id) });
 }
 
-export async function listCategories(
+export async function listAttributeSets(
   websiteId: string,
-): Promise<MaterialCategory[]> {
+): Promise<AttributeSet[]> {
   const db = await getDatabase();
-  const col = db.collection<MaterialCategory>(COLLECTION);
+  const col = db.collection<AttributeSet>(COLLECTION);
 
   const filter: any = {};
   if (websiteId) {
     // websiteId is stored as string in the database, not ObjectId
-    filter.websiteId = websiteId;
+    filter.websiteId = new ObjectId(websiteId);
   }
-  // Add Filter If need filtering
+
+  // Add Filter for Filtering
+
   const data = await col.find().sort({ name: 1 }).toArray();
 
   return data;
 }
 
-export async function updateCategory(
+export async function updateAttributeSets(
   id: string | ObjectId,
-  data: Partial<MaterialCategory>,
+  data: Partial<AttributeSet>,
 ): Promise<MaterialCategory | null> {
   const db = await getDatabase();
-  const col = db.collection<MaterialCategory>(COLLECTION);
+  const col = db.collection<AttributeSet>(COLLECTION);
 
   if (data.name) {
     data.name = data.name.trim();
@@ -99,9 +99,11 @@ export async function updateCategory(
   return col.findOne({ _id });
 }
 
-export async function deleteCategory(id: string | ObjectId): Promise<boolean> {
+export async function deleteAttributeSets(
+  id: string | ObjectId,
+): Promise<boolean> {
   const db = await getDatabase();
-  const col = db.collection<MaterialCategory>(COLLECTION);
+  const col = db.collection<AttributeSet>(COLLECTION);
 
   const _id = toObjectId(id);
   const result = await col.deleteOne({ _id });

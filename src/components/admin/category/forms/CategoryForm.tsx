@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { IconSVG } from "@/components/ui/icon-display";
 import { businessTypeIcons } from "./businessTypeIcons";
 import { MaterialCategory } from "../types/CategoryModel";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import slugify from "slugify";
 
 type CategoryFormProps = {
   category: MaterialCategory;
@@ -19,66 +20,72 @@ export default function CategoryForm({
   fieldErrors,
 }: CategoryFormProps) {
   const { listCategory } = useSelector((state: RootState) => state.category);
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
-  const [newCategoryName, setNewCategoryName] = useState("");
-
-
-
-  useEffect(()=>{
-     if (newCategoryName.trim()) {
-      setCategory({ ...category, name: newCategoryName.trim() });
-      // setShowNewCategoryInput(false);
-      // setNewCategoryName("");
-    }
-  },[newCategoryName])
 
   return (
     <>
       <div>
         <label className="block text-sm font-medium">Category Name</label>
-        <div className="flex gap-2 items-center mt-1">
-          <select
-            value={category.name || ''}
-            onChange={e => setCategory({ ...category, name: e.target.value })}
-            className="block w-full rounded-md border p-2"
-          >
-            <option value="">Select a category</option>
-            {listCategory && listCategory.map((cat: any) => (
-              <option key={cat._id} value={cat.name}>{cat.name}</option>
-            ))}
-          </select>
-          <button
-            type="button"
-            className="px-2 py-1 rounded bg-blue-500 text-white flex items-center justify-center text-lg font-bold"
-            onClick={() => setShowNewCategoryInput(v => !v)}
-            title="Add new category"
-          >
-            +
-          </button>
-        </div>
-        {showNewCategoryInput && (
-          <div className="mt-2 flex gap-2 items-center">
-            <input
-              value={newCategoryName}
-              onChange={e => setNewCategoryName(e.target.value)}
-              className="block w-full rounded-md border p-2"
-              placeholder="New category name"
-            />
-            {/* <button
-              type="button"
-              className="px-3 py-1 rounded bg-green-500 text-white"
-              onClick={() => {
-                if (newCategoryName.trim()) {
-                  setCategory({ ...category, name: newCategoryName.trim() });
-                  setShowNewCategoryInput(false);
-                  setNewCategoryName("");
-                }
-              }}
-            >
-              Add
-            </button> */}
+        <input
+          type="text"
+          value={category.name || ""}
+          onChange={(e) =>
+            setCategory({
+              ...category,
+              name: e.target.value,
+              slug: slugify(e.target.value, {
+                lower: true,
+              }),
+            })
+          }
+          className="mt-1 block w-full rounded-md border p-2"
+          placeholder="Enter category name"
+        />
+        {fieldErrors.name && (
+          <div className="text-sm text-destructive mt-1">
+            {fieldErrors.name}
           </div>
         )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">
+          Parent Category (Optional)
+        </label>
+        <select
+          value={String(category.parentCategoryId) || ""}
+          onChange={(e) =>
+            setCategory({
+              ...category,
+              parentCategoryId: e.target.value || undefined,
+            })
+          }
+          className="mt-1 block w-full rounded-md border p-2"
+        >
+          <option value="">None (Top Level Category)</option>
+          {listCategory &&
+            listCategory.map((cat: any) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+        </select>
+        {fieldErrors.parentCategoryId && (
+          <div className="text-sm text-destructive mt-1">
+            {fieldErrors.parentCategoryId}
+          </div>
+        )}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium">Slug</label>
+        <input
+          type="text"
+          value={category.slug || ""}
+          className="mt-1 block w-full rounded-md border p-2"
+          placeholder="Enter category name"
+          readOnly={true}
+          disabled={true}
+        />
         {fieldErrors.name && (
           <div className="text-sm text-destructive mt-1">
             {fieldErrors.name}
@@ -90,8 +97,8 @@ export default function CategoryForm({
         <label className="block text-sm font-medium">Icon</label>
         <div className="mt-1">
           <select
-            value={category.icon || ''}
-            onChange={e => setCategory({ ...category, icon: e.target.value })}
+            value={category.icon || ""}
+            onChange={(e) => setCategory({ ...category, icon: e.target.value })}
             className="block w-full rounded-md border p-2"
           >
             <option value="">Select an icon</option>
@@ -106,12 +113,12 @@ export default function CategoryForm({
           {category.icon && businessTypeIcons[category.icon] && (
             <IconSVG svg={businessTypeIcons[category.icon]} />
           )}
-          Selected: {category.icon}
+          Selected: {category.icon || "None"}
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium">Sort order</label>
+        <label className="block text-sm font-medium">Sort Order</label>
         <input
           type="number"
           value={category.sort_order ?? 0}
