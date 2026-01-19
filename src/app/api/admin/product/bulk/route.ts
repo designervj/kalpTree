@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCollection } from "../../tenants/[id]/route";
+
 import { success } from "zod";
 import { ObjectId } from "mongodb";
+import { getCollection } from "@/app/api/tenants/[id]/route";
 
 export async function POST(req: NextRequest) {
   try {
