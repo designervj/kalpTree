@@ -81,10 +81,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   return (
     <div className="w-[25%] border-l border-slate-800 flex flex-col h-full transition-all duration-300 ease-in-out">
       <Tabs defaultValue="style" className="flex flex-col h-full">
-        <TabsList className="grid w-full h-10 grid-cols-3 border-b rounded-none bg-slate-900 border-slate-800">
+        <TabsList className="grid w-full h-10 grid-cols-3 border-b rounded-none bg-slate-900 border-slate-800 text-white">
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="style" className="text-xs font-medium">
+              <TabsTrigger value="style" className="text-xs font-medium text-white">
                 <Palette className="w-4 h-4" />
                 <span className="sr-only">Style</span>
               </TabsTrigger>
@@ -94,7 +94,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
           <Tooltip>
             <TooltipTrigger asChild>
-              <TabsTrigger value="attributes" className="text-xs font-medium">
+              <TabsTrigger value="attributes" className="text-xs font-medium text-white">
                 <Box className="w-4 h-4" />
                 <span className="sr-only">Attributes</span>
               </TabsTrigger>
@@ -106,7 +106,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             <TooltipTrigger asChild>
               <TabsTrigger
                 value="interactivity"
-                className="text-xs font-medium"
+                className="text-xs font-medium text-white"
               >
                 <MousePointer className="w-4 h-4" />
                 <span className="sr-only">Interactivity</span>

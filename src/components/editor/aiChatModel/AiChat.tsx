@@ -88,10 +88,11 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml, onResponse }) => {
       <div className="flex justify-end">
         <Button
           onClick={handleSend}
+          variant="secondary"
           disabled={!prompt.trim() || isProcessing}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10"
+          // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10"
         >
-          <Send className="h-4 w-4 mr-2" />
+          <Send className="h-4 w-4 " />
           {isProcessing ? 'Processing...' : 'Send'}
         </Button>
       </div>

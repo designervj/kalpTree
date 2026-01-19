@@ -207,20 +207,23 @@
 }
 
 .gjs-mdl-dialog {
-  background-color: #1e293b !important;
-  color: white !important;
+  background-color: #fff !important;
+  max-width: 710px !important;
+  color: black !important;
   border-radius: 0.5rem !important;
   border: 1px solid #334155 !important;
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
 }
 
 .gjs-mdl-header {
-  border-bottom: 1px solid #334155 !important;
+  border-bottom: 1px solid #ddd !important;
   padding: 0.75rem 1rem !important;
 }
 
 .gjs-mdl-title {
   font-weight: 600 !important;
+  color: #283848 !important;
+
 }
 
 .gjs-mdl-btn-close {

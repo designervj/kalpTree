@@ -90,9 +90,13 @@ export default function GrapesJSEditor() {
     state.editor.Modal.open({
       title: "Import Code",
       content: `
-        <div style="padding: 20px;">
-          <textarea id="import-code" style="width: 100%; height: 250px; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; color:black;" placeholder="Paste your HTML code here"></textarea>
-          <button id="import-button" style="padding: 8px 16px; background-color: #7C3AED; color: white; border: none; border-radius: 4px; cursor: pointer;">Import</button>
+        <div >
+           <div style="padding: 18px; padding-bottom: 0;">
+            <textarea id="import-code" style="width: 100%; height: 250px; padding: 10px; background-color: #f7f7f7; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; color:black;" placeholder="Paste your HTML code here"></textarea>
+           </div> 
+           <hr>
+          <button id="import-button"  style="display:flex; margin-top:15px; margin-bottom:12px; margin-right: 0; margin-left: auto; padding: 8px 16px; background-color: #7f2e62; color: white; border: none; border-radius: 4px; cursor: pointer;">Import</button>
+       
         </div>
       `,
       attributes: { class: "gjs-modal-import" },

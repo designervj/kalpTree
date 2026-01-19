@@ -364,7 +364,7 @@ export function HighLevelSidebar({
                           "w-full flex items-center gap-3 rounded-md px-3 py-2.5",
                           "text-left transition border border-transparent",
                           isActive
-                            ? "bg-[var(--admin-sidebar-active-bg)] text-[color:var(--admin-sidebar-active-fg)] shadow-sm border-[color:var(--admin-sidebar-border)]"
+                            ? "bg-[var(--admin-sidebar-active-bg)] text-[color:#000] shadow-sm border-[color:var(--admin-sidebar-border)]"
                             : "hover:bg-[var(--admin-sidebar-hover)]"
                         )}
                         onClick={() =>

@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import AiChat from "./AiChat";
@@ -16,7 +21,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
   const componentHtml = component?.html || "";
   const componentType = component?.type || "unknown";
   const componentTag = component?.tagName || "div";
-  const actualComponent = component?.component; // Get the actual GrapesJS component
+  const actualComponent = component?.component; // keep (if you need later)
   const [apiResponse, setApiResponse] = useState("");
   const [extractedHtml, setExtractedHtml] = useState("");
 
@@ -26,74 +31,90 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
       setExtractedHtml("");
       return;
     }
+
     try {
-      // Try to parse as JSON and get .result
       let html = "";
       let parsed: any = null;
+
       try {
         parsed = JSON.parse(apiResponse);
       } catch {}
-      if (parsed && typeof parsed.result === "string") {
-        // Look for ```html ... ``` or ``` ... ``` code block
-        const codeBlockMatch = parsed.result.match(/```html([\s\S]*?)```/i) || parsed.result.match(/```([\s\S]*?)```/);
-        if (codeBlockMatch) {
-          html = codeBlockMatch[1].trim();
-        } else {
-          // Fallback: try to find a <div> or <...> tag
-          const divMatch = parsed.result.match(/(<[a-z][\s\S]*>)/i);
-          if (divMatch) {
-            html = divMatch[1];
-          }
-        }
+
+      const sourceText =
+        parsed && typeof parsed.result === "string" ? parsed.result : apiResponse;
+
+      const codeBlockMatch =
+        sourceText.match(/```html([\s\S]*?)```/i) ||
+        sourceText.match(/```([\s\S]*?)```/);
+
+      if (codeBlockMatch) {
+        html = codeBlockMatch[1].trim();
+      } else {
+        const tagMatch = sourceText.match(/(<[a-z][\s\S]*>)/i);
+        if (tagMatch) html = tagMatch[1].trim();
       }
+
       setExtractedHtml(html);
     } catch {
       setExtractedHtml("");
     }
   }, [apiResponse]);
-  
-  console.log("Component data:", component);
-  console.log("Component HTML:", componentHtml);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-screen-xxl min-w-[1200px] max-h-[98vh] overflow-hidden bg-white border-gray-200 p-0">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent
+        className="
+          p-0 overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl
+          w-[95vw] md:w-[75vw] lg:w-[60vw]
+          max-w-[95vw] md:max-w-[75vw] lg:max-w-[60vw]
+          h-[90vh]
+          flex flex-col
+        "
+      >
         {/* Header */}
-        <DialogHeader className="border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-lg font-semibold text-gray-900">
+        <DialogHeader className="border-b border-gray-200 px-6 py-4 bg-white">
+          <div className="flex items-center justify-between gap-4">
+            <DialogTitle className="text-base md:text-lg font-semibold text-gray-900">
               AI Component Editor - {componentTag} ({componentType})
             </DialogTitle>
-            <Button
+            {/* <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="h-8 w-8 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+              className="h-9 w-9 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
             >
               <X className="h-4 w-4" />
-            </Button>
+            </Button> */}
           </div>
         </DialogHeader>
 
         {/* Main Content */}
-        <div className="grid flex-col h-[calc(98vh-140px)]">
+        <div className="flex-1 min-h-0 grid grid-rows-2">
           {/* Top Section - Split View */}
-          <div className="grid h-1/2 border-b border-gray-200">
+          <div className="min-h-0 grid grid-cols-1 lg:grid-cols-2 border-b border-gray-200">
             {/* Left Side - AI Chat */}
-            <div className=" border-r border-gray-200 py-6 overflow-auto">
-              <div className="h-full flex flex-col justify-start">
-                <AiChat componentHtml={componentHtml} onResponse={setApiResponse} />
+            <div className="min-h-0 overflow-auto p-4 md:p-6 bg-white lg:border-r border-gray-200">
+              <div className="h-full  bg-white overflow-hidden">
+                <div className="h-full">
+                  <AiChat componentHtml={componentHtml} onResponse={setApiResponse} />
+                </div>
               </div>
             </div>
 
             {/* Right Side - HTML Preview */}
-            <div className=" py-6 overflow-auto bg-gray-50">
-              <div className="mb-3 px-4">
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Live Preview</h3>
+            <div className="min-h-0 overflow-auto p-4 md:p-6 bg-gray-50">
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-gray-800">Live Preview</h3>
               </div>
-              <div className="border border-gray-200 rounded-lg bg-white p-4 min-h-[300px] mx-4">
+
+              <div className="border border-gray-200 rounded-xl bg-white p-4 min-h-[260px]">
                 {componentHtml ? (
-                  <div 
+                  <div
                     dangerouslySetInnerHTML={{ __html: componentHtml }}
                     className="rendered-html"
                   />
@@ -107,21 +128,28 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
           </div>
 
           {/* Bottom Section - API Response and HTML Preview */}
-          <div className="h-1/2 py-6 overflow-auto bg-gray-50">
-            <div className="mb-3 px-4">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2">AI Response</h3>
+          <div className="min-h-0 overflow-auto bg-gray-50 p-4 md:p-6 pt-0 pb-0">
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold text-gray-800">AI Response</h3>
             </div>
-            <div className="px-4">
+
+            <div className="space-y-4">
               <textarea
                 value={apiResponse}
                 readOnly
                 placeholder="AI response will appear here..."
-                className="w-full h-[120px] p-4 border border-gray-300 rounded-lg resize-none bg-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4"
+                className="
+                  w-full h-[140px] p-4 border border-gray-200 rounded-xl resize-none
+                  bg-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500
+                "
               />
+
               {extractedHtml && (
-                <div className="mt-4">
-                  <h4 className="text-xs font-semibold text-gray-600 mb-2">Extracted HTML Preview</h4>
-                  <div className="border border-dashed border-blue-400 rounded bg-blue-50 p-4 overflow-auto">
+                <div className="pt-2">
+                  <h4 className="text-xs font-semibold text-gray-700 mb-2">
+                    Extracted HTML Preview
+                  </h4>
+                  <div className="border border-dashed border-blue-300 rounded-xl bg-blue-50 p-4 overflow-auto">
                     <div dangerouslySetInnerHTML={{ __html: extractedHtml }} />
                   </div>
                 </div>
@@ -131,14 +159,12 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Modify component with AI assistance
-            </p>
+        <div className="border-t border-gray-200 px-6 py-4 bg-white">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-sm text-gray-500">Modify component with AI assistance</p>
             <Button
               onClick={onClose}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9 text-sm font-medium"
+              // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9 text-sm font-medium rounded-xl"
             >
               Close
             </Button>

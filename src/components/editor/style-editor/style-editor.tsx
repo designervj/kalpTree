@@ -94,15 +94,15 @@ function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Font Family</Label>
+      <Label className="text-xs font-medium">Font Family </Label>
       <Select
         value={fontFamilyvalue}
         onValueChange={(value) => hadleFontFamily(value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700">
+        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full text-white">
           <SelectValue placeholder="Select font" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+        <SelectContent className="bg-slate-800 border-slate-700 max-h-60 w-full text-white">
           <SelectItem value="Arial, sans-serif" className="text-xs">
             Arial
           </SelectItem>
@@ -216,7 +216,7 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <Label className="text-xs">Font Size</Label>
-        <div className="text-xs text-slate-400">
+        <div className="text-xs text-slate-200">
           {styles.typography.fontSize}
         </div>
       </div>
@@ -224,16 +224,16 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
         <Input
           value={getFontSizeValue()}
           onChange={(e) => handleValueChange(e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className="flex-1 h-11 text-xs  bg-slate-800 border-slate-700"
           type="number"
           min="0"
           step="1"
         />
         <Select value={getFontSizeUnit()} onValueChange={handleUnitChange}>
-          <SelectTrigger className="w-16 text-xs h-7 bg-slate-800 border-slate-700">
+          <SelectTrigger className="w-16 text-xs  bg-slate-800 border-slate-700">
             <SelectValue placeholder="Unit" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
+          <SelectContent className="bg-slate-800 border-slate-700 text-white">
             <SelectItem value="px" className="text-xs">
               px
             </SelectItem>
@@ -271,10 +271,10 @@ function FontWeightControl({ styles, onStyleChange }: SectionProps) {
         value={styles.typography.fontWeight || "400"}
         onValueChange={(value) => onStyleChange("font-weight", value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700">
+        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
           <SelectValue placeholder="Select weight" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700">
+        <SelectContent className="bg-slate-800 border-slate-700 w-full text-white">
           <SelectItem value="100" className="text-xs">
             Thin (100)
           </SelectItem>
@@ -413,62 +413,74 @@ function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
       <Label className="text-xs">Text Alignment</Label>
-      <div className="flex gap-1.5">
-        <Button
-          variant={
-            styles.typography.textAlign === "left" ? "default" : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onStyleChange("text-align", "left")}
-        >
-          <AlignLeft className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.textAlign === "center" ? "default" : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onStyleChange("text-align", "center")}
-        >
-          <AlignCenter className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.textAlign === "right" ? "default" : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onStyleChange("text-align", "right")}
-        >
-          <AlignRight className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.textAlign === "justify" ? "default" : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={() => onStyleChange("text-align", "justify")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </Button>
-      </div>
+     <div className="flex gap-1.5">
+  <Button
+    variant={styles.typography.textAlign === "left" ? "default" : "outline"}
+    size="icon"
+    onClick={() => onStyleChange("text-align", "left")}
+    className={`h-7 w-7 ${
+      styles.typography.textAlign === "left"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <AlignLeft className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={styles.typography.textAlign === "center" ? "default" : "outline"}
+    size="icon"
+    onClick={() => onStyleChange("text-align", "center")}
+    className={`h-7 w-7 ${
+      styles.typography.textAlign === "center"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <AlignCenter className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={styles.typography.textAlign === "right" ? "default" : "outline"}
+    size="icon"
+    onClick={() => onStyleChange("text-align", "right")}
+    className={`h-7 w-7 ${
+      styles.typography.textAlign === "right"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <AlignRight className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={styles.typography.textAlign === "justify" ? "default" : "outline"}
+    size="icon"
+    onClick={() => onStyleChange("text-align", "justify")}
+    className={`h-7 w-7 ${
+      styles.typography.textAlign === "justify"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <line x1="3" y1="12" x2="21" y2="12" />
+      <line x1="3" y1="18" x2="21" y2="18" />
+    </svg>
+  </Button>
+</div>
+
     </div>
   );
 }
@@ -505,50 +517,62 @@ function TextStyleControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <Label className="text-xs">Text Style</Label>
       <div className="flex gap-1.5">
-        <Button
-          variant={isBold ? "default" : "outline"}
-          size="icon"
-          className="h-7 w-7"
-          onClick={toggleBold}
-        >
-          <Bold className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.fontStyle === "italic" ? "default" : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={toggleItalic}
-        >
-          <Italic className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.textDecoration === "underline"
-              ? "default"
-              : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={toggleUnderline}
-        >
-          <Underline className="h-3.5 w-3.5" />
-        </Button>
-        <Button
-          variant={
-            styles.typography.textTransform === "uppercase"
-              ? "default"
-              : "outline"
-          }
-          size="icon"
-          className="h-7 w-7"
-          onClick={toggleUppercase}
-          title="Uppercase"
-        >
-          <span className="text-xs font-bold">TT</span>
-        </Button>
-      </div>
+  <Button
+    variant={isBold ? "default" : "outline"}
+    size="icon"
+    onClick={toggleBold}
+    className={`h-7 w-7 ${
+      isBold ? "text-white" : "text-black hover:text-black"
+    }`}
+  >
+    <Bold className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={styles.typography.fontStyle === "italic" ? "default" : "outline"}
+    size="icon"
+    onClick={toggleItalic}
+    className={`h-7 w-7 ${
+      styles.typography.fontStyle === "italic"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <Italic className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={
+      styles.typography.textDecoration === "underline" ? "default" : "outline"
+    }
+    size="icon"
+    onClick={toggleUnderline}
+    className={`h-7 w-7 ${
+      styles.typography.textDecoration === "underline"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <Underline className="h-3.5 w-3.5" />
+  </Button>
+
+  <Button
+    variant={
+      styles.typography.textTransform === "uppercase" ? "default" : "outline"
+    }
+    size="icon"
+    onClick={toggleUppercase}
+    title="Uppercase"
+    className={`h-7 w-7 ${
+      styles.typography.textTransform === "uppercase"
+        ? "text-white"
+        : "text-black hover:text-black"
+    }`}
+  >
+    <span className="text-xs font-bold">TT</span>
+  </Button>
+</div>
+
     </div>
   );
 }
@@ -908,10 +932,10 @@ function BorderStyleControl({ styles, onStyleChange }: SectionProps) {
         value={styles.colors.borderStyle || "solid"}
         onValueChange={(value) => onStyleChange("border-style", value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700">
+        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700">
+        <SelectContent className="bg-slate-800 border-slate-700 w-full text-white">
           <SelectItem value="none" className="text-xs">
             None
           </SelectItem>
@@ -1005,7 +1029,7 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
       className="w-full"
     >
       <AccordionItem value="typography" className="border-slate-700">
-        <AccordionTrigger className="py-2 text-xs font-medium hover:no-underline">
+        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
           Typography
         </AccordionTrigger>
         <AccordionContent>
@@ -1014,7 +1038,7 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
       </AccordionItem>
 
       <AccordionItem value="spacing" className="border-slate-700">
-        <AccordionTrigger className="py-2 text-xs font-medium hover:no-underline">
+        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
           Spacing
         </AccordionTrigger>
         <AccordionContent>
@@ -1023,7 +1047,7 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
       </AccordionItem>
 
       <AccordionItem value="colors" className="border-slate-700">
-        <AccordionTrigger className="py-2 text-xs font-medium hover:no-underline">
+        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
           Colors
         </AccordionTrigger>
         <AccordionContent>
@@ -1032,7 +1056,7 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
       </AccordionItem>
 
       <AccordionItem value="Display" className="border-slate-700">
-        <AccordionTrigger className="py-2 text-xs font-medium hover:no-underline">
+        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
           Display
         </AccordionTrigger>
         <AccordionContent>

@@ -84,7 +84,7 @@ export function CodeEditor({
           Code Editor
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-5xl h-[80vh] flex flex-col">
+      <DialogContent className="sm:max-w-[70%] h-[80vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Code Editor</DialogTitle>
         </DialogHeader>

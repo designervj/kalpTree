@@ -100,11 +100,12 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
         </Tooltip>
 
         <Tooltip>
-          <TooltipTrigger asChild>
+          <TooltipTrigger asChild >
             <TemplateManager
               onSelectTemplate={onSelectTemplate}
               onSaveTemplate={onSaveTemplate}
               currentContent={editorHtml || editor?.getHtml?.()}
+         
             />
           </TooltipTrigger>
           <TooltipContent side="bottom">Templates</TooltipContent>

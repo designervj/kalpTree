@@ -31,11 +31,11 @@ export function SearchAndFilterBar({
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-1 1">
         <Button
-          variant="ghost"
+          variant="secondary"
           size="icon"
-          className="w-8 h-8"
+          className="w-9 h-9 shaodow-md"
           onClick={() => setBlockView(blockView === "grid" ? "list" : "grid")}
         >
           {blockView === "grid" ? (
@@ -75,9 +75,9 @@ export function SearchAndFilterBar({
         </Button>
         <div className="relative">
           <Button
-            variant="ghost"
+          variant="secondary"
             size="icon"
-            className="w-8 h-8"
+            className="w-9 h-9 shaodow-md"
             onClick={() => setShowFilterOptions(!showFilterOptions)}
           >
             <Filter className="w-4 h-4" />

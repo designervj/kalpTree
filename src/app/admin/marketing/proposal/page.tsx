@@ -990,7 +990,7 @@ export default function Page() {
                       />
 
                       <label className="block">
-                        <div className="text-xs font-bold text-[var(--ui-muted)]">Font weight</div>
+                        <div className="text-xs font-bold text-[var(--ui-muted)]">Font weight </div>
                         <select
                           value={fontWeight}
                           onChange={(e) => {

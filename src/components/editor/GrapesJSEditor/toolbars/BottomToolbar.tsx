@@ -66,7 +66,7 @@ const BottomToolbar: React.FC<BottomToolbarProps> = ({
         </div>
 
         <div className="flex items-center">
-          <span className="mr-2 text-xs text-slate-400">
+          <span className="mr-2 text-xs text-slate-200 font-semibold">
             Canvas: {currentDevice}
           </span>
         </div>
