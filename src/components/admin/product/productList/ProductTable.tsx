@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataTableExt } from "@/components/admin/DataTableExt";
 import { addProduct, removeProduct } from "@/hooks/slices/product/ProductSlice";
-import { useToast } from "@/hooks/use-toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Papa from "papaparse";
 
@@ -19,6 +18,7 @@ import ProductForm from "../forms/ProductForm";
 import { ProductModel } from "../type/ProductModel";
 import { buildWebsiteHref, CSVProcessing } from "@/lib/utils";
 import { CSVImportModal } from "../ImportCSV";
+import { toast } from "sonner";
 
 const ProductTable = () => {
   const searchParams = useSearchParams();
@@ -36,13 +36,14 @@ const ProductTable = () => {
   const { listProduct, isProductLoading } = useSelector(
     (state: RootState) => state.product,
   );
+
+
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listBrand } = useSelector((state: RootState) => state.brand);
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
-  const { toast } = useToast();
   const router = useRouter();
 
   const products = useMemo(() => {
@@ -117,21 +118,13 @@ const ProductTable = () => {
         throw new Error(msg);
       }
       const created = data?.item ?? data;
-      toast({
-        title: "Created",
-        description: `Category ${newProduct.name} created successfully`,
-      });
+
       setIsAddDialogOpen(false);
       setNewProduct(null);
       dispatch(addProduct(created));
       // window.location.reload();
     } catch (err: any) {
       console.error("Failed to create category", err);
-      toast({
-        title: "Create failed",
-        description: String(err?.message || err),
-        variant: "destructive",
-      });
     } finally {
       setIsSaving(false);
     }
@@ -140,7 +133,6 @@ const ProductTable = () => {
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) {
-      toast({ title: "Delete failed", description: "Missing id" });
       return;
     }
 
@@ -156,16 +148,8 @@ const ProductTable = () => {
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
       dispatch(removeProduct(id));
-      toast({
-        title: "Deleted",
-        description: `Product ${row?.name ?? id} removed`,
-      });
     } catch (err: any) {
       console.error("Failed to delete product", err);
-      toast({
-        title: "Delete failed",
-        description: String(err?.message || err),
-      });
     }
   };
 
@@ -207,20 +191,11 @@ const ProductTable = () => {
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
 
-      toast({
-        title: "Updated",
-        description: `Category ${editingProduct.name} updated successfully`,
-      });
       setIsEditDialogOpen(false);
       setEditingProduct(null);
       window.location.reload();
     } catch (err: any) {
       console.error("Failed to update category", err);
-      toast({
-        title: "Update failed",
-        description: String(err?.message || err),
-        variant: "destructive",
-      });
     } finally {
       setIsSaving(false);
     }
@@ -263,10 +238,9 @@ const ProductTable = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleImport = async (data: any) => {
-    const websiteId = "696729dde1222ee82bdd906d";
     try {
       const res = await fetch(
-        `/api/product/bulk?websiteId=${websiteId}&tenantId=${user?.tenantId}`,
+        `/api/admin/product/bulk?websiteId=${currentWebsite?._id}&tenantId=${user?.tenantId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -274,10 +248,12 @@ const ProductTable = () => {
         },
       );
       const result = await res.json();
-      console.log(result);
       if (result.success) {
-        console.log(result);
+        toast.success("Product has been Created");
         return true;
+      } else {
+        toast.error("Error in Product Creation");
+        return false;
       }
     } catch (error) {
       console.error(error);

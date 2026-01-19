@@ -189,3 +189,22 @@ export const CSVProcessing = (t: any) => {
 
   return product;
 };
+
+export function buildCategoryTree(categories: any) {
+  const map: any = {};
+  const roots: any = [];
+
+  categories.forEach((cat: any) => {
+    map[cat._id] = { ...cat, children: [] };
+  });
+
+  categories.forEach((cat: any) => {
+    if (cat.parentCategoryId && map[cat.parentCategoryId]) {
+      map[cat.parentCategoryId].children.push(map[cat._id]);
+    } else {
+      roots.push(map[cat._id]);
+    }
+  });
+
+  return roots;
+}

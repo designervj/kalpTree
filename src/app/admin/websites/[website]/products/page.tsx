@@ -8,10 +8,7 @@ export default async function ProductPage(props: any) {
   return (
     <div className="mx-auto max-w-full px-6">
       <div className="flex items-center justify-between mb-6">
-        {/* <EntityCreateModal entity={"products"} /> */}
-      
       </div>
-
       <ProductHome />
     </div>
   );

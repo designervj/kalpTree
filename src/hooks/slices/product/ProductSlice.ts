@@ -23,7 +23,7 @@ export const fetchProducts = createAsyncThunk<
   "product/fetchProducts",
   async ({ websiteId }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/admin/products?websiteId=${websiteId}`);
+      const res = await fetch(`/api/admin/product?websiteId=${websiteId}`);
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         return rejectWithValue(body?.error || `HTTP ${res.status}`);
@@ -32,7 +32,7 @@ export const fetchProducts = createAsyncThunk<
       return data?.items || [];
     } catch (error: unknown) {
       return rejectWithValue(
-        error instanceof Error ? error.message : "Network error"
+        error instanceof Error ? error.message : "Network error",
       );
     }
   },
@@ -45,7 +45,10 @@ export const fetchProducts = createAsyncThunk<
           return false;
         }
         // Prevent if already fetched for this websiteId
-        if (state.product.hasFetched && state.product.lastFetchedWebsiteId === websiteId) {
+        if (
+          state.product.hasFetched &&
+          state.product.lastFetchedWebsiteId === websiteId
+        ) {
           return false;
         }
         return true;
@@ -53,7 +56,7 @@ export const fetchProducts = createAsyncThunk<
         return true;
       }
     },
-  }
+  },
 );
 
 const productSlice = createSlice({
@@ -103,15 +106,13 @@ const productSlice = createSlice({
       .addCase(fetchProducts.pending, (state) => {
         state.isProductLoading = true;
       })
-      .addCase(
-        fetchProducts.fulfilled,
-        (state, action) => {
-          state.listProduct = action.payload;
-          state.hasFetched = true;
-          state.isProductLoading = false;
-          state.lastFetchedWebsiteId = action.meta.arg.websiteId;
-        }
-      )
+      .addCase(fetchProducts.fulfilled, (state, action) => {
+        console.log("====>>",action.payload)
+        state.listProduct = action.payload;
+        state.hasFetched = true;
+        state.isProductLoading = false;
+        state.lastFetchedWebsiteId = action.meta.arg.websiteId;
+      })
       .addCase(fetchProducts.rejected, (state, action) => {
         state.isProductLoading = false;
         // Still mark as fetched and store websiteId to prevent infinite retries

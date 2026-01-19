@@ -1,32 +1,33 @@
-import { 
-  createCategory, 
-  listCategories, 
-  getCategoryById, 
+import {
+  createCategory,
+  listCategories,
+  getCategoryById,
   deleteCategory,
-  updateCategory
+  updateCategory,
 } from "@/lib/material/category";
-import { 
-  getBrandById, 
-  updateBrand, 
-  createBrand, 
-  listBrands, 
-  deleteBrand 
+import {
+  getBrandById,
+  updateBrand,
+  createBrand,
+  listBrands,
+  deleteBrand,
 } from "@/lib/material/product_brand";
-import { 
-  getAttributeById, 
-  updateAttribute, 
-  createAttribute, 
-  listAttributes, 
-  deleteAttribute 
+import {
+  getAttributeById,
+  updateAttribute,
+  createAttribute,
+  listAttributes,
+  deleteAttribute,
 } from "@/lib/material/product_attribute";
 
-import { 
-  getProductById, 
-  updateProduct, 
-  createProduct, 
-  listProducts, 
-  deleteProduct 
+import {
+  getProductById,
+  updateProduct,
+  createProduct,
+  listProducts,
+  deleteProduct,
 } from "@/lib/material/product";
+import { createAttributessets, deleteAttributeSets, getAttributeSetsById, listAttributeSets, updateAttributeSets } from "../material/attributessets";
 
 export interface EntityOperations {
   create: (data: any) => Promise<any>;
@@ -66,9 +67,19 @@ export const entityConfig: Record<string, EntityOperations> = {
     update: updateProduct,
     delete: deleteProduct,
   },
+
+  attributessets: {
+    create: createAttributessets,
+    list: listAttributeSets,
+    getById: getAttributeSetsById,
+    update: updateAttributeSets,
+    delete: deleteAttributeSets,
+  },
   // Add more entities here as needed
 };
 
-export const isValidEntity = (entity: string): entity is keyof typeof entityConfig => {
+export const isValidEntity = (
+  entity: string,
+): entity is keyof typeof entityConfig => {
   return entity in entityConfig;
 };

@@ -9,15 +9,15 @@ import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
-
 interface FormData {
   title: string;
   basePrice: string;
   description: string;
-  segmentType: string;
+  productType: string;
   categories: string;
   brands: string;
   tags: string;
+  allcategories: string[];
 }
 
 interface ImageFile {
@@ -62,13 +62,14 @@ export function CreateProduct() {
     title: "",
     basePrice: "",
     description: "",
-    segmentType: "Wall",
-    categories: "Paint",
-    brands: "PPG",
+    productType: "",
+    categories: "",
+    brands: "",
     tags: "",
+    allcategories: [],
   });
   const { listAttribute: attributes, isAttributeLoading } = useSelector(
-    (state: RootState) => state.attribute
+    (state: RootState) => state.attribute,
   );
 
   const [images, setImages] = useState<ImageFile[]>([]);
@@ -113,7 +114,7 @@ export function CreateProduct() {
   // ]);
   const [showDropdown, setShowDropdown] = useState<number | null>(null);
   const [showValueDropdown, setShowValueDropdown] = useState<number | null>(
-    null
+    null,
   );
   const [searchTerm, setSearchTerm] = useState("");
   const [valueSearchTerm, setValueSearchTerm] = useState<{
@@ -121,15 +122,19 @@ export function CreateProduct() {
   }>({});
 
   useEffect(() => {
+    if (!formData.categories) {
+      setProductOptions([]);
+      return;
+    }
 
     const relevantAttrs = attributes.filter((attr) =>
-      attr.category_id?.includes(formData.categories)
+      attr.category_id?.includes(formData.categories),
     );
 
     setProductOptions((prev: any) => {
       return relevantAttrs.map((attr) => {
         const existing = prev.find((opt: any) => opt.id === attr.id);
-        console.log(existing);
+
         return (
           existing ?? {
             id: attr._id,
@@ -145,7 +150,7 @@ export function CreateProduct() {
 
   const generateVariants = () => {
     const variantOptions = productOptions.filter(
-      (opt) => opt.useForVariants && opt.values.length > 0
+      (opt) => opt.useForVariants && opt.values.length > 0,
     );
 
     if (variantOptions.length === 0) {
@@ -192,7 +197,7 @@ export function CreateProduct() {
   }, [productOptions]);
 
   const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -222,10 +227,10 @@ export function CreateProduct() {
   const updateOption = (
     id: number,
     field: keyof ProductOption,
-    value: string | boolean
+    value: string | boolean,
   ) => {
     setProductOptions((prev) =>
-      prev.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt))
+      prev.map((opt) => (opt.id === id ? { ...opt, [field]: value } : opt)),
     );
   };
 
@@ -236,14 +241,14 @@ export function CreateProduct() {
       prev.map((opt: any) =>
         opt.id === optionId
           ? { ...opt, title: attr.name, attributeId: attr.id, unit: attr.unit }
-          : opt
-      )
+          : opt,
+      ),
     );
     setShowDropdown(null);
     setSearchTerm("");
   };
 
-  console.log(productOptions)
+  console.log(productOptions);
 
   const removeOption = (id: number) =>
     setProductOptions((prev) => prev.filter((opt) => opt.id !== id));
@@ -262,27 +267,6 @@ export function CreateProduct() {
     clonedOption[index].values.push(value);
 
     setProductOptions(clonedOption);
-
-    // If this option is linked to an attribute and value doesn't exist in default_values, add it
-    // Add Redux logic to add options
-    // if (option?.id) {
-    //   setAttributes((prev) =>
-    //     prev.map((attr) => {
-    //       if (
-    //         attr.id === option.id &&
-    //         !attr.possible_values.includes(value.trim())
-    //       ) {
-    //         return {
-    //           ...attr,
-    //           default_values: [...attr.possible_values, value.trim()],
-    //         };
-    //       }
-    //       return attr;
-    //     })
-    //   );
-    // }
-
-    // Clear the search term for this option
     setValueSearchTerm((prev) => ({ ...prev, [optionId]: "" }));
   };
 
@@ -291,20 +275,20 @@ export function CreateProduct() {
       prev.map((opt) =>
         opt.id === optionId
           ? { ...opt, values: opt.values.filter((_, i) => i !== idx) }
-          : opt
-      )
+          : opt,
+      ),
     );
   };
 
   const autoGenConfigs = () => {
     const stock =
       document.querySelector<HTMLInputElement>(
-        'input[placeholder="Enter Stock"]'
+        'input[placeholder="Enter Stock"]',
       )?.value || "0";
 
     const price =
       document.querySelector<HTMLInputElement>(
-        'input[placeholder="Enter Variant Price $ 0.00"]'
+        'input[placeholder="Enter Variant Price $ 0.00"]',
       )?.value || "0.00";
 
     const princeInNum = parseFloat(price).toFixed(2);
@@ -314,17 +298,17 @@ export function CreateProduct() {
         ...cfg,
         stock: parseInt(stock) || 0,
         price: princeInNum,
-      }))
+      })),
     );
   };
 
   const updateConfig = (
     id: number,
     field: keyof VariantConfig,
-    value: string | number
+    value: string | number,
   ) => {
     setVariantConfigs((prev) =>
-      prev.map((cfg) => (cfg.id === id ? { ...cfg, [field]: value } : cfg))
+      prev.map((cfg) => (cfg.id === id ? { ...cfg, [field]: value } : cfg)),
     );
   };
 
@@ -374,15 +358,15 @@ export function CreateProduct() {
       finalObj.productdata.images = finalImages;
     }
 
-    console.log(finalObj)
+    console.log(finalObj);
 
     try {
-      // const req = await fetch("/api/products", {
-      //   method: "POST",
-      //   body: JSON.stringify(finalObj),
-      // });
-      // const res = await req.json();
-      // console.log(res);
+      const req = await fetch("/api/admin/product", {
+        method: "POST",
+        body: JSON.stringify(finalObj),
+      });
+      const res = await req.json();
+      console.log(res);
     } catch (error) {
       console.error(error);
     }
@@ -518,11 +502,11 @@ export function CreateProduct() {
               <div className="space-y-4">
                 {productOptions.map((option) => {
                   const linkedAttr = attributes.find(
-                    (attr) => attr.id === option.id
+                    (attr) => attr.id === option.id,
                   );
                   const availVals = linkedAttr?.possible_values || [];
                   const filteredAttrs = attributes.filter((attr) =>
-                    attr.name.toLowerCase().includes(searchTerm.toLowerCase())
+                    attr.name.toLowerCase().includes(searchTerm.toLowerCase()),
                   );
 
                   return (
@@ -624,7 +608,7 @@ export function CreateProduct() {
                                 updateConfig(
                                   cfg.id,
                                   "stock",
-                                  parseInt(e.target.value) || 0
+                                  parseInt(e.target.value) || 0,
                                 )
                               }
                               className="w-20 px-2 py-1 border rounded text-sm"

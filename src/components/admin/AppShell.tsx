@@ -357,7 +357,7 @@ export const currentWebsiteSections: NavSection[] = [
       },
       {
         label: "Attribute Sets",
-        href: "/admin/attributes-list",
+        href: "/admin/attributessets",
         icon: Component,
         permission: ["product:read", "product:update", "product:delete"],
       },
@@ -711,7 +711,7 @@ export function useHasPermission(user: User | IUser | null) {
 
       return required.some((p) => user.permissions!.includes(p));
     },
-    [user]
+    [user],
   );
 }
 
@@ -756,7 +756,7 @@ export function AppShell({
   const agencyid = searchParams.get("agencyid");
   const { user } = useSelector((state: RootState) => state.user);
   const { websites, currentWebsite } = useSelector(
-    (state: RootState) => state.websites
+    (state: RootState) => state.websites,
   );
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
@@ -874,7 +874,7 @@ export function AppShell({
                   <AvatarFallback
                     className={cn(
                       "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
-                      getRoleAvatarClass(user?.role)
+                      getRoleAvatarClass(user?.role),
                     )}
                   >
                     {user?.email?.charAt(0).toUpperCase() || "U"}
@@ -943,13 +943,15 @@ export function AppShell({
       </header>
 
       <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-   {    user && user.role!= "business" && <HighLevelSidebar
-          user={user}
-          collapsed={collapsed}
-          setCollapsed={setCollapsed}
-          showSidebar={showSidebar}
-          setShowSidebar={setShowSidebar}
-        />}
+        {user && user.role != "business" && (
+          <HighLevelSidebar
+            user={user}
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+            showSidebar={showSidebar}
+            setShowSidebar={setShowSidebar}
+          />
+        )}
 
         {isHighLevelCollapsed && (
           <Sidebar
@@ -991,7 +993,7 @@ export function AppShell({
                 onClick={() => setMobileSidebarOpen(false)}
                 aria-label="Close"
               >
-                <IoMdClose className="w-[28px]"/>
+                <IoMdClose className="w-[28px]" />
               </Button>
             </div>
 

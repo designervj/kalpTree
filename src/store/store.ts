@@ -17,6 +17,8 @@ import businessReducer from "../hooks/slices/business/BusinessSlice";
 import templateReducer from "../hooks/slices/templates/TemplateSlice";
 import headerReducer from "../hooks/slices/header/HeaderSlice";
 import footerReducer from "../hooks/slices/footer/FooterSlice";
+import attributesetsReducer from "../hooks/slices/attributessets/attributeSetsSlice";
+
 export const store = configureStore({
   reducer: {
     user: userSlice,
@@ -32,13 +34,15 @@ export const store = configureStore({
     template: templateReducer,
     attribute: attributeReducer,
     product: productReducer,
-   
+
     tenants: tenantsReducer,
     llmSetting: llmSettingReducer,
     block: BlockReducer,
 
     rolePermission: rolePermissionReducer,
     account: accountReducer,
+
+    attributeSets: attributesetsReducer,
   },
 });
 
