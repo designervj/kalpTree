@@ -1,5 +1,5 @@
 "use client";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
@@ -26,6 +26,19 @@ function SignInForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isMainDomain, setIsMainDomain] = useState(false);
+  const [domain, setDomain] = useState("");
+
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    if (hostname === "kalptree.xyz"||hostname === "localhost") {
+      setIsMainDomain(true);
+      setDomain("kalptree.xyz");
+    } else {
+      setIsMainDomain(false);
+      setDomain(hostname);
+    }
+  }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,17 +50,18 @@ function SignInForm() {
         callbackUrl: "/admin",
         email,
         password,
+        isMainDomain,
+        domain,
         // tenantSlug,
       });
 
       if (result && (result as any).error) {
         throw new Error((result as any).error || "Sign-in failed");
       }
-      console.log("cutomer login result-- ", result);
       const session = await getSession();
 
       if (session?.user) {
-        console.log("cutomer login session-- ", session);
+
         const mappedUser = {
           email: session.user.email,
           name: session.user.name,
@@ -56,7 +70,7 @@ function SignInForm() {
         };
         dispatch(setUser(mappedUser));
       }
-      console.log(session);
+
       if (session && ["agency", "superadmin"].includes(session?.user?.role)) {
         router.push("/admin");
       } else {

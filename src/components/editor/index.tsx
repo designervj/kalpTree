@@ -59,27 +59,76 @@ export default function GrapesJSEditor() {
   }
 
   const isCalled = useRef<boolean>(false)
-  // update the page content into editor
+  const contentLoadedRef = useRef<boolean>(false)
+
+  // update the page content into editor - wait for editor load event
   useEffect(() => {
-    if (state.editor && page?.content) {
-      const data = page.content.replace(/\\n/g, '');
-      if(data){
-        state.editor?.setComponents(data);
-        setEditorHtml(data);
-      }
-     const css= extractCssFromHtml(page.content)
-     if(css){
-      state.editor?.setStyle(css);
-     }
-  //  console.log("css---", css)
-    // state.editor.setStyle(css)
-  }else{
-      // dispatch(clearPageEdit())
-      //   state.editor.setComponents("");
-      // setEditorHtml("");
+    if (!state.editor || !page?.content) return;
+
+    // Reset the content loaded flag when page content changes
+    if (contentLoadedRef.current) {
+      contentLoadedRef.current = false;
     }
+
+    const loadContent = () => {
+      // Prevent loading content multiple times
+      if (contentLoadedRef.current) return;
+
+      // Check if editor has necessary methods and is fully initialized
+      if (typeof state.editor?.setComponents !== 'function') {
+        console.warn('Editor setComponents method not available yet');
+        return;
+      }
+
+      // Check if Components API is available (prevents Canvas.getFrames error)
+      if (!state.editor?.Components || typeof state.editor.Components.getWrapper !== 'function') {
+        console.warn('Editor Components API not fully initialized yet');
+        return;
+      }
+
+      try {
+        const data = page.content;
+        if (data) {
+          // Safely set components with error handling
+          state.editor.setComponents(data);
+          setEditorHtml(data);
+
+          // Extract and set CSS from the content
+          const css = extractCssFromHtml(data);
+          if (css && typeof state.editor.setStyle === 'function') {
+            state.editor.setStyle(css);
+            setEditorCss(css);
+          }
+        }
+
+        contentLoadedRef.current = true;
+      } catch (error) {
+        console.error('Error setting editor content:', error);
+        // Don't crash the app, just log the error
+      }
+    };
+
+    // If editor is already loaded (load event already fired), load content immediately
+    // Otherwise, wait for the load event
+    const handleLoad = () => {
+      // Small delay to ensure Canvas is fully ready
+      setTimeout(loadContent, 100);
+    };
+
+    // Check if editor is already loaded
+    if (state.editor && !state.isLoading) {
+      // Editor is already loaded, try to load content
+      handleLoad();
+    } else {
+      // Wait for load event
+      state.editor?.on('load', handleLoad);
+    }
+
+    return () => {
+      state.editor?.off('load', handleLoad);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.editor, page?.content]);
+  }, [state.editor, state.isLoading, page?.content]);
 
 
 

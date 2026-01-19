@@ -1,6 +1,8 @@
 import { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { userService } from "./user-service";
+import { websiteService } from "../websites/website-service";
+import { tenantService } from "../tenant/tenant-service";
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -10,22 +12,49 @@ export const authConfig: NextAuthConfig = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        isMainDomain: { label: "Is Main Domain", type: "boolean" },
+        domain: { label: "Domain", type: "text" },
       },
       async authorize(credentials) {
         // Validate credentials exist
-        if (!credentials?.email || !credentials?.password) {
+        if (!credentials?.email || !credentials?.password || !credentials?.isMainDomain || !credentials?.domain) {
           throw new Error("Email and password are required");
         }
 
         try {
           // Get user by email
+
+          const getWebsite = await websiteService.getByHost(
+            credentials.domain as string
+          );
+           if (!getWebsite ) {
+            throw new Error("Invalid domain");
+          }
+
+       const tenantdetail= await tenantService.getTenantById(
+        getWebsite?.tenantId?.toString() as string
+       )
+  console.log("tenantdetail====", tenantdetail);
           const user = await userService.getUserByEmail(
             credentials.email as string
           );
-
           // Check if user exists and is active
+
+
+
           if (!user || user.status !== "active") {
-            throw new Error("Invalid credentials or inactive account");
+            throw new Error("Invalid credentials ");
+          }
+          if (!getWebsite && user.role != "superadmin") {
+            throw new Error("Invalid domain");
+          }
+          // Convert isMainDomain from string to boolean (NextAuth passes credentials as strings)
+          const isMainDomain = credentials.isMainDomain === "true" || credentials.isMainDomain === true;
+         const getTenantId=user.role=="agency"?tenantdetail?.tenantId?.toString():tenantdetail?._id?.toString();
+         console.log("userTenatId====", user.tenantId?.toString());
+         console.log("getTenantId====", getTenantId);
+          if (!isMainDomain && user.tenantId?.toString() !== getTenantId && user.role !== "superadmin") {
+            throw new Error("Invalid domain");
           }
 
           // Verify password
