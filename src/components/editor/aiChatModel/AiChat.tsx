@@ -23,8 +23,8 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml, onResponse }) => {
     
     try {
       // TODO: Implement AI chat functionality
-      console.log('Sending prompt:', prompt);
-      console.log('Component HTML:', componentHtml);
+      // console.log('Sending prompt:', prompt);
+      // console.log('Component HTML:', componentHtml);
       
       // Simulate API call
    const response = await fetch("/api/admin/llm/test", {

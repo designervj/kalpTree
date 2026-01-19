@@ -16,7 +16,7 @@ const GetAllIIMData = () => {
     if (!hasFetched && 
         user?.tenantId) {
         
-      dispatch(fetchLLMSettings({tenantId:user?.tenantId}));
+      dispatch(fetchLLMSettings({tenantId:user.role==="superadmin"?user?.tenantId:"6965e74f0552bf15baa45962"}));
     }
   }, [hasFetched, isLLMSettingLoading, user,dispatch,currentWebsite]);
 

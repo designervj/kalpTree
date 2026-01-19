@@ -34,6 +34,7 @@ export function CodeEditor({
   const [localCss, setLocalCss] = useState(css);
   const [localJs, setLocalJs] = useState(js);
   const [preview, setPreview] = useState("");
+  const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState("html");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -49,7 +50,30 @@ export function CodeEditor({
     }
   }, [isDialogOpen]);
 
+  // Auto-refresh preview when content changes (with debounce)
+  useEffect(() => {
+    if (!isDialogOpen) return;
+
+    const timeoutId = setTimeout(() => {
+      generatePreview();
+    }, 500); // 500ms debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [localHtml, localCss, localJs, isDialogOpen]);
+
   const generatePreview = () => {
+    // Extract any scripts from the HTML content itself
+    const scriptMatches = localHtml.match(/<script\b[^>]*>([\s\S]*?)<\/script>/gi) || [];
+    const extractedScripts = scriptMatches
+      .map(scriptTag => {
+        const match = scriptTag.match(/<script\b[^>]*>([\s\S]*?)<\/script>/i);
+        return match ? match[1] : '';
+      })
+      .filter(script => script.trim());
+
+    // Remove script tags from HTML to avoid duplicate execution
+    const htmlWithoutScripts = localHtml.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+
     const previewHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -61,12 +85,32 @@ export function CodeEditor({
         <style>${localCss}</style>
       </head>
       <body>
-        ${localHtml}
-        <script>${localJs}</script>
+        ${htmlWithoutScripts}
+        <script>
+          // Execute scripts extracted from HTML first
+          ${extractedScripts.map((script, idx) => `
+            // Script ${idx + 1} from HTML
+            try {
+              ${script}
+            } catch (error) {
+              console.error('HTML Script ${idx + 1} error:', error);
+            }
+          `).join('\n')}
+
+          // Then execute the JavaScript tab content
+          try {
+            ${localJs}
+          } catch (error) {
+            console.error('JavaScript tab error:', error);
+            document.body.innerHTML += '<div style="background: #fee; color: #c00; padding: 10px; margin: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">Script Error: ' + error.message + '</div>';
+          }
+        </script>
       </body>
       </html>
     `;
     setPreview(previewHtml);
+    // Force iframe refresh by changing key
+    setPreviewKey(prev => prev + 1);
   };
 
   const handleApplyChanges = () => {
@@ -137,7 +181,7 @@ export function CodeEditor({
               </TabsContent>
 
               <TabsContent
-                value="js"
+                value={localJs}
                 className={cn(
                   "flex-1 flex flex-col",
                   activeTab !== "js" && "hidden"
@@ -165,10 +209,11 @@ export function CodeEditor({
             </div>
             <div className="flex-1 overflow-hidden bg-white border rounded-md">
               <iframe
+                key={previewKey}
                 srcDoc={preview}
                 title="Preview"
                 className="w-full h-full"
-                sandbox="allow-scripts"
+                sandbox="allow-scripts allow-same-origin"
               />
             </div>
           </div>

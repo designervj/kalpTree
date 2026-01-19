@@ -10,6 +10,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import AiChat from "./AiChat";
+import GetAllIIMData from "@/components/admin/settings/integration/llm/llmdata/GetAllIIMData";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { setCurrentLLMSetting } from "@/hooks/slices/setting/llmSetting/LLMSettingSlice";
 
 interface AiChatModalProps {
   isOpen: boolean;
@@ -24,6 +28,8 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
   const actualComponent = component?.component; // keep (if you need later)
   const [apiResponse, setApiResponse] = useState("");
   const [extractedHtml, setExtractedHtml] = useState("");
+    const dispatch=useDispatch<AppDispatch>()
+  const {listLLMSettings}=useSelector((state:RootState)=>state.llmSetting)
 
   // Extract HTML code block from API response
   useEffect(() => {
@@ -60,7 +66,17 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
     }
   }, [apiResponse]);
 
+
+  // update current llm setting
+
+  useEffect(() => {
+      if(listLLMSettings && listLLMSettings.length>0){
+        dispatch(setCurrentLLMSetting(listLLMSettings[0]))
+      }
+  }, [listLLMSettings]);
   return (
+    <>
+    <GetAllIIMData/>
     <Dialog
       open={isOpen}
       onOpenChange={(open) => {
@@ -82,14 +98,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
             <DialogTitle className="text-base md:text-lg font-semibold text-gray-900">
               AI Component Editor - {componentTag} ({componentType})
             </DialogTitle>
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              onClick={onClose}
-              className="h-9 w-9 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl"
-            >
-              <X className="h-4 w-4" />
-            </Button> */}
+         
           </div>
         </DialogHeader>
 
@@ -172,5 +181,6 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }

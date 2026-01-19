@@ -21,41 +21,10 @@ function miniToast(msg: string) {
 const PreviewTemplate = ({ onClose }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
     const { currentTemplate } = useSelector((state: RootState) => state.template);
-    const [editorHtml, setEditorHtml] = useState("");
-    const [editorCss, setEditorCss] = useState("");
-    const [preview, setPreview] = useState("");
+ 
 
-    // useEffect(() => {
-    //     if (currentTemplate?.content) {
-    //         console.log("Template Content:", currentTemplate.content);
-    //         const css = extractCssFromHtml(currentTemplate.content);
-    //         console.log("Extracted CSS:", css);
-    //         setEditorCss(css);
-    //         const html = currentTemplate.content.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
-    //         setEditorHtml(html);
-    //         generatePreview(html, css);
-    //     }
-    // }, [currentTemplate?.content]);
+  
 
-    const generatePreview = (html: string, css: string) => {
-        const previewHtml = `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Add Tailwind CSS CDN -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>${css}</style>
-      </head>
-      <body>
-        ${html}
-     
-      </body>
-      </html>
-    `;
-        setPreview(previewHtml);
-    };
     return (
         <>
             <div className="fixed inset-0 z-50">
@@ -78,15 +47,11 @@ const PreviewTemplate = ({ onClose }: Props) => {
 
                     <div className="p-4">
                         <div className="overflow-hidden rounded-lg border h-[60vh] overflow-y-auto">
-                            {/* <>
-                                <iframe
-                                    srcDoc={preview}
-                                    title="Preview"
-                                    className="w-full h-full"
-                                    sandbox="allow-scripts"
-                                />
-                            </> */}
-                            <div dangerouslySetInnerHTML={{ __html: preview }} />
+                        
+                          <div
+                    suppressHydrationWarning
+                    dangerouslySetInnerHTML={{ __html: currentTemplate?.content?.replace(/\\n/g, '') || ''}}
+                />
                             {/* <div className={["h-[440px] w-full bg-gradient-to-br"].join(" ")} /> */}
                         </div>
 

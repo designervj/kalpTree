@@ -46,7 +46,6 @@ export function createEditorConfig(
       blocks: defaultBlocks,
     },
     layerManager: {
-      appendTo: "#layers-container",
     },
     styleManager: {
       sectors: [
@@ -88,9 +87,8 @@ export function createEditorConfig(
             { name: "Border Style", property: "border-style", type: "select" },
           ],
         },
-        
+
       ],
-      appendTo: "#styles-container",
     },
     panels: { defaults: [] },
     canvas: {
