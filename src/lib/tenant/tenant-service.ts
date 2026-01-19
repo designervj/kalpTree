@@ -108,6 +108,7 @@ export class TenantService {
     return result.modifiedCount > 0;
   }
 
+
   async suspendTenant(id: string | ObjectId): Promise<boolean> {
     return this.updateTenant(id, { status: "suspended" });
   }
@@ -124,6 +125,98 @@ export class TenantService {
       customDomain: domain.toLowerCase(),
       customDomainVerified: true,
     });
+  }
+
+  async updateBusinessDetails(
+    id: string | ObjectId,
+    businessDetails: {
+      brandName?: string;
+      tagline?: string;
+      description?: string;
+      industry?: string;
+      foundedYear?: string;
+      phone?: string;
+      address?: string;
+      email?: string;
+      socials?: {
+        facebook?: string;
+        instagram?: string;
+        linkedin?: string;
+        twitter?: string;
+      };
+    }
+  ): Promise<Tenant | null> {
+    const collection = await this.getCollection();
+    const objectId = typeof id === "string" ? new ObjectId(id) : id;
+
+    // Get existing tenant to merge data
+    const existingTenant = await this.getTenantById(objectId);
+    if (!existingTenant) {
+      return null;
+    }
+
+    // Prepare updates
+    const updates: Partial<Tenant> = {};
+
+    // Update businessdetails
+    if (
+      businessDetails.brandName !== undefined ||
+      businessDetails.tagline !== undefined ||
+      businessDetails.description !== undefined ||
+      businessDetails.industry !== undefined ||
+      businessDetails.foundedYear !== undefined ||
+      businessDetails.phone !== undefined ||
+      businessDetails.address !== undefined
+    ) {
+      updates.businessdetails = {
+        ...existingTenant.businessdetails,
+        ...(businessDetails.brandName !== undefined && {
+          brand_name: businessDetails.brandName,
+        }),
+        ...(businessDetails.tagline !== undefined && {
+          tagline: businessDetails.tagline,
+        }),
+        ...(businessDetails.description !== undefined && {
+          about: businessDetails.description,
+        }),
+        ...(businessDetails.industry !== undefined && {
+          industry: businessDetails.industry,
+        }),
+        ...(businessDetails.foundedYear !== undefined && {
+          founded_year: businessDetails.foundedYear,
+        }),
+        ...(businessDetails.phone !== undefined && {
+          phone: businessDetails.phone,
+        }),
+        ...(businessDetails.address !== undefined && {
+          headquarters: businessDetails.address,
+        }),
+      };
+    }
+
+    // Update email
+    if (businessDetails.email !== undefined) {
+      // updates.email = businessDetails.email;
+    }
+
+    // Update social presence - create if doesn't exist, merge if it does
+    console.log("businessDetails.socials", businessDetails.socials);
+    if (businessDetails.socials !== undefined && businessDetails.socials !== null) {
+      // Only update if socials object has at least one property
+      const hasValues = Object.keys(businessDetails.socials).length > 0;
+      if (hasValues) {
+        updates.socialPresence = {
+          ...(existingTenant.socialPresence || {}),
+          ...businessDetails.socials,
+        };
+      }
+    }
+
+    // Perform update
+    await this.updateTenant(objectId, updates);
+
+    // Return updated tenant
+    return this.getTenantById(objectId);
   }
 
   async listTenants(options?: {

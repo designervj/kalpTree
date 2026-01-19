@@ -136,6 +136,7 @@ export const UpperBar = () => {
   }
 
   const handleBusinessChange = (tenantId: string) => {
+    handleResetRedux()
     const params = new URLSearchParams(searchParams.toString())
     const business = allBusiness.find(b => b._id?.toString() === tenantId);
     params.set('businessid', business?._id?.toString() || '')

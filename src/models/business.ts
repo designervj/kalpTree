@@ -48,15 +48,27 @@ export interface IBusiness {
     updatedAt?: string;
   }>;
   businessdetails?: BussinessDetailModel;
+  socialPresence?:{
+   facebook?:string,
+   twitter?:string,
+   linkedin?:string,
+   instagram?:string,
+   youtube?:string,
+   tiktok?:string,
+   whatsapp?:string,
+   telegram?:string,
+   
+  }
 }
 
 export interface BussinessDetailModel {
-  business_website_url: string;
-  tagline: string;
-  industry: string;
-  founded_year: string;
-  about: string;
-  public_email: string;
-  phone: string;
-  headquarters: string;
+  business_website_url?: string;
+  tagline?: string;
+  industry?: string;
+  founded_year?: string;
+  about?: string;
+  public_email?: string;
+  phone?: string;
+  headquarters?: string;
+  brand_name?: string;
 }

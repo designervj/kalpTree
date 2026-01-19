@@ -62,17 +62,17 @@ export class BrandingService {
     const logoUrl = `/uploads/logos/${tenantId}_${Date.now()}_${logoFile.originalname}`;
     
     // Update the tenant's branding with the new logo
-    await this.updateBrandingSettings(
-      tenantId,
-      {
-        logo: {
-          url: logoUrl,
-          width: 200, // Default width
-          height: 60, // Default height
-        },
-      },
-      updatedBy
-    );
+    // await this.updateBrandingSettings(
+    //   tenantId,
+    //   {
+    //     logo: {
+    //       url: logoUrl,
+    //       width: 200, // Default width
+    //       height: 60, // Default height
+    //     },
+    //   },
+    //   updatedBy
+    // );
 
     return logoUrl;
   }
@@ -84,16 +84,16 @@ export class BrandingService {
     let css = ':root {\n';
     
     // Color variables
-    if (colors.primary) css += `  --primary: ${colors.primary};\n`;
-    if (colors.secondary) css += `  --secondary: ${colors.secondary};\n`;
-    if (colors.accent) css += `  --accent: ${colors.accent};\n`;
-    if (colors.background) css += `  --background: ${colors.background};\n`;
-    if (colors.foreground) css += `  --foreground: ${colors.foreground};\n`;
-    if (colors.muted) css += `  --muted: ${colors.muted};\n`;
-    if (colors.mutedForeground) css += `  --muted-foreground: ${colors.mutedForeground};\n`;
-    if (colors.border) css += `  --border: ${colors.border};\n`;
-    if (colors.input) css += `  --input: ${colors.input};\n`;
-    if (colors.ring) css += `  --ring: ${colors.ring};\n`;
+    // if (colors.primary) css += `  --primary: ${colors.primary};\n`;
+    // if (colors.secondary) css += `  --secondary: ${colors.secondary};\n`;
+    // if (colors.accent) css += `  --accent: ${colors.accent};\n`;
+    // if (colors.background) css += `  --background: ${colors.background};\n`;
+    // if (colors.foreground) css += `  --foreground: ${colors.foreground};\n`;
+    // if (colors.muted) css += `  --muted: ${colors.muted};\n`;
+    // if (colors.mutedForeground) css += `  --muted-foreground: ${colors.mutedForeground};\n`;
+    // if (colors.border) css += `  --border: ${colors.border};\n`;
+    // if (colors.input) css += `  --input: ${colors.input};\n`;
+    // if (colors.ring) css += `  --ring: ${colors.ring};\n`;
     
     // Font variables
     if (fonts?.heading) css += `  --font-heading: ${fonts.heading};\n`;
@@ -135,25 +135,25 @@ export class BrandingService {
     const errors: string[] = [];
 
     // Validate colors
-    if (branding.colors) {
-      const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+    // if (branding.colors) {
+    //   const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
       
-      Object.entries(branding.colors).forEach(([key, value]) => {
-        if (value && !colorRegex.test(value)) {
-          errors.push(`Invalid color format for ${key}: ${value}`);
-        }
-      });
-    }
+    //   Object.entries(branding.colors).forEach(([key, value]) => {
+    //     if (value && !colorRegex.test(value)) {
+    //       errors.push(`Invalid color format for ${key}: ${value}`);
+    //     }
+    //   });
+    // }
 
     // Validate logo dimensions
-    if (branding.logo) {
-      if (branding.logo.width && (branding.logo.width < 50 || branding.logo.width > 500)) {
-        errors.push('Logo width must be between 50 and 500 pixels');
-      }
-      if (branding.logo.height && (branding.logo.height < 20 || branding.logo.height > 200)) {
-        errors.push('Logo height must be between 20 and 200 pixels');
-      }
-    }
+    // if (branding.logo) {
+    //   if (branding?.logo?.width??"" && (branding.logo.width < 50 || branding.logo.width > 500)) {
+    //     errors.push('Logo width must be between 50 and 500 pixels');
+    //   }
+    //   if (branding?.logo?.height??"" && (branding.logo.height < 20 || branding.logo.height > 200)) {
+    //     errors.push('Logo height must be between 20 and 200 pixels');
+    //   }
+    // }
 
     // Validate custom CSS (basic check)
     if (branding.customCSS) {

@@ -15,6 +15,8 @@ const createSchema = z.object({
   slug: z.string().min(1),
   title: z.string().min(1),
   content: z.string().default(""),
+  tenantId:z.string(),
+  websiteId:z.string(),
   seo: z
     .object({
       metaTitle: z.string().optional(),

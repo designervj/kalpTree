@@ -49,6 +49,7 @@ export interface BrandingSettings {
     body?: string;
   };
   customCSS?: string;
+
 }
 
 // Tenant (franchise/client) - Enhanced
@@ -106,6 +107,25 @@ export interface Tenant extends Omit<BaseDocument, "tenantId"> {
     taxRate?: number; // 0.08 (8%)
     maxUsers?: number; // User limit for this tenant
     maxSubTenants?: number; // Sub-tenant limit for franchises
+  };
+
+  // Business details for brand profile
+  businessdetails?: {
+    brand_name?: string;
+    tagline?: string;
+    about?: string;
+    industry?: string;
+    founded_year?: string;
+    phone?: string;
+    headquarters?: string;
+  };
+
+  // Social media presence
+  socialPresence?: {
+    facebook?: string;
+    instagram?: string;
+    linkedin?: string;
+    twitter?: string;
   };
 
   // Status

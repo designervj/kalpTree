@@ -10,6 +10,7 @@ import {
   fetchBusinessesByTenant,
   fetchBusinessesByPlan,
   searchBusinesses,
+  updateBusinessBranding,
 } from "./BusinessThunk";
 import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
 
@@ -27,6 +28,7 @@ interface BusinessState {
   allSelectedBusiness: IBusiness[];
   businessWebsite: IBusiness | null;
   currentBusiness: IBusiness | null;
+
   hasFetchedBusiness: boolean;
   isLoading: boolean;
   error: string | null;
@@ -258,6 +260,26 @@ const businessSlice = createSlice({
         }
       })
       .addCase(savedashboardDetailsThunk.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      })
+      //update business profile
+      .addCase(updateBusinessBranding.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateBusinessBranding.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const { data } = action.payload;
+        state.currentBusiness = data;
+        // update in allBusiness array if it exists
+        const index = state.allBusiness.findIndex(
+          (b: IBusiness) => b._id?.toString() === data._id?.toString()
+        );
+        if (index !== -1) {
+          state.allBusiness[index] = data;
+        }
+      })
+      .addCase(updateBusinessBranding.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

@@ -155,8 +155,12 @@ const searchParams = useSearchParams()
       });
       return initialData;
     });
+ const params = new URLSearchParams(searchParams.toString())
+      params.set('agencyid', curretAgency?._id?.toString()??"")
+      params.set('businessid', currentBusiness?._id?.toString()??"")
+    const primaryBusiness = currentWebsite?.primaryDomain?.[0]??null
+      router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`)  
 
-    router.push("/admin/websites/pages");
   };
 
   // Render fields
