@@ -138,13 +138,43 @@ export class WebsiteService {
 
   async getByHost(host: string) {
     const c = await this.col();
+
+    // Extract subdomain from host (e.g., "ai-tech" from "ai-tech.localhost")
+    const extractSubdomain = (hostname: string) => {
+      // Remove port if present
+      const withoutPort = hostname.split(':')[0];
+      // Get the first part before the first dot
+      const parts = withoutPort.split('.');
+      return parts.length > 1 ? parts[0] : null;
+    };
+
+    const subdomain = extractSubdomain(host);
+    console.log("subdomain====", subdomain);
+    // Build query conditions
+    const orConditions: any[] = [
+      { primaryDomain: host }, // exact match for string
+      { primaryDomain: { $elemMatch: { $eq: host } } }, // exact match in array
+      { systemSubdomain: host }, // exact match for system subdomain
+    ];
+
+    // If we have a subdomain, add regex matching for primaryDomain array elements
+    if (subdomain) {
+      // Match domains that start with the subdomain pattern
+      // e.g., "ai-tech" matches "ai-tech.kalptree.xyz" or "ai-tech.localhost:55803"
+      orConditions.push({
+        primaryDomain: {
+          $elemMatch: {
+            $regex: `^${subdomain}\\.`,
+            $options: 'i'
+          }
+        }
+      });
+    }
+  console.log("orConditions====", orConditions);
     const doc = await c.findOne({
-      $or: [
-        { primaryDomain: host }, // matches string
-        { primaryDomain: { $elemMatch: { $eq: host } } }, // matches array
-        { systemSubdomain: host },
-      ],
+      $or: orConditions,
     });
+    console.log("doc====", doc);
     return doc || null;
   }
 

@@ -69,10 +69,7 @@ export default async function PageTemplate({
     } else if (!slug) {
       slug = "home";
     }
-   console.log("slug", slug)
-   console.log("lang", lang)
-   console.log("website", website)
-   console.log("currentWebsite", currentWebsite)
+
     // Get header/footer collection (needed regardless of website source)
     try {
       const allheader_coll = await db.collection("templates_header");

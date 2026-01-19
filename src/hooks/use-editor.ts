@@ -35,9 +35,6 @@ interface GrapesJSEditor {
     getById: (id: string) => any;
     getWrapper: () => any;
   };
-  Canvas?: {
-    getFrames?: () => any;
-  };
   BlockManager: {
     getAll: () => any;
   };
@@ -103,7 +100,7 @@ export function useEditor(containerId: string) {
 
   const dispatch = useDispatch<AppDispatch>()
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
-  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+ const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   useEffect(() => {
     const initEditor = async () => {
@@ -432,6 +429,13 @@ export function useEditor(containerId: string) {
         // Set up event listeners
         setupEventListeners(editor as unknown as GrapesJSEditor);
 
+        // Update state
+        setState((prev) => ({
+          ...prev,
+          editor,
+          isLoading: false,
+        }));
+
         return () => {
           editor.destroy();
         };
@@ -596,8 +600,6 @@ export function useEditor(containerId: string) {
 
         setState((prev) => ({
           ...prev,
-          editor,
-          isLoading: false,
           blocks: blockList,
           editorJs: initialJs,
         }));
@@ -911,7 +913,7 @@ export function useEditor(containerId: string) {
         if (response) {
           toast.success("Footer content updated successfully!");
         }
-      } else if (type === "header") {
+      }else if(type === "header"){
 
 
         console.log("header", {
@@ -1626,7 +1628,7 @@ export function useEditor(containerId: string) {
   return {
     state,
     actions,
-    isAiChatOpen,
+      isAiChatOpen,
     setIsAiChatOpen,
     selectedComponentForAi,
   };
