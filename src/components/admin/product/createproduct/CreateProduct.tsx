@@ -8,7 +8,11 @@ import { ProductOptions } from "./ProductOptions";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import BookingConfiguration from "./BookingType";
+import BookingConfiguration, {
+  BookingConfig,
+  DEFAULT_CONFIGS,
+} from "./BookingType";
+import { toast } from "sonner";
 
 interface FormData {
   title: string;
@@ -84,31 +88,38 @@ export function CreateProduct() {
     [key: number]: string;
   }>({});
 
+  const [bookingConfig, setBookingConfig] = useState<BookingConfig>(
+    DEFAULT_CONFIGS.DATE_RANGE,
+  );
+
   useEffect(() => {
-    if (!formData.categories) {
-      setProductOptions([]);
-      return;
-    }
+    // if (!formData.categories) {
+    //   setProductOptions([]);
+    //   return;
+    // }
 
-    const relevantAttrs = attributes.filter((attr) =>
-      attr.category_id?.includes(formData.categories),
-    );
+    // const relevantAttrs = attributes && attributes.length>0 && attributes.filter((attr) =>
+    //   attr.category_id?.includes(formData.categories),
+    // );
 
-    setProductOptions((prev: any) => {
-      return relevantAttrs.map((attr) => {
-        const existing = prev.find((opt: any) => opt.id === attr.id);
+    const relevantAttrs = attributes.length > 0 ? attributes : [];
 
-        return (
-          existing ?? {
-            id: attr._id,
-            title: attr.name,
-            values: attr.possible_values,
-            useForVariants: false,
-            unit: attr.unit,
-          }
-        );
+    if (relevantAttrs.length > 0) {
+      setProductOptions((prev: any) => {
+        return relevantAttrs.map((attr) => {
+          const existing = prev.find((opt: any) => opt.id === attr.id);
+          return (
+            existing ?? {
+              id: attr._id,
+              title: attr.name,
+              values: attr.possible_values,
+              useForVariants: false,
+              unit: attr.unit,
+            }
+          );
+        });
       });
-    });
+    }
   }, [formData.categories, attributes]);
 
   const generateVariants = () => {
@@ -197,8 +208,8 @@ export function CreateProduct() {
     );
   };
 
-  const selectAttribute = (optionId: number, attrId: number) => {
-    const attr = attributes.find((a) => a.id === attrId);
+  const selectAttribute = (optionId: number, attrId: string) => {
+    const attr = attributes.find((a) => a._id === attrId);
     if (!attr) return;
     setProductOptions((prev: any) =>
       prev.map((opt: any) =>
@@ -319,15 +330,24 @@ export function CreateProduct() {
       finalObj.productdata.images = finalImages;
     }
 
-    console.log(finalObj);
+    if (formData.productType == "hotel") {
+      finalObj.productdata.bookingConfg = bookingConfig;
+    }
 
     try {
-      const req = await fetch("/api/admin/product", {
-        method: "POST",
-        body: JSON.stringify(finalObj),
-      });
+      const req = await fetch(
+        `/api/admin/product?tenantId=696729dde1222ee82bdd906a&websiteId=696729dde1222ee82bdd906d`,
+        {
+          method: "POST",
+          body: JSON.stringify(finalObj),
+        },
+      );
       const res = await req.json();
-      console.log(res);
+      if (res.success) {
+        toast.success(res.message);
+      } else {
+        toast.error(res.message);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -463,7 +483,7 @@ export function CreateProduct() {
               <div className="space-y-4">
                 {productOptions.map((option) => {
                   const linkedAttr = attributes.find(
-                    (attr) => attr.id === option.id,
+                    (attr: any) => attr._id === option.id,
                   );
                   const availVals = linkedAttr?.possible_values || [];
                   const filteredAttrs = attributes.filter((attr) =>
@@ -602,7 +622,10 @@ export function CreateProduct() {
         </div>
         {formData.productType === "hotel" && (
           <div className="mt-5">
-            <BookingConfiguration />
+            <BookingConfiguration
+              bookingConfig={bookingConfig}
+              setBookingConfig={setBookingConfig}
+            />
           </div>
         )}
       </div>

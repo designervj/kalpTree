@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
       tags,
       options,
       images,
+      bookingConfg,
     } = jsondata.productdata;
 
     let imageUrls: string[] = [];
@@ -77,6 +78,7 @@ export async function POST(req: NextRequest) {
       basePrice,
       websiteId: new ObjectId(websiteId),
       tenantId: new ObjectId(tenantId),
+      bookingConfg: bookingConfg ? bookingConfg : null,
     });
 
     const productvariants = jsondata.variantData;
@@ -153,11 +155,29 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
 
-    if (products.length > 0) {
+    const finalProducts = await productColl
+      .aggregate([
+        {
+          $match: {
+            websiteId: new ObjectId(websiteId),
+          },
+        },
+        {
+          $lookup: {
+            from: "product_variants",
+            localField: "_id",
+            foreignField: "productId",
+            as: "variants",
+          },
+        },
+      ])
+      .toArray();
+
+    if (finalProducts.length > 0) {
       return NextResponse.json({
         message: "Successfully Fetched Products",
-        items: products,
-        success: false,
+        items: finalProducts,
+        success: true,
       });
     } else {
       return NextResponse.json({

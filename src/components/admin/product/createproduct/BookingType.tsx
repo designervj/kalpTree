@@ -4,23 +4,23 @@ import React, { useState } from "react";
 // TYPE DEFINITIONS
 // ============================================================================
 
-type BookingType =
+export type BookingType =
   | "DATE_RANGE"
   | "FIXED_PACKAGE"
   | "DATE_TIME"
   | "HOURLY"
   | "TICKET";
 
-type DayOfWeek = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
+export type DayOfWeek = "MON" | "TUE" | "WED" | "THU" | "FRI" | "SAT" | "SUN";
 
-interface BaseRules {
+export interface BaseRules {
   advanceBookingDays?: number;
   maxAdvanceBookingDays?: number;
   cancellationHours?: number;
   blackoutDates?: string[];
 }
 
-interface DateRangeRules extends BaseRules {
+export interface DateRangeRules extends BaseRules {
   minNights: number;
   maxNights: number;
   checkInTime: string;
@@ -28,7 +28,7 @@ interface DateRangeRules extends BaseRules {
   allowSameDayCheckout?: boolean;
 }
 
-interface FixedPackageRules extends BaseRules {
+export interface FixedPackageRules extends BaseRules {
   duration: {
     days: number;
     nights: number;
@@ -36,26 +36,26 @@ interface FixedPackageRules extends BaseRules {
   fixedItinerary?: boolean;
 }
 
-interface DateTimeRules extends BaseRules {
+export interface DateTimeRules extends BaseRules {
   duration: number; // in minutes
   slotInterval?: number; // in minutes
   allowedDays?: DayOfWeek[];
 }
 
-interface HourlyRules extends BaseRules {
+export interface HourlyRules extends BaseRules {
   minHours: number;
   maxHours: number;
   slotInterval?: number; // in minutes (e.g., 30, 60)
   allowedDays?: DayOfWeek[];
 }
 
-interface TicketRules extends BaseRules {
+export interface TicketRules extends BaseRules {
   validityDays?: number;
   timeSlotRequired?: boolean;
   transferable?: boolean;
 }
 
-interface Schedule {
+export interface Schedule {
   startDates?: string[];
   openingTime?: string;
   closingTime?: string;
@@ -64,7 +64,7 @@ interface Schedule {
   availableDays?: DayOfWeek[];
 }
 
-interface Capacity {
+export interface Capacity {
   minGuests: number;
   maxGuests: number;
   childrenAllowed: boolean;
@@ -73,7 +73,7 @@ interface Capacity {
   totalCapacity?: number;
 }
 
-interface Policies {
+export interface Policies {
   refundable: boolean;
   modifiable: boolean;
   depositRequired?: boolean;
@@ -82,7 +82,7 @@ interface Policies {
   gracePeriodMinutes?: number;
 }
 
-interface PricingRules {
+export interface PricingRules {
   basePrice?: number;
   currency?: string;
   pricePerPerson?: boolean;
@@ -90,14 +90,14 @@ interface PricingRules {
   weekendSurcharge?: number;
 }
 
-type BookingRules =
+export type BookingRules =
   | DateRangeRules
   | FixedPackageRules
   | DateTimeRules
   | HourlyRules
   | TicketRules;
 
-interface BookingConfig<T extends BookingType = BookingType> {
+export interface BookingConfig<T extends BookingType = BookingType> {
   bookingType: T;
   rules: T extends "DATE_RANGE"
     ? DateRangeRules
@@ -120,7 +120,7 @@ interface BookingConfig<T extends BookingType = BookingType> {
 // DEFAULT CONFIGURATIONS
 // ============================================================================
 
-const DEFAULT_CONFIGS: Record<BookingType, BookingConfig> = {
+export const DEFAULT_CONFIGS: Record<BookingType, BookingConfig> = {
   DATE_RANGE: {
     bookingType: "DATE_RANGE",
     rules: {
@@ -252,17 +252,19 @@ const DEFAULT_CONFIGS: Record<BookingType, BookingConfig> = {
 // COMPONENT
 // ============================================================================
 
-export default function BookingConfiguration() {
-  const [bookingConfig, setBookingConfig] = useState<BookingConfig>(
-    DEFAULT_CONFIGS.DATE_RANGE,
-  );
-
+export default function BookingConfiguration({
+  bookingConfig,
+  setBookingConfig,
+}: {
+  bookingConfig: BookingConfig;
+  setBookingConfig: any;
+}) {
   const handleBookingTypeChange = (type: BookingType) => {
     setBookingConfig(DEFAULT_CONFIGS[type]);
   };
 
   const updateRules = (key: string, value: any) => {
-    setBookingConfig((prev) => ({
+    setBookingConfig((prev: any) => ({
       ...prev,
       rules: { ...prev.rules, [key]: value },
     }));
@@ -272,7 +274,7 @@ export default function BookingConfiguration() {
     key: K,
     value: Schedule[K],
   ) => {
-    setBookingConfig((prev) => ({
+    setBookingConfig((prev: any) => ({
       ...prev,
       schedule: { ...prev.schedule, [key]: value },
     }));
@@ -282,7 +284,7 @@ export default function BookingConfiguration() {
     key: K,
     value: Capacity[K],
   ) => {
-    setBookingConfig((prev) => ({
+    setBookingConfig((prev: any) => ({
       ...prev,
       capacity: { ...prev.capacity, [key]: value },
     }));
@@ -292,7 +294,7 @@ export default function BookingConfiguration() {
     key: K,
     value: Policies[K],
   ) => {
-    setBookingConfig((prev) => ({
+    setBookingConfig((prev: any) => ({
       ...prev,
       policies: { ...prev.policies, [key]: value },
     }));

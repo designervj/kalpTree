@@ -42,6 +42,8 @@ export const ProductOptions = ({
   setSearchTerm,
   setShowDropdown,
 }: ProductOptionsProps) => {
+
+console.log("====>>>",availVals, showDropdown, showValueDropdown)
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -71,7 +73,7 @@ export const ProductOptions = ({
                 <button
                   key={String(attr._id)}
                   type="button"
-                  onClick={() => selectAttribute(option.id, attr.id)}
+                  onClick={() => selectAttribute(option.id, attr._id)}
                   className="w-full px-3 py-2 text-left hover:bg-gray-100 text-sm"
                 >
                   <div className="font-medium">{attr.name}</div>
@@ -117,8 +119,8 @@ export const ProductOptions = ({
                       val
                         .toLowerCase()
                         .includes(
-                          (valueSearchTerm[option.id] || "").toLowerCase()
-                        ) && !option.values.includes(val)
+                          (valueSearchTerm[option.id] || "").toLowerCase(),
+                        ) && !option.values.includes(val),
                   )
                   .map((val, i) => (
                     <button
@@ -136,8 +138,8 @@ export const ProductOptions = ({
                     val
                       .toLowerCase()
                       .includes(
-                        (valueSearchTerm[option.id] || "").toLowerCase()
-                      ) && !option.values.includes(val)
+                        (valueSearchTerm[option.id] || "").toLowerCase(),
+                      ) && !option.values.includes(val),
                 ).length === 0 &&
                   (valueSearchTerm[option.id] || "").trim() && (
                     <button
