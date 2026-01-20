@@ -8,6 +8,7 @@ import { ProductOptions } from "./ProductOptions";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import BookingConfiguration from "./BookingType";
 
 interface FormData {
   title: string;
@@ -71,47 +72,9 @@ export function CreateProduct() {
   const { listAttribute: attributes, isAttributeLoading } = useSelector(
     (state: RootState) => state.attribute,
   );
-
   const [images, setImages] = useState<ImageFile[]>([]);
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [variantConfigs, setVariantConfigs] = useState<VariantConfig[]>([]);
-  // const [attributes, setAttributes] = useState<Attributes[]>([
-  //   {
-  //     id: 1,
-  //     name: "Color",
-  //     category_id: "color",
-  //     unit: "",
-  //     possible_values: ["Red", "Blue", "Green"],
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "Finish Type",
-  //     category_id: "paint",
-  //     unit: "",
-  //     possible_values: ["Matte", "Glossy", "Satin", "Semi-Gloss"],
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Paint Type",
-  //     category_id: "paint",
-  //     unit: "",
-  //     possible_values: ["Emulsion", "Enamel", "Distemper", "Texture"],
-  //   },
-  //   {
-  //     id: 4,
-  //     name: "Coverage Area",
-  //     category_id: "paint",
-  //     unit: "sq ft/litre",
-  //     possible_values: ["80", "100", "120", "140"],
-  //   },
-  //   {
-  //     id: 5,
-  //     name: "Drying Time",
-  //     category_id: "paint",
-  //     unit: "hours",
-  //     possible_values: ["1", "2", "4", "6"],
-  //   },
-  // ]);
   const [showDropdown, setShowDropdown] = useState<number | null>(null);
   const [showValueDropdown, setShowValueDropdown] = useState<number | null>(
     null,
@@ -247,8 +210,6 @@ export function CreateProduct() {
     setShowDropdown(null);
     setSearchTerm("");
   };
-
-  console.log(productOptions);
 
   const removeOption = (id: number) =>
     setProductOptions((prev) => prev.filter((opt) => opt.id !== id));
@@ -639,6 +600,11 @@ export function CreateProduct() {
             handleInputChange={handleInputChange}
           />
         </div>
+        {formData.productType === "hotel" && (
+          <div className="mt-5">
+            <BookingConfiguration />
+          </div>
+        )}
       </div>
     </div>
   );

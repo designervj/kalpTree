@@ -164,9 +164,9 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
                   <SelectValue placeholder="Select segment type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Wall">Hotel</SelectItem>
-                  <SelectItem value="Floor">Packages</SelectItem>
-                  <SelectItem value="Ceiling">Clothing</SelectItem>
+                  <SelectItem value="hotel">Hotel</SelectItem>
+                  <SelectItem value="packages">Packages</SelectItem>
+                  <SelectItem value="clothing">Clothing</SelectItem>
                 </SelectContent>
               </Select>
             </div>

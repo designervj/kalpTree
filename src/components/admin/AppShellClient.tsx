@@ -24,16 +24,6 @@ type AppShellClientProps = {
 };
 
 export function AppShellClient({ children }: AppShellClientProps) {
-  // const {
-  //   agencies,
-  //   business,
-  //   websites,
-  //   currentAgency,
-  //   currentWebsite,
-  //   currentbusiness,
-  //   totalwebsites,
-  //   totalbusiness,
-  // } = useSelector((state: RootState) => state.dashboardDetails);
 
   const router = useRouter();
 
@@ -59,33 +49,7 @@ export function AppShellClient({ children }: AppShellClientProps) {
  //   dispatch(onAgencyChange({ agencyId }));
   };
 
-  // useEffect(() => {
-  //   // Only update URL if we don't already have the correct params
-  //   const currentAgencyId = currentAgency?._id;
-  //   const currentBusinessId = currentbusiness?._id;
-  //   const currentWebsiteId =
-  //     currentWebsite?.primaryDomain?.find((d: any) =>
-  //       d.includes("kalptree.xyz")
-  //     ) ?? null;
 
-  //   let href = "/admin/websites";
-
-  //   if (currentWebsiteId) {
-  //     href += `/${currentWebsiteId}`;
-  //   }
-
-  //   if (currentBusinessId) {
-  //     href += `?businessid=${currentBusinessId}`;
-  //   }
-
-  //   if (currentAgencyId) {
-  //     href += `&agencyid=${currentAgencyId}`;
-  //   }
-
-  //   if (currentWebsite || currentAgency || currentbusiness) {
-  //     router.push(href);
-  //   }
-  // }, [currentAgency, currentWebsite, currentbusiness]);
 
   return (
     <AppShell

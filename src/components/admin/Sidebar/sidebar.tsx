@@ -5,7 +5,6 @@ import {
   sectionIconMap,
   useHasPermission,
   User as UserType,
-  Website,
 } from "../AppShell";
 import React from "react";
 import {
@@ -15,40 +14,11 @@ import {
   TooltipTrigger,
 } from "@radix-ui/react-tooltip";
 import { buildWebsiteHref, cn } from "@/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
-import {
-  ArrowBigDown,
-  Bell,
-  Building2,
-  ChevronDown,
-  ChevronRight,
-  ChevronsUpDown,
-  CreditCard,
-  Globe2,
-  LayoutDashboard,
-  LogOut,
-  Sparkles,
-  User,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, LayoutDashboard } from "lucide-react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@radix-ui/react-dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 
@@ -65,13 +35,7 @@ type SidebarProps = {
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
-export function Sidebar({
-  onWebsiteChange,
-  collapsed = false,
-  onToggleCollapse,
-  onTenantChange,
-  onAgencyChage,
-}: SidebarProps) {
+export function Sidebar({ collapsed = false }: SidebarProps) {
   const { user } = useSelector((state: RootState) => state.user);
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
@@ -99,7 +63,7 @@ export function Sidebar({
       const init: Record<string, boolean> = {};
       filteredWebsiteSections.forEach((s, idx) => (init[s.id] = idx === 0)); // first group open by default
       return init;
-    }
+    },
   );
 
   React.useEffect(() => {
@@ -128,7 +92,7 @@ export function Sidebar({
     <TooltipProvider>
       <div
         className={cn(
-          "relative hidden md:flex h-screen  max-h-[80vh] md:max-h-[90vh] lg:max-h-[92vh] overflow-y-auto bg-[#f5f6f7]        w-[450px]"
+          "relative hidden md:flex h-screen  max-h-[80vh] md:max-h-[90vh] lg:max-h-[92vh] overflow-y-auto bg-[#f5f6f7]        w-[450px]",
         )}
       >
         {/* ✅ soft container like screenshot */}
@@ -148,7 +112,7 @@ export function Sidebar({
                     <div
                       className={cn(
                         "px-3 py-6 text-sm text-black/45",
-                        collapsed && "text-center px-1"
+                        collapsed && "text-center px-1",
                       )}
                     >
                       Select website
@@ -175,7 +139,7 @@ export function Sidebar({
                                   className={cn(
                                     "w-full flex items-center justify-center",
                                     "h-11 rounded-md bg-white/70 hover:bg-white transition",
-                                    "border border-black/5 shadow-sm"
+                                    "border border-black/5 shadow-sm",
                                   )}
                                 >
                                   <HeaderIcon className="h-5 w-5 text-black/70" />
@@ -229,7 +193,7 @@ export function Sidebar({
                                                 "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
                                                 active
                                                   ? "bg-[#f2f3f4] text-black shadow-sm"
-                                                  : "text-black/70 hover:bg-[#f6f7f8]"
+                                                  : "text-black/70 hover:bg-[#f6f7f8]",
                                               )}
                                             >
                                               <Icon className="h-4 w-4" />
@@ -265,7 +229,7 @@ export function Sidebar({
                             className={cn(
                               "w-full flex items-center gap-3 rounded-md px-3 py-2.5",
                               "text-left bg-white/70 border border-black/5 shadow-sm",
-                              "hover:bg-white transition"
+                              "hover:bg-white transition",
                             )}
                           >
                             <div className="grid h-9 w-9 place-items-center rounded-md bg-white border shadow-sm">
@@ -325,7 +289,7 @@ export function Sidebar({
                                                 "group flex items-center gap-3 rounded-md px-3 py-2",
                                                 active
                                                   ? "bg-[#fff] text-black shadow-sm"
-                                                  : "text-black/70 hover:bg-[#f6f7f8]"
+                                                  : "text-black/70 hover:bg-[#f6f7f8]",
                                               )}
                                             >
                                               <Icon className="h-4 w-4 text-black/55" />

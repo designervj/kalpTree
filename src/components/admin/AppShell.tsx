@@ -71,6 +71,11 @@ import {
   Sparkles,
   ChevronsUpDown,
   LogOut,
+  CalendarCheck,
+  Calendar,
+  BedDouble,
+  IndianRupee,
+  ScrollText,
 } from "lucide-react";
 
 import {
@@ -439,6 +444,61 @@ export const currentWebsiteSections: NavSection[] = [
         href: "/admin/ecommerce/settings",
         icon: Settings,
         permission: ["product:read", "product:update", "product:delete"],
+      },
+    ],
+  },
+
+  {
+    id: "bookings",
+    label: "Bookings",
+    items: [
+      {
+        label: "Reservations",
+        href: "/admin/bookings/reservations",
+        icon: CalendarCheck,
+        permission: ["booking:read"],
+      },
+      {
+        label: "Calendar / Availability",
+        href: "/admin/bookings/calendar",
+        icon: Calendar,
+        permission: ["booking:read", "booking:update"],
+      },
+      {
+        label: "Rooms / Units",
+        href: "/admin/bookings/units",
+        icon: BedDouble,
+        permission: ["product:read", "product:update"],
+      },
+      {
+        label: "Rate Plans",
+        href: "/admin/bookings/rates",
+        icon: IndianRupee,
+        permission: ["booking:update"],
+      },
+      {
+        label: "Guests",
+        href: "/admin/bookings/guests",
+        icon: Users,
+        permission: ["booking:read"],
+      },
+      {
+        label: "Reports",
+        href: "/admin/bookings/reports",
+        icon: BarChart4,
+        permission: ["booking:read"],
+      },
+      {
+        label: "Policies",
+        href: "/admin/bookings/policies",
+        icon: ScrollText,
+        permission: ["booking:update"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/bookings/settings",
+        icon: Settings,
+        permission: ["booking:update"],
       },
     ],
   },
@@ -819,24 +879,6 @@ export function AppShell({
                 className="h-18 w-18"
               />
             </div>
-            {/* <button
-              type="button"
-              onClick={() => setCollapsed((v) => !v)}
-              className={cn(
-                "w-full rounded-md transition hover:bg-white/60",
-                collapsed
-                  ? "h-10 flex items-center justify-center"
-                  : "h-10 flex items-center justify-between px-3"
-              )}
-            >
-              <span className="text-black/70">
-                {collapsed ? (
-                  <GoSidebarExpand size={20} />
-                ) : (
-                  <GoSidebarCollapse size={20} />
-                )}
-              </span>
-            </button> */}
           </div>
         </div>
         {isHighLevelCollapsed && <UpperBar />}
