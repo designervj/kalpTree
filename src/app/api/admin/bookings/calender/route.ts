@@ -56,15 +56,80 @@ export async function GET(req: NextRequest) {
             as: "variantId",
           },
         },
+        {
+          $unwind: {
+            path: "$productId",
+          },
+        },
+        {
+          $unwind: {
+            path: "$variantId",
+          },
+        },
       ])
       .toArray();
 
-    if (AllBooking.length === 0) {
+    const map: any = {};
+
+    for (let i = 0; i < AllBooking.length; i++) {
+      let final = AllBooking[i];
+      let date = final.date.toISOString().split("T")[0];
+      const {
+        variantId,
+        productId,
+        _id,
+        totalUnits,
+        bookedUnits,
+        priceOverride,
+      } = final;
+      const { _id: variant_id, sku, price, attributes } = variantId;
+      const { _id: product_id, title, basePrice, bookingConfg } = productId;
+
+      let main = {
+        totalUnits,
+        bookedUnits,
+        priceOverride,
+        date: date,
+        variantPrice: price,
+        attributes,
+        sku,
+        product_title: title,
+        product_price: basePrice,
+        bookingConfig: bookingConfg ? bookingConfg : {},
+        product_id,
+        variant_id,
+        inventory_id: _id,
+      };
+      const finalId = String(variant_id);
+
+      if (map[finalId]) {
+        map[finalId].masterData[date] = main;
+      } else {
+        map[finalId] = {
+          masterData: {},
+          _id: variant_id,
+        };
+        map[finalId].masterData[date] = main;
+      }
+    }
+
+    console.log(map);
+
+    // if (AllBooking.length === 0) {
+    //   // Changed from < 0 to === 0
+    //   return NextResponse.json({
+    //     message: "No inventory found for the selected date range",
+    //     success: false,
+    //     data: [],
+    //   });
+    // }
+
+    if (map) {
       // Changed from < 0 to === 0
       return NextResponse.json({
         message: "No inventory found for the selected date range",
         success: false,
-        data: [],
+        data: Object.values(map),
       });
     }
 

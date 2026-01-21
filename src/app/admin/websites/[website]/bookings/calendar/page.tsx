@@ -119,16 +119,16 @@ const GridCell: React.FC<{
         <div className="flex items-center gap-2 w-full justify-center">
           <input
             type="text"
-            defaultValue={data.inventory}
+            defaultValue={data && data.totalUnits}
             className="w-10 h-7 text-center border border-gray-300 rounded text-xs focus:border-blue-500 focus:outline-none text-gray-600 font-medium"
           />
           <div className="bg-gray-100 text-gray-500 text-[10px] font-semibold px-1.5 py-0.5 rounded border border-gray-200 whitespace-nowrap">
-            AVL {data.available}
+            AVL {data && data.totalUnits - data.bookedUnits}
           </div>
         </div>
 
         <button className="focus:outline-none mt-1 hover:scale-110 transition-transform">
-          {data.isLocked || data.isClosed ? (
+          {true ? (
             <div className="w-6 h-6 rounded-full bg-red-50 border border-red-100 flex items-center justify-center text-red-500">
               <Lock size={12} />
             </div>
@@ -159,7 +159,17 @@ const RoomRow: React.FC<{ room: RoomType; dates: CalendarDate[] }> = ({
   room,
   dates,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(room.isExpanded);
+  const [isExpanded, setIsExpanded] = useState(null);
+
+  const handleExpand = (id: string) => {
+    if (id == isExpanded) {
+      setIsExpanded(null);
+    } else {
+      setIsExpanded(id);
+    }
+  };
+
+  const { productId, variantId } = room;
 
   return (
     <div className="contents">
@@ -169,17 +179,17 @@ const RoomRow: React.FC<{ room: RoomType; dates: CalendarDate[] }> = ({
         <div className="sticky left-0 z-10 bg-white border-b border-r border-gray-200 h-20 flex items-center justify-between px-4 min-w-[250px] shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
           <div
             className="flex items-center gap-3 cursor-pointer select-none group-hover:text-blue-600 transition-colors"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={() => handleExpand(room._id)}
           >
             <div className="w-5 h-5 flex items-center justify-center rounded bg-gray-100 text-gray-500 group-hover:bg-blue-50 group-hover:text-blue-600 transition-colors">
-              {isExpanded ? (
+              {isExpanded === room._id ? (
                 <ChevronDown size={14} />
               ) : (
                 <ChevronRight size={14} />
               )}
             </div>
             <span className="font-semibold text-gray-800 text-sm">
-              {room.name}
+              {room._id}
             </span>
           </div>
           <button className="text-orange-500 hover:text-orange-600 text-xs font-semibold px-2 py-1 hover:bg-orange-50 rounded transition-colors">
@@ -199,7 +209,7 @@ const RoomRow: React.FC<{ room: RoomType; dates: CalendarDate[] }> = ({
       </div>
 
       {/* Expanded Content */}
-      {isExpanded &&
+      {isExpanded == room._id &&
         room.plans.map((plan) => (
           <React.Fragment key={plan.id}>
             {/* Plan Header Row */}
@@ -258,6 +268,35 @@ export default function HotelInventoryCalendar() {
     formatToYYYYMMDD(addDays(new Date(startDate), 15)),
   );
   const [booking, setBooking] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/admin/product?websiteId=696729dde1222ee82bdd906d`,
+        );
+        const response = await res.json();
+
+        if (response.success) {
+          // toast.success(response.message);
+          setProducts(response.items);
+        } else {
+          // toast.error(response.message);
+        }
+      } catch (error) {
+        // toast.error(String(error));
+      }
+    })();
+  }, []);
+
+  const final = products.find((d) => d.tenantId == "696729dde1222ee82bdd906a");
+
+  const finalBooking = booking.map((d) => {
+    return { ...d, plans: [] };
+  });
+
+  console.log(finalBooking);
 
   useEffect(() => {
     (async () => {
@@ -266,8 +305,9 @@ export default function HotelInventoryCalendar() {
       );
       const res = await req.json();
       console.log(res);
+      setBooking(res.data);
     })();
-  }, []);
+  }, [startDate, endDate]);
 
   const handleChangeDate = (e: any) => {
     const { name, value } = e.target;
@@ -311,35 +351,39 @@ export default function HotelInventoryCalendar() {
           id: "plan-1",
           name: "CP Plan",
           rows: [
-            {
-              id: "p1-r1",
-              label: "1 Adult",
-              type: "price",
-              data: generateDailyData(dates, 0, 2000),
-            },
-            {
-              id: "p1-r2",
-              label: "2 Adults",
-              type: "price",
-              data: generateDailyData(dates, 0, 4000),
-            },
-            {
-              id: "p1-r3",
-              label: "Extra Person",
-              type: "price",
-              data: generateDailyData(dates, 0, 1500),
-            },
-            {
-              id: "p1-r4",
-              label: "Child",
-              type: "price",
-              data: generateDailyData(dates, 0, 800),
-            },
+            // {
+            //   id: "p1-r1",
+            //   label: "1 Adult",
+            //   type: "price",
+            //   data: generateDailyData(dates, 0, 2000),
+            // },
+            // {
+            //   id: "p1-r2",
+            //   label: "2 Adults",
+            //   type: "price",
+            //   data: generateDailyData(dates, 0, 4000),
+            // },
+            // {
+            //   id: "p1-r3",
+            //   label: "Extra Person",
+            //   type: "price",
+            //   data: generateDailyData(dates, 0, 1500),
+            // },
+            // {
+            //   id: "p1-r4",
+            //   label: "Child",
+            //   type: "price",
+            //   data: generateDailyData(dates, 0, 800),
+            // },
           ],
         },
       ],
     },
   ];
+
+  console.log(rooms);
+
+  console.log(finalBooking);
 
   return (
     <div>
@@ -465,9 +509,11 @@ export default function HotelInventoryCalendar() {
               ))}
 
               {/* Room Rows (Recursive) */}
-              {rooms.map((room) => (
-                <RoomRow key={room.id} room={room} dates={dates} />
-              ))}
+              {finalBooking &&
+                finalBooking.length > 0 &&
+                finalBooking.map((room) => (
+                  <RoomRow key={room._id} room={room} dates={dates} />
+                ))}
             </div>
           </div>
         </div>

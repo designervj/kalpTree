@@ -69,7 +69,6 @@ export const buildWebsiteHref = (
 
   const clean = href.replace(/^\/admin/, "");
   let main = "?";
-
   const keys = Object.keys(arr);
 
   if (keys.length > 0) {
@@ -207,4 +206,26 @@ export function buildCategoryTree(categories: any) {
   });
 
   return roots;
+}
+
+export function extractHtmlParts(html: string) {
+  let styles = "";
+  let body = html;
+
+  // 1. Extract all <style> tags
+  const styleMatches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+
+  if (styleMatches) {
+    styles = styleMatches
+      .map((tag) => tag.replace(/<\/?style[^>]*>/gi, ""))
+      .join("\n");
+
+    // Remove styles from HTML
+    body = body.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
+  }
+
+  // 2. Remove <body> wrapper if present
+  body = body.replace(/<\/?body[^>]*>/gi, "").trim();
+
+  return { styles, body };
 }

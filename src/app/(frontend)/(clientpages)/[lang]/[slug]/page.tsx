@@ -3,8 +3,8 @@ import NotFound from "@/app/not-found";
 import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
 import RenderHtml from "./RenderHtml";
-import { demoProduct, processedHTML } from "../../../../../../utils/utlis";
 import { getDatabase } from "@/lib/db/mongodb";
+import { extractHtmlParts } from "@/lib/utils";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -18,10 +18,11 @@ export default async function PageTemplate({
   const db = await getDatabase();
 
   const EditButton = (await import("../../EditButton")).default;
-  console.log("host--", host)
+  console.log("host--", host);
 
   // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
-  const isLocalhost = host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
+  const isLocalhost =
+    host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
   const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
   // if (isLocalhost || isMainKalpTree) {
@@ -50,106 +51,111 @@ export default async function PageTemplate({
   //   </div>
 
   // } else {
-    const jar = await cookies();
-    let websiteData = jar.get("current_website_data")?.value || null;
-    console.log("websiteData", websiteData)
-    let website = websiteData ? JSON.parse(websiteData) : null;
-    const currentWebsiteData = jar.get("current_website")?.value || null;
-    let currentWebsite = currentWebsiteData
-      ? JSON.parse(currentWebsiteData)
-      : null;
+  const jar = await cookies();
+  let websiteData = jar.get("current_website_data")?.value || null;
+  console.log("websiteData", websiteData);
+  let website = websiteData ? JSON.parse(websiteData) : null;
+  const currentWebsiteData = jar.get("current_website")?.value || null;
+  let currentWebsite = currentWebsiteData
+    ? JSON.parse(currentWebsiteData)
+    : null;
 
-    const session = await auth();
-    let slug = param?.slug ? param.slug : null;
-    let lang = param?.lang ? param.lang : null;
+  const session = await auth();
+  let slug = param?.slug ? param.slug : null;
+  let lang = param?.lang ? param.lang : null;
 
-    if (lang && lang.length > 2 && !slug) {
-      slug = lang;
-      lang = null;
-    } else if (!slug) {
-      slug = "home";
+  if (lang && lang.length > 2 && !slug) {
+    slug = lang;
+    lang = null;
+  } else if (!slug) {
+    slug = "home";
+  }
+
+  // Get header/footer collection (needed regardless of website source)
+  try {
+    const allheader_coll = await db.collection("templates_header");
+    const allfooter_coll = await db.collection("templates_footer");
+
+    if (!website) {
+      const websiteColl = await getCollection("websites");
+      const pagecoll = await getCollection("pages");
+
+      let websitedata = await websiteColl.findOne({
+        primaryDomain: {
+          $in: [host],
+        },
+      });
+
+      let page = await pagecoll.findOne({
+        websiteId: websitedata._id,
+        slug: slug,
+      });
+
+      // console.log("page--->", page);
+      if (!lang && websitedata.lang) {
+        lang = websitedata.lang.find((d: any) => d.default == true)?.name;
+      }
+      website = page;
+      currentWebsite = {
+        ...websitedata,
+        _id: websitedata._id.toString(),
+        tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
+      };
     }
 
-    // Get header/footer collection (needed regardless of website source)
-    try {
-      const allheader_coll = await db.collection("templates_header");
-      const allfooter_coll = await db.collection("templates_footer");
+    if (!website) {
+      return <NotFound />;
+    }
 
-      if (!website) {
-        const websiteColl = await getCollection("websites");
-        const pagecoll = await getCollection("pages");
+    const html = website?.content2 ? website.content2[lang!] : website.content;
 
-        let websitedata = await websiteColl.findOne({
-          primaryDomain: {
-            $in: [host],
-          },
-        });
+    if (!html) {
+      return <NotFound />;
+    }
 
-        let page = await pagecoll.findOne({
-          websiteId: websitedata._id,
-          slug: slug,
-        });
+    website = {
+      ...website,
+      _id: String(website._id),
+      tenantId: String(website.tenantId),
+      websiteId: String(website.websiteId),
+    };
 
-     
-        console.log("page--->", page)
-        if (!lang && websitedata.lang) {
-          lang = websitedata.lang.find((d: any) => d.default == true)?.name;
-        }
-        website = page;
-        currentWebsite = {
-          ...websitedata,
-          _id: websitedata._id.toString(),
-          tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
-        };
-      }
+    const headerData = await allheader_coll.findOne({
+      websiteId: currentWebsite._id,
+    });
 
-      if (!website) {
-        return <NotFound />;
-      }
+    const footerData = await allfooter_coll.findOne({
+      websiteId: currentWebsite._id,
+    });
 
-      const html = website?.content2 ? website.content2[lang!] : website.content;
+    const processedHtml = html;
 
-      if (!html) {
-        return <NotFound />;
-      }
+    const { styles, body } = extractHtmlParts(html);
 
-      website = {
-        ...website,
-        _id: String(website._id),
-        tenantId: String(website.tenantId),
-        websiteId: String(website.websiteId),
-      };
-
-
-      const headerData = await allheader_coll.findOne({
-        websiteId: currentWebsite._id,
-      });
-
-      const footerData = await allfooter_coll.findOne({
-        websiteId: currentWebsite._id,
-      });
-
-      const processedHtml = html;
-      return (
-        <div>
-          {session && session.user && <EditButton
+    return (
+      <>
+        {styles && <style dangerouslySetInnerHTML={{ __html: styles }} />}
+        {session && session.user && (
+          <EditButton
             pageData={website}
             currentWebsite={currentWebsite}
             user={session?.user || {}}
             type="page"
-          />}
-          <RenderHtml html={processedHtml}
-            currentWebsite={currentWebsite}
-            headerData={headerData || {}}
-            footerData={footerData || {}}
           />
-        </div>
-      );
-    } catch (error) {
-      console.error("Error loading page:", error);
-      return <NotFound />;
-    }
+        )}
+
+        <RenderHtml
+          html={processedHtml}
+          currentWebsite={currentWebsite}
+          headerData={headerData || {}}
+          footerData={footerData || {}}
+        />
+      </>
+    );
+  } catch (error) {
+    console.error("Error loading page:", error);
+    return <NotFound />;
   }
+}
 
 // }
-

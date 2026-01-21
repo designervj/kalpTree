@@ -453,6 +453,12 @@ export const currentWebsiteSections: NavSection[] = [
     label: "Bookings",
     items: [
       {
+        label: "Rooms and Rent Plans",
+        href: "/admin/bookings/rooms-rate-plans",
+        icon: CalendarCheck,
+        permission: ["booking:read"],
+      },
+      {
         label: "Reservations",
         href: "/admin/bookings/reservations",
         icon: CalendarCheck,
