@@ -18,39 +18,12 @@ export default async function PageTemplate({
   const db = await getDatabase();
 
   const EditButton = (await import("../../EditButton")).default;
-  console.log("host--", host);
 
   // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
   const isLocalhost =
     host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
   const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
-  // if (isLocalhost || isMainKalpTree) {
-  //   const session = await auth();
-  //   const getHomePage = await db.collection("pages").findOne({
-  //     slug: "home-kalptree"
-  //   })
-  //   if (!getHomePage) {
-  //     return <NotFound />
-  //   }
-  //   const html = getHomePage.content
-
-  //   return <div>
-  //     {session && session.user && session.user.role == "superadmin" &&
-  //       <EditButton
-  //         pageData={getHomePage}
-  //         currentWebsite={null}
-  //         user={session?.user || null}
-  //         type="page"
-  //       />}
-  //     <RenderHtml html={html}
-  //       currentWebsite={null}
-  //       headerData={null}
-  //       footerData={null}
-  //     />
-  //   </div>
-
-  // } else {
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
   console.log("websiteData", websiteData);
@@ -123,18 +96,30 @@ export default async function PageTemplate({
     const headerData = await allheader_coll.findOne({
       websiteId: currentWebsite._id,
     });
+     
+      
+        // if (!lang && websitedata.lang) {
+        //   lang = websitedata.lang.find((d: any) => d.default == true)?.name;
+        // }
+        // website = page;
+        // currentWebsite = {
+        //   ...websitedata,
+        //   _id: websitedata._id.toString(),
+        //   tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
+        // };
+     // }
 
     const footerData = await allfooter_coll.findOne({
       websiteId: currentWebsite._id,
     });
 
-    const processedHtml = html;
+     const processedHtml = html;
 
-    const { styles, body } = extractHtmlParts(html);
+ 
 
     return (
       <>
-        {styles && <style dangerouslySetInnerHTML={{ __html: styles }} />}
+       
         {session && session.user && (
           <EditButton
             pageData={website}

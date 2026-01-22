@@ -8,10 +8,11 @@ import { useDispatch, useSelector } from 'react-redux';
 
 interface AiChatProps {
   componentHtml: string;
+  componentCss: string;
   onResponse?: (response: string) => void;
 }
 
-const AiChat: React.FC<AiChatProps> = ({ componentHtml, onResponse }) => {
+const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse }) => {
   const [prompt, setPrompt] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const {currentLLMSetting}= useSelector((state:RootState)=>state.llmSetting)
@@ -38,6 +39,7 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml, onResponse }) => {
           apiKey:currentLLMSetting.secreteKey,
           prompt:prompt,
           componentHtml: componentHtml,
+          componentCss: componentCss,
         }),
       });
 
