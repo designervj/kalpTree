@@ -1174,6 +1174,7 @@ export function useEditor(containerId: string) {
                 },
               };
             } else if (property === "font-size") {
+              console.log("Font Size", value)
               return {
                 ...prev,
                 styles: {
