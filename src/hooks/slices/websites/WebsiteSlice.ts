@@ -46,6 +46,11 @@ const websitesSlice = createSlice({
     setCurrentWebsite(state, action: PayloadAction<Website | null>) {
       state.currentWebsite = action.payload;
     },
+    addCreatedWebsite(state, action: PayloadAction<Website>) {
+      state.websites.unshift(action.payload);
+      // state.selectedWebsites.unshift(action.payload);
+      state.currentWebsite = action.payload;
+    },  
   },
   extraReducers: (builder) => {
     builder
@@ -91,5 +96,7 @@ const websitesSlice = createSlice({
   },
 });
 
-export const { setWebsites, clearWebsites, setCurrentWebsite, setSelectedWebsite } = websitesSlice.actions;
+export const { setWebsites, 
+  clearWebsites, setCurrentWebsite,
+   setSelectedWebsite,addCreatedWebsite } = websitesSlice.actions;
 export default websitesSlice.reducer;

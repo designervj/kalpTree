@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { deleteAgency } from "@/hooks/slices/user/agencySlice";
-import { useToast } from "@/hooks/use-toast";
+
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import Link from "next/link";
+import { toast } from "sonner";
 
 type Agency = {
   _id: string;
@@ -107,7 +108,7 @@ function roleVariant(r?: string): "blue" | "neutral" {
 export default function AgencyList() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const { toast } = useToast();
+
 
   const { user } = useSelector((state: RootState) => state.user);
   const { allAgencies, isAgencyLoading } = useSelector(
@@ -227,8 +228,7 @@ export default function AgencyList() {
   const handleCreate = () => {
     if (user?.role === "superadmin") router.push("/admin/agencies/create");
     else {
-      toast({
-        title: "Not allowed",
+      toast.error("Not allowed",{
         description: "Only Super Admin can create agencies.",
       });
     }
@@ -241,22 +241,20 @@ export default function AgencyList() {
   const handleDelete = async (row: Agency) => {
     const id = row?._id;
     if (!id) {
-      toast({ title: "Delete failed", description: "Missing id" });
+      toast.error("Delete failed",{description: "Missing id" });
       return;
     }
     const ok = confirm(`Delete agency "${row?.name ?? id}"?`);
     if (!ok) return;
 
     try {
-      await dispatch(deleteAgency(String(id)));
-      toast({
-        title: "Deleted",
-        description: `Agency ${row?.name ?? String(id)} removed`,
-      });
+     const response= await dispatch(deleteAgency(String(id))).unwrap();
+     if(response && response.success){
+     toast.success("Agency deleted successfully");
+     }
     } catch (err: any) {
       console.error(err);
-      toast({
-        title: "Delete failed",
+      toast.error("Delete failed",{
         description: String(err?.message || err),
       });
     }

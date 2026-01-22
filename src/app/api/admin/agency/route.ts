@@ -14,8 +14,6 @@ export async function GET(req: NextRequest) {
   const userId = searchParams.get("userId");
   const query: any = {};
 
-  console.log(" role--", role);
-  console.log(" userId---", userId);
   // If superadmin, get all agencies (role=agency)
   if (role === "agency" && !userId) {
     query.type = "agency";
@@ -77,6 +75,17 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
   const _id = toObjectId(id);
+  const getBusiness = await db.collection("tenants").findOne({ tenantId: _id });
+
+  if (getBusiness) {
+    const website = await db.collection("websites").deleteOne({ tenantId: getBusiness?._id });
+    const pages = await db.collection("pages").deleteMany({ tenantId: getBusiness?._id });
+    const agencyUser = await db.collection("users").deleteOne({ tenantId: _id });
+    const businessUser = await db.collection("users").deleteOne({ tenantId: getBusiness?._id });
+    const business = await db.collection("tenants").deleteOne({ tenantId: getBusiness?._id });
+    const result = await db.collection("tenants").deleteOne({ _id });
+    return NextResponse.json({ deleted: result.deletedCount === 1 });
+  }
   const result = await db.collection("tenants").deleteOne({ _id });
   return NextResponse.json({ deleted: result.deletedCount === 1 });
 }

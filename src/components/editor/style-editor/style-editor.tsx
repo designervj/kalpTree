@@ -1002,7 +1002,7 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
         value={styles?.layout?.display || "block"}
         onValueChange={(value) => onStyleChange("display", value)}
       >
-              <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
+        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
         <SelectContent className="bg-slate-800 border-slate-700">
