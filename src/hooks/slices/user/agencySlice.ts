@@ -22,7 +22,7 @@ export const fetchAllAgencies = createAsyncThunk<
 
 // Thunk to delete an agency by id
 export const deleteAgency = createAsyncThunk<
-  string, // return type (deleted agency id)
+  {success:boolean,agencyId:string}, // return type (deleted agency id)
   string, // argument type (agency id)
   { rejectValue: string }
 >("agency/deleteAgency", async (agencyId, { rejectWithValue }) => {
@@ -34,7 +34,10 @@ export const deleteAgency = createAsyncThunk<
       const data = await res.json().catch(() => ({}));
       throw new Error(data?.error || `HTTP ${res.status}`);
     }
-    return agencyId;
+    return {
+      success:true,
+      agencyId
+    }
   } catch (err: any) {
     return rejectWithValue(err?.message || "Failed to delete agency");
   }
@@ -95,6 +98,9 @@ const agencySlice = createSlice({
     setCurretAgency(state, action: PayloadAction<IUser | null>) {
       state.curretAgency = action.payload;
     },
+    addCreatedAgency(state, action: PayloadAction<IBusiness>) {
+      state.allAgencies.unshift(action.payload);
+    },
     clearAgencies(state) {
       state.agencies = [];
       state.hasfetched = false;
@@ -119,8 +125,9 @@ const agencySlice = createSlice({
         state.isAgencyLoading = true;
       })
       .addCase(deleteAgency.fulfilled, (state, action) => {
+        const {success,agencyId}=action.payload
         state.isAgencyLoading = false;
-        state.agencies = state.agencies.filter((a) => a._id !== action.payload);
+        state.agencies = state.agencies.filter((a) => a._id !== agencyId);
       })
       .addCase(deleteAgency.rejected, (state) => {
         state.isAgencyLoading = false;
@@ -152,9 +159,11 @@ const agencySlice = createSlice({
       .addCase(fetchSingleAgency.rejected, (state, action) => {
         state.isAgencyLoading = false;
       });
+
+ 
   },
 });
 
-export const { setAgencies, setAgencyLoading, setCurretAgency, clearAgencies } =
+export const { setAgencies, setAgencyLoading, setCurretAgency, clearAgencies,addCreatedAgency } =
   agencySlice.actions;
 export default agencySlice.reducer;

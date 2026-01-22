@@ -13,6 +13,7 @@ import {
   updateBusinessBranding,
 } from "./BusinessThunk";
 import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
+import { deleteAgency } from "../user/agencySlice";
 
 export interface Pagination {
   hasNextPage: boolean;
@@ -62,6 +63,9 @@ const businessSlice = createSlice({
     },
     setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
       state.currentBusiness = action.payload;
+    },
+    addCreatedBusiness(state, action: PayloadAction<IBusiness>) {
+      state.allBusiness.unshift(action.payload);
     },
     clearBusinesses(state) {
       state.allBusiness = [];
@@ -282,7 +286,15 @@ const businessSlice = createSlice({
       .addCase(updateBusinessBranding.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
-      });
+      })
+
+      //on delete agenct delete business
+          .addCase(deleteAgency.fulfilled, (state, action) => {
+              const {success,agencyId}=action.payload
+                state.allBusiness = state.allBusiness.filter((b: IBusiness) => b.tenantId !== agencyId);
+                state.allSelectedBusiness = state.allSelectedBusiness.filter((b: IBusiness) => b.tenantId !== agencyId);
+             
+            })
   },
 });
 
@@ -294,6 +306,7 @@ export const {
   setBusinessWebsite,
   setLoading,
   setError,
+  addCreatedBusiness
 } = businessSlice.actions;
 
 export default businessSlice.reducer;

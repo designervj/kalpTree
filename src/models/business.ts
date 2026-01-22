@@ -2,12 +2,12 @@ import { ObjectId } from "mongodb";
 
 export interface IBusiness {
   _id?: string | ObjectId;
-  slug: string;
-  name: string;
-  email: string;
-  plan: "trial" | "free" | "pro" | "agency";
-  subscriptionStatus: "active" | "paused" | "cancelled";
-  customDomainVerified: boolean;
+  slug?: string;
+  name?: string;
+  email?: string;
+  plan?: "trial" | "free" | "pro" | "agency" | "enterprise" | "basic" | undefined;
+  subscriptionStatus?: "active" | "paused" | "cancelled" | "suspended" | "inactive" | "pending" |undefined;
+  customDomainVerified?: boolean;
   branding?: {
     primary_color?: string;
     secondary_color?: string;
@@ -31,12 +31,12 @@ export interface IBusiness {
     currency?: string;
     timezone?: string;
   };
-  status: "active" | "paused" | "inactive";
-  createdAt: string;
-  updatedAt: string;
-  createdById: string;
+  status?: "active" | "paused" | "inactive";
+  createdAt?: string;
+  updatedAt?: string;
+  createdById?: string;
   type?: "business" | "franchise" | "agency";
-  tenantId?: string;
+  tenantId?: string ;
   websitesCount?: number;
   membersCount?: number;
   websites?: Array<{

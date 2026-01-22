@@ -37,7 +37,7 @@ export class TenantService {
     businessdetails?: any;
     branding?: any;
     type: string;
-    tenantId?: string;
+    tenantId?: string | ObjectId | undefined;
   }): Promise<Tenant> {
     const collection = await this.getCollection();
 

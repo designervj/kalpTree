@@ -15,9 +15,13 @@ import { Businessdetails } from "@/components/admin/users/businessdetails";
 import { Userdetails } from "@/components/admin/users/userdetails";
 import Link from "next/link";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatBrandSlug } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { addCreatedAgency } from "@/hooks/slices/user/agencySlice";
+import { addCreatedBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { addCreatedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
@@ -29,8 +33,9 @@ export default function BusinessCreatePage({
   agencies?: any[];
 }) {
   const path = usePathname();
+  const router = useRouter();
   const isAgencyPath = path.includes("agencies");
-
+   const dispatch = useDispatch();
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
@@ -199,11 +204,23 @@ export default function BusinessCreatePage({
       });
 
       const result = await res.json();
+    console.log("result created agency",result)
+      if (result?.tenantId && 
+        result?.agency && 
+        result?.business &&
+        result?.website) {
+          // dispatch add created agency
+          dispatch(addCreatedAgency(result.agency));
 
-      if (result?.tenantId) {
+          // dispatch add created business
+          dispatch(addCreatedBusiness(result.business));
+
+          // dispatch add created website
+          dispatch(addCreatedWebsite(result.website));
         toast.success(result.message);
         setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
+        router.push(`/admin/agencies`);
       } else {
         setMessage({
           type: "error",

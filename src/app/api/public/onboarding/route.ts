@@ -9,6 +9,8 @@ import { auth } from "@/auth";
 import { getCollection } from "../../tenants/[id]/route";
 import { demoPages } from "../../../../../utils/utlis";
 import { ObjectId } from "mongodb";
+import { Tenant } from "@/types";
+
 
 export async function POST(req: Request) {
   try {
@@ -56,9 +58,9 @@ export async function POST(req: Request) {
     } else if (tenantId && !agency_name && !agency_password) {
       createByTenant = tenantId;
     }
-
+    let tenant: Tenant | null = null;
     if (agency_name && agency_email && agency_password) {
-      const tenant = await tenantService.createTenant({
+      tenant = await tenantService.createTenant({
         name: agency_name,
         email: agency_email,
         plan: "trial",
@@ -77,7 +79,7 @@ export async function POST(req: Request) {
         type: "agency",
       });
 
-      const agencyid = String(tenant._id);
+      const agencyid = String(tenant?._id);
 
       if (logo) {
         const buffer = Buffer.from(await logo.arrayBuffer());
@@ -120,7 +122,7 @@ export async function POST(req: Request) {
       message += "Agency ";
     }
 
-    const tenant = await tenantService.createTenant({
+    const businessTenant = await tenantService.createTenant({
       name: business_name,
       email: email,
       plan: "trial",
@@ -141,7 +143,7 @@ export async function POST(req: Request) {
       tenantId: createByTenant,
     });
 
-    const id = String(tenant._id);
+    const id = String(businessTenant._id);
     let logoUrl = "";
     if (logo_url) {
       logoUrl = logo_url;
@@ -177,7 +179,7 @@ export async function POST(req: Request) {
       name: business_name,
       role: "business",
       createdById: createdById,
-      tenantId: tenant._id,
+      tenantId: businessTenant._id,
     });
 
     const primaryDomain = [
@@ -186,7 +188,7 @@ export async function POST(req: Request) {
     ];
 
     const website = await websiteService.create({
-      tenantId: tenant._id,
+      tenantId: businessTenant._id,
       name: business_name,
       serviceType: service ?? "WEBSITE_ONLY",
       primaryDomain: primaryDomain,
@@ -199,7 +201,7 @@ export async function POST(req: Request) {
     const mappedValue = demoPages.map((d) => {
       return {
         ...d,
-        tenantId: new ObjectId(String(tenant._id)),
+        tenantId: new ObjectId(String(businessTenant._id)),
         websiteId: new ObjectId(String(website._id)),
       };
     });
@@ -208,8 +210,11 @@ export async function POST(req: Request) {
 
     return NextResponse.json({
       ok: true,
-      tenantId: String(tenant._id),
-      tenantSlug: tenant.slug,
+      agency: tenant,
+      business: businessTenant,
+      website: website,
+      tenantId: String(businessTenant._id),
+      tenantSlug: businessTenant.slug,
       websiteId: website.websiteId,
       message: `${message}Business Created`,
       page: page.insertedCount,
