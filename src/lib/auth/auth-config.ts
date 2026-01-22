@@ -34,7 +34,7 @@ export const authConfig: NextAuthConfig = {
        const tenantdetail= await tenantService.getTenantById(
         getWebsite?.tenantId?.toString() as string
        )
-  console.log("tenantdetail====", tenantdetail);
+  // console.log("tenantdetail====", tenantdetail);
           const user = await userService.getUserByEmail(
             credentials.email as string
           );

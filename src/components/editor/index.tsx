@@ -14,6 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
+import { extractHtmlParts, extractStyles } from "@/lib/utils";
 
 export default function GrapesJSEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,14 +39,6 @@ export default function GrapesJSEditor() {
   const dispatch = require("react-redux").useDispatch();
   const { page } = useSelector((state: RootState) => state.pageEdit);
 
-  function extractCssFromHtml(html: string): string {
-    const matches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
-    if (!matches) return "";
-    return matches.map(styleTag => {
-      const inner = styleTag.match(/<style[^>]*>([\s\S]*?)<\/style>/i);
-      return inner ? inner[1] : "";
-    }).join("\n");
-  }
 
   function extractScriptsFromHtml(html: string): string {
     const matches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
@@ -91,19 +84,26 @@ export default function GrapesJSEditor() {
         if (data) {
           // Safely set components with error handling
           state.editor.setComponents(data);
-          setEditorHtml(data);
+           const { body } = extractHtmlParts(data);
+          setEditorHtml(body);
 
           // Extract and set CSS from the content
-          const css = extractCssFromHtml(data);
+          const css = extractStyles(data);
           if (css && typeof state.editor.setStyle === 'function') {
             state.editor.setStyle(css);
             setEditorCss(css);
+          }
+
+          const js = extractScriptsFromHtml(data);
+          if (js && typeof state.editor.setJs === 'function') {
+            state.editor.setJs(js);
+            setEditorJs(js);
           }
         }
 
         contentLoadedRef.current = true;
       } catch (error) {
-        console.error('Error setting editor content:', error);
+        console.error('Error setting editor content:', error);  
         // Don't crash the app, just log the error
       }
     };
@@ -139,7 +139,7 @@ export default function GrapesJSEditor() {
 
       // console.log("hfjhhfdhhfhfh----",html)
 
-      // setEditorHtml(html);
+      setEditorHtml(html);
       //  dispatch({ type: "pageEdit/setContent", payload: html });
     };
     state.editor.on("component:update", updateHandler);

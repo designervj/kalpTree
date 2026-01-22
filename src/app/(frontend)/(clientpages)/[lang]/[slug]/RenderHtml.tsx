@@ -8,7 +8,7 @@ import {
   executeScript,
 } from "@/components/editor/utils/htmlParser";
 import { useServerInsertedHTML } from "next/navigation";
-import { extractHtmlParts } from "@/lib/utils";
+import { extractHtmlParts, extractStyles } from "@/lib/utils";
 
 type props = {
   html: string;
@@ -16,6 +16,7 @@ type props = {
   headerData: TemplateDocument | null;
   footerData: TemplateDocument | null;
 };
+
 const RenderHtml = ({
   html,
   currentWebsite,
@@ -45,6 +46,18 @@ const RenderHtml = ({
     return extractScriptsFromHtml(footerData.content.replace(/\\n/g, ""));
   }, [footerData?.content]);
 
+
+      // Extract styles from header, main content, and footer
+    const extractedStyles = useMemo(() => {
+        const headerStyles = headerData?.content ? extractStyles(headerData.content) : '';
+        const mainStyles = html ? extractStyles(html) : '';
+        const footerStyles = footerData?.content ? extractStyles(footerData.content) : '';
+
+        const combinedStyles = `${headerStyles}\n${mainStyles}\n${footerStyles}`;
+
+
+        return combinedStyles;
+    }, [html]);
   // Execute all scripts after the component mounts and content is rendered
   useEffect(() => {
     // Execute header scripts
@@ -73,6 +86,15 @@ const RenderHtml = ({
 
   return (
     <>
+
+        {/* apply style */}
+         {/* Inject extracted styles globally */}
+            {extractedStyles && (
+                <style
+                    suppressHydrationWarning
+                    dangerouslySetInnerHTML={{ __html: extractedStyles }}
+                />
+            )}
       {/* Render header at the top if headerData exists */}
       {headerData && headerData.content && (
         <div

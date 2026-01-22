@@ -170,7 +170,7 @@ export class WebsiteService {
         }
       });
     }
-  console.log("orConditions====", orConditions);
+    console.log("orConditions====", orConditions);
     const doc = await c.findOne({
       $or: orConditions,
     });

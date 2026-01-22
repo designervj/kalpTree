@@ -9,6 +9,7 @@ import { savePageThunk } from "./slices/pageEditSlice";
 import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
 import { updateHeader } from "./slices/header/HeaderThunk";
+import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
 
 
 
@@ -98,9 +99,11 @@ export function useEditor(containerId: string) {
   });
 
 
+  console.log("editorRef--->", editorRef.current?.getHtml());
+  console.log("editorRef--->", editorRef.current?.getCss());
   const dispatch = useDispatch<AppDispatch>()
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
- const [isAiChatOpen, setIsAiChatOpen] = useState(false);
+  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   useEffect(() => {
     const initEditor = async () => {
@@ -159,6 +162,58 @@ export function useEditor(containerId: string) {
         const editor = grapesjs.default.init(config);
         editorRef.current = editor as any;
 
+        // Function to inject CSS variables dynamically from page content
+        const injectCanvasStyles = (pageContent?: string) => {
+          const canvas = editor.Canvas;
+          const canvasDoc = canvas.getDocument();
+          const canvasHead = canvasDoc?.head;
+
+          if (!canvasHead) return;
+
+          // Remove existing custom styles if any
+          const existingStyle = canvasDoc.querySelector('[data-custom-root-vars="true"]');
+          if (existingStyle) {
+            existingStyle.remove();
+          }
+
+          // Remove existing font links
+          const existingFonts = canvasDoc.querySelectorAll('link[data-custom-fonts="true"]');
+          existingFonts.forEach(link => link.remove());
+
+          // Extract and inject styles from page content
+          const styleContent = pageContent ? createCanvasStyleString(pageContent) : '';
+
+          if (styleContent) {
+            const styleEl = canvasDoc.createElement('style');
+            styleEl.setAttribute('data-custom-root-vars', 'true');
+            styleEl.innerHTML = styleContent;
+            canvasHead.appendChild(styleEl);
+            console.log('✅ CSS variables dynamically injected from page content');
+          }
+
+          // Extract and inject font links
+          if (pageContent) {
+            const fontUrls = extractFontLinks(pageContent);
+            fontUrls.forEach(fontUrl => {
+              const fontLink = canvasDoc.createElement('link');
+              fontLink.rel = 'stylesheet';
+              fontLink.href = fontUrl;
+              fontLink.setAttribute('data-custom-fonts', 'true');
+              canvasHead.appendChild(fontLink);
+            });
+
+            if (fontUrls.length > 0) {
+              console.log(`✅ ${fontUrls.length} font link(s) injected into canvas`);
+            }
+          }
+        };
+
+        // Inject styles on editor load
+        editor.on('load', () => {
+          // Use page content if available
+          injectCanvasStyles(page?.content);
+        });
+
         // Add fallback methods if needed
         if (typeof (editor as any).setJs !== "function") {
 
@@ -198,7 +253,7 @@ export function useEditor(containerId: string) {
 
         const domc = editor.DomComponents;
         const bm = editor.BlockManager;
-        console.log("bloick bm", bm)
+
         domc.addType("product-list", {
           model: {
             defaults: {
@@ -486,10 +541,11 @@ export function useEditor(containerId: string) {
               const componentHtml = component.toHTML();
               // console.log('Component HTML:', componentHtml);
 
-              // Store component with its HTML
+              // Store component with its HTML and CSS
               setSelectedComponentForAi({
                 component,
                 html: componentHtml,
+                css: editorRef?.current?.getCss?.() || "",
                 type: component.get('type'),
                 tagName: component.get('tagName')
               });
@@ -913,7 +969,7 @@ export function useEditor(containerId: string) {
         if (response) {
           toast.success("Footer content updated successfully!");
         }
-      }else if(type === "header"){
+      } else if (type === "header") {
 
 
         console.log("header", {
@@ -1628,7 +1684,7 @@ export function useEditor(containerId: string) {
   return {
     state,
     actions,
-      isAiChatOpen,
+    isAiChatOpen,
     setIsAiChatOpen,
     selectedComponentForAi,
   };

@@ -229,3 +229,18 @@ export function extractHtmlParts(html: string) {
 
   return { styles, body };
 }
+
+
+export const extractStyles = (htmlContent: string): string => {
+    const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+    const styles: string[] = [];
+    let match;
+
+    while ((match = styleRegex.exec(htmlContent)) !== null) {
+        if (match[1]) {
+            styles.push(match[1]);
+        }
+    }
+
+    return styles.join('\n');
+};
