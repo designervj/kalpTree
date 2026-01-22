@@ -999,9 +999,12 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <Label className="text-xs">Display</Label>
       <Select
-        value={styles?.layout!.display || "block"}
+        value={styles?.layout?.display || "block"}
         onValueChange={(value) => onStyleChange("display", value)}
       >
+              <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
+          <SelectValue placeholder="Select style" />
+        </SelectTrigger>
         <SelectContent className="bg-slate-800 border-slate-700">
           <SelectItem value="block" className="text-xs">
             Block
