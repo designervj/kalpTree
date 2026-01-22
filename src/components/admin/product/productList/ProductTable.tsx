@@ -37,7 +37,6 @@ const ProductTable = () => {
     (state: RootState) => state.product,
   );
 
-
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listBrand } = useSelector((state: RootState) => state.brand);
 
@@ -75,26 +74,13 @@ const ProductTable = () => {
       searchparams,
     );
     router.push(href);
-    // setNewProduct({
-    //   name: "",
-    //   brand_id: "",
-    //   product_category_id: "",
-    //   description: "",
-    //   photo: "",
-    //   base_price: 0,
-    //   product_variants: [],
-    //   websiteId: currentWebsite?._id,
-    //   tenantId: user?.tenantId,
-    // });
-    // setFieldErrors({});
-    // setIsAddDialogOpen(true);
   };
 
   const handleSaveAdd = async () => {
     if (!newProduct) return;
     setFieldErrors({});
     const errors: Record<string, string> = {};
-    if (!newProduct.name?.trim()) {
+    if (!newProduct.title?.trim()) {
       errors.name = "Name is required";
     }
     if (Object.keys(errors).length > 0) {
@@ -156,8 +142,14 @@ const ProductTable = () => {
   const handleView = (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) return;
+
+    const href = buildWebsiteHref(
+      `/admin/products/${id}`,
+      params.website!,
+      searchparams,
+    );
     // navigate to edit/view page under admin
-    router.push(`/admin/products/${id}`);
+    router.push(href);
   };
 
   const handleSaveEdit = async () => {
@@ -166,7 +158,7 @@ const ProductTable = () => {
     setFieldErrors({});
     const errors: Record<string, string> = {};
 
-    if (!editingProduct.name?.trim()) {
+    if (!editingProduct.title?.trim()) {
       errors.name = "Name is required";
     }
 
@@ -205,12 +197,12 @@ const ProductTable = () => {
     { key: "_id", label: "ID", hidden: true },
     { key: "id", label: "ID", hidden: true },
     { key: "product_category_id", label: "Product category Id", hidden: true },
-    { key: "name", label: "Name" },
+    { key: "title", label: "Title" },
     { key: "description", label: "Description" },
-    { key: "category", label: "Category" },
-    { key: "brand", label: "Brand" },
-    { key: "segment", label: "Segment" },
-    { key: "base_price", label: "Price" },
+    { key: "categories", label: "Categories" },
+    { key: "brands", label: "Brand" },
+    { key: "segmentType", label: "Segment" },
+    { key: "basePrice", label: "Price" },
     { key: "createdAt", label: "Created" },
   ];
 

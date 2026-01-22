@@ -22,10 +22,14 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
 
   const handleFileChange = async (e: any) => {
     const selectedFile = e.target.files[0];
+    console.log(selectedFile);
     if (!selectedFile) return;
 
-    if (!selectedFile.name.endsWith(".csv")) {
-      setErrors(["Please select a valid CSV file"]);
+    if (
+      !selectedFile.name.endsWith(".csv") &&
+      !selectedFile.name.endsWith(".json")
+    ) {
+      setErrors(["Please select a valid CSV or JSON file"]);
       return;
     }
 
@@ -36,31 +40,37 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
 
     // Simulate file processing
     try {
-      const Papa = await import("papaparse");
+      if (selectedFile.name.endsWith(".json")) {
+        const text = await selectedFile.text();
+        setPreviewData(JSON.parse(text));
+        setIsUploading(false);
+      } else {
+        const Papa = await import("papaparse");
 
-      Papa.parse(selectedFile, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result: any) => {
-          const cleanedData = result.data.map((row: Record<string, any>) => {
-            return Object.fromEntries(
-              Object.entries(row).filter(
-                ([_, value]) =>
-                  value !== "" && value !== null && value !== undefined,
-              ),
-            );
-          });
+        Papa.parse(selectedFile, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (result: any) => {
+            const cleanedData = result.data.map((row: Record<string, any>) => {
+              return Object.fromEntries(
+                Object.entries(row).filter(
+                  ([_, value]) =>
+                    value !== "" && value !== null && value !== undefined,
+                ),
+              );
+            });
 
-          let finalProduct = CSVProcessing(cleanedData);
-          console.log(finalProduct);
-          setPreviewData(finalProduct);
-          setIsUploading(false);
-        },
-        error: (error) => {
-          setErrors([`Failed to parse CSV: ${error.message}`]);
-          setIsUploading(false);
-        },
-      });
+            let finalProduct = CSVProcessing(cleanedData);
+            console.log(finalProduct);
+            setPreviewData(finalProduct);
+            setIsUploading(false);
+          },
+          error: (error) => {
+            setErrors([`Failed to parse CSV: ${error.message}`]);
+            setIsUploading(false);
+          },
+        });
+      }
     } catch (err) {
       setErrors(["Failed to process file"]);
       setIsUploading(false);
@@ -98,14 +108,24 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
     onClose();
   };
 
-  const handleDownloadCSV = () => {
-    const fileUrl = "/samplecsv.csv";
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = "samplecsv.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadCSV = (type: string) => {
+    if (type == "json") {
+      const fileUrl = "/sample.json";
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = "sample.json";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      const fileUrl = "/samplecsv.csv";
+      const link = document.createElement("a");
+      link.href = fileUrl;
+      link.download = "samplecsv.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   if (!isOpen) return null;
@@ -144,7 +164,7 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center hover:border-blue-400 transition-colors">
               <input
                 type="file"
-                accept=".csv"
+                accept=".csv, .json"
                 onChange={handleFileChange}
                 className="hidden"
                 id="csv-upload"
@@ -295,9 +315,16 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
             <button
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
               disabled={isImporting}
-              onClick={handleDownloadCSV}
+              onClick={() => handleDownloadCSV("csv")}
             >
               Download Sample CSV
+            </button>
+            <button
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+              disabled={isImporting}
+              onClick={() => handleDownloadCSV("json")}
+            >
+              Download Sample JSON
             </button>
             <button
               onClick={handleClose}

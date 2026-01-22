@@ -6,7 +6,6 @@ export default async function LangHomePage({
   params?: Promise<{ slug: string; lang: string }>;
 }) {
 
-  
 
   return <PageTemplate params={params} />;
 }

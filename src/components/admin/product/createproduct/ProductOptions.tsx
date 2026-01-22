@@ -42,8 +42,6 @@ export const ProductOptions = ({
   setSearchTerm,
   setShowDropdown,
 }: ProductOptionsProps) => {
-
-console.log("====>>>",availVals, showDropdown, showValueDropdown)
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -159,20 +157,22 @@ console.log("====>>>",availVals, showDropdown, showValueDropdown)
             )}
           </div>
           <div className="flex flex-wrap gap-2 mt-2">
-            {option.values.map((val, idx) => (
-              <span
-                key={idx}
-                className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm"
-              >
-                {val}
-                <button
-                  onClick={() => removeValue(option.id, idx)}
-                  className="text-blue-600 hover:text-blue-800"
+            {option &&
+              option.values &&
+              option.values.map((val, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded text-sm"
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </span>
-            ))}
+                  {val}
+                  <button
+                    onClick={() => removeValue(option.id, idx)}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              ))}
           </div>
         </div>
       </div>

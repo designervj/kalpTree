@@ -1,6 +1,12 @@
 "use client";
 
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
 import { X, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RightColumn } from "./RightColumn";
@@ -22,7 +28,7 @@ interface FormData {
   categories: string;
   brands: string;
   tags: string;
-  allcategories: string[];
+  allcategories?: string[];
 }
 
 interface ImageFile {
@@ -44,6 +50,7 @@ interface VariantAttribute {
   attributeName: string;
   value: string;
   unit?: string;
+  weight?: string;
 }
 
 interface VariantConfig {
@@ -52,6 +59,7 @@ interface VariantConfig {
   stock: number;
   price: string;
   attributes: VariantAttribute[];
+  weight: string;
 }
 
 export interface Attributes {
@@ -62,7 +70,19 @@ export interface Attributes {
   possible_values: string[];
 }
 
-export function CreateProduct() {
+export function CreateProduct({ productId }: { productId?: string }) {
+  const { listAttribute: attributes, isAttributeLoading } = useSelector(
+    (state: RootState) => state.attribute,
+  );
+
+  const { listProduct, isProductLoading } = useSelector(
+    (state: RootState) => state.product,
+  );
+
+  const singleSelectedProduct = useMemo(() => {
+    return listProduct.find((d) => d._id == productId);
+  }, [productId, listProduct]);
+
   const [formData, setFormData] = useState<FormData>({
     title: "",
     basePrice: "",
@@ -73,9 +93,7 @@ export function CreateProduct() {
     tags: "",
     allcategories: [],
   });
-  const { listAttribute: attributes, isAttributeLoading } = useSelector(
-    (state: RootState) => state.attribute,
-  );
+
   const [images, setImages] = useState<ImageFile[]>([]);
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [variantConfigs, setVariantConfigs] = useState<VariantConfig[]>([]);
@@ -92,6 +110,48 @@ export function CreateProduct() {
     DEFAULT_CONFIGS.DATE_RANGE,
   );
 
+  useLayoutEffect(() => {
+    const singleSelectedProduct = listProduct.find((d) => d._id == productId);
+    if (singleSelectedProduct && attributes.length > 0) {
+      const {
+        title,
+        basePrice,
+        description,
+        categories,
+        brands,
+        options,
+        variants,
+      } = singleSelectedProduct;
+
+      setFormData({
+        title: title ? title : "",
+        basePrice: basePrice ? basePrice : "",
+        description: description ? description : "",
+        productType: "",
+        categories: categories ? categories : "",
+        brands: brands ? brands : "",
+        tags: "",
+      });
+
+      const attributesparsed = options.map((parsed) => {
+        const relevantAttr = attributes.find((d) => d._id == parsed.id);
+
+        return {
+          id: relevantAttr?._id,
+          title: relevantAttr?.name,
+          values: parsed.values,
+          unit: parsed.unit ?? "",
+          useForVariants: parsed.useForVariants,
+        };
+      });
+
+      setProductOptions(attributesparsed);
+      setVariantConfigs(variants);
+    }
+  }, [listProduct, productId]);
+
+  console.log(variantConfigs);
+
   useEffect(() => {
     // if (!formData.categories) {
     //   setProductOptions([]);
@@ -102,23 +162,25 @@ export function CreateProduct() {
     //   attr.category_id?.includes(formData.categories),
     // );
 
-    const relevantAttrs = attributes.length > 0 ? attributes : [];
+    if (!productId) {
+      const relevantAttrs = attributes.length > 0 ? attributes : [];
 
-    if (relevantAttrs.length > 0) {
-      setProductOptions((prev: any) => {
-        return relevantAttrs.map((attr) => {
-          const existing = prev.find((opt: any) => opt.id === attr.id);
-          return (
-            existing ?? {
-              id: attr._id,
-              title: attr.name,
-              values: attr.possible_values,
-              useForVariants: false,
-              unit: attr.unit,
-            }
-          );
+      if (relevantAttrs.length > 0) {
+        setProductOptions((prev: any) => {
+          return relevantAttrs.map((attr) => {
+            const existing = prev.find((opt: any) => opt.id === attr.id);
+            return (
+              existing ?? {
+                id: attr._id,
+                title: attr.name,
+                values: attr.possible_values,
+                useForVariants: false,
+                unit: attr.unit,
+              }
+            );
+          });
         });
-      });
+      }
     }
   }, [formData.categories, attributes]);
 
@@ -148,6 +210,7 @@ export function CreateProduct() {
             attributeName: option.title,
             value,
             unit: option.unit,
+            weight: "",
           },
         ]);
       });
@@ -161,13 +224,16 @@ export function CreateProduct() {
       stock: 0,
       price: "",
       attributes: attrs,
+      weight: "0",
     }));
 
     setVariantConfigs(variants);
   };
 
   useEffect(() => {
-    generateVariants();
+    if (!productId) {
+      generateVariants();
+    }
   }, [productOptions]);
 
   const handleInputChange = (
@@ -353,6 +419,15 @@ export function CreateProduct() {
     }
   };
 
+  const handleRemoveVariant = (idx: number) => {
+    const cloned = structuredClone(variantConfigs).filter(
+      (d, index) => index !== idx,
+    );
+    if (cloned.length > 0) {
+      setVariantConfigs(cloned);
+    }
+  };
+
   return (
     <div className="min-h-screen">
       <div className="w-full mb-4 flex justify-between items-center">
@@ -485,6 +560,7 @@ export function CreateProduct() {
                   const linkedAttr = attributes.find(
                     (attr: any) => attr._id === option.id,
                   );
+
                   const availVals = linkedAttr?.possible_values || [];
                   const filteredAttrs = attributes.filter((attr) =>
                     attr.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -516,7 +592,7 @@ export function CreateProduct() {
 
             {/* Variants */}
             {variantConfigs.length > 0 && (
-              <div className="bg-white rounded-md shadow p-6">
+              <div className="bg-white rounded-md shadow p-6 ">
                 <h2 className="text-2xl font-bold tracking-tight">
                   Configure Variants
                 </h2>
@@ -557,15 +633,17 @@ export function CreateProduct() {
                         <th className="px-4 py-3 text-left text-xs font-medium">
                           Price
                         </th>
+                        <th className="px-4 py-3 text-left text-xs font-medium">
+                          Weight
+                        </th>
+                        {/* <th className="px-4 py-3 text-left text-xs font-medium">
+                         
+                        </th> */}
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {variantConfigs.map((cfg) => (
+                      {variantConfigs.map((cfg, index) => (
                         <tr key={cfg.id} className="hover:bg-gray-50">
-                          {/* <td className="px-4 py-3 text-sm">{cfg.combined}</td>
-                          
-                          */}
-
                           <td className="px-4 py-3 text-sm">
                             {cfg.attributes
                               .map((a) => `${a.attributeName}: ${a.value}`)
@@ -604,6 +682,21 @@ export function CreateProduct() {
                               }
                               className="w-20 px-2 py-1 border rounded text-sm"
                             />
+                          </td>
+                          <td className="px-4 py-3">
+                            <input
+                              type="text"
+                              value={cfg.weight}
+                              onChange={(e) =>
+                                updateConfig(cfg.id, "weight", e.target.value)
+                              }
+                              className="w-20 px-2 py-1 border rounded text-sm"
+                            />
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <button onClick={() => handleRemoveVariant(index)}>
+                              <X color="red" />
+                            </button>
                           </td>
                         </tr>
                       ))}

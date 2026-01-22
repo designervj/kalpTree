@@ -79,8 +79,9 @@ function inferType(values: any[]): "string" | "number" | "date" | "boolean" {
   return "string";
 }
 
-function formatValue(v: any, key?: string) {
+function formatValue(v: any, key?: string, list?: any) {
   if (v == null) return "-";
+  console.log("====>>>", key, v);
   // Custom date formatting for createdAt/updatedAt
   if (
     key &&
@@ -105,6 +106,10 @@ function formatValue(v: any, key?: string) {
   }
   if (v instanceof Date) return v.toISOString();
   if (typeof v === "boolean") return v ? "Yes" : "No";
+  if (list && list.length > 0) {
+    const value = list.find((d: any) => d._id == v)?.name;
+    return value;
+  }
   return String(v);
 }
 
@@ -128,8 +133,9 @@ export function DataTableExt({
     Record<string, boolean>
   >({ content: false, _id: false });
   const [enumFilters, setEnumFilters] = useState<Record<string, string | null>>(
-    {}
+    {},
   );
+  const { listCategory } = useSelector((state: RootState) => state.category);
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [numFilters, setNumFilters] = useState<
     Record<string, { min?: number; max?: number }>
@@ -156,7 +162,8 @@ export function DataTableExt({
     const base: ColumnConfig[] = Array.from(keys)
       .filter(
         (k) =>
-          !["tenantId", "websiteId"].includes(k) && typeof first[k] !== "object"
+          !["tenantId", "websiteId"].includes(k) &&
+          typeof first[k] !== "object",
       )
       .map((k) => ({
         key: k,
@@ -228,7 +235,7 @@ export function DataTableExt({
             columnVisibility[c.key] !== false &&
             String(r[c.key] ?? "")
               .toLowerCase()
-              .includes(q)
+              .includes(q),
         );
       });
     }
@@ -357,7 +364,7 @@ export function DataTableExt({
     row: {
       slug?: string;
       primaryDomain?: string[];
-    }
+    },
   ) {
     // opentab(row)
     if (opentab) {
@@ -388,10 +395,8 @@ export function DataTableExt({
   const pageName = pathname.split("/")[5];
   console.log("pageName", pageName);
 
-  const handleBuilderEdit = async (
-   row: WebsitePageModel
-  ) => {
-        const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
+  const handleBuilderEdit = async (row: WebsitePageModel) => {
+    const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
       ? currentWebsite?.primaryDomain[0]
       : currentWebsite?.primaryDomain;
     const localsub =
@@ -494,6 +499,7 @@ export function DataTableExt({
             </div>
             {columns.map((c) => {
               if (columnVisibility[c.key] === false) return null;
+
               const m = meta[c.key];
               if (!m) return null;
               const type = m.type;
@@ -673,6 +679,7 @@ export function DataTableExt({
           </TableHeader>
           <TableBody>
             {pageRows.map((row, i) => {
+              //  for changing rows
               return (
                 <TableRow
                   key={row._id ?? i}
@@ -700,6 +707,13 @@ export function DataTableExt({
                             if (c.render) return c.render(row[c.key], row);
 
                             // 3) Default formatter with key for date columns
+                            if (c.key == "categories") {
+                              return formatValue(
+                                row[c.key],
+                                c.key,
+                                listCategory,
+                              );
+                            }
                             return formatValue(row[c.key], c.key);
                           })()}
                         </TableCell>
@@ -712,7 +726,7 @@ export function DataTableExt({
                           variant="ghost"
                           size="sm"
                           className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
-                          onClick={() => handleBuilderEdit( row)}
+                          onClick={() => handleBuilderEdit(row)}
                           title="Builder"
                         >
                           <Layout className="h-4 w-4" />

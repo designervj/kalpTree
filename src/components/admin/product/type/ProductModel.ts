@@ -7,7 +7,7 @@ import { ProductVariant } from "@/modules/ecommerce/types";
 export interface ProductModel {
   id?: number;
   _id?: string;
-  name?: string;
+  title?: string;
   brand_id?: string | ObjectId;
   brand?: MaterialBrandModel;
   product_category_id?: string | ObjectId;
@@ -25,4 +25,5 @@ export interface ProductModel {
   gallery?: string[];
   websiteId?: string;
   tenantId?: string;
+  basePrice?: string;
 }

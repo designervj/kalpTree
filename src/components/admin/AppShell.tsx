@@ -373,7 +373,7 @@ export const currentWebsiteSections: NavSection[] = [
         permission: ["product:read", "product:update", "product:delete"],
       },
       {
-        label: "Pricing Rules",
+        label: "Pricing Rules & Discount",
         href: "/admin/pricing-rules",
         icon: CircleDollarSign,
         permission: ["product:read", "product:update", "product:delete"],

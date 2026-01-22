@@ -95,8 +95,6 @@ export async function POST(req: NextRequest) {
               (attr) => String(attr.slug) == varyattr.id,
             );
 
-            console.log("===>>>", singlevaryattr);
-
             return {
               attributeId: singlevaryattr?._id,
               attributeName: singlevaryattr?.name,

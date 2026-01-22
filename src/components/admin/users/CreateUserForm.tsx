@@ -18,10 +18,8 @@ interface CreateUserFormProps {
 }
 
 export default function CreateUserForm({ user, roles }: any) {
-  console.log("===>>>", "roles");
-
   const filteredRoles = roles.items.filter(
-    (d: any) => d.code.includes(user.role) && d.code !== user.role
+    (d: any) => d.code.includes(user.role) && d.code !== user.role,
   );
 
   const [formData, setFormData] = useState<UserFormData>({
@@ -38,14 +36,17 @@ export default function CreateUserForm({ user, roles }: any) {
       return d.code == formData.role;
     });
     if (!rolefiltered) return [];
-    return rolefiltered.permissions.reduce((acc: any, permission: any) => {
-      const category = permission.split(":")[0];
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(permission);
-      return acc;
-    }, {} as Record<string, string[]>);
+    return rolefiltered.permissions.reduce(
+      (acc: any, permission: any) => {
+        const category = permission.split(":")[0];
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(permission);
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
   }, [formData.role]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +59,7 @@ export default function CreateUserForm({ user, roles }: any) {
     PERMISSION_CATEGORIES && Object.values(PERMISSION_CATEGORIES).flat();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -350,7 +351,7 @@ export default function CreateUserForm({ user, roles }: any) {
                       ))}
                     </div>
                   </div>
-                )
+                ),
               )}
             </div>
           </div>

@@ -1,0 +1,101 @@
+[
+  {
+    "title": "Men Cotton T-Shirt",
+    "basePrice": "799",
+    "description": "Premium cotton round-neck t-shirt for everyday wear",
+    "segmentType": "Wall",
+    "categories": "apparel-and-clothing",
+    "brands": "UrbanWear",
+    "options": [
+      {
+        "id": "size",
+        "values": ["S", "M", "L", "XL"]
+      },
+      {
+        "id": "color",
+        "values": ["black", "white", "blue"]
+      },
+      {
+        "id": "fabric",
+        "values": "100% cotton"
+      }
+    ],
+    "variant": [
+      {
+        "price": "799",
+        "stock": "10",
+        "sku": "TS-BLK-M",
+        "attributes": [
+          { "id": "size", "value": "M" },
+          { "id": "color", "value": "black" }
+        ]
+      },
+      {
+        "price": "799",
+        "stock": "8",
+        "sku": "TS-WHT-L",
+        "attributes": [
+          { "id": "size", "value": "L" },
+          { "id": "color", "value": "white" }
+        ]
+      },
+      {
+        "price": "849",
+        "stock": "5",
+        "sku": "TS-BLU-XL",
+        "attributes": [
+          { "id": "size", "value": "XL" },
+          { "id": "color", "value": "blue" }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Women Denim Jeans",
+    "basePrice": "1799",
+    "description": "Slim-fit stretchable denim jeans",
+    "segmentType": "Wall",
+    "categories": "apparel-and-clothing",
+    "brands": "StyleDenim",
+    "options": [
+      {
+        "id": "waist-size",
+        "values": ["26", "28", "30", "32"]
+      },
+      {
+        "id": "length",
+        "values": ["30", "32"]
+      },
+      {
+        "id": "color",
+        "values": ["dark-blue", "light-blue"]
+      },
+      {
+        "id": "fit",
+        "values": "slim"
+      }
+    ],
+    "variant": [
+      {
+        "price": "1799",
+        "stock": "6",
+        "sku": "DJ-DB-28-30",
+        "attributes": [
+          { "id": "waist-size", "value": "28" },
+          { "id": "length", "value": "30" },
+          { "id": "color", "value": "dark-blue" }
+        ]
+      },
+      {
+        "price": "1799",
+        "stock": "4",
+        "sku": "DJ-LB-30-32",
+        "attributes": [
+          { "id": "waist-size", "value": "30" },
+          { "id": "length", "value": "32" },
+          { "id": "color", "value": "light-blue" }
+        ]
+      }
+    ]
+  }
+]

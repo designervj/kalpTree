@@ -76,7 +76,7 @@ const productSlice = createSlice({
         if ((c as any)._id && (updated as any)._id)
           return String((c as any)._id) === String((updated as any)._id);
         if (c.id && updated.id) return String(c.id) === String(updated.id);
-        return c.name === updated.name;
+        return c.title === updated.title;
       });
       if (idx !== -1) {
         state.listProduct[idx] = {
@@ -91,7 +91,7 @@ const productSlice = createSlice({
         if (!c) return false;
         if ((c as any)._id && id) return String((c as any)._id) !== String(id);
         if (c.id && id) return String(c.id) !== String(id);
-        return c.name !== String(id);
+        return c.title !== String(id);
       });
     },
     clearProducts(state) {
@@ -107,7 +107,7 @@ const productSlice = createSlice({
         state.isProductLoading = true;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        console.log("====>>",action.payload)
+        console.log("====>>", action.payload);
         state.listProduct = action.payload;
         state.hasFetched = true;
         state.isProductLoading = false;
