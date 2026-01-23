@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 // shadcn
 import { Button } from "@/components/ui/button";
@@ -29,20 +29,10 @@ import {
   ChevronDown,
   ChevronRight,
   Search,
-  CheckCircle2,
   Plus,
-  LayoutGrid,
-  Palette,
-  Sparkles,
-  ShoppingCart,
-  MoreHorizontal,
-  MessageSquare,
-  Home,
+
   FileText,
-  Store,
-  Shield,
-  File,
-  X,
+  
   Pencil,
   Settings,
   Image as ImageIcon,
@@ -62,31 +52,20 @@ import {
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
-import { AppDispatch } from "@/store/store";
+import { AppDispatch, RootState } from "@/store/store";
 import { IUser } from "@/models/user";
 import { Website } from "@/components/admin/AppShell";
+import { useMemo } from "react";
 
-/**
- * ✅ FIXED LAYOUT (proper spacing + full look)
- * - Header fixed (40px)
- * - Rail fixed below header
- * - Panel fixed below header
- * - Content is FIXED and fills remaining viewport (no big white empty area)
- */
-const HEADER_H = 40;
-const RAIL_W = 92;
-const PANEL_W = 360;
+
 
 export default function BuilderSidebarLayout({
-  children,
-  defaultOpenKey = "seo",
   user,
   currentWebsite,
   pageData,
   type,
 }: {
-  children: React.ReactNode;
-  defaultOpenKey?: SidebarKey | null;
+
   user: IUser | null;
   currentWebsite: Website | null;
   pageData: WebsitePageModel | TemplateDocument;
@@ -95,25 +74,13 @@ export default function BuilderSidebarLayout({
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
+  const {user:reduxUser} = useSelector((state: RootState) => state.user);
 
-  const [openKey, setOpenKey] = React.useState<SidebarKey | null>(defaultOpenKey);
 
-  const activeKeyFromPath = React.useMemo(() => {
-    const p = pathname || "";
-    if (p.includes("/builder/seo")) return "seo";
-    if (p.includes("/builder/setup")) return "setup";
-    if (p.includes("/builder/elements")) return "elements";
-    if (p.includes("/builder/pages")) return "pages";
-    if (p.includes("/builder/styles")) return "styles";
-    if (p.includes("/builder/ai-tools")) return "ai";
-    if (p.includes("/builder/store")) return "store";
-    if (p.includes("/builder/more")) return "more";
-    return null;
-  }, [pathname]);
+  const currentUser = useMemo(() => {
+    return user || reduxUser;
+  }, [user, reduxUser]);  
 
-  React.useEffect(() => {
-    if (activeKeyFromPath) setOpenKey(activeKeyFromPath);
-  }, [activeKeyFromPath]);
 
   // ✅ Fix: pageData.id may not exist in your type
   const pageId =
@@ -137,24 +104,15 @@ export default function BuilderSidebarLayout({
     router.push(slug ? `/${lang}/${slug}/builder` : "/builder");
   };
 
-  const railItems: RailItem[] = [
-    { key: "setup", label: "Setup", icon: <CheckCircle2 className="h-5 w-5" /> },
-    { key: "elements", label: "Elements", icon: <Plus className="h-5 w-5" /> },
-    { key: "pages", label: "Pages", icon: <LayoutGrid className="h-5 w-5" /> },
-    { key: "styles", label: "Styles", icon: <Palette className="h-5 w-5" /> },
-    { key: "ai", label: "AI tools", icon: <Sparkles className="h-5 w-5" /> },
-    { key: "divider", label: "", icon: null as any },
-    { key: "store", label: "Store", icon: <ShoppingCart className="h-5 w-5" /> },
-    { key: "seo", label: "SEO", icon: <Search className="h-5 w-5" /> },
-    { key: "more", label: "More", icon: <MoreHorizontal className="h-5 w-5" /> },
-  ];
-
-  const contentLeft = RAIL_W + (openKey ? PANEL_W : 0);
+   console.log("user--", user)
 
   return (
-    <TooltipProvider delayDuration={120}>
+    <>
+ { user &&
+ (user.role === "superadmin" || user.role === "business" || user.role === "agency" )&&
+ <TooltipProvider delayDuration={120}>
       {/* ================= TOP HEADER ================= */}
-      <header
+      <div
         className="
           fixed top-0 left-0 right-0
           h-10
@@ -228,7 +186,8 @@ export default function BuilderSidebarLayout({
             </DropdownMenu>
 
             {/* EDIT */}
-            <DropdownMenu 
+           {
+           <DropdownMenu 
             
             >
               <DropdownMenuTrigger asChild 
@@ -275,7 +234,7 @@ export default function BuilderSidebarLayout({
                   </DropdownMenuItem>
                 </Link>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu>}
 
             <Button
               type="button"
@@ -364,287 +323,15 @@ export default function BuilderSidebarLayout({
             </DropdownMenu>
           </div>
         </div>
-      </header>
-
-      {/* ================= LEFT ICON RAIL ================= */}
-      <aside
-        className="
-          fixed left-0 
-          top-10
-          h-[calc(100vh-40px)]
-          w-[92px]
-          bg-white
-          border-r border-slate-200
-          z-[120]
-          flex flex-col
-          py-3
-        "
-        style={{
-          paddingLeft:"10px", paddingRight:"10px", paddingTop:"10px",
-        }}
-      >
-        <div className="px-4 py-4 grid gap-1 ">
-          {railItems.map((it, idx) => {
-            if (it.key === "divider") {
-              return <Separator key={`div-${idx}`} className="my-2" />;
-            }
-            return (
-              <RailButton
-                key={it.key}
-                label={it.label}
-                icon={it.icon}
-                active={openKey === it.key}
-                onClick={() => setOpenKey((prev) => (prev === it.key ? null : it.key))}
-              />
-            );
-          })}
-        </div>
-
-        <div className="mt-auto px-2 pb-2">
-          <RailButton
-            label="Feedback"
-            icon={<MessageSquare className="h-5 w-5" />}
-            active={openKey === "feedback"}
-            onClick={() => setOpenKey((prev) => (prev === "feedback" ? null : "feedback"))}
-          />
-        </div>
-      </aside>
-
-      {/* ================= SECOND PANEL ================= */}
-      <SecondPanel openKey={openKey} onClose={() => setOpenKey(null)} />
-
-      {/* ================= CONTENT (FULL HEIGHT / NO GAP) ================= */}
-      <main
-        style={{
-          position: "fixed",
-          top: HEADER_H,
-          left: contentLeft,
-          right: 0,
-          bottom: 0,
-          overflow: "auto",
-          background: "#f8fafc",
-        }}
-      >
-        {/* Optional: add padding for normal pages. For iframe/canvas, remove p-4 */}
-        <div className="min-h-full p-4">{children}</div>
-      </main>
-    </TooltipProvider>
-  );
-}
-
-/* ---------------- Panel ---------------- */
-
-function SecondPanel({
-  openKey,
-  onClose,
-}: {
-  openKey: SidebarKey | null;
-  onClose: () => void;
-}) {
-  const show = Boolean(openKey);
-
-  return (
-    <div
-      className={[
-        "fixed left-[92px] top-10 px-4",
-        "h-[calc(100vh-40px)] w-[360px]",
-        "bg-white border-r border-slate-200 z-[110]",
-        "transition-transform duration-200 ease-out",
-        show ? "translate-x-0" : "-translate-x-[380px]",
-      ].join(" ")}
-      style={{
-        paddingLeft:"10px", paddingRight: "10px",
-      }}
-    >
-      <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200 bg-white">
-        <div className="font-semibold text-slate-900">{panelTitle(openKey)}</div>
-
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-          <X className="h-4 w-4" />
-        </Button>
       </div>
 
-      <div className="h-[calc(100%-56px)] overflow-y-auto">
-        {openKey === "seo" ? <SeoPanel /> : null}
-        {openKey === "pages" ? <PagesPanel /> : null}
-        {openKey === "store" ? <StorePanel /> : null}
-        {openKey === "setup" ? (
-          <SimplePanel icon={<CheckCircle2 className="h-4 w-4" />} title="Setup" desc="Project setup options." />
-        ) : null}
-        {openKey === "elements" ? (
-          <SimplePanel icon={<Plus className="h-4 w-4" />} title="Elements" desc="Add blocks and widgets." />
-        ) : null}
-        {openKey === "styles" ? (
-          <SimplePanel icon={<Palette className="h-4 w-4" />} title="Styles" desc="Theme + typography + colors." />
-        ) : null}
-        {openKey === "ai" ? (
-          <SimplePanel icon={<Sparkles className="h-4 w-4" />} title="AI tools" desc="AI assistance tools list." />
-        ) : null}
-        {openKey === "more" ? (
-          <SimplePanel icon={<MoreHorizontal className="h-4 w-4" />} title="More" desc="More settings and utilities." />
-        ) : null}
-        {openKey === "feedback" ? (
-          <SimplePanel icon={<MessageSquare className="h-4 w-4" />} title="Feedback" desc="Send feedback to team." />
-        ) : null}
-      </div>
-    </div>
+    
+    </TooltipProvider>}
+    </>
   );
 }
 
-function panelTitle(openKey: SidebarKey | null) {
-  switch (openKey) {
-    case "seo":
-      return "Let’s be found on Google (SEO)";
-    case "pages":
-      return "Pages";
-    case "store":
-      return "Store";
-    case "setup":
-      return "Setup";
-    case "elements":
-      return "Elements";
-    case "styles":
-      return "Styles";
-    case "ai":
-      return "AI tools";
-    case "more":
-      return "More";
-    case "feedback":
-      return "Feedback";
-    default:
-      return "";
-  }
-}
 
-/* ---------------- SEO Panel ---------------- */
-
-function SeoPanel() {
-  const [q, setQ] = React.useState("");
-  const [mainOpen, setMainOpen] = React.useState(true);
-
-  const pages = React.useMemo(
-    () => [
-      { label: "Home", icon: <Home className="h-4 w-4" />, status: "warn" as const },
-      { label: "Shop", icon: <Store className="h-4 w-4" />, status: "warn" as const },
-      { label: "Products", icon: <ShoppingCart className="h-4 w-4" />, status: "warn" as const },
-      { label: "Terms & conditions", icon: <Shield className="h-4 w-4" />, status: "warn" as const },
-    ],
-    []
-  );
-
-  const filtered = pages.filter((p) => p.label.toLowerCase().includes(q.trim().toLowerCase()));
-
-  return (
-    <div className="p-3 space-y-3">
-      <button
-        type="button"
-        className="w-full flex items-center gap-3 rounded-xl bg-violet-50 border border-violet-100 px-3 py-3 text-left"
-              style={{paddingTop:"15px"}}
-        
-      >
-        <div className="h-9 w-9 rounded-lg bg-violet-100 flex items-center justify-center text-violet-700">
-          <FileText className="h-5 w-5" />
-        </div>
-        <div className="flex-1">
-          <div className="font-medium text-slate-900">Website overview</div>
-        </div>
-      </button>
-
-      <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
-        <button
-          type="button"
-          onClick={() => setMainOpen((v) => !v)}
-          className="w-full px-3 py-3 flex items-center justify-between"
-        >
-          <div className="font-medium text-slate-900">Main pages</div>
-          {mainOpen ? (
-            <ChevronDown className="h-4 w-4 text-slate-500" />
-          ) : (
-            <ChevronRight className="h-4 w-4 text-slate-500" />
-          )}
-        </button>
-
-        {mainOpen && (
-          <div className="px-3 pb-3 space-y-2">
-            <div className="relative">
-              <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-              <Input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search pages..."
-                className="pl-9 h-10"
-              />
-            </div>
-
-            <div className="space-y-1">
-              {filtered.map((p) => (
-                <button
-                  key={p.label}
-                  type="button"
-                  className="w-full flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 text-left 1"
-                        style={{paddingTop:"15px"}}
-                >
-                  <StatusDot status={p.status} />
-                  <div className="flex items-center gap-2 text-slate-900">
-                    {p.icon}
-                    <span className="text-[14px]">{p.label}</span>
-                  </div>
-                </button>
-              ))}
-              {filtered.length === 0 ? (
-                <div className="text-sm text-slate-500 px-2 py-3">No pages found.</div>
-              ) : null}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-/* ---------------- Other panels ---------------- */
-
-function PagesPanel() {
-  return (
-    <div className="p-3 space-y-2">
-      <PanelRow icon={<FileText className="h-4 w-4" />} label="All pages" />
-      <PanelRow icon={<Home className="h-4 w-4" />} label="Homepage" />
-      <PanelRow icon={<File className="h-4 w-4" />} label="Drafts" />
-    </div>
-  );
-}
-
-function StorePanel() {
-  return (
-    <div className="p-3 space-y-2">
-      <PanelRow icon={<ShoppingCart className="h-4 w-4" />} label="Products" />
-      <PanelRow icon={<Store className="h-4 w-4" />} label="Orders" />
-      <PanelRow icon={<Shield className="h-4 w-4" />} label="Payments" />
-    </div>
-  );
-}
-
-function SimplePanel({
-  icon,
-  title,
-  desc,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  desc: string;
-}) {
-  return (
-    <div className="p-4">
-      <div className="flex items-center gap-2 text-slate-900 font-semibold">
-        {icon}
-        <span>{title}</span>
-      </div>
-      <p className="mt-2 text-sm text-slate-600">{desc}</p>
-    </div>
-  );
-}
-
-/* ---------------- UI helpers ---------------- */
 
 function BarIconOnly({ label, icon }: { label: string; icon: React.ReactNode }) {
   return (
@@ -663,96 +350,3 @@ function BarIconOnly({ label, icon }: { label: string; icon: React.ReactNode }) 
     </Tooltip>
   );
 }
-
-function RailButton({
-  label,
-  icon,
-  active,
-  onClick,
-}: {
-  label: string;
-  icon: React.ReactNode;
-  active?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        "w-full",
-        "flex flex-col items-center justify-center",
-        "gap-1.5",
-        "px-2 py-3",
-        "rounded-xl",
-        "transition-colors",
-        active ? "bg-violet-50" : "hover:bg-slate-50",
-      ].join(" ")}
-      style={{paddingTop:"5px", paddingBottom:"10px"}}
-    >
-      <div
-        className={[
-          "h-10 w-10 rounded-full",
-          "flex items-center justify-center",
-          active ? "bg-violet-100 text-violet-700" : "bg-slate-100 text-slate-700",
-        ].join(" ")}
-        // style={{paddingTop:"10px"}}
-      >
-        {icon}
-      </div>
-      <div className={["text-[12px] font-medium leading-none", active ? "text-violet-700" : "text-slate-700"].join(" ")}>
-        {label}
-      </div>
-    </button>
-  );
-}
-
-function StatusDot({ status }: { status: "warn" | "ok" }) {
-  return (
-    <span
-      className={[
-        "h-2.5 w-2.5 rounded-full",
-        status === "ok" ? "bg-emerald-500" : "bg-amber-500",
-      ].join(" ")}
-    />
-  );
-}
-
-function PanelRow({ icon, label }: { icon: React.ReactNode; label: string }) {
-  return (
-    <button
-      type="button"
-      className="w-full flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-slate-50 text-left 1"
-      
-
-    >
-      <div className="text-slate-600">{icon}</div>
-      <div className="text-[14px] text-slate-900">{label}</div>
-    </button>
-  );
-}
-
-/* ---------------- Types ---------------- */
-
-type SidebarKey =
-  | "setup"
-  | "elements"
-  | "pages"
-  | "styles"
-  | "ai"
-  | "store"
-  | "seo"
-  | "more"
-  | "feedback";
-
-type RailItem =
-  | {
-      key: SidebarKey;
-      label: string;
-      icon: React.ReactNode;
-    }
-  | {
-      key: "divider";
-      label: string;
-      icon: React.ReactNode;
-    };

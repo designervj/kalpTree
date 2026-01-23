@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import RenderHtml from "./RenderHtml";
 import { getDatabase } from "@/lib/db/mongodb";
 import { extractHtmlParts } from "@/lib/utils";
+import SlugPageHome from "./SlugPageHome";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -17,7 +18,7 @@ export default async function PageTemplate({
   const host = header.get("host");
   const db = await getDatabase();
 
-  const EditButton = (await import("../../EditButton")).default;
+  const EditButton = (await import("../../EditButtonBackup")).default;
 
   // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
   const isLocalhost =
@@ -119,22 +120,29 @@ export default async function PageTemplate({
 
     return (
       <>
-       
-        {session && session.user && (
-          <EditButton
+       <SlugPageHome
+       website={website}
+       currentWebsite={currentWebsite}
+       user={session?.user || {}}
+       html={processedHtml}
+       headerData={headerData || {}}
+       footerData={footerData || {}}
+       />
+
+          {/* <EditButton
             pageData={website}
             currentWebsite={currentWebsite}
             user={session?.user || {}}
             type="page"
           />
-        )}
+     
 
         <RenderHtml
           html={processedHtml}
           currentWebsite={currentWebsite}
           headerData={headerData || {}}
           footerData={footerData || {}}
-        />
+        /> */}
       </>
     );
   } catch (error) {

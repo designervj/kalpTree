@@ -61,19 +61,25 @@ const RenderHtml = ({
   // Execute all scripts after the component mounts and content is rendered
   useEffect(() => {
     // Execute header scripts
-    headerParsed.scripts.forEach((script) => {
+    if(headerParsed?.scripts.length > 0){
+    headerParsed?.scripts.forEach((script) => {
       executeScript(script);
     });
+    }
 
     // Execute main content scripts
-    mainParsed.scripts.forEach((script) => {
+    if(mainParsed?.scripts.length > 0){
+    mainParsed?.scripts.forEach((script) => {
       executeScript(script);
     });
+    }
 
     // Execute footer scripts
-    footerParsed.scripts.forEach((script) => {
+    if(footerParsed?.scripts.length > 0){
+    footerParsed?.scripts.forEach((script) => {
       executeScript(script);
     });
+    }
 
     // Cleanup function to remove event listeners if needed
     return () => {
