@@ -52,7 +52,11 @@ export function executeScript(scriptContent: string): void {
     try {
         // Create a new script element
         const script = document.createElement('script');
-        script.textContent = scriptContent;
+
+        // Wrap the script content in an IIFE to create a new scope
+        // This prevents variable redeclaration errors when multiple scripts
+        // declare the same variables (e.g., menuData)
+        script.textContent = `(function() { ${scriptContent} })();`;
 
         // Append to document body to execute
         document.body.appendChild(script);
