@@ -249,7 +249,7 @@ export function HighLevelSidebar({
             </div>
           )}
 
-          <div className="flex h-full flex-col">
+          <div className="flex h-full flex-col ">
             {/* Navigation */}
             <div
               className={cn(

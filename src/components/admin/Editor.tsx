@@ -10,6 +10,7 @@ import { WebsitePageModel } from "./website/websitePage/WebsitePageType";
 import { routeModule } from "next/dist/build/templates/pages";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
 
 
 // Field configuration type
@@ -292,31 +293,7 @@ export default function PageEditor({
               View
             </a>
           )}
-          <button
-            type="button"
-            className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-white font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-          <button
-            type="button"
-            className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 disabled:transform-none"
-            disabled={saving}
-            onClick={onSubmit}
-          >
-            {saving ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                Saving...
-              </span>
-            ) : (
-              "Save Changes"
-            )}
-          </button>
+       
         </div>
       </div>
 
@@ -343,6 +320,36 @@ export default function PageEditor({
           {rightFields.map((field) => renderField(field))}
         </div>
       </div>
+
+    <div className="w-full flex justify-end gap-2 mt-8">
+         <Button
+            type="button"
+            variant="outline"
+            // className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-white font-medium hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
+            onClick={handleDelete}
+          >
+            Delete
+          </Button>
+          <Button
+            type="button"
+            // className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 disabled:transform-none"
+            disabled={saving}
+            onClick={onSubmit}
+          >
+            {saving ? (
+              <span className="flex items-center gap-2">
+                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Saving...
+              </span>
+            ) : (
+              "Save Changes"
+            )}
+          </Button>
+    </div>
+
     </div>
   );
 }
