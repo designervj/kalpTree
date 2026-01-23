@@ -116,7 +116,7 @@ export default function BrandProfilePage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="founded">Founded Year</Label>
+                <Label htmlFor="founded">Founded Year 1</Label>
                 <Input 
                   id="founded" 
                   value={formData.foundedYear}

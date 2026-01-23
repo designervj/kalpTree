@@ -447,7 +447,7 @@ function SecondPanel({
     <div
       className={[
         "fixed left-[92px] top-10 px-4",
-        "h-[calc(100vh-40px)] w-[360px]",
+        "h-[calc(100vh-40px)] w-[550px]",
         "bg-white border-r border-slate-200 z-[110]",
         "transition-transform duration-200 ease-out",
         show ? "translate-x-0" : "-translate-x-[380px]",
@@ -457,7 +457,7 @@ function SecondPanel({
       }}
     >
       <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200 bg-white">
-        <div className="font-semibold text-slate-900">{panelTitle(openKey)}</div>
+        <div className="font-semibold text-slate-900 " >{panelTitle(openKey)}</div>
 
         <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
           <X className="h-4 w-4" />
@@ -539,7 +539,7 @@ function SeoPanel() {
       <button
         type="button"
         className="w-full flex items-center gap-3 rounded-xl bg-violet-50 border border-violet-100 px-3 py-3 text-left"
-              style={{paddingTop:"15px"}}
+         style={{marginTop:"8px", marginBottom:"8px", padding:"10px"}}
         
       >
         <div className="h-9 w-9 rounded-lg bg-violet-100 flex items-center justify-center text-violet-700">
@@ -550,13 +550,14 @@ function SeoPanel() {
         </div>
       </button>
 
-      <div className="rounded-xl border border-slate-200 overflow-hidden bg-white">
+      <div className="rounded-xl border border-slate-200 overflow-hidden bg-white"     style={{padding:"10px"}}>
         <button
           type="button"
           onClick={() => setMainOpen((v) => !v)}
           className="w-full px-3 py-3 flex items-center justify-between"
+          style={{padding:"10px"}}
         >
-          <div className="font-medium text-slate-900">Main pages</div>
+          <div className="font-medium text-slate-900 ">Main pages</div>
           {mainOpen ? (
             <ChevronDown className="h-4 w-4 text-slate-500" />
           ) : (
@@ -565,7 +566,7 @@ function SeoPanel() {
         </button>
 
         {mainOpen && (
-          <div className="px-3 pb-3 space-y-2">
+          <div className="px-3 pb-3 space-y-2" >
             <div className="relative">
               <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <Input
@@ -573,17 +574,19 @@ function SeoPanel() {
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search pages..."
                 className="pl-9 h-10"
+                style={{paddingLeft:"30px"}}
               />
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-1 grid gap-2" 
+            style={{
+              marginTop:"10px",
+            }}>
               {filtered.map((p) => (
                 <button
                   key={p.label}
                   type="button"
-                  className="w-full flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 text-left 1"
-                        style={{paddingTop:"15px"}}
-                >
+                  className="w-full flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 text-left">
                   <StatusDot status={p.status} />
                   <div className="flex items-center gap-2 text-slate-900">
                     {p.icon}
