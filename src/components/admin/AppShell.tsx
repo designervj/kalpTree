@@ -120,6 +120,7 @@ import { UpperBar } from "./Sidebar/UpperBar";
 import { ObjectId } from "mongodb";
 import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
+import Link from "next/link";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -804,16 +805,16 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  onWebsiteChange = () => {},
-  onTenantChange = () => {},
-  onAgencyChage = () => {},
+  onWebsiteChange = () => { },
+  onTenantChange = () => { },
+  onAgencyChage = () => { },
 }: AppShellProps) {
   // const { user, websites, currentWebsite } = useSelector(
   //   (state: RootState) => state.dashboardDetails
   // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
+  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
@@ -859,6 +860,11 @@ export function AppShell({
   const [collapsed, setCollapsed] = React.useState(Boolean(params.website));
   const [showSidebar, setShowSidebar] = React.useState(true);
   const { isSecondDashBoard } = useSelector((state: RootState) => state.user);
+
+  const handleAdmin = () => {
+    resetRedux();
+    router.push(`/admin`);
+  }
   return (
     <>
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
@@ -882,7 +888,8 @@ export function AppShell({
               <img
                 src="/kalptree-favicon.svg"
                 alt="KalpTree"
-                className="h-18 w-18"
+                className="h-18 w-18 cursor-pointer"
+                onClick={handleAdmin}
               />
             </div>
           </div>
@@ -991,7 +998,7 @@ export function AppShell({
       </header>
 
       <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-        {user && user.role != "business" && (
+        {user && user.role != "business" && !isHighLevelCollapsed && (
           <HighLevelSidebar
             user={user}
             collapsed={collapsed}

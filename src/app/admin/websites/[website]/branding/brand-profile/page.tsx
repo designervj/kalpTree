@@ -204,10 +204,10 @@ export default function BrandProfilePage() {
               <div className="space-y-2">
                 <Label>Industry</Label>
                 <Select value={formData.industry} onValueChange={(value) => setFormData({ ...formData, industry: value })}>
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full h-6">
                     <SelectValue placeholder="Select industry" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="w-full ">
                     <SelectItem value="Architecture">Architecture</SelectItem>
                     <SelectItem value="Interior Design">Interior Design</SelectItem>
                     <SelectItem value="Construction">Construction</SelectItem>
@@ -217,9 +217,10 @@ export default function BrandProfilePage() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="founded">Founded Year</Label>
+                <Label htmlFor="founded">Founded Year 1</Label>
                 <Input
                   id="founded"
+              className="py-4"
                   value={formData.foundedYear}
                   onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
                 />
