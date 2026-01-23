@@ -5,6 +5,8 @@ import { cookies, headers } from "next/headers";
 import RenderHtml from "./RenderHtml";
 import { getDatabase } from "@/lib/db/mongodb";
 import { extractHtmlParts } from "@/lib/utils";
+import ModernCartPage from "@/components/admin/product/Cart/Cart";
+import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -76,6 +78,12 @@ export default async function PageTemplate({
       };
     }
 
+    const obj: any = { cart: <ModernCartPage />, checkout: <ModernCheckout /> };
+
+    if (slug in obj) {
+      return obj[slug];
+    }
+
     if (!website) {
       return <NotFound />;
     }
@@ -96,30 +104,26 @@ export default async function PageTemplate({
     const headerData = await allheader_coll.findOne({
       websiteId: currentWebsite._id,
     });
-     
-      
-        // if (!lang && websitedata.lang) {
-        //   lang = websitedata.lang.find((d: any) => d.default == true)?.name;
-        // }
-        // website = page;
-        // currentWebsite = {
-        //   ...websitedata,
-        //   _id: websitedata._id.toString(),
-        //   tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
-        // };
-     // }
+
+    // if (!lang && websitedata.lang) {
+    //   lang = websitedata.lang.find((d: any) => d.default == true)?.name;
+    // }
+    // website = page;
+    // currentWebsite = {
+    //   ...websitedata,
+    //   _id: websitedata._id.toString(),
+    //   tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
+    // };
+    // }
 
     const footerData = await allfooter_coll.findOne({
       websiteId: currentWebsite._id,
     });
 
-     const processedHtml = html;
-
- 
+    const processedHtml = html;
 
     return (
       <>
-       
         {session && session.user && (
           <EditButton
             pageData={website}
