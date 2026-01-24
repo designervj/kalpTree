@@ -9,14 +9,30 @@ import { DeviceConfig } from "../../../types/editor";
 
 import TopToolbar from "./GrapesJSEditor/toolbars/TopToolbar";
 import BottomToolbar from "./GrapesJSEditor/toolbars/BottomToolbar";
-import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
+
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
+import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
+
+  type PropertiesSidebarProps = {
+  showSidebar: boolean;
+  selectedElement: any;
+  styles: any;
+  onStyleChange: (property: string, value: string) => void;
+  onAttributeChange: (name: string, value: any) => void;
+  onInteractivityChange: (config: any) => void;
+};
+
 
 export default function GrapesJSEditor() {
+
+
+
+
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     state,
@@ -479,7 +495,7 @@ export default function GrapesJSEditor() {
           onSave={handleSaveData}
         />
 
-        <div className="relative flex flex-1 overflow-hidden">
+        <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
           {/* Canvas */}
           <div
             className={`${showSidebar ? "w-[90%]" : "w-full"
@@ -494,14 +510,14 @@ export default function GrapesJSEditor() {
           </div>
 
           {/* Sidebar */}
-          <PropertiesSidebar
-            showSidebar={showSidebar}
-            selectedElement={state.selectedElement}
-            styles={state.styles}
-            onStyleChange={handleStyleChange}
-            onAttributeChange={actions.updateAttribute}
-            onInteractivityChange={handleUpdateInteractivity}
-          />
+        <PropertiesSidebar
+          showSidebar={showSidebar}
+          selectedElement={state.selectedElement}
+          styles={state.styles}
+          onStyleChange={handleStyleChange}
+          onAttributeChange={actions.updateAttribute}
+          onInteractivityChange={handleUpdateInteractivity}
+        />
         </div>
 
         <BottomToolbar
