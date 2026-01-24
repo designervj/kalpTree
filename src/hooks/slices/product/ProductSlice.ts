@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProductModel } from "@/components/admin/product/type/ProductModel";
+import { toast } from "sonner";
 
 export type ProductState = {
   listProduct: ProductModel[];
   isProductLoading: boolean;
   hasFetched: boolean;
   lastFetchedWebsiteId?: string;
+  cart: [];
+  isCartLoading: boolean;
 };
 
 const initialState: ProductState = {
@@ -13,6 +16,8 @@ const initialState: ProductState = {
   isProductLoading: false,
   hasFetched: false,
   lastFetchedWebsiteId: undefined,
+  cart: [],
+  isCartLoading: false,
 };
 
 export const fetchProducts = createAsyncThunk<
@@ -24,8 +29,10 @@ export const fetchProducts = createAsyncThunk<
   async ({ websiteId }, { rejectWithValue }) => {
     try {
       const res = await fetch(`/api/admin/product?websiteId=${websiteId}`);
+
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
+
         return rejectWithValue(body?.error || `HTTP ${res.status}`);
       }
       const data = await res.json();
@@ -56,6 +63,67 @@ export const fetchProducts = createAsyncThunk<
         return true;
       }
     },
+  },
+);
+
+export const fetchCart = createAsyncThunk(
+  "product/fetchCart",
+  async (
+    { websiteId, userId }: { websiteId: string; userId?: string },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await fetch(
+        `/api/admin/cart?websiteId=${websiteId}&userId=${userId}`,
+      );
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+
+        return rejectWithValue(body?.error || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+      return data?.items || [];
+    } catch (error: unknown) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Network error",
+      );
+    }
+  },
+);
+
+export const updateCart = createAsyncThunk(
+  "product/fetchCart",
+  async (
+    {
+      websiteId,
+      userId,
+      cartData,
+    }: { websiteId: string; userId?: string; cartData: any },
+    { rejectWithValue },
+  ) => {
+    try {
+      const res = await fetch(
+        `/api/admin/cart?websiteId=${websiteId}&userId=${userId}`,
+        {
+          method: "POST",
+          body: JSON.stringify(cartData),
+        },
+      );
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+
+        return rejectWithValue(body?.error || `HTTP ${res.status}`);
+      }
+      const data = await res.json();
+
+      return data?.items || [];
+    } catch (error: unknown) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : "Network error",
+      );
+    }
   },
 );
 
@@ -100,14 +168,67 @@ const productSlice = createSlice({
       state.hasFetched = false;
       state.lastFetchedWebsiteId = undefined;
     },
+    addProductInCart(state, action) {
+      const { productId, variantId } = action.payload;
+
+      const findIndex = state.cart.findIndex(
+        (item) => item.productId == productId && item.variantId == variantId,
+      );
+
+      if (findIndex > -1) {
+        const newQuantity = Number(state.cart[findIndex].quantity) + 1;
+        const productVariant = state.listProduct.find(
+          (d) => d._id == productId,
+        );
+        const variant = productVariant?.variants?.find(
+          (d) => d._id == variantId,
+        );
+
+        if (newQuantity > Number(variant.stock)) {
+          toast.error("Item out of Stock");
+        } else {
+          state.cart[findIndex].quantity = newQuantity;
+        }
+      } else {
+        const newCart = {
+          productId,
+          variantId,
+          quantity: 1,
+        };
+        state.cart.push(newCart);
+      }
+    },
+    removeProductInCart(state, action) {
+      const index = action.payload;
+      state.cart = state.cart.filter((d, idx) => idx !== index);
+    },
+
+    updateProductQtyInCart(state, action) {
+      const { index, delta } = action.payload;
+      const newQuantity = Number(state.cart[index].quantity) + delta;
+      const mainVariant = state.cart[index];
+      const productVariant = state.listProduct.find(
+        (d) => d._id == mainVariant.productId,
+      );
+      const variant = productVariant?.variants?.find(
+        (d) => d._id == mainVariant.variantId,
+      );
+      if (newQuantity > Number(variant.stock)) {
+        toast.error("Item out of Stock");
+      } else if (newQuantity < 1) {
+        state.cart = state.cart.filter((d, idx) => idx != index);
+      } else {
+        state.cart[index].quantity = newQuantity;
+      }
+    },
   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchProducts.pending, (state) => {
         state.isProductLoading = true;
       })
       .addCase(fetchProducts.fulfilled, (state, action) => {
-        console.log("====>>", action.payload);
         state.listProduct = action.payload;
         state.hasFetched = true;
         state.isProductLoading = false;
@@ -118,6 +239,16 @@ const productSlice = createSlice({
         // Still mark as fetched and store websiteId to prevent infinite retries
         state.hasFetched = true;
         state.lastFetchedWebsiteId = action.meta.arg.websiteId;
+      })
+      .addCase(fetchCart.pending, (state) => {
+        state.isCartLoading = true;
+      })
+      .addCase(fetchCart.fulfilled, (state, action) => {
+        state.cart = action.payload;
+        state.isCartLoading = false;
+      })
+      .addCase(fetchCart.rejected, (state, action) => {
+        state.isCartLoading = false;
       });
   },
 });
@@ -128,6 +259,9 @@ export const {
   updateProduct,
   removeProduct,
   clearProducts,
+  addProductInCart,
+  removeProductInCart,
+  updateProductQtyInCart,
 } = productSlice.actions;
 
 export default productSlice.reducer;

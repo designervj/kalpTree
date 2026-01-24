@@ -8,6 +8,8 @@ import { extractHtmlParts } from "@/lib/utils";
 import SlugPageHome from "./SlugPageHome";
 import ModernCartPage from "@/components/admin/product/Cart/Cart";
 import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
+import ProductShowcase from "@/components/admin/product/Cart/Products";
+import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -79,7 +81,25 @@ export default async function PageTemplate({
       };
     }
 
-    const obj: any = { cart: <ModernCartPage />, checkout: <ModernCheckout /> };
+    const obj: any = {
+      cart: <ModernCartPage />,
+      checkout: (
+        <>
+          <GetAllProduct websiteId={currentWebsite?._id} />
+          <ModernCheckout />
+        </>
+      ),
+      product: (
+        <>
+          <GetAllProduct websiteId={currentWebsite?._id} />
+
+          {/* <GetAllAttribute />
+          <GetAllcategory />
+          <GetAllBrand /> */}
+          <ProductShowcase />
+        </>
+      ),
+    };
 
     if (slug in obj) {
       return obj[slug];
@@ -125,31 +145,14 @@ export default async function PageTemplate({
 
     return (
       <>
-       <SlugPageHome
-       website={website}
-       currentWebsite={currentWebsite}
-       user={session?.user || {}}
-       html={processedHtml}
-       headerData={headerData || {}}
-       footerData={footerData || {}}
-       />
-
-          {/* <EditButton
-        {session && session.user && (
-          <EditButton
-            pageData={website}
-            currentWebsite={currentWebsite}
-            user={session?.user || {}}
-            type="page"
-          />
-     
-
-        <RenderHtml
-          html={processedHtml}
+        <SlugPageHome
+          website={website}
           currentWebsite={currentWebsite}
+          user={session?.user || {}}
+          html={processedHtml}
           headerData={headerData || {}}
           footerData={footerData || {}}
-        /> */}
+        />
       </>
     );
   } catch (error) {

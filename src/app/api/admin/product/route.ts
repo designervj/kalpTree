@@ -149,11 +149,11 @@ export async function GET(req: NextRequest) {
 
     const productColl = await getCollection("products");
 
-    const products = await productColl
-      .find({
-        websiteId: new ObjectId(websiteId),
-      })
-      .toArray();
+    // const products = await productColl
+    //   .find({
+    //     websiteId: new ObjectId(websiteId),
+    //   })
+    //   .toArray();
 
     const finalProducts = await productColl
       .aggregate([
