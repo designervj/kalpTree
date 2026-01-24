@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import { StyleState } from "../../../../types/editor";
 import { useState, useEffect } from "react";
+import GlobalStylesSection from "./GlobalStyle";
 
 // Common interfaces
 interface StyleEditorProps {
@@ -77,6 +78,8 @@ function ColorsSection({ styles, onStyleChange }: SectionProps) {
     </div>
   );
 }
+
+
 
 // Typography Controls
 function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
@@ -413,73 +416,69 @@ function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
       <Label className="text-xs">Text Alignment</Label>
-     <div className="flex gap-1.5">
-  <Button
-    variant={styles.typography.textAlign === "left" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "left")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "left"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignLeft className="h-3.5 w-3.5" />
-  </Button>
+      <div className="flex gap-1.5">
+        <Button
+          variant={styles.typography.textAlign === "left" ? "default" : "outline"}
+          size="icon"
+          onClick={() => onStyleChange("text-align", "left")}
+          className={`h-7 w-7 ${styles.typography.textAlign === "left"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <AlignLeft className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={styles.typography.textAlign === "center" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "center")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "center"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignCenter className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant={styles.typography.textAlign === "center" ? "default" : "outline"}
+          size="icon"
+          onClick={() => onStyleChange("text-align", "center")}
+          className={`h-7 w-7 ${styles.typography.textAlign === "center"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <AlignCenter className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={styles.typography.textAlign === "right" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "right")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "right"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignRight className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant={styles.typography.textAlign === "right" ? "default" : "outline"}
+          size="icon"
+          onClick={() => onStyleChange("text-align", "right")}
+          className={`h-7 w-7 ${styles.typography.textAlign === "right"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <AlignRight className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={styles.typography.textAlign === "justify" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "justify")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "justify"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
-  </Button>
-</div>
+        <Button
+          variant={styles.typography.textAlign === "justify" ? "default" : "outline"}
+          size="icon"
+          onClick={() => onStyleChange("text-align", "justify")}
+          className={`h-7 w-7 ${styles.typography.textAlign === "justify"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </Button>
+      </div>
 
     </div>
   );
@@ -517,61 +516,57 @@ function TextStyleControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <Label className="text-xs">Text Style</Label>
       <div className="flex gap-1.5">
-  <Button
-    variant={isBold ? "default" : "outline"}
-    size="icon"
-    onClick={toggleBold}
-    className={`h-7 w-7 ${
-      isBold ? "text-white" : "text-black hover:text-black"
-    }`}
-  >
-    <Bold className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant={isBold ? "default" : "outline"}
+          size="icon"
+          onClick={toggleBold}
+          className={`h-7 w-7 ${isBold ? "text-white" : "text-black hover:text-black"
+            }`}
+        >
+          <Bold className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={styles.typography.fontStyle === "italic" ? "default" : "outline"}
-    size="icon"
-    onClick={toggleItalic}
-    className={`h-7 w-7 ${
-      styles.typography.fontStyle === "italic"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <Italic className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant={styles.typography.fontStyle === "italic" ? "default" : "outline"}
+          size="icon"
+          onClick={toggleItalic}
+          className={`h-7 w-7 ${styles.typography.fontStyle === "italic"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <Italic className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={
-      styles.typography.textDecoration === "underline" ? "default" : "outline"
-    }
-    size="icon"
-    onClick={toggleUnderline}
-    className={`h-7 w-7 ${
-      styles.typography.textDecoration === "underline"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <Underline className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant={
+            styles.typography.textDecoration === "underline" ? "default" : "outline"
+          }
+          size="icon"
+          onClick={toggleUnderline}
+          className={`h-7 w-7 ${styles.typography.textDecoration === "underline"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <Underline className="h-3.5 w-3.5" />
+        </Button>
 
-  <Button
-    variant={
-      styles.typography.textTransform === "uppercase" ? "default" : "outline"
-    }
-    size="icon"
-    onClick={toggleUppercase}
-    title="Uppercase"
-    className={`h-7 w-7 ${
-      styles.typography.textTransform === "uppercase"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <span className="text-xs font-bold">TT</span>
-  </Button>
-</div>
+        <Button
+          variant={
+            styles.typography.textTransform === "uppercase" ? "default" : "outline"
+          }
+          size="icon"
+          onClick={toggleUppercase}
+          title="Uppercase"
+          className={`h-7 w-7 ${styles.typography.textTransform === "uppercase"
+            ? "text-white"
+            : "text-black hover:text-black"
+            }`}
+        >
+          <span className="text-xs font-bold">TT</span>
+        </Button>
+      </div>
 
     </div>
   );
@@ -1023,7 +1018,7 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
 // Main StyleEditor component
 export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
 
-  console.log("styles,styles", styles)
+
   return (
     <Accordion
       type="single"
@@ -1064,6 +1059,16 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
         </AccordionTrigger>
         <AccordionContent>
           <LayoutSection styles={styles} onStyleChange={onStyleChange} />
+        </AccordionContent>
+      </AccordionItem>
+
+
+      <AccordionItem value="global" className="border-slate-700">
+        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
+          Global Styles
+        </AccordionTrigger>
+        <AccordionContent>
+          <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>

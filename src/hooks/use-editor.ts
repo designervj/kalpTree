@@ -53,6 +53,9 @@ interface GrapesJSEditor {
     store: (data: Record<string, any>) => void;
     get: (key: string) => any;
   };
+  Canvas: {
+    getDocument: () => Document | null;
+  };
   on: (event: string, callback: Function) => void;
   destroy: () => void;
 }
@@ -99,8 +102,6 @@ export function useEditor(containerId: string) {
   });
 
 
-  console.log("editorRef--->", editorRef.current?.getHtml());
-  console.log("editorRef--->", editorRef.current?.getCss());
   const dispatch = useDispatch<AppDispatch>()
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
@@ -1150,7 +1151,73 @@ export function useEditor(containerId: string) {
 
     updateStyle: (property: string, value: string) => {
       try {
-        console.log("Selcted Editor", state.selectedElement)
+  
+
+        // Check if this is a global CSS variable (starts with --)
+        if (property.startsWith('--')) {
+          // Handle global CSS variables
+          if (editorRef.current) {
+            const canvas = editorRef.current.Canvas;
+            const canvasDoc = canvas.getDocument();
+            const canvasHead = canvasDoc?.head;
+
+            if (canvasHead) {
+              // Find or create the global styles element
+              let globalStyleEl = canvasDoc.querySelector('[data-global-styles="true"]');
+
+              if (!globalStyleEl) {
+                globalStyleEl = canvasDoc.createElement('style');
+                globalStyleEl.setAttribute('data-global-styles', 'true');
+                canvasHead.appendChild(globalStyleEl);
+              }
+
+              // Get existing global styles
+              const existingStyles = globalStyleEl.innerHTML;
+              const rootMatch = existingStyles.match(/:root\s*{([^}]*)}/);
+
+              let cssVars: Record<string, string> = {};
+
+              if (rootMatch && rootMatch[1]) {
+                // Parse existing CSS variables
+                const declarations = rootMatch[1].split(';').filter((d: string) => d.trim());
+                declarations.forEach((decl: string) => {
+                  const [prop, val] = decl.split(':').map((s: string) => s.trim());
+                  if (prop && val) {
+                    cssVars[prop] = val;
+                  }
+                });
+              }
+
+              // Update or add the new variable
+              cssVars[property] = value;
+
+              // Rebuild the :root rule with CSS variables
+              const cssVarString = Object.entries(cssVars)
+                .map(([prop, val]) => `  ${prop}: ${val};`)
+                .join('\n');
+
+              // Include body and universal selector reset styles
+              globalStyleEl.innerHTML = `:root {
+${cssVarString}
+}
+
+body {
+  font-family: var(--font-family);
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+}`;
+
+              console.log(`✅ Global CSS variable ${property} set to ${value}`);
+            }
+          }
+          return; // Exit early for global variables
+        }
+
+        // Handle regular component styles
         if (state.selectedElement) {
           // Get existing styles and merge with the new property
           const currentStyles = state.selectedElement.getStyle() || {};

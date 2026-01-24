@@ -121,20 +121,28 @@ export default async function PageTemplate({
       websiteId: currentWebsite._id,
     });
 
+    // Serialize MongoDB documents to plain objects
+    const serializedHeaderData = headerData
+      ? JSON.parse(JSON.stringify(headerData))
+      : {};
+    const serializedFooterData = footerData
+      ? JSON.parse(JSON.stringify(footerData))
+      : {};
+
     const processedHtml = html;
 
     return (
       <>
-       <SlugPageHome
-       website={website}
-       currentWebsite={currentWebsite}
-       user={session?.user || {}}
-       html={processedHtml}
-       headerData={headerData || {}}
-       footerData={footerData || {}}
-       />
+        <SlugPageHome
+          website={website}
+          currentWebsite={currentWebsite}
+          user={session?.user || {}}
+          html={processedHtml}
+          headerData={serializedHeaderData}
+          footerData={serializedFooterData}
+        />
 
-          {/* <EditButton
+        {/* <EditButton
         {session && session.user && (
           <EditButton
             pageData={website}

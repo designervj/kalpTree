@@ -26,6 +26,9 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useMemo } from "react";
 
 type PageItem = {
   id: string;
@@ -254,15 +257,39 @@ function reorder<T>(list: T[], fromIndex: number, toIndex: number) {
   return next;
 }
 
+
 export default function Pages() {
   const [comingSoon, setComingSoon] = React.useState(false);
+  const { websitePages } = useSelector((state: RootState) => state.websitePage)
 
+  const { currentWebsite } = useSelector((state: RootState) => state.websites)
   const [mainNav, setMainNav] = React.useState<PageItem[]>([
     { id: "home", title: "Home", icon: "home", seoIssue: true, inNavigation: true, isHomepage: true, url: "/" },
     { id: "shop", title: "Shop", icon: "doc", seoIssue: true, inNavigation: true, url: "/shop" },
     { id: "products", title: "Products", icon: "doc", seoIssue: true, inNavigation: true, url: "/products" },
   ]);
 
+
+  const allPages = useMemo(() => {
+    if (websitePages &&
+      websitePages.length > 0 &&
+      currentWebsite && currentWebsite.primaryDomain &&
+      currentWebsite.primaryDomain.length > 0) {
+      const primaryDomain = currentWebsite.primaryDomain[0];
+      return websitePages.map((page): PageItem => {
+        return {
+          id: page._id,
+          title: page.title,
+          icon: "doc" as const,
+          seoIssue: false,
+          inNavigation: false,
+          isHomepage: false,
+          url: `${primaryDomain}/${page.slug}`,
+        }
+      })
+    }
+    return [];
+  }, [websitePages, currentWebsite])
   const [hiddenNav, setHiddenNav] = React.useState<PageItem[]>([
     { id: "terms", title: "Terms & conditions", icon: "doc", inNavigation: false, url: "/terms" },
   ]);
@@ -357,7 +384,7 @@ export default function Pages() {
         >
           {/* Header */}
           <div className="relative">
-           
+
 
             <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
               Pages and navigation
@@ -376,7 +403,7 @@ export default function Pages() {
 
               <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div className="px-3">
-                  {mainNav.map((p) => {
+                  {allPages && allPages.map((p) => {
                     const isDragOver = dragOverId === p.id;
                     const isDragging = draggingIdRef.current === p.id;
 

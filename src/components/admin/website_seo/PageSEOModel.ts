@@ -1,14 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export interface PageSEOModel {
-    _id?: ObjectId | string;
-    websiteId?: ObjectId | string;
-
-    pageName?: string;
-    slug?: string;
-    path?: string;
-    isMainPage?: boolean;
-
+   
     // SEO Fields
     seo?: {
         title?: string;

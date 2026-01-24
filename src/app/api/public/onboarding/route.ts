@@ -203,6 +203,17 @@ export async function POST(req: Request) {
         ...d,
         tenantId: new ObjectId(String(businessTenant._id)),
         websiteId: new ObjectId(String(website._id)),
+        seo: {
+          title: d.title,
+          slug: d.slug,
+          metaDescription: "",
+          focusKeywords: [{
+            keyword: "",
+            score: false
+          }],
+          hideFromSearchResults: false
+        },
+
       };
     });
 

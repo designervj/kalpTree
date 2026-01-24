@@ -11,6 +11,8 @@ import {
 } from "@/hooks/slices/website/websitePageSlice";
 import { WebsitePageModel } from "./WebsitePageType";
 import { buildWebsiteHref } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+
 
 const WebsitePageTable = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -99,10 +101,20 @@ const WebsitePageTable = () => {
     searchparams
   );
 
-  
+  const handleWebsiteBuilder = () => {
+    const url = `/builder/${currentWebsite?._id}`;
+    window.open(url, "_blank");
+  };
 
   return (
+    <>
+
+     <Button
+     onClick={handleWebsiteBuilder}
+     >Website Builder</Button>
     <div>
+     
+
       <DataTableExt
         title="Pages"
         data={filteredPages}
@@ -113,6 +125,7 @@ const WebsitePageTable = () => {
         opentab={handleViewTab}
       />
     </div>
+    </>
   );
 };
 
