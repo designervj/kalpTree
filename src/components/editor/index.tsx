@@ -467,6 +467,11 @@ export default function GrapesJSEditor() {
       actions.updateInteractivity(data.type, data.event, data.action, data.target, data.options);
     }
   }
+
+  const [open, setOpen] = useState(false);
+
+
+
   return (
     <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
       <TooltipProvider delayDuration={300}>
@@ -493,6 +498,8 @@ export default function GrapesJSEditor() {
           onSelectTemplate={handleSelectTemplate}
           onSaveTemplate={handleSaveTemplate}
           onSave={handleSaveData}
+          setOpen={setOpen} 
+          open={open}
         />
 
         <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
@@ -517,6 +524,8 @@ export default function GrapesJSEditor() {
           onStyleChange={handleStyleChange}
           onAttributeChange={actions.updateAttribute}
           onInteractivityChange={handleUpdateInteractivity}
+          open={open}
+          setOpen={setOpen}
         />
         </div>
 

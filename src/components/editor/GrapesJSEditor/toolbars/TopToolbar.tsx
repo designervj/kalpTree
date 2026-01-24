@@ -50,6 +50,8 @@ type TopToolbarProps = {
   onSelectTemplate: (content: string, append?: boolean) => void;
   onSaveTemplate: (name: string, content: string) => void;
   onSave: () => void;
+  setOpen: (open: boolean) => void;
+  open: boolean;
 };
 
 type ThemeMode = "light" | "dark";
@@ -94,6 +96,8 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
   onSelectTemplate,
   onSaveTemplate,
   onSave,
+  setOpen,
+  open
 }) => {
   const [theme, setTheme] = React.useState<ThemeMode>("dark");
 
@@ -182,6 +186,8 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                 onSelectTemplate={onSelectTemplate}
                 onSaveTemplate={onSaveTemplate}
                 currentContent={editorHtml || editor?.getHtml?.()}
+                setOpen={setOpen}
+                open={open}
               />
             </TooltipTrigger>
             <TooltipContent side="bottom">Templates</TooltipContent>

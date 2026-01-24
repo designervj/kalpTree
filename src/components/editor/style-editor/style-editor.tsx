@@ -30,15 +30,61 @@ import {
 import { StyleState } from "../../../../types/editor";
 import { useState, useEffect } from "react";
 
-// Common interfaces
+/* -----------------------
+   Theme utility classes
+   - Light: clean whites, slate borders
+   - Dark: deep slate, subtle borders
+------------------------ */
+const UI = {
+  panelText: "text-slate-900 dark:text-slate-100 w-full",
+  subtleText: "text-slate-600 dark:text-slate-400",
+
+  label: "text-xs font-medium text-slate-700 dark:text-slate-300",
+  microLabel: "text-[10px] text-slate-500 dark:text-slate-400",
+
+  input:
+    "text-xs h-8 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
+    "focus-visible:ring-2 focus-visible:ring-violet-500/50 " +
+    "dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500",
+  inputTall:
+    "text-xs h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
+    "focus-visible:ring-2 focus-visible:ring-violet-500/50 " +
+    "dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500",
+
+  selectTrigger:
+    "text-xs h-8 bg-white border-slate-200 text-slate-900 " +
+    "focus-visible:ring-2 focus-visible:ring-violet-500/50 " +
+    "dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100",
+  selectContent:
+    "bg-white border-slate-200 text-slate-900 shadow-lg w-full" +
+    "dark:border-slate-800 dark:bg-black dark:text-slate-100",
+  selectItem: "text-xs",
+
+  sectionTitle: "py-2 h-14 text-sm font-medium hover:no-underline",
+  accordionItem: "border-slate-200 dark:border-slate-800",
+
+  iconBtnBase:
+    "h-8 w-8 border border-slate-200 bg-white text-slate-900 " +
+    "hover:bg-slate-50 hover:text-slate-900 " +
+    "dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
+  iconBtnActive:
+    "bg-violet-600 text-white border-violet-600 " +
+    "hover:bg-violet-600 hover:text-white " +
+    "dark:bg-violet-500 dark:border-violet-500 dark:text-white dark:hover:bg-violet-500",
+};
+
+/* --------------------------
+   Common interfaces
+--------------------------- */
 interface StyleEditorProps {
   styles: StyleState;
   onStyleChange: (property: string, value: string) => void;
 }
+interface SectionProps extends StyleEditorProps {}
 
-interface SectionProps extends StyleEditorProps { }
-
-// Typography section component
+/* --------------------------
+   Sections
+--------------------------- */
 function TypographySection({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-4">
@@ -55,7 +101,6 @@ function TypographySection({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-// Spacing section component
 function SpacingSection({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-3">
@@ -66,7 +111,6 @@ function SpacingSection({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-// Colors section component
 function ColorsSection({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-3">
@@ -78,100 +122,67 @@ function ColorsSection({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-// Typography Controls
-function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
-  const [fontFamilyvalue, setFontFamilyValue] = useState<string>(styles.typography.fontFamily || "Arial, sans-serif")
+function LayoutSection({ styles, onStyleChange }: SectionProps) {
+  return (
+    <div className="space-y-3">
+      <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
+    </div>
+  );
+}
 
-  // Sync local state with props when styles change
+/* --------------------------
+   Typography Controls
+--------------------------- */
+function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
+  const [fontFamilyValue, setFontFamilyValue] = useState<string>(
+    styles.typography.fontFamily || "Arial, sans-serif"
+  );
+
   useEffect(() => {
     setFontFamilyValue(styles.typography.fontFamily || "Arial, sans-serif");
   }, [styles.typography.fontFamily]);
 
-  const hadleFontFamily = (data: string) => {
-    setFontFamilyValue(data)
-    onStyleChange("font-family", data)
-  }
+  const handleFontFamily = (data: string) => {
+    setFontFamilyValue(data);
+    onStyleChange("font-family", data);
+  };
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs font-medium">Font Family </Label>
-      <Select
-        value={fontFamilyvalue}
-        onValueChange={(value) => hadleFontFamily(value)}
-      >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full text-white">
+      <Label className={UI.label}>Font Family</Label>
+      <Select value={fontFamilyValue} onValueChange={handleFontFamily}>
+        <SelectTrigger className={UI.selectTrigger} style={{width:"100%"}}>
           <SelectValue placeholder="Select font" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700 max-h-60 w-full text-white">
-          <SelectItem value="Arial, sans-serif" className="text-xs">
-            Arial
-          </SelectItem>
-          <SelectItem value="Helvetica, sans-serif" className="text-xs">
-            Helvetica
-          </SelectItem>
-          <SelectItem value="Times New Roman, serif" className="text-xs">
-            Times New Roman
-          </SelectItem>
-          <SelectItem value="Georgia, serif" className="text-xs">
-            Georgia
-          </SelectItem>
-          <SelectItem value="Courier New, monospace" className="text-xs">
-            Courier New
-          </SelectItem>
-          <SelectItem value="Verdana, sans-serif" className="text-xs">
-            Verdana
-          </SelectItem>
-          <SelectItem value="Tahoma, sans-serif" className="text-xs">
-            Tahoma
-          </SelectItem>
-          <SelectItem value="Trebuchet MS, sans-serif" className="text-xs">
-            Trebuchet MS
-          </SelectItem>
-          <SelectItem value="Impact, sans-serif" className="text-xs">
-            Impact
-          </SelectItem>
-          <SelectItem value="Comic Sans MS, cursive" className="text-xs">
-            Comic Sans MS
-          </SelectItem>
-          <SelectItem
-            value="Lucida Sans Unicode, sans-serif"
-            className="text-xs"
-          >
-            Lucida Sans
-          </SelectItem>
-          <SelectItem value="Palatino Linotype, serif" className="text-xs">
-            Palatino
-          </SelectItem>
-          <SelectItem value="Garamond, serif" className="text-xs">
-            Garamond
-          </SelectItem>
-          <SelectItem value="Bookman, serif" className="text-xs">
-            Bookman
-          </SelectItem>
-          <SelectItem value="Avant Garde, sans-serif" className="text-xs">
-            Avant Garde
-          </SelectItem>
-          <SelectItem value="system-ui, sans-serif" className="text-xs">
-            System UI
-          </SelectItem>
-          <SelectItem value="Inter, sans-serif" className="text-xs">
-            Inter
-          </SelectItem>
-          <SelectItem value="Roboto, sans-serif" className="text-xs">
-            Roboto
-          </SelectItem>
-          <SelectItem value="Open Sans, sans-serif" className="text-xs">
-            Open Sans
-          </SelectItem>
-          <SelectItem value="Lato, sans-serif" className="text-xs">
-            Lato
-          </SelectItem>
-          <SelectItem value="Montserrat, sans-serif" className="text-xs">
-            Montserrat
-          </SelectItem>
-          <SelectItem value="Poppins, sans-serif" className="text-xs">
-            Poppins
-          </SelectItem>
+        <SelectContent className={UI.selectContent}>
+          {[
+            ["Arial, sans-serif", "Arial"],
+            ["Helvetica, sans-serif", "Helvetica"],
+            ["Times New Roman, serif", "Times New Roman"],
+            ["Georgia, serif", "Georgia"],
+            ["Courier New, monospace", "Courier New"],
+            ["Verdana, sans-serif", "Verdana"],
+            ["Tahoma, sans-serif", "Tahoma"],
+            ["Trebuchet MS, sans-serif", "Trebuchet MS"],
+            ["Impact, sans-serif", "Impact"],
+            ["Comic Sans MS, cursive", "Comic Sans MS"],
+            ["Lucida Sans Unicode, sans-serif", "Lucida Sans"],
+            ["Palatino Linotype, serif", "Palatino"],
+            ["Garamond, serif", "Garamond"],
+            ["Bookman, serif", "Bookman"],
+            ["Avant Garde, sans-serif", "Avant Garde"],
+            ["system-ui, sans-serif", "System UI"],
+            ["Inter, sans-serif", "Inter"],
+            ["Roboto, sans-serif", "Roboto"],
+            ["Open Sans, sans-serif", "Open Sans"],
+            ["Lato, sans-serif", "Lato"],
+            ["Montserrat, sans-serif", "Montserrat"],
+            ["Poppins, sans-serif", "Poppins"],
+          ].map(([value, label]) => (
+            <SelectItem key={value} value={value} className={UI.selectItem}>
+              {label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -179,23 +190,17 @@ function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
 }
 
 function FontSizeControl({ styles, onStyleChange }: SectionProps) {
-  const getFontSizeValue = () => {
-    return styles.typography.fontSize
-      .replace("px", "")
-      .replace("rem", "")
-      .replace("em", "");
-  };
+  const getFontSizeValue = () =>
+    styles.typography.fontSize.replace("px", "").replace("rem", "").replace("em", "");
 
-  const getFontSizeUnit = () => {
-    return styles.typography.fontSize.includes("rem")
+  const getFontSizeUnit = () =>
+    styles.typography.fontSize.includes("rem")
       ? "rem"
       : styles.typography.fontSize.includes("em")
-        ? "em"
-        : "px";
-  };
+      ? "em"
+      : "px";
 
   const handleValueChange = (value: string) => {
-    // Only update if the value is valid (empty or a number)
     if (value === "" || !isNaN(Number.parseFloat(value))) {
       const unit = getFontSizeUnit();
       onStyleChange("font-size", `${value}${unit}`);
@@ -215,47 +220,43 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
-        <Label className="text-xs">Font Size</Label>
-        <div className="text-xs text-slate-200">
-          {styles.typography.fontSize}
-        </div>
+        <Label className={UI.label}>Font Size</Label>
+        <div className={"text-xs " + UI.subtleText}>{styles.typography.fontSize}</div>
       </div>
+
       <div className="flex items-center gap-2">
         <Input
           value={getFontSizeValue()}
           onChange={(e) => handleValueChange(e.target.value)}
-          className="flex-1 h-11 text-xs  bg-slate-800 border-slate-700"
+          className={UI.inputTall}
           type="number"
           min="0"
           step="1"
         />
         <Select value={getFontSizeUnit()} onValueChange={handleUnitChange}>
-          <SelectTrigger className="w-16 text-xs  bg-slate-800 border-slate-700">
+          <SelectTrigger className={"w-16 " + UI.selectTrigger}>
             <SelectValue placeholder="Unit" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700 text-white">
-            <SelectItem value="px" className="text-xs">
+          <SelectContent className={UI.selectContent}>
+            <SelectItem value="px" className={UI.selectItem}>
               px
             </SelectItem>
-            <SelectItem value="rem" className="text-xs">
+            <SelectItem value="rem" className={UI.selectItem}>
               rem
             </SelectItem>
-            <SelectItem value="em" className="text-xs">
+            <SelectItem value="em" className={UI.selectItem}>
               em
             </SelectItem>
           </SelectContent>
         </Select>
       </div>
+
       <div className="pt-1">
         <Slider
           value={[Number.parseFloat(getFontSizeValue())]}
           min={0}
-          max={
-            getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 10 : 100
-          }
-          step={
-            getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 0.1 : 1
-          }
+          max={getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 10 : 100}
+          step={getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 0.1 : 1}
           onValueChange={handleSliderChange}
         />
       </div>
@@ -266,42 +267,30 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
 function FontWeightControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Font Weight</Label>
+      <Label className={UI.label}>Font Weight</Label>
       <Select
         value={styles.typography.fontWeight || "400"}
         onValueChange={(value) => onStyleChange("font-weight", value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
+        <SelectTrigger className={UI.selectTrigger}>
           <SelectValue placeholder="Select weight" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700 w-full text-white">
-          <SelectItem value="100" className="text-xs">
-            Thin (100)
-          </SelectItem>
-          <SelectItem value="200" className="text-xs">
-            Extra Light (200)
-          </SelectItem>
-          <SelectItem value="300" className="text-xs">
-            Light (300)
-          </SelectItem>
-          <SelectItem value="400" className="text-xs">
-            Regular (400)
-          </SelectItem>
-          <SelectItem value="500" className="text-xs">
-            Medium (500)
-          </SelectItem>
-          <SelectItem value="600" className="text-xs">
-            Semi Bold (600)
-          </SelectItem>
-          <SelectItem value="700" className="text-xs">
-            Bold (700)
-          </SelectItem>
-          <SelectItem value="800" className="text-xs">
-            Extra Bold (800)
-          </SelectItem>
-          <SelectItem value="900" className="text-xs">
-            Black (900)
-          </SelectItem>
+        <SelectContent className={UI.selectContent}>
+          {[
+            ["100", "Thin (100)"],
+            ["200", "Extra Light (200)"],
+            ["300", "Light (300)"],
+            ["400", "Regular (400)"],
+            ["500", "Medium (500)"],
+            ["600", "Semi Bold (600)"],
+            ["700", "Bold (700)"],
+            ["800", "Extra Bold (800)"],
+            ["900", "Black (900)"],
+          ].map(([value, label]) => (
+            <SelectItem key={value} value={value} className={UI.selectItem}>
+              {label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>
@@ -311,26 +300,22 @@ function FontWeightControl({ styles, onStyleChange }: SectionProps) {
 function LineHeightControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Line Height</Label>
-      <div className="flex items-center gap-2">
-        <Input
-          value={styles.typography.lineHeight || "1.5"}
-          onChange={(e) => onStyleChange("line-height", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
-          type="number"
-          min="0"
-          step="0.1"
-        />
-      </div>
+      <Label className={UI.label}>Line Height</Label>
+      <Input
+        value={styles.typography.lineHeight || "1.5"}
+        onChange={(e) => onStyleChange("line-height", e.target.value)}
+        className={UI.input}
+        type="number"
+        min="0"
+        step="0.1"
+      />
       <div className="pt-1">
         <Slider
           value={[Number.parseFloat(styles.typography.lineHeight || "1.5")]}
           min={0}
           max={3}
           step={0.1}
-          onValueChange={([value]) =>
-            onStyleChange("line-height", value.toString())
-          }
+          onValueChange={([value]) => onStyleChange("line-height", value.toString())}
         />
       </div>
     </div>
@@ -338,49 +323,42 @@ function LineHeightControl({ styles, onStyleChange }: SectionProps) {
 }
 
 function LetterSpacingControl({ styles, onStyleChange }: SectionProps) {
-  const getLetterSpacingValue = () => {
-    return (styles.typography.letterSpacing || "0")
-      .replace("px", "")
-      .replace("em", "");
-  };
+  const getLetterSpacingValue = () =>
+    (styles.typography.letterSpacing || "0").replace("px", "").replace("em", "");
 
-  const getLetterSpacingUnit = () => {
-    return styles.typography.letterSpacing &&
-      styles.typography.letterSpacing.includes("em")
+  const getLetterSpacingUnit = () =>
+    styles.typography.letterSpacing && styles.typography.letterSpacing.includes("em")
       ? "em"
       : "px";
-  };
 
   const handleValueChange = (value: string) => {
-    const unit = getLetterSpacingUnit();
-    onStyleChange("letter-spacing", `${value}${unit}`);
+    onStyleChange("letter-spacing", `${value}${getLetterSpacingUnit()}`);
   };
 
   const handleUnitChange = (unit: string) => {
-    const value = getLetterSpacingValue();
-    onStyleChange("letter-spacing", `${value}${unit}`);
+    onStyleChange("letter-spacing", `${getLetterSpacingValue()}${unit}`);
   };
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Letter Spacing</Label>
+      <Label className={UI.label}>Letter Spacing</Label>
       <div className="flex items-center gap-2">
         <Input
           value={getLetterSpacingValue()}
           onChange={(e) => handleValueChange(e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
           type="number"
           step="0.1"
         />
         <Select value={getLetterSpacingUnit()} onValueChange={handleUnitChange}>
-          <SelectTrigger className="w-16 text-xs h-7 bg-slate-800 border-slate-700">
+          <SelectTrigger className={"w-16 " + UI.selectTrigger}>
             <SelectValue placeholder="Unit" />
           </SelectTrigger>
-          <SelectContent className="bg-slate-800 border-slate-700">
-            <SelectItem value="px" className="text-xs">
+          <SelectContent className={UI.selectContent}>
+            <SelectItem value="px" className={UI.selectItem}>
               px
             </SelectItem>
-            <SelectItem value="em" className="text-xs">
+            <SelectItem value="em" className={UI.selectItem}>
               em
             </SelectItem>
           </SelectContent>
@@ -393,7 +371,7 @@ function LetterSpacingControl({ styles, onStyleChange }: SectionProps) {
 function TextColorControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Text Color</Label>
+      <Label className={UI.label}>Text Color</Label>
       <div className="flex items-center gap-2">
         <ColorPicker
           color={styles.typography.color}
@@ -402,7 +380,7 @@ function TextColorControl({ styles, onStyleChange }: SectionProps) {
         <Input
           value={styles.typography.color}
           onChange={(e) => onStyleChange("color", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
         />
       </div>
     </div>
@@ -410,77 +388,66 @@ function TextColorControl({ styles, onStyleChange }: SectionProps) {
 }
 
 function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
+  const active = styles.typography.textAlign;
+
+  const btnClass = (isActive: boolean) =>
+    [UI.iconBtnBase, isActive ? UI.iconBtnActive : ""].join(" ");
+
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Text Alignment</Label>
-     <div className="flex gap-1.5">
-  <Button
-    variant={styles.typography.textAlign === "left" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "left")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "left"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignLeft className="h-3.5 w-3.5" />
-  </Button>
+      <Label className={UI.label}>Text Alignment</Label>
 
-  <Button
-    variant={styles.typography.textAlign === "center" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "center")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "center"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignCenter className="h-3.5 w-3.5" />
-  </Button>
+      <div className="flex gap-1.5">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onStyleChange("text-align", "left")}
+          className={btnClass(active === "left")}
+        >
+          <AlignLeft className="h-4 w-4" />
+        </Button>
 
-  <Button
-    variant={styles.typography.textAlign === "right" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "right")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "right"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <AlignRight className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onStyleChange("text-align", "center")}
+          className={btnClass(active === "center")}
+        >
+          <AlignCenter className="h-4 w-4" />
+        </Button>
 
-  <Button
-    variant={styles.typography.textAlign === "justify" ? "default" : "outline"}
-    size="icon"
-    onClick={() => onStyleChange("text-align", "justify")}
-    className={`h-7 w-7 ${
-      styles.typography.textAlign === "justify"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="3" y1="6" x2="21" y2="6" />
-      <line x1="3" y1="12" x2="21" y2="12" />
-      <line x1="3" y1="18" x2="21" y2="18" />
-    </svg>
-  </Button>
-</div>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onStyleChange("text-align", "right")}
+          className={btnClass(active === "right")}
+        >
+          <AlignRight className="h-4 w-4" />
+        </Button>
 
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => onStyleChange("text-align", "justify")}
+          className={btnClass(active === "justify")}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </Button>
+      </div>
     </div>
   );
 }
@@ -490,161 +457,142 @@ function TextStyleControl({ styles, onStyleChange }: SectionProps) {
     styles.typography.fontWeight === "bold" ||
     Number.parseInt(styles.typography.fontWeight || "0") >= 700;
 
-  const toggleBold = () => {
-    const newWeight = isBold ? "normal" : "bold";
-    onStyleChange("font-weight", newWeight);
-  };
+  const toggleBold = () => onStyleChange("font-weight", isBold ? "normal" : "bold");
+  const toggleItalic = () =>
+    onStyleChange(
+      "font-style",
+      styles.typography.fontStyle === "italic" ? "normal" : "italic"
+    );
+  const toggleUnderline = () =>
+    onStyleChange(
+      "text-decoration",
+      styles.typography.textDecoration === "underline" ? "none" : "underline"
+    );
+  const toggleUppercase = () =>
+    onStyleChange(
+      "text-transform",
+      styles.typography.textTransform === "uppercase" ? "none" : "uppercase"
+    );
 
-  const toggleItalic = () => {
-    const newStyle =
-      styles.typography.fontStyle === "italic" ? "normal" : "italic";
-    onStyleChange("font-style", newStyle);
-  };
-
-  const toggleUnderline = () => {
-    const newDecoration =
-      styles.typography.textDecoration === "underline" ? "none" : "underline";
-    onStyleChange("text-decoration", newDecoration);
-  };
-
-  const toggleUppercase = () => {
-    const newTransform =
-      styles.typography.textTransform === "uppercase" ? "none" : "uppercase";
-    onStyleChange("text-transform", newTransform);
-  };
+  const btnClass = (isActive: boolean) =>
+    [UI.iconBtnBase, isActive ? UI.iconBtnActive : ""].join(" ");
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Text Style</Label>
+      <Label className={UI.label}>Text Style</Label>
+
       <div className="flex gap-1.5">
-  <Button
-    variant={isBold ? "default" : "outline"}
-    size="icon"
-    onClick={toggleBold}
-    className={`h-7 w-7 ${
-      isBold ? "text-white" : "text-black hover:text-black"
-    }`}
-  >
-    <Bold className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleBold}
+          className={btnClass(isBold)}
+        >
+          <Bold className="h-4 w-4" />
+        </Button>
 
-  <Button
-    variant={styles.typography.fontStyle === "italic" ? "default" : "outline"}
-    size="icon"
-    onClick={toggleItalic}
-    className={`h-7 w-7 ${
-      styles.typography.fontStyle === "italic"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <Italic className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleItalic}
+          className={btnClass(styles.typography.fontStyle === "italic")}
+        >
+          <Italic className="h-4 w-4" />
+        </Button>
 
-  <Button
-    variant={
-      styles.typography.textDecoration === "underline" ? "default" : "outline"
-    }
-    size="icon"
-    onClick={toggleUnderline}
-    className={`h-7 w-7 ${
-      styles.typography.textDecoration === "underline"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <Underline className="h-3.5 w-3.5" />
-  </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleUnderline}
+          className={btnClass(styles.typography.textDecoration === "underline")}
+        >
+          <Underline className="h-4 w-4" />
+        </Button>
 
-  <Button
-    variant={
-      styles.typography.textTransform === "uppercase" ? "default" : "outline"
-    }
-    size="icon"
-    onClick={toggleUppercase}
-    title="Uppercase"
-    className={`h-7 w-7 ${
-      styles.typography.textTransform === "uppercase"
-        ? "text-white"
-        : "text-black hover:text-black"
-    }`}
-  >
-    <span className="text-xs font-bold">TT</span>
-  </Button>
-</div>
-
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleUppercase}
+          title="Uppercase"
+          className={btnClass(styles.typography.textTransform === "uppercase")}
+        >
+          <span className="text-[11px] font-bold">TT</span>
+        </Button>
+      </div>
     </div>
   );
 }
 
 function TextShadowControl({ styles, onStyleChange }: SectionProps) {
   const updateTextShadow = (
-    x: string = styles.typography.textShadowX || "0",
-    y: string = styles.typography.textShadowY || "0",
-    blur: string = styles.typography.textShadowBlur || "0",
-    color: string = styles.typography.textShadowColor || "rgba(0,0,0,0.5)"
+    x: string = styles.typography.textShadowX || "0px",
+    y: string = styles.typography.textShadowY || "0px",
+    blur: string = styles.typography.textShadowBlur || "0px",
+    color: string = styles.typography.textShadowColor || "rgba(0,0,0,0.4)"
   ) => {
     onStyleChange("text-shadow", `${x} ${y} ${blur} ${color}`);
   };
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Text Shadow</Label>
+      <Label className={UI.label}>Text Shadow</Label>
+
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <Label className="text-[10px] text-slate-400">Horizontal</Label>
+          <Label className={UI.microLabel}>Horizontal</Label>
           <Input
-            value={(styles.typography.textShadowX || "0").replace("px", "")}
-            onChange={(e) => {
-              updateTextShadow(e.target.value + "px");
-            }}
-            className="text-xs h-7 bg-slate-800 border-slate-700"
+            value={(styles.typography.textShadowX || "0px").replace("px", "")}
+            onChange={(e) => updateTextShadow(`${e.target.value || 0}px`)}
+            className={UI.input}
             type="number"
           />
         </div>
+
         <div>
-          <Label className="text-[10px] text-slate-400">Vertical</Label>
+          <Label className={UI.microLabel}>Vertical</Label>
           <Input
-            value={(styles.typography.textShadowY || "0").replace("px", "")}
-            onChange={(e) => {
+            value={(styles.typography.textShadowY || "0px").replace("px", "")}
+            onChange={(e) =>
               updateTextShadow(
-                styles.typography.textShadowX || "0",
-                e.target.value + "px"
-              );
-            }}
-            className="text-xs h-7 bg-slate-800 border-slate-700"
+                styles.typography.textShadowX || "0px",
+                `${e.target.value || 0}px`
+              )
+            }
+            className={UI.input}
             type="number"
           />
         </div>
+
         <div>
-          <Label className="text-[10px] text-slate-400">Blur</Label>
+          <Label className={UI.microLabel}>Blur</Label>
           <Input
-            value={(styles.typography.textShadowBlur || "0").replace("px", "")}
-            onChange={(e) => {
+            value={(styles.typography.textShadowBlur || "0px").replace("px", "")}
+            onChange={(e) =>
               updateTextShadow(
-                styles.typography.textShadowX || "0",
-                styles.typography.textShadowY || "0",
-                e.target.value + "px"
-              );
-            }}
-            className="text-xs h-7 bg-slate-800 border-slate-700"
+                styles.typography.textShadowX || "0px",
+                styles.typography.textShadowY || "0px",
+                `${e.target.value || 0}px`
+              )
+            }
+            className={UI.input}
             type="number"
             min="0"
           />
         </div>
+
         <div>
-          <Label className="text-[10px] text-slate-400">Color</Label>
+          <Label className={UI.microLabel}>Color</Label>
           <div className="flex items-center gap-1">
             <ColorPicker
-              color={styles.typography.textShadowColor || "rgba(0,0,0,0.5)"}
-              onChange={(color) => {
+              color={styles.typography.textShadowColor || "rgba(0,0,0,0.4)"}
+              onChange={(color) =>
                 updateTextShadow(
-                  styles.typography.textShadowX || "0",
-                  styles.typography.textShadowY || "0",
-                  styles.typography.textShadowBlur || "0",
+                  styles.typography.textShadowX || "0px",
+                  styles.typography.textShadowY || "0px",
+                  styles.typography.textShadowBlur || "0px",
                   color
-                );
-              }}
+                )
+              }
             />
           </div>
         </div>
@@ -653,21 +601,21 @@ function TextShadowControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-// Spacing Controls
+/* --------------------------
+   Spacing Controls
+--------------------------- */
 function BorderRadiusControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Border Radius (rem)</Label>
+      <Label className={UI.label}>Border Radius (rem)</Label>
       <Slider
         value={[styles.spacing.borderRadius || 0]}
         max={2}
         step={0.125}
-        onValueChange={([value]) =>
-          onStyleChange("border-radius", `${value}rem`)
-        }
+        onValueChange={([value]) => onStyleChange("border-radius", `${value}rem`)}
         className="py-1"
       />
-      <div className="text-right text-[10px] text-slate-400">
+      <div className={"text-right text-[10px] " + UI.subtleText}>
         {styles.spacing.borderRadius || 0}rem
       </div>
     </div>
@@ -677,50 +625,36 @@ function BorderRadiusControl({ styles, onStyleChange }: SectionProps) {
 function PaddingControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Padding</Label>
+      <Label className={UI.label}>Padding</Label>
+
       <div className="flex items-center gap-2">
         <Input
           value={styles.spacing.padding || "0px"}
           onChange={(e) => onStyleChange("padding", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
         />
-        <div className="w-16 text-xs text-right text-slate-400">
+        <div className={"w-16 text-xs text-right " + UI.subtleText}>
           {styles.spacing.padding || "0px"}
         </div>
       </div>
+
       <div className="grid grid-cols-4 gap-1 mt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("padding", "0px")}
-        >
-          None
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("padding", "4px")}
-        >
-          XS
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("padding", "8px")}
-        >
-          SM
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("padding", "16px")}
-        >
-          MD
-        </Button>
+        {[
+          ["None", "0px"],
+          ["XS", "4px"],
+          ["SM", "8px"],
+          ["MD", "16px"],
+        ].map(([label, value]) => (
+          <Button
+            key={label}
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800"
+            onClick={() => onStyleChange("padding", value)}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
     </div>
   );
@@ -729,68 +663,57 @@ function PaddingControl({ styles, onStyleChange }: SectionProps) {
 function MarginControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Margin</Label>
+      <Label className={UI.label}>Margin</Label>
+
       <div className="flex items-center gap-2">
         <Input
           value={styles.spacing.margin || "0px"}
           onChange={(e) => onStyleChange("margin", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
         />
-        <div className="w-16 text-xs text-right text-slate-400">
+        <div className={"w-16 text-xs text-right " + UI.subtleText}>
           {styles.spacing.margin || "0px"}
         </div>
       </div>
+
       <div className="grid grid-cols-4 gap-1 mt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("margin", "0px")}
-        >
-          None
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("margin", "4px")}
-        >
-          XS
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("margin", "8px")}
-        >
-          SM
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("margin", "16px")}
-        >
-          MD
-        </Button>
+        {[
+          ["None", "0px"],
+          ["XS", "4px"],
+          ["SM", "8px"],
+          ["MD", "16px"],
+        ].map(([label, value]) => (
+          <Button
+            key={label}
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800"
+            onClick={() => onStyleChange("margin", value)}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
     </div>
   );
 }
 
-// Colors Controls
+/* --------------------------
+   Colors Controls
+--------------------------- */
 function BackgroundColorControl({ styles, onStyleChange }: SectionProps) {
   const colorPresets = [
     { color: "#FFFFFF", name: "White" },
-    { color: "#F3F4F6", name: "Light Gray" },
-    { color: "#6B7280", name: "Gray" },
-    { color: "#1F2937", name: "Dark Gray" },
-    { color: "#000000", name: "Black" },
+    { color: "#F8FAFC", name: "Slate 50" },
+    { color: "#EEF2FF", name: "Indigo 50" },
+    { color: "#ECFEFF", name: "Cyan 50" },
+    { color: "#0B1220", name: "Deep Dark" },
   ];
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Background Color</Label>
+      <Label className={UI.label}>Background Color</Label>
+
       <div className="flex items-center gap-2">
         <ColorPicker
           color={styles.colors.backgroundColor || "#FFFFFF"}
@@ -799,21 +722,20 @@ function BackgroundColorControl({ styles, onStyleChange }: SectionProps) {
         <Input
           value={styles.colors.backgroundColor || "#FFFFFF"}
           onChange={(e) => onStyleChange("background-color", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
         />
       </div>
+
       <div className="grid grid-cols-5 gap-1 mt-2">
         {colorPresets.map((preset, index) => (
-          <Button
+          <button
             key={`bg-${preset.color}-${index}`}
-            variant="outline"
-            size="sm"
-            className="w-full h-6 p-0"
+            type="button"
+            className="w-full h-7 rounded-md border border-slate-200 dark:border-slate-800"
             style={{ backgroundColor: preset.color }}
             onClick={() => onStyleChange("background-color", preset.color)}
-          >
-            <span className="sr-only">{preset.name}</span>
-          </Button>
+            title={preset.name}
+          />
         ))}
       </div>
     </div>
@@ -823,15 +745,16 @@ function BackgroundColorControl({ styles, onStyleChange }: SectionProps) {
 function BorderColorControl({ styles, onStyleChange }: SectionProps) {
   const colorPresets = [
     { color: "#E5E7EB", name: "Default" },
-    { color: "#6B7280", name: "Gray" },
-    { color: "#3B82F6", name: "Blue" },
-    { color: "#10B981", name: "Green" },
+    { color: "#CBD5E1", name: "Slate 300" },
+    { color: "#A78BFA", name: "Violet" },
+    { color: "#22C55E", name: "Green" },
     { color: "#EF4444", name: "Red" },
   ];
 
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Border Color</Label>
+      <Label className={UI.label}>Border Color</Label>
+
       <div className="flex items-center gap-2">
         <ColorPicker
           color={styles.colors.borderColor || "#E5E7EB"}
@@ -840,21 +763,20 @@ function BorderColorControl({ styles, onStyleChange }: SectionProps) {
         <Input
           value={styles.colors.borderColor || "#E5E7EB"}
           onChange={(e) => onStyleChange("border-color", e.target.value)}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
         />
       </div>
+
       <div className="grid grid-cols-5 gap-1 mt-2">
         {colorPresets.map((preset, index) => (
-          <Button
+          <button
             key={`border-${preset.color}-${index}`}
-            variant="outline"
-            size="sm"
-            className="w-full h-6 p-0"
+            type="button"
+            className="w-full h-7 rounded-md border border-slate-200 dark:border-slate-800"
             style={{ backgroundColor: preset.color }}
             onClick={() => onStyleChange("border-color", preset.color)}
-          >
-            <span className="sr-only">{preset.name}</span>
-          </Button>
+            title={preset.name}
+          />
         ))}
       </div>
     </div>
@@ -864,7 +786,8 @@ function BorderColorControl({ styles, onStyleChange }: SectionProps) {
 function BorderWidthControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Border Width</Label>
+      <Label className={UI.label}>Border Width</Label>
+
       <div className="flex items-center gap-2">
         <Input
           value={(styles.colors.borderWidth || "0px")
@@ -877,48 +800,33 @@ function BorderWidthControl({ styles, onStyleChange }: SectionProps) {
               onStyleChange("border-width", `${value}px`);
             }
           }}
-          className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+          className={UI.input}
           type="number"
           min="0"
           step="1"
         />
-        <div className="w-16 text-xs text-right text-slate-400">
+        <div className={"w-16 text-xs text-right " + UI.subtleText}>
           {styles.colors.borderWidth || "0px"}
         </div>
       </div>
+
       <div className="grid grid-cols-4 gap-1 mt-2">
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("border-width", "0px")}
-        >
-          None
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("border-width", "1px")}
-        >
-          Thin
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("border-width", "2px")}
-        >
-          Medium
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-6 text-xs"
-          onClick={() => onStyleChange("border-width", "4px")}
-        >
-          Thick
-        </Button>
+        {[
+          ["None", "0px"],
+          ["Thin", "1px"],
+          ["Medium", "2px"],
+          ["Thick", "4px"],
+        ].map(([label, value]) => (
+          <Button
+            key={label}
+            variant="outline"
+            size="sm"
+            className="h-7 text-xs bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800"
+            onClick={() => onStyleChange("border-width", value)}
+          >
+            {label}
+          </Button>
+        ))}
       </div>
     </div>
   );
@@ -927,89 +835,83 @@ function BorderWidthControl({ styles, onStyleChange }: SectionProps) {
 function BorderStyleControl({ styles, onStyleChange }: SectionProps) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Border Style</Label>
+      <Label className={UI.label}>Border Style</Label>
+
       <Select
         value={styles.colors.borderStyle || "solid"}
         onValueChange={(value) => onStyleChange("border-style", value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
+        <SelectTrigger className={UI.selectTrigger}>
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700 w-full text-white">
-          <SelectItem value="none" className="text-xs">
-            None
-          </SelectItem>
-          <SelectItem value="solid" className="text-xs">
-            Solid
-          </SelectItem>
-          <SelectItem value="dashed" className="text-xs">
-            Dashed
-          </SelectItem>
-          <SelectItem value="dotted" className="text-xs">
-            Dotted
-          </SelectItem>
-          <SelectItem value="double" className="text-xs">
-            Double
-          </SelectItem>
+        <SelectContent className={UI.selectContent}>
+          {[
+            ["none", "None"],
+            ["solid", "Solid"],
+            ["dashed", "Dashed"],
+            ["dotted", "Dotted"],
+            ["double", "Double"],
+          ].map(([value, label]) => (
+            <SelectItem key={value} value={value} className={UI.selectItem}>
+              {label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
+
       <div className="grid grid-cols-4 gap-1 mt-2">
-        <div
-          className="flex items-center justify-center h-6 text-xs border border-solid rounded cursor-pointer border-slate-400"
+        <button
+          type="button"
+          className="h-8 rounded-md border border-slate-200 text-xs text-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-800"
           onClick={() => onStyleChange("border-style", "solid")}
         >
           Solid
-        </div>
-        <div
-          className="flex items-center justify-center h-6 text-xs border border-dashed rounded cursor-pointer border-slate-400"
+        </button>
+        <button
+          type="button"
+          className="h-8 rounded-md border border-dashed border-slate-300 text-xs text-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           onClick={() => onStyleChange("border-style", "dashed")}
         >
           Dashed
-        </div>
-        <div
-          className="flex items-center justify-center h-6 text-xs border border-dotted rounded cursor-pointer border-slate-400"
+        </button>
+        <button
+          type="button"
+          className="h-8 rounded-md border border-dotted border-slate-300 text-xs text-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           onClick={() => onStyleChange("border-style", "dotted")}
         >
           Dotted
-        </div>
-        <div
-          className="flex items-center justify-center h-6 text-xs border-2 border-double rounded cursor-pointer border-slate-400"
+        </button>
+        <button
+          type="button"
+          className="h-8 rounded-md border-2 border-double border-slate-300 text-xs text-slate-700 bg-white hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
           onClick={() => onStyleChange("border-style", "double")}
         >
           Double
-        </div>
+        </button>
       </div>
     </div>
   );
 }
 
-function LayoutSection({ styles, onStyleChange }: SectionProps) {
-  return (
-    <div className="space-y-3">
-      <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
-
-    </div>
-  );
-}
-
-
+/* --------------------------
+   Layout Controls
+--------------------------- */
 function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
-
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs">Display</Label>
+      <Label className={UI.label}>Display</Label>
       <Select
         value={styles?.layout?.display || "block"}
         onValueChange={(value) => onStyleChange("display", value)}
       >
-        <SelectTrigger className="text-xs h-7 bg-slate-800 border-slate-700 w-full">
+        <SelectTrigger className={UI.selectTrigger}>
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
-        <SelectContent className="bg-slate-800 border-slate-700">
-          <SelectItem value="block" className="text-xs">
+        <SelectContent className={UI.selectContent}>
+          <SelectItem value="block" className={UI.selectItem}>
             Block
           </SelectItem>
-          <SelectItem value="flex" className="text-xs">
+          <SelectItem value="flex" className={UI.selectItem}>
             Flex
           </SelectItem>
         </SelectContent>
@@ -1018,50 +920,35 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-
-
-// Main StyleEditor component
+/* --------------------------
+   Main StyleEditor component
+--------------------------- */
 export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
-
-  console.log("styles,styles", styles)
   return (
-    <Accordion
-      type="single"
-      collapsible
-      defaultValue="typography"
-      className="w-full"
-    >
-      <AccordionItem value="typography" className="border-slate-700">
-        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
-          Typography
-        </AccordionTrigger>
+    <Accordion type="single" collapsible defaultValue="typography" className="w-full">
+      <AccordionItem value="typography" className={UI.accordionItem}>
+        <AccordionTrigger className={UI.sectionTitle}>Typography</AccordionTrigger>
         <AccordionContent>
           <TypographySection styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="spacing" className="border-slate-700">
-        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
-          Spacing
-        </AccordionTrigger>
+      <AccordionItem value="spacing" className={UI.accordionItem}>
+        <AccordionTrigger className={UI.sectionTitle}>Spacing</AccordionTrigger>
         <AccordionContent>
           <SpacingSection styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="colors" className="border-slate-700">
-        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
-          Colors
-        </AccordionTrigger>
+      <AccordionItem value="colors" className={UI.accordionItem}>
+        <AccordionTrigger className={UI.sectionTitle}>Colors</AccordionTrigger>
         <AccordionContent>
           <ColorsSection styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
       </AccordionItem>
 
-      <AccordionItem value="Display" className="border-slate-700">
-        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
-          Display
-        </AccordionTrigger>
+      <AccordionItem value="display" className={UI.accordionItem}>
+        <AccordionTrigger className={UI.sectionTitle}>Display</AccordionTrigger>
         <AccordionContent>
           <LayoutSection styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
