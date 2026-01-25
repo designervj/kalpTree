@@ -81,7 +81,7 @@ function inferType(values: any[]): "string" | "number" | "date" | "boolean" {
 
 function formatValue(v: any, key?: string, list?: any) {
   if (v == null) return "-";
-  console.log("====>>>", key, v);
+
   // Custom date formatting for createdAt/updatedAt
   if (
     key &&

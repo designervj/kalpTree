@@ -4,7 +4,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-const GetAllProduct = () => {
+const GetAllProduct = ({ websiteId }: any) => {
   const { isProductLoading, hasFetched } = useSelector(
     (state: RootState) => state.product,
   );
@@ -14,15 +14,12 @@ const GetAllProduct = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (
-      !hasFetched &&
-      !isProductLoading &&
-      currentWebsite &&
-      currentWebsite._id
-    ) {
-      dispatch(fetchProducts({ websiteId: String(currentWebsite._id) }));
+    if (!hasFetched && !isProductLoading && (currentWebsite || websiteId)) {
+      let idtoPass =
+        currentWebsite && currentWebsite._id ? currentWebsite._id : websiteId;
+      dispatch(fetchProducts({ websiteId: String(idtoPass) }));
     }
-  }, [hasFetched, isProductLoading, currentWebsite, dispatch]);
+  }, [hasFetched, isProductLoading, currentWebsite, dispatch, websiteId]);
   return null;
 };
 

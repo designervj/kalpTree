@@ -25,6 +25,7 @@ import { InteractivityEditor } from "../../interactivity/interactivity-editor";
 import { StyleEditor } from "../../style-editor/style-editor";
 import { AttributesEditor } from "../../attributes-editor/attributes-editor";
 import Pages from "../../pages-builder/pages";
+import SeobuilderPage from "../../Seobuilder/SeobuilderPage";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -36,6 +37,8 @@ type PropertiesSidebarProps = {
   onStyleChange: (property: string, value: string) => void;
   onAttributeChange: (name: string, value: any) => void;
   onInteractivityChange: (config: any) => void;
+  setOpen: (open: boolean) => void;
+  open: boolean;
 };
 
 type TabKey =
@@ -57,7 +60,7 @@ const TAB_TITLES: Record<TabKey, string> = {
   interactivity: "Interactivity",
   setup: "Setup",
   elements: "Elements",
-  pages: "Pages",
+  pages: "Pages and Navigation",
   styles: "Styles",
   ai: "AI Tools",
   store: "Store",
@@ -72,6 +75,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   onStyleChange,
   onAttributeChange,
   onInteractivityChange,
+  setOpen,
+  open,
 }) => {
   const [tab, setTab] = React.useState<TabKey>("style");
 
@@ -155,7 +160,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
       // ✅ HERE: show the Pages component when Pages tab is selected
       case "pages":
-        return <Pages />;
+        return <Pages 
+          setOpen={setOpen}
+          open={open}
+          />;
 
 
       case "ai":
@@ -174,13 +182,18 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           "Connect products, carts, and checkout settings here."
         );
 
-      case "seo":
+      // case "seo":
+      //   return renderPlaceholder(
+      //     <span className="inline-flex items-center gap-2">
+      //       <Search className="w-4 h-4" /> SEO
+      //     </span>,
+      //     "Manage meta tags, social previews, indexing and sitemap settings."
+      //   );
+
+case "seo":
         return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <Search className="w-4 h-4" /> SEO
-          </span>,
-          "Manage meta tags, social previews, indexing and sitemap settings."
-        );
+         <SeobuilderPage  />       
+ );
 
       case "more":
         return renderPlaceholder(
@@ -237,7 +250,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           />
           <IconTab
             active={tab === "pages"}
-            label="Pages and navigation"
+            label="Pages"
             onClick={() => setTab("pages")}
             icon={<LayoutGrid className="w-5 h-5" />}
           />

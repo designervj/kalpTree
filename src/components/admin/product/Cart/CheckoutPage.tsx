@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   CreditCard,
   Lock,
@@ -13,8 +13,16 @@ import {
   Phone,
   User,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useSearchParams } from "next/navigation";
 
 const ModernCheckout = () => {
+  const {
+    listProduct: products,
+    isProductLoading,
+    isCartLoading,
+  } = useSelector((state: RootState) => state.product);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
@@ -34,33 +42,65 @@ const ModernCheckout = () => {
     saveInfo: false,
     sameAsBilling: true,
   });
+  const searchParams = useSearchParams();
+  const checkoutData = searchParams.get("data");
+  const cart = useMemo(() => {
+    const obj = JSON.parse(decodeURIComponent(checkoutData!));
+    if (products.length > 0) {
+      return obj.map((singlecart) => {
+        const product = products.find((d) => d._id == singlecart.productId);
+        const variant = product?.variants.find(
+          (d) => d._id == singlecart.variantId,
+        );
 
-  const orderItems = [
-    {
-      id: 1,
-      name: "Wireless Headphones Pro",
-      price: 129.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
-    },
-    {
-      id: 2,
-      name: "Smart Watch Series 5",
-      price: 399.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
-    },
-  ];
+        return {
+          ...singlecart,
+          productId: product,
+          variantId: variant,
+        };
+      });
+    }
+  }, [checkoutData, products]);
 
-  const subtotal = orderItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0,
-  );
-  const shipping = 9.99;
-  const tax = subtotal * 0.08;
-  const total = subtotal + shipping + tax;
+  const getTotalPrice = () => {
+    return cart.reduce((total, item) => {
+      const { productId, variantId } = item;
+      const product = products.find((d) => d._id == item.productId._id);
+      const variant = product.variants.find((d) => d._id == item.variantId._id);
+      const price = parseInt(variant.price);
+      return total + price * item.quantity;
+    }, 0);
+  };
+
+  // Demo
+
+  // const orderItems = [
+  //   {
+  //     id: 1,
+  //     name: "Wireless Headphones Pro",
+  //     price: 129.99,
+  //     quantity: 1,
+  //     image:
+  //       "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "Smart Watch Series 5",
+  //     price: 399.99,
+  //     quantity: 1,
+  //     image:
+  //       "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
+  //   },
+  // ];
+
+  // const subtotal = orderItems.reduce(
+  //   (sum, item) => sum + item.price * item.quantity,
+  //   0,
+  // );
+
+  // const shipping = 9.99;
+  // const tax = subtotal * 0.08;
+  // const total = subtotal + shipping + tax;
 
   const steps = [
     { number: 1, title: "Information", icon: User },
@@ -81,6 +121,8 @@ const ModernCheckout = () => {
       setCurrentStep(currentStep + 1);
     }
   };
+
+  console.log(cart);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
@@ -490,31 +532,36 @@ const ModernCheckout = () => {
                 Order Summary
               </h3>
 
-              <div className="space-y-4 mb-6">
-                {orderItems.map((item) => (
-                  <div key={item.id} className="flex gap-4">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                      <span className="absolute -top-2 -right-2 w-6 h-6 bg-indigo-600 text-white text-xs rounded-full flex items-center justify-center font-semibold">
-                        {item.quantity}
-                      </span>
+              <div className="space-y-4 mb-6 z-99">
+                {cart &&
+                  cart.length > 0 &&
+                  cart.map((item, index) => (
+                    <div key={index} className="relative flex gap-4">
+                      <div className=" w-16 h-16 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                        <img
+                          src={
+                            item.image ||
+                            "https://images.unsplash.com/photo-1602293589930-45aad59ba3ab?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          }
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute -top-1 z-999 -left-1 w-6 h-6 bg-indigo-600 text-white text-xs rounded-full flex items-center justify-center font-semibold">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-slate-900 text-sm">
+                          {item.productId.title}
+                        </p>
+                        <p className="text-slate-600 text-sm">
+                          ${Number(item.variantId.price).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900 text-sm">
-                        {item.name}
-                      </p>
-                      <p className="text-slate-600 text-sm">
-                        ${item.price.toFixed(2)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
               </div>
-
+              {/* 
               <div className="space-y-3 mb-6 pb-6 border-t border-b border-slate-200 pt-4">
                 <div className="flex justify-between text-slate-600">
                   <span>Subtotal</span>
@@ -528,14 +575,14 @@ const ModernCheckout = () => {
                   <span>Tax</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex justify-between items-center mb-6">
                 <span className="text-lg font-semibold text-slate-900">
                   Total
                 </span>
                 <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  ${total.toFixed(2)}
+                  $ {getTotalPrice()}
                 </span>
               </div>
 

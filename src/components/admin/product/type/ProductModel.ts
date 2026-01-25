@@ -21,7 +21,7 @@ export interface ProductModel {
   base_price?: number | null;
   material_segment_id?: string | ObjectId;
   // segment?:MaterialSegmentModel
-  product_variants?: ProductVariant[];
+  variants?: ProductVariant[];
   gallery?: string[];
   websiteId?: string;
   tenantId?: string;

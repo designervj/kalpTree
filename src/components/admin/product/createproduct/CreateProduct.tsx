@@ -254,6 +254,22 @@ export function CreateProduct({ productId }: { productId?: string }) {
     setImages((prev) => [...prev, ...newImages]);
   };
 
+  const [drag, setDrag] = useState<null | number>(null);
+
+  const handleDrag = (index: number) => {
+    setDrag(index);
+  };
+
+  const handleDragEnd = (index: number) => {
+    if (drag === null || drag === index) return;
+    const cloned = [...images];
+    if (drag !== null) {
+      [cloned[drag], cloned[index]] = [cloned[index], cloned[drag]];
+    }
+    setImages(cloned);
+    setDrag(null);
+  };
+
   const removeImage = (id: number) =>
     setImages((prev) => prev.filter((img) => img.id !== id));
 
@@ -498,7 +514,14 @@ export function CreateProduct({ productId }: { productId?: string }) {
                 {images.length > 0 && (
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     {images.map((img, idx) => (
-                      <div key={img.id} className="relative group">
+                      <div
+                        draggable={true}
+                        onDragStart={() => handleDrag(idx)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => handleDragEnd(idx)}
+                        key={img.id}
+                        className="relative group"
+                      >
                         <img
                           src={img.url}
                           alt={`Product ${idx + 1}`}
