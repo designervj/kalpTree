@@ -15,16 +15,16 @@ if (!MONGODB_URI) {
 
 async function createCollections() {
   const client = new MongoClient(MONGODB_URI!);
-  
+
   try {
     console.log('🔌 Connecting to MongoDB...');
     await client.connect();
     console.log('✅ Connected to MongoDB');
-    
+
     // Use 'KalpTree' database explicitly
     const db = client.db('KalpTree');
     console.log('📂 Using database: KalpTree');
-    
+
     // List of all collections to create
     const collections = [
       // Core Collections
@@ -33,54 +33,54 @@ async function createCollections() {
       'custom_roles',
       'ui_configurations',
       'franchise_clients',
-      
+
       // Website Collections
       'websites',
       'pages',
       'posts',
-      
+
       'blog_tags',
-      
+
       // Media Collections
       'media',
       'media_folders',
-      
+
       // E-commerce Collections
       'products',
       'product_categories',
       'product_variants',
       'orders',
       'carts',
-      
+
       // Billing Collections
       'invoices',
       'payments',
       'subscriptions',
-      
+
       // System/Admin Collections
       'audit_logs',
       'activities',
       'activity_logs',
       'invitations',
       'password_reset_tokens',
-      
+
       // Branding Collections
       'tenant_styles',
-      
+
       // Plugin Collections
       'plugin_registry',
       'plugin_installations',
     ];
-    
+
     console.log('\n📦 Creating collections...\n');
-    
+
     // Get existing collections
     const existingCollections = await db.listCollections().toArray();
     const existingNames = existingCollections.map(c => c.name);
-    
+
     let created = 0;
     let skipped = 0;
-    
+
     for (const collectionName of collections) {
       if (existingNames.includes(collectionName)) {
         console.log(`⏭️  ${collectionName} - Already exists`);
@@ -91,18 +91,18 @@ async function createCollections() {
         created++;
       }
     }
-    
+
     console.log('\n📊 Summary:');
     console.log(`   Created: ${created}`);
     console.log(`   Skipped: ${skipped}`);
     console.log(`   Total: ${collections.length}`);
-    
+
     // Create indexes
     console.log('\n🔧 Creating indexes...\n');
-    
+
     const indexes: Array<{ collection: string; index: any; options: any }> = [
       // Core
-      { collection: 'tenants', index: { slug: 1 }, options: { unique: true, name: 'uniq_tenants_slug' } },
+      { collection: 'tenants', index: { slug: 1 }, options: { unique: false, name: 'uniq_tenants_slug' } },
       { collection: 'users', index: { tenantId: 1, email: 1 }, options: { unique: true, name: 'uniq_users_tenant_email' } },
       { collection: 'users', index: { tenantId: 1, role: 1 }, options: { name: 'users_tenant_role' } },
       { collection: 'custom_roles', index: { tenantId: 1, name: 1 }, options: { unique: true, name: 'uniq_custom_roles_tenant_name' } },
@@ -110,11 +110,11 @@ async function createCollections() {
       // Websites
       { collection: 'websites', index: { websiteId: 1 }, options: { unique: true, name: 'uniq_websites_id' } },
       { collection: 'websites', index: { tenantId: 1, createdAt: -1 }, options: { name: 'websites_tenant_createdAt' } },
-      { collection: 'websites', index: { systemSubdomain: 1 }, options: { unique: true, name: 'uniq_websites_sys_sub' } },
-      { collection: 'websites', index: { primaryDomain: 1 }, options: { unique: true, sparse: true, name: 'uniq_websites_primary_domain' } },
+      // { collection: 'websites', index: { systemSubdomain: 1 }, options: { unique: true, name: 'uniq_websites_sys_sub' } },
+      // { collection: 'websites', index: { primaryDomain: 1 }, options: { unique: true, sparse: true, name: 'uniq_websites_primary_domain' } },
 
       // Website Content
-      { collection: 'pages', index: { tenantId: 1, websiteId: 1, slug: 1 }, options: { unique: true, name: 'uniq_pages_tenant_website_slug' } },
+      // { collection: 'pages', index: { tenantId: 1, websiteId: 1, slug: 1 }, options: { unique: true, name: 'uniq_pages_tenant_website_slug' } },
       { collection: 'posts', index: { tenantId: 1, websiteId: 1, slug: 1 }, options: { unique: true, name: 'uniq_posts_tenant_website_slug' } },
       { collection: 'categories', index: { tenantId: 1, websiteId: 1, slug: 1 }, options: { unique: true, name: 'uniq_categories_tenant_website_slug' } },
       { collection: 'blog_tags', index: { tenantId: 1, websiteId: 1, slug: 1 }, options: { unique: true, name: 'uniq_blog_tags_tenant_website_slug' } },
@@ -149,10 +149,10 @@ async function createCollections() {
       { collection: 'plugin_registry', index: { key: 1 }, options: { unique: true, name: 'uniq_plugin_registry_key' } },
       { collection: 'plugin_installations', index: { tenantId: 1, pluginKey: 1 }, options: { unique: true, name: 'uniq_plugin_install_tenant_plugin' } },
     ];
-    
+
     let indexCreated = 0;
     let indexSkipped = 0;
-    
+
     for (const { collection, index, options } of indexes) {
       try {
         await db.collection(collection).createIndex(index, options);
@@ -167,11 +167,11 @@ async function createCollections() {
         }
       }
     }
-    
+
     console.log(`\n📊 Index Summary:`);
     console.log(`   Created: ${indexCreated}`);
     console.log(`   Skipped: ${indexSkipped}`);
-    
+
     // Create text index for products separately (only one text index allowed per collection)
     try {
       await db.collection('products').createIndex({ name: 'text', description: 'text', tags: 'text' }, { name: 'text_index_products' });
@@ -183,9 +183,9 @@ async function createCollections() {
         console.log('\n⚠️  Could not create text index for products:', error.message);
       }
     }
-    
+
     console.log('\n✅ All indexes processed successfully\n');
-    
+
     // Show final collection list
     console.log('📋 Final collection list:');
     const finalCollections = await db.listCollections().toArray();
@@ -194,9 +194,9 @@ async function createCollections() {
         console.log(`   ✓ ${col.name}`);
       }
     });
-    
+
     console.log('\n✨ Database setup complete!');
-    
+
   } catch (error) {
     console.error('❌ Error:', error);
     process.exit(1);

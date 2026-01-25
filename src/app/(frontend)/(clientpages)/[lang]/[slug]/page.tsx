@@ -179,7 +179,7 @@ export default async function PageTemplate({
           html={processedHtml}
           headerData={headerData || {}}
           footerData={footerData || {}}
-        />
+        /> */}
       </>
     );
   } catch (error) {
