@@ -81,7 +81,7 @@ interface StyleEditorProps {
   styles: StyleState;
   onStyleChange: (property: string, value: string) => void;
 }
-interface SectionProps extends StyleEditorProps {}
+interface SectionProps extends StyleEditorProps { }
 
 /* --------------------------
    Sections
@@ -144,7 +144,7 @@ function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <Label className={UI.label}>Font Family</Label>
       <Select value={fontFamilyValue} onValueChange={handleFontFamily}>
-        <SelectTrigger className={UI.selectTrigger} style={{width:"100%"}}>
+        <SelectTrigger className={UI.selectTrigger} style={{ width: "100%" }}>
           <SelectValue placeholder="Select font" />
         </SelectTrigger>
         <SelectContent className={UI.selectContent}>
@@ -190,8 +190,8 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
     styles.typography.fontSize.includes("rem")
       ? "rem"
       : styles.typography.fontSize.includes("em")
-      ? "em"
-      : "px";
+        ? "em"
+        : "px";
 
   const handleValueChange = (value: string) => {
     if (value === "" || !isNaN(Number.parseFloat(value))) {
@@ -452,30 +452,6 @@ function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
           </svg>
         </Button>
       </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => onStyleChange("text-align", "justify")}
-          className={btnClass(active === "justify")}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
-        </Button>
-      </div>
     </div>
   );
 }
@@ -559,35 +535,6 @@ function TextStyleControl({ styles, onStyleChange }: SectionProps) {
             }`}
         >
           <span className="text-xs font-bold">TT</span>
-        </Button>
-      </div>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleItalic}
-          className={btnClass(styles.typography.fontStyle === "italic")}
-        >
-          <Italic className="h-4 w-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleUnderline}
-          className={btnClass(styles.typography.textDecoration === "underline")}
-        >
-          <Underline className="h-4 w-4" />
-        </Button>
-
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleUppercase}
-          title="Uppercase"
-          className={btnClass(styles.typography.textTransform === "uppercase")}
-        >
-          <span className="text-[11px] font-bold">TT</span>
         </Button>
       </div>
     </div>
@@ -1023,7 +970,7 @@ export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
       <AccordionItem value="display" className={UI.accordionItem}>
         <AccordionTrigger className={UI.sectionTitle}>Display</AccordionTrigger>
         <AccordionContent>
-          <LayoutSection styles={styles} onStyleChange={onStyleChange} />
+          <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
         </AccordionContent>
       </AccordionItem>
 
