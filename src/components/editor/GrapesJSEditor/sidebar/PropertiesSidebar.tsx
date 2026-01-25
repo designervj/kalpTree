@@ -165,13 +165,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           open={open}
           />;
 
-      case "styles":
-        return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <Palette className="w-4 h-4" /> Global Styles
-          </span>,
-          "Manage global style tokens, themes, and reusable classes."
-        );
 
       case "ai":
         return renderPlaceholder(
