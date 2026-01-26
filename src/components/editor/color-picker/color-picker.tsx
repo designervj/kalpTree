@@ -30,7 +30,7 @@ export function ColorPicker({ color, onChange, className = "" }: ColorPickerProp
     <Popover>
       <PopoverTrigger asChild>
         <div
-          className={`w-8 h-8 rounded border border-gray-700 cursor-pointer ${className}`}
+          className={`w-8 h-8 rounded border border-gray-700 dark:bg-violet-600/10 bg-white  cursor-pointer ${className}`}
           style={{ backgroundColor: currentColor }}
         />
       </PopoverTrigger>

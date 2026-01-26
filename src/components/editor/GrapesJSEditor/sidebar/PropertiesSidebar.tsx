@@ -27,8 +27,12 @@ import { AttributesEditor } from "../../attributes-editor/attributes-editor";
 import Pages from "../../pages-builder/pages";
 import SeobuilderPage from "../../Seobuilder/SeobuilderPage";
 
-import ElemetsPage from "../../elementsbuilder/ElemetsPage";
+
 import StorePage from "../../storeBuilder/StorePage";
+import AiToolsPage from "../../aitools/AiToolsPage";
+import ElemetsPage from "../../blogbuilder/BlogPage";
+import BlogPage from "../../blogbuilder/BlogPage";
+import { GoNote } from "react-icons/go";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -49,7 +53,7 @@ type TabKey =
   | "attributes"
   | "interactivity"
   | "setup"
-  | "elements"
+  | "blog"
   | "pages"
   | "styles"
   | "ai"
@@ -62,7 +66,7 @@ const TAB_TITLES: Record<TabKey, string> = {
   attributes: "Attributes",
   interactivity: "Interactivity",
   setup: "Setup",
-  elements: "Elements",
+  blog: "Blog",
   pages: "Pages and Navigation",
   styles: "Styles",
   ai: "AI Tools",
@@ -153,15 +157,15 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           />
         );
 
-      // case "elements":
+      // case "blog":
       //   return renderPlaceholder(
       //     <span className="inline-flex items-center gap-2">
-      //       <Plus className="w-4 h-4" /> Elements
+      //       <Plus className="w-4 h-4" /> blog
       //     </span>,
       //     "Add/insert components, blocks, and sections here."
       //   );
-         case "elements":
-        return <ElemetsPage  />;
+         case "blog":
+        return <BlogPage  />;
           // setOpen={setOpen}
           // open={open}
           // />;
@@ -175,13 +179,17 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
      
 
 
-      case "ai":
-        return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <Sparkles className="w-4 h-4" /> AI Tools
-          </span>,
-          "Add AI-powered actions (rewrite, generate sections, optimize layout, etc.)."
-        );
+      // case "ai":
+      //   return renderPlaceholder(
+      //     <span className="inline-flex items-center gap-2">
+      //       <Sparkles className="w-4 h-4" /> AI Tools
+      //     </span>,
+      //     "Add AI-powered actions (rewrite, generate sections, optimize layout, etc.)."
+      //   );
+
+        
+         case "ai":
+        return <AiToolsPage />;
 
       // case "store":
       //   return renderPlaceholder(
@@ -202,7 +210,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     "Manage meta tags, social previews, indexing and sitemap settings."
       //   );
 
-case "seo":
+ case "seo":
         return renderPlaceholder(
          <SeobuilderPage  />       
  );
@@ -255,10 +263,10 @@ case "seo":
           <div className="my-1 w-8 h-px bg-slate-200 dark:bg-slate-800/70" />
 
           <IconTab
-            active={tab === "elements"}
-            label="Elements"
-            onClick={() => setTab("elements")}
-            icon={<Plus className="w-5 h-5" />}
+            active={tab === "blog"}
+            label="blog"
+            onClick={() => setTab("blog")}
+            icon={<GoNote className="w-5 h-5" />}
           />
           <IconTab
             active={tab === "pages"}
@@ -308,7 +316,7 @@ case "seo":
           </div>
 
           {/* content */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-4">
+          <div className="flex-1 min-h-0 overflow-y-auto p-2">
             {renderRightContent()}
           </div>
         </div>

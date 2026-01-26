@@ -26,7 +26,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
           <Input
             defaultValue="#007bff"
             onChange={(e) => onStyleChange("--primary-color", e.target.value)}
-            className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+            className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
             placeholder="#007bff"
           />
         </div>
@@ -43,7 +43,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
           <Input
             defaultValue="#6c757d"
             onChange={(e) => onStyleChange("--secondary-color", e.target.value)}
-            className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+            className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
             placeholder="#6c757d"
           />
         </div>
@@ -55,7 +55,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
         <Input
           defaultValue="'Inter', sans-serif"
           onChange={(e) => onStyleChange("--font-family", e.target.value)}
-          className="text-xs h-7 bg-slate-800 border-slate-700"
+          className="text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
           placeholder="'Inter', sans-serif"
         />
       </div>
@@ -75,7 +75,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
             <Input
               defaultValue="rgba(240, 237, 255, 1)"
               onChange={(e) => onStyleChange("--body-background", e.target.value)}
-              className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+              className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
               placeholder="rgba(240, 237, 255, 1)"
             />
           </div>
@@ -92,7 +92,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
             <Input
               defaultValue="#484c51"
               onChange={(e) => onStyleChange("--body-color", e.target.value)}
-              className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+              className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
               placeholder="#484c51"
             />
           </div>
@@ -114,7 +114,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
             <Input
               defaultValue="rgba(73, 49, 230, 1)"
               onChange={(e) => onStyleChange("--h1-color", e.target.value)}
-              className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+              className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
               placeholder="rgba(73, 49, 230, 1)"
             />
           </div>
@@ -127,7 +127,7 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
             <Input
               defaultValue="2"
               onChange={(e) => onStyleChange("--h1-size", `${e.target.value}rem`)}
-              className="flex-1 text-xs h-7 bg-slate-800 border-slate-700"
+              className="flex-1 text-xs h-7 dark:bg-slate-800 dark:border-slate-700"
               type="number"
               min="0"
               step="0.1"
@@ -141,12 +141,12 @@ const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
       {/* Buttons Section */}
       <div className="space-y-1.5 pt-2">
         <Label className="text-xs font-semibold text-slate-300">Buttons</Label>
-        <div className="text-[10px] text-slate-500 p-2 bg-slate-800/50 rounded">
+        <div className="text-[10px] text-slate-500 p-2 dark:bg-slate-800/50 border rounded-md dark:border-slate-700rounded">
           Button styles can be configured here
         </div>
       </div>
 
-      <div className="text-[10px] text-slate-500 mt-4 p-2 bg-slate-800/50 rounded">
+      <div className="text-[10px] text-slate-500 mt-4 p-2  rounded">
         💡 Use with <code className="text-blue-400">var(--primary-color)</code> in component styles
       </div>
     </div>

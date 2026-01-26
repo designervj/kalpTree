@@ -17,6 +17,7 @@ import {
   Settings,
   MoreVertical,
 } from "lucide-react";
+import StorePagesModel from "./StorePagesModel";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavItem = { id: string; label: string; icon: React.ReactNode };
@@ -68,9 +69,9 @@ export default function StorePage() {
   return (
     <div className="w-full max-w-[420px] bg-white text-slate-900 dark:bg-[#0b1220] dark:text-slate-100">
       {/* Header */}
-      <div className="flex items-start justify-between px-0 pt-0">
+      {/* <div className="flex items-start justify-between px-0 pt-0">
         <div className="text-[32px] font-semibold tracking-tight text-slate-900 dark:text-slate-100">
-          Manage store
+          Manage store 1
         </div>
 
         <button
@@ -84,14 +85,14 @@ export default function StorePage() {
         >
           <X className="h-5 w-5" />
         </button>
-      </div>
+      </div> */}
 
       {/* Setup card */}
       <div className="px-0 pt-2">
         <div
           className={cn(
-            "rounded-2xl bg-white ring-1 ring-slate-200/60",
-            "shadow-[0_10px_30px_rgba(15,23,42,0.08)]",
+            "rounded-sm bg-white ring-1 ring-slate-200/60",
+            // "shadow-[0_10px_30px_rgba(15,23,42,0.08)]",
             "dark:bg-[#0b1220] dark:ring-slate-800/70 dark:shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
           )}
         >
@@ -117,7 +118,8 @@ export default function StorePage() {
                     <div className="text-[15px] text-slate-700 dark:text-slate-200">{s.label}</div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-slate-400 dark:text-slate-500" />
-                </button>
+
+                 </button>
               ))}
             </div>
           </div>
@@ -141,7 +143,8 @@ export default function StorePage() {
                 <span className="text-slate-700 dark:text-slate-300">{item.icon}</span>
                 <span className="text-[15px] text-slate-700 dark:text-slate-200">{item.label}</span>
               </div>
-              <ChevronRight className="h-5 w-5 text-slate-400 dark:text-slate-500" />
+              {/* <ChevronRight className="h-5 w-5 text-slate-400 dark:text-slate-500" /> */}
+              <StorePagesModel/>
             </button>
 
             <div className="mx-0 h-px bg-slate-200/70 dark:bg-slate-800" />
@@ -150,7 +153,7 @@ export default function StorePage() {
       </div>
 
       {/* Bottom bar */}
-      <div className="mt-8 border-t border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-[#0b1220]">
+      <div className="mt-8 border-t border-slate-200 bg-white px-0 py-4 dark:border-slate-800 dark:bg-[#0b1220]">
         <div className="flex items-center justify-between gap-3">
           <button
             type="button"
