@@ -922,10 +922,11 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
         value={styles?.layout?.display || "block"}
         onValueChange={(value) => onStyleChange("display", value)}
       >
-        <SelectTrigger className={UI.selectTrigger}>
+        <SelectTrigger className={UI.selectTrigger} 
+          style={{width:"100%"}}>
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
-        <SelectContent className={UI.selectContent}>
+        <SelectContent className={UI.selectContent}   style={{width:"100%"}}>
           <SelectItem value="block" className={UI.selectItem}>
             Block
           </SelectItem>

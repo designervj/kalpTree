@@ -321,14 +321,14 @@ function EventSelector({ value, onChange }: { value: string; onChange: (value: s
     <div className="space-y-1.5">
       <Label className="text-xs text-slate-700 dark:text-slate-300">Event</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-8 text-xs bg-white border-slate-200 text-slate-900 dark:bg-slate-900/40 dark:border-slate-700 dark:text-slate-100">
+        <SelectTrigger className="h-8 text-xs bg-white border-slate-200 text-slate-900 dark:bg-slate-900/40 dark:border-slate-700 dark:text-slate-100 w-full">
           <SelectValue placeholder="Select event" />
         </SelectTrigger>
         <SelectContent className="bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700">
-          <SelectItem value="click" className="text-xs">Click</SelectItem>
-          <SelectItem value="dblclick" className="text-xs">Double Click</SelectItem>
-          <SelectItem value="hover" className="text-xs">Hover</SelectItem>
-          <SelectItem value="scroll" className="text-xs">Scroll</SelectItem>
+          <SelectItem value="click" className="text-xs text-gray-900 dark:text-white">Click</SelectItem>
+          <SelectItem value="dblclick" className="text-xs text-gray-900 dark:text-white">Double Click</SelectItem>
+          <SelectItem value="hover" className="text-xs text-gray-900 dark:text-white">Hover</SelectItem>
+          <SelectItem value="scroll" className="text-xs text-gray-900 dark:text-white ">Scroll</SelectItem>
         </SelectContent>
       </Select>
     </div>
@@ -340,18 +340,18 @@ function ActionSelector({ value, onChange }: { value: string; onChange: (value: 
     <div className="space-y-1.5">
       <Label className="text-xs text-slate-700 dark:text-slate-300">Action</Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-8 text-xs bg-white border-slate-200 text-slate-900 dark:bg-slate-900/40 dark:border-slate-700 dark:text-slate-100">
+        <SelectTrigger className="h-8 text-xs w-full bg-white border-slate-200 text-slate-900 dark:bg-slate-900/40 dark:border-slate-700 dark:text-slate-100">
           <SelectValue placeholder="Select action" />
         </SelectTrigger>
         <SelectContent className="bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700">
-          <SelectItem value="toggle-class" className="text-xs">Toggle Class</SelectItem>
-          <SelectItem value="add-class" className="text-xs">Add Class</SelectItem>
-          <SelectItem value="remove-class" className="text-xs">Remove Class</SelectItem>
-          <SelectItem value="show" className="text-xs">Show Element</SelectItem>
-          <SelectItem value="hide" className="text-xs">Hide Element</SelectItem>
-          <SelectItem value="toggle" className="text-xs">Toggle Visibility</SelectItem>
-          <SelectItem value="scroll-to" className="text-xs">Scroll To</SelectItem>
-          <SelectItem value="redirect" className="text-xs">Redirect</SelectItem>
+          <SelectItem value="toggle-class" className="text-xs text-gray-900 dark:text-white">Toggle Class</SelectItem>
+          <SelectItem value="add-class" className="text-xs text-gray-900 dark:text-white">Add Class</SelectItem>
+          <SelectItem value="remove-class" className="text-xs text-gray-900 dark:text-white">Remove Class</SelectItem>
+          <SelectItem value="show" className="text-xs text-gray-900 dark:text-white">Show Element</SelectItem>
+          <SelectItem value="hide" className="text-xs text-gray-900 dark:text-white">Hide Element</SelectItem>
+          <SelectItem value="toggle" className="text-xs text-gray-900 dark:text-white">Toggle Visibility</SelectItem>
+          <SelectItem value="scroll-to" className="text-xs text-gray-900 dark:text-white">Scroll To</SelectItem>
+          <SelectItem value="redirect" className="text-xs text-gray-900 dark:text-white">Redirect</SelectItem>
         </SelectContent>
       </Select>
     </div>
