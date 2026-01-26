@@ -106,7 +106,13 @@ const NAV: NavItem[] = [
     id: "settings-group",
     label: "Settings",
     icon: <Settings className="h-4 w-4" />,
-    children: [{ id: "settings", label: "Settings" }],
+    children: [
+      { id: "store-details", label: "Store Details" },
+      { id: "company-information", label: "Company information" },
+      { id: "payments", label: "Payments" },
+      { id: "shipping", label: "Shipping" },
+      { id: "checkout", label: "Checkout" },
+        ],
   },
   { id: "integrations", label: "Integrations", icon: <Boxes className="h-4 w-4" /> },
 ];
@@ -1050,8 +1056,16 @@ function RightContent({ active }: { active: string }) {
   if (active === "orders") return <SimplePage title="Orders" />;
   if (active === "settings") return <SimplePage title="Settings" />;
 
+  if (active === "store-details") return <SimplePage title="Store Details" />;
+  if (active === "company-information") return <SimplePage title="Company information" />;
+  if (active === "payments") return <SimplePage title="Payments" />;
+  if (active === "shipping") return <SimplePage title="Shipping" />;
+  if (active === "checkout") return <SimplePage title="Checkout" />;
+
   return <ProductsPage />;
 }
+
+
 
 /* -------------------- Main Component -------------------- */
 
