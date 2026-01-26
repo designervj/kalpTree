@@ -12,7 +12,7 @@ const page = async ({
     params?: Promise<{ id: string }>;
 }) => {
     const param = await params;
-    console.log("param", param?.id);
+
     const db = await getDatabase();
     const websiteColl = await db.collection("websites");
     const website = await websiteColl.findOne({ _id: new ObjectId(param?.id) });
@@ -30,7 +30,7 @@ const page = async ({
     // Serialize MongoDB documents to plain objects for Client Component
     const serializedWebsite: Website = {
         _id: website._id.toString(),
-        tenantId: website.tenantId,
+        tenantId: website.tenantId?.toString(),
         websiteId: website.websiteId,
         name: website.name,
         primaryDomain: website.primaryDomain,
@@ -42,16 +42,16 @@ const page = async ({
 
     const serializedPages: WebsitePageModel[] = pagesData.map((page) => ({
         _id: page._id.toString(),
-        tenantId: page.tenantId,
+        tenantId: page.tenantId?.toString() ?? "",
         websiteId: page.websiteId?.toString(),
         slug: page.slug,
         title: page.title,
         content: page.content,
         seo: page.seo,
         status: page.status,
-        createdAt: page.createdAt,
-        updatedAt: page.updatedAt,
-        publishedAt: page.publishedAt,
+        createdAt:"",
+        updatedAt: "",
+        publishedAt: "",
     }));
 
     return (

@@ -33,6 +33,7 @@ import AiToolsPage from "../../aitools/AiToolsPage";
 import ElemetsPage from "../../blogbuilder/BlogPage";
 import BlogPage from "../../blogbuilder/BlogPage";
 import { GoNote } from "react-icons/go";
+import PageLayer from "./PageLayer";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -59,12 +60,14 @@ type TabKey =
   | "ai"
   | "store"
   | "seo"
-  | "more";
+  | "more"
+  | "layer"
 
 const TAB_TITLES: Record<TabKey, string> = {
   style: "Style",
   attributes: "Attributes",
   interactivity: "Interactivity",
+  layer: "Layer",
   setup: "Setup",
   blog: "Blog",
   pages: "Pages and Navigation",
@@ -157,6 +160,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           />
         );
 
+      case "layer":
+
+        return (
+          <PageLayer
+          />
+        );
       // case "blog":
       //   return renderPlaceholder(
       //     <span className="inline-flex items-center gap-2">
@@ -164,19 +173,21 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     </span>,
       //     "Add/insert components, blocks, and sections here."
       //   );
-         case "blog":
-        return <BlogPage  />;
-          // setOpen={setOpen}
-          // open={open}
-          // />;
+      case "blog":
+        return <BlogPage />;
+      // setOpen={setOpen}
+      // open={open}
+      // />;
 
 
-           case "pages":
-        return <Pages />;   
-          
+      case "pages":
+        return <Pages
+          setOpen={setOpen}
+          open={open} />
+
 
       // ✅ HERE: show the Pages component when Pages tab is selected
-     
+
 
 
       // case "ai":
@@ -187,8 +198,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     "Add AI-powered actions (rewrite, generate sections, optimize layout, etc.)."
       //   );
 
-        
-         case "ai":
+
+      case "ai":
         return <AiToolsPage />;
 
       // case "store":
@@ -199,7 +210,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     "Connect products, carts, and checkout settings here."
       //   );
 
-         case "store":
+      case "store":
         return <StorePage />;
 
       // case "seo":
@@ -210,10 +221,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     "Manage meta tags, social previews, indexing and sitemap settings."
       //   );
 
- case "seo":
+      case "seo":
         return renderPlaceholder(
-         <SeobuilderPage  />       
- );
+          <SeobuilderPage />
+        );
 
       case "more":
         return renderPlaceholder(
@@ -252,6 +263,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             label="Interactivity"
             onClick={() => setTab("interactivity")}
             icon={<MousePointer className="w-5 h-5" />}
+          />
+          <IconTab
+            active={tab === "layer"}
+            label="Layer"
+            onClick={() => setTab("layer")}
+            icon={<LayoutGrid className="w-5 h-5" />}
           />
           <IconTab
             active={tab === "setup"}
