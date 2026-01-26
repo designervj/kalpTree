@@ -26,10 +26,11 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
+import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 
 type PageItem = {
   id: string;
@@ -338,11 +339,15 @@ function reorder<T>(list: T[], fromIndex: number, toIndex: number) {
   return next;
 }
 
+type Props={
+  open: boolean;
+  setOpen: (open: boolean) => void;
+}
 
-export default function Pages() {
+export default function Pages({open,setOpen}: Props) {
   const [comingSoon, setComingSoon] = React.useState(false);
   const { websitePages } = useSelector((state: RootState) => state.websitePage)
-
+  const dispatch=useDispatch<AppDispatch>()
   const { currentWebsite } = useSelector((state: RootState) => state.websites)
   const [mainNav, setMainNav] = React.useState<PageItem[]>([
     { id: "home", title: "Home", icon: "home", seoIssue: true, inNavigation: true, isHomepage: true, url: "/" },
@@ -362,8 +367,8 @@ export default function Pages() {
           id: page._id,
           title: page.title,
           icon: "doc" as const,
-          seoIssue: false,
-          inNavigation: false,
+          seoIssue: true,
+          inNavigation: true,
           isHomepage: false,
           url: `${primaryDomain}/${page.slug}`,
         }
@@ -371,12 +376,12 @@ export default function Pages() {
     }
     return [];
   }, [websitePages, currentWebsite])
+
   const [hiddenNav, setHiddenNav] = React.useState<PageItem[]>([
     { id: "terms", title: "Terms & conditions", icon: "doc", inNavigation: false, url: "/terms" },
   ]);
 
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
-  const [open, setOpen] = React.useState(false);
 
   const draggingIdRef = React.useRef<string | null>(null);
   const [dragOverId, setDragOverId] = React.useState<string | null>(null);
@@ -468,6 +473,18 @@ export default function Pages() {
     else setHiddenNav((p) => p.filter((x) => x.id !== page.id));
   };
 
+  const handlePages=(page:PageItem)=>{
+
+    const currentPage=websitePages.find((p)=>p._id===page.id)
+    if(currentPage){
+      dispatch(setPageEdit({
+        page:currentPage,
+      type:"page"
+      }))
+    }
+    
+  }
+
   return (
     <TooltipProvider delayDuration={150}>
       <div className="h-full">
@@ -499,7 +516,8 @@ export default function Pages() {
 
               <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div className="px-3">
-                  {mainNav.map((p) => {
+                  {
+                  allPages.length>0 && allPages.map((p) => {
                     const isDragOver = dragOverId === p.id;
                     const isDragging = draggingIdRef.current === p.id;
 
@@ -529,7 +547,11 @@ export default function Pages() {
                           {IconFor(p)}
                         </div>
 
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 min-w-0"
+                        onClick={()=>{
+                        handlePages(p)
+                        }}
+                        >
                           <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                             {p.title}
                           </div>

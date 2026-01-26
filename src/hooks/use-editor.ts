@@ -507,6 +507,12 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
+      // Validate component exists before processing
+      if (!component) {
+        console.warn('component:selected fired with no component');
+        return;
+      }
+
       setState((prev) => ({
         ...prev,
         selectedElement: component,
@@ -514,8 +520,14 @@ export function useEditor(containerId: string) {
       updateStylesFromComponent(component);
 
       // Initialize interactions if not already present
-      if (!component.get("interactions")) {
-        component.set("interactions", []);
+      try {
+        if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
+          if (component.set && typeof component.set === 'function') {
+            component.set("interactions", []);
+          }
+        }
+      } catch (error) {
+        console.error('Error initializing interactions:', error);
       }
 
       // Add custom toolbar button only if it doesn't already exist
@@ -579,30 +591,44 @@ export function useEditor(containerId: string) {
 
     // Device change
     editor.on("change:device", () => {
-      setState((prev) => ({
-        ...prev,
-        currentDevice: editor.getDevice(),
-      }));
+      try {
+        if (editor && typeof editor.getDevice === 'function') {
+          setState((prev) => ({
+            ...prev,
+            currentDevice: editor.getDevice(),
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling device change:', error);
+      }
     });
 
     // Script-related events
     editor.on("script:update", () => {
-      if (editor.getJs) {
-        const js = editor.getJs();
-        setState((prev) => ({
-          ...prev,
-          editorJs: js,
-        }));
+      try {
+        if (editor && editor.getJs && typeof editor.getJs === 'function') {
+          const js = editor.getJs();
+          setState((prev) => ({
+            ...prev,
+            editorJs: js,
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling script update:', error);
       }
     });
 
     editor.on("script:add", () => {
-      if (editor.getJs) {
-        const js = editor.getJs();
-        setState((prev) => ({
-          ...prev,
-          editorJs: js,
-        }));
+      try {
+        if (editor && editor.getJs && typeof editor.getJs === 'function') {
+          const js = editor.getJs();
+          setState((prev) => ({
+            ...prev,
+            editorJs: js,
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling script add:', error);
       }
     });
 
@@ -616,9 +642,26 @@ export function useEditor(containerId: string) {
     // Load event
     editor.on("load", () => {
       try {
+        // Validate editor state
+        if (!editor || !editor.BlockManager) {
+          console.warn('Editor or BlockManager not available on load event');
+          return;
+        }
+
         // Get blocks
         const blockManager = editor.BlockManager;
-        const blockList = blockManager.getAll().models.map((block: any) => {
+        if (!blockManager.getAll || typeof blockManager.getAll !== 'function') {
+          console.warn('getAll method not available on BlockManager');
+          return;
+        }
+
+        const allBlocks = blockManager.getAll();
+        if (!allBlocks || !allBlocks.models) {
+          console.warn('Block models not available');
+          return;
+        }
+
+        const blockList = allBlocks.models.map((block: any) => {
           // Extract category properly
           let category = "Basic";
           try {
@@ -679,7 +722,23 @@ export function useEditor(containerId: string) {
     }
 
     try {
+      // Add additional check for getComponents method
+      if (typeof editor.Components.getComponents !== 'function') {
+        console.warn('getComponents method not available on editor.Components');
+        return;
+      }
+
       const components = editor.Components.getComponents();
+
+      // Verify components is valid before mapping
+      if (!components) {
+        setState((prev) => ({
+          ...prev,
+          layers: [],
+        }));
+        return;
+      }
+
       const layerItems = mapComponentsToLayers(components);
 
       setState((prev) => ({
@@ -718,10 +777,16 @@ export function useEditor(containerId: string) {
       // Safely get children components
       let children = [];
       try {
-        const componentsMethod =
-          component.components || component.get?.("components");
-        if (typeof componentsMethod === "function") {
-          children = componentsMethod.call(component);
+        // Check if component has a components method
+        if (component.components && typeof component.components === "function") {
+          children = component.components();
+        } else if (component.get && typeof component.get === "function") {
+          const componentsMethod = component.get("components");
+          if (componentsMethod && typeof componentsMethod === "function") {
+            children = componentsMethod();
+          } else if (Array.isArray(componentsMethod)) {
+            children = componentsMethod;
+          }
         }
       } catch (error) {
         console.error("Error getting child components:", error);
@@ -949,8 +1014,25 @@ export function useEditor(containerId: string) {
         return;
       }
 
-      const html = editorRef.current.getHtml();
-      const css = editorRef.current.getCss?.() || "";
+      // Safely get HTML and CSS with error handling
+      let html = "";
+      let css = "";
+
+      try {
+        html = editorRef.current.getHtml();
+      } catch (error) {
+        console.error("Error getting HTML:", error);
+        toast.error("Failed to get page HTML.");
+        return;
+      }
+
+      try {
+        if (typeof editorRef.current.getCss === 'function') {
+          css = editorRef.current.getCss() || "";
+        }
+      } catch (error) {
+        console.warn("Error getting CSS:", error);
+      }
 
       // Option A: store CSS inline with HTML
       const fullHtml = `
@@ -1007,7 +1089,16 @@ export function useEditor(containerId: string) {
     exportHtml: () => {
       if (editorRef.current) {
         const html = editorRef.current.getHtml();
-        const css = editorRef.current.getCss();
+
+        // Safely get CSS with fallback
+        let css = "";
+        try {
+          if (typeof editorRef.current.getCss === 'function') {
+            css = editorRef.current.getCss() || "";
+          }
+        } catch (error) {
+          console.warn('Error getting CSS:', error);
+        }
 
         // Get JavaScript with better error handling
         let js = "";
@@ -1151,7 +1242,7 @@ export function useEditor(containerId: string) {
 
     updateStyle: (property: string, value: string) => {
       try {
-  
+
 
         // Check if this is a global CSS variable (starts with --)
         if (property.startsWith('--')) {

@@ -143,7 +143,7 @@ export default function GrapesJSEditor() {
     return () => {
       state.editor?.off('load', handleLoad);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [state.editor, state.isLoading, page?.content]);
 
 
