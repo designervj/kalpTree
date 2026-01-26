@@ -111,7 +111,7 @@ export function useEditor(containerId: string) {
       try {
         // Dynamically import GrapesJS
         const grapesjs = await import("grapesjs");
-        const gjsPresetWebpage = await import("grapesjs-preset-webpage");
+        // const gjsPresetWebpage = await import("grapesjs-preset-webpage");
         const gjsBlocksBasic = await import("grapesjs-blocks-basic");
         const gjsScriptEditor = await import("grapesjs-script-editor");
 
@@ -137,20 +137,20 @@ export function useEditor(containerId: string) {
         const config = {
           ...createEditorConfig(containerEl, {}),
           plugins: [
-            gjsPresetWebpage.default,
+            // gjsPresetWebpage.default,
             gjsBlocksBasic.default,
             gjsScriptEditor.default,
           ],
           pluginsOpts: {
-            [String(gjsPresetWebpage.default)]: {
-              blocksBasicOpts: {
-                blocks: [],
-                flexGrid: true,
-              },
-              exportOpts: {},
-              aviaryOpts: false,
-              filestackOpts: false,
-            },
+            // [String(gjsPresetWebpage.default)]: {
+            //   blocksBasicOpts: {
+            //     blocks: [],
+            //     flexGrid: true,
+            //   },
+            //   exportOpts: {},
+            //   aviaryOpts: false,
+            //   filestackOpts: false,
+            // },
             [String(gjsBlocksBasic.default)]: {
               blocks: [], // Empty array to not include any blocks from the plugin
             },
@@ -489,7 +489,6 @@ export function useEditor(containerId: string) {
         setState((prev) => ({
           ...prev,
           editor,
-          isLoading: false,
         }));
 
         return () => {
@@ -702,6 +701,7 @@ export function useEditor(containerId: string) {
           ...prev,
           blocks: blockList,
           editorJs: initialJs,
+          isLoading: false,
         }));
 
         updateLayers(editor);

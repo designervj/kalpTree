@@ -18,7 +18,7 @@ import { AiChatModal } from "./aiChatModel/AiChatModal";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
 import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
 
-  type PropertiesSidebarProps = {
+type PropertiesSidebarProps = {
   showSidebar: boolean;
   selectedElement: any;
   styles: any;
@@ -83,15 +83,18 @@ export default function GrapesJSEditor() {
       // Prevent loading content multiple times
       if (contentLoadedRef.current) return;
 
-      // Check if editor has necessary methods and is fully initialized
-      if (typeof state.editor?.setComponents !== 'function') {
-        console.warn('Editor setComponents method not available yet');
-        return;
-      }
+      // Enhanced check for editor readiness
+      const isEditorReady =
+        state.editor &&
+        typeof state.editor.setComponents === 'function' &&
+        state.editor.Components &&
+        typeof state.editor.Components.getWrapper === 'function' &&
+        state.editor.Canvas; // Ensure Canvas is available
 
-      // Check if Components API is available (prevents Canvas.getFrames error)
-      if (!state.editor?.Components || typeof state.editor.Components.getWrapper !== 'function') {
-        console.warn('Editor Components API not fully initialized yet');
+      if (!isEditorReady) {
+        console.warn('Editor not fully initialized yet, retrying...');
+        // Retry after a short delay if editor is not ready
+        setTimeout(loadContent, 100);
         return;
       }
 
@@ -100,7 +103,7 @@ export default function GrapesJSEditor() {
         if (data) {
           // Safely set components with error handling
           state?.editor?.setComponents(data);
-           const { body } = extractHtmlParts(data);
+          const { body } = extractHtmlParts(data);
           setEditorHtml(body);
 
           // Extract and set CSS from the content
@@ -119,7 +122,7 @@ export default function GrapesJSEditor() {
 
         contentLoadedRef.current = true;
       } catch (error) {
-        console.error('Error setting editor content:', error);  
+        console.error('Error setting editor content:', error);
         // Don't crash the app, just log the error
       }
     };
@@ -498,7 +501,7 @@ export default function GrapesJSEditor() {
           onSelectTemplate={handleSelectTemplate}
           onSaveTemplate={handleSaveTemplate}
           onSave={handleSaveData}
-          setOpen={setOpen} 
+          setOpen={setOpen}
           open={open}
         />
 
@@ -517,16 +520,16 @@ export default function GrapesJSEditor() {
           </div>
 
           {/* Sidebar */}
-        <PropertiesSidebar
-          showSidebar={showSidebar}
-          selectedElement={state.selectedElement}
-          styles={state.styles}
-          onStyleChange={handleStyleChange}
-          onAttributeChange={actions.updateAttribute}
-          onInteractivityChange={handleUpdateInteractivity}
-          open={open}
-          setOpen={setOpen}
-        />
+          <PropertiesSidebar
+            showSidebar={showSidebar}
+            selectedElement={state.selectedElement}
+            styles={state.styles}
+            onStyleChange={handleStyleChange}
+            onAttributeChange={actions.updateAttribute}
+            onInteractivityChange={handleUpdateInteractivity}
+            open={open}
+            setOpen={setOpen}
+          />
         </div>
 
         <BottomToolbar
