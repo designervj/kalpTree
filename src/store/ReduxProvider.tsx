@@ -12,6 +12,7 @@ export default function ReduxProvider({ children }: { children: React.ReactNode 
     (async () => {
       try {
         const session = await getSession();
+        console.log("session=====>", session);
         if (session?.user) {
           const mappedUser = {
             email: session.user.email,

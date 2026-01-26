@@ -16,6 +16,8 @@ export const authConfig: NextAuthConfig = {
         domain: { label: "Domain", type: "text" },
       },
       async authorize(credentials) {
+
+   
         // Validate credentials exist
         if (
           !credentials?.email ||
@@ -32,6 +34,7 @@ export const authConfig: NextAuthConfig = {
           const getWebsite = await websiteService.getByHost(
             credentials.domain as string,
           );
+       
           if (!getWebsite) {
             throw new Error("Invalid domain");
           }
