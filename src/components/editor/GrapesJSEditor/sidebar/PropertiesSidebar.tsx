@@ -27,6 +27,9 @@ import { AttributesEditor } from "../../attributes-editor/attributes-editor";
 import Pages from "../../pages-builder/pages";
 import SeobuilderPage from "../../Seobuilder/SeobuilderPage";
 
+import ElemetsPage from "../../elementsbuilder/ElemetsPage";
+import StorePage from "../../storeBuilder/StorePage";
+
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
 
@@ -150,20 +153,26 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           />
         );
 
-      case "elements":
-        return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <Plus className="w-4 h-4" /> Elements
-          </span>,
-          "Add/insert components, blocks, and sections here."
-        );
+      // case "elements":
+      //   return renderPlaceholder(
+      //     <span className="inline-flex items-center gap-2">
+      //       <Plus className="w-4 h-4" /> Elements
+      //     </span>,
+      //     "Add/insert components, blocks, and sections here."
+      //   );
+         case "elements":
+        return <ElemetsPage  />;
+          // setOpen={setOpen}
+          // open={open}
+          // />;
+
+
+           case "pages":
+        return <Pages />;   
+          
 
       // ✅ HERE: show the Pages component when Pages tab is selected
-      case "pages":
-        return <Pages 
-          setOpen={setOpen}
-          open={open}
-          />;
+     
 
 
       case "ai":
@@ -174,13 +183,16 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           "Add AI-powered actions (rewrite, generate sections, optimize layout, etc.)."
         );
 
-      case "store":
-        return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <ShoppingCart className="w-4 h-4" /> Store
-          </span>,
-          "Connect products, carts, and checkout settings here."
-        );
+      // case "store":
+      //   return renderPlaceholder(
+      //     <span className="inline-flex items-center gap-2">
+      //       <ShoppingCart className="w-4 h-4" /> Store
+      //     </span>,
+      //     "Connect products, carts, and checkout settings here."
+      //   );
+
+         case "store":
+        return <StorePage />;
 
       // case "seo":
       //   return renderPlaceholder(
