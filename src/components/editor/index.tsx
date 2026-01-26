@@ -99,7 +99,7 @@ export default function GrapesJSEditor() {
         const data = page.content;
         if (data) {
           // Safely set components with error handling
-          state.editor.setComponents(data);
+          state?.editor?.setComponents(data);
            const { body } = extractHtmlParts(data);
           setEditorHtml(body);
 

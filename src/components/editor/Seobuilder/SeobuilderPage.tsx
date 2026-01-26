@@ -145,7 +145,7 @@ function Sidebar({
 
   return (
     <div className="h-full w-full bg-white text-slate-900 dark:bg-[#0b1220] dark:text-slate-100">
-      <div className="px-4 pt-4">
+      <div className="px-0 pt-0">
         {/* Website overview */}
         <button
           type="button"
@@ -526,7 +526,7 @@ export default function SeobuilderPage() {
     <div className="min-h-screen w-full bg-white text-slate-900 dark:bg-[#0b1220] dark:text-slate-100">
       <div className="flex min-h-screen">
         {/* LEFT SIDEBAR */}
-        <div className="w-[320px] border-r border-slate-200 dark:border-slate-800">
+        <div className="w-[320px] ">
           <Sidebar selectedId={selectedId} onSelect={handleSelect} />
         </div>
 
