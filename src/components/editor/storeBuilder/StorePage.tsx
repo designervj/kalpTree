@@ -100,8 +100,8 @@ export default function StorePage() {
             Set up your store
           </div>
 
-          <div className="px-4 pb-4 pt-3">
-            <div className="rounded-2xl">
+          <div className="px-2 pb-4 pt-2">
+            <div className="rounded-xl">
               {SETUP.map((s) => (
                 <button
                   key={s.id}
@@ -114,8 +114,8 @@ export default function StorePage() {
                   onClick={() => {}}
                 >
                   <div className="flex items-center gap-3">
-                    <CheckDot done={s.done} />
-                    <div className="text-[15px] text-slate-700 dark:text-slate-200">{s.label}</div>
+                    <CheckDot done={s.done}/>
+                    <div className="text-sm text-slate-700 dark:text-slate-200">{s.label}</div>
                   </div>
                   <ChevronRight className="h-5 w-5 text-slate-400 dark:text-slate-500" />
 

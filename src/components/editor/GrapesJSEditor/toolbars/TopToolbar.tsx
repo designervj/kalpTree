@@ -26,6 +26,7 @@ import {
 import { BlocksManager } from "../../blocks-manager/blocks-manager";
 import { CodeEditor } from "../../code-editor/code-editor";
 import { TemplateManager } from "../../template-manager/template-manager";
+import { EditSection } from "../../sectionEdit/EditSection";
 
 type TopToolbarProps = {
   editor: any;
@@ -141,7 +142,26 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
           </Link>
         </div>
 
+
+    
+
         <div className="flex items-center space-x-1.5">
+
+          {/* <Button className="text-black border-none bg-transprant  shadow-none h-8 px-4 text-[14px]" variant="outline">
+            Edit
+          </Button> */}
+
+          
+            <Tooltip>
+            <TooltipTrigger asChild>
+             
+
+              <EditSection/>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Form</TooltipContent>
+          </Tooltip>
+
+          
           {/* THEME TOGGLE */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -164,6 +184,9 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             </TooltipContent>
           </Tooltip>
 
+
+          
+
           <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-800" />
 
           <Tooltip>
@@ -179,6 +202,8 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             </TooltipTrigger>
             <TooltipContent side="bottom">Blocks</TooltipContent>
           </Tooltip>
+
+             
 
           <Tooltip>
             <TooltipTrigger asChild>
@@ -293,6 +318,9 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             </TooltipTrigger>
             <TooltipContent side="bottom">Export HTML</TooltipContent>
           </Tooltip>
+
+
+            
 
           <Tooltip>
             <TooltipTrigger asChild>

@@ -58,6 +58,11 @@ import {
 } from "lucide-react";
 import OverviewPage from "./OverviewPage";
 import AppointmentsPage from "../appointments/AppointmentsPage";
+import StoreDetails from "../storeSetting/StoreDetails";
+import CompanyInformation from "../storeSetting/CompanyInformation";
+import Payments from "../storeSetting/Payments";
+import Shipping from "../storeSetting/Shipping";
+import Checkout from "../storeSetting/Checkout";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavChild = { id: string; label: string };
@@ -1056,11 +1061,11 @@ function RightContent({ active }: { active: string }) {
   if (active === "orders") return <SimplePage title="Orders" />;
   if (active === "settings") return <SimplePage title="Settings" />;
 
-  if (active === "store-details") return <SimplePage title="Store Details" />;
-  if (active === "company-information") return <SimplePage title="Company information" />;
-  if (active === "payments") return <SimplePage title="Payments" />;
-  if (active === "shipping") return <SimplePage title="Shipping" />;
-  if (active === "checkout") return <SimplePage title="Checkout" />;
+  if (active === "store-details") return <StoreDetails />;
+  if (active === "company-information") return <CompanyInformation />;
+  if (active === "payments") return <Payments  />;
+  if (active === "shipping") return <Shipping  />;
+  if (active === "checkout") return <Checkout  />;
 
   return <ProductsPage />;
 }
@@ -1074,7 +1079,7 @@ export default function StorePage() {
   const [activeNav, setActiveNav] = React.useState<string>("products");
 
   return (
-    <div className="w-full">
+    <div >
       <Dialog open={open} onOpenChange={setOpen}>
         {/* Replace this trigger with your menu item / icon click */}
         <DialogTrigger asChild>
