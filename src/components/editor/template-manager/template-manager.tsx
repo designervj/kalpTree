@@ -28,10 +28,13 @@ import {
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import {
-  componentCategories,
-  componentTemplates,
-} from "../../../../utils/component-library";
+// import {
+//   componentCategories,
+//   componentTemplates,
+// } from "../../../../utils/component-library";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 interface TemplateManagerProps {
   onSelectTemplate: (content: string, append?: boolean) => void;
@@ -41,6 +44,11 @@ interface TemplateManagerProps {
   open: boolean;
 }
 
+interface CategoryBasedTemplate {
+  id: string;
+  label: string;
+  content: string;
+}
 export function TemplateManager({
   onSelectTemplate,
   onSaveTemplate,
@@ -54,17 +62,37 @@ export function TemplateManager({
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"browse" | "saved">("browse");
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
+  const { allTemplate } = useSelector((state: RootState) => state.template);
+
+  const categorybasedTemplate = useMemo(() => {
+    if (!allTemplate) return [];
+
+    // Create a Set to store unique category names
+    const uniqueCategories = new Set<string>();
+
+    allTemplate.forEach((template) => {
+      if (template.category) {
+        uniqueCategories.add(template.category);
+      }
+    });
+
+    return Array.from(uniqueCategories);
+  }, [allTemplate]);
+
+  console.log("categorybasedTemplate", categorybasedTemplate)
 
   const filteredTemplates = useMemo(() => {
-    return componentTemplates.filter((template) => {
-      const matchesSearch = template.label
+    return allTemplate.filter((template: TemplateDocument) => {
+      if (!template.category)
+        return false
+      const matchesSearch = template?.category
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
       const matchesCategory =
         selectedCategory === "all" || template.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory,allTemplate]);
 
   const handleSaveTemplate = () => {
     if (templateName && currentContent) {
@@ -82,11 +110,11 @@ export function TemplateManager({
   };
 
   const handleAddSelectedTemplates = () => {
-    const templates = componentTemplates.filter((template) =>
-      selectedTemplates.includes(template.id)
+    const templates = allTemplate.filter((template) =>
+      selectedTemplates.includes(template?.templateId??"")
     );
 
-    templates.forEach((template) => onSelectTemplate(template.content, true));
+    templates.forEach((template) => onSelectTemplate(template?.content??"", true));
 
     setSelectedTemplates([]);
     setOpen(false);
@@ -100,8 +128,8 @@ export function TemplateManager({
   const currentCategoryLabel =
     selectedCategory === "all"
       ? "All"
-      : componentCategories.find((c) => c.id === selectedCategory)?.label ||
-        selectedCategory;
+      : allTemplate.find((c) => c.id === selectedCategory)?.label ||
+      selectedCategory;
 
   return (
     <>
@@ -265,19 +293,19 @@ export function TemplateManager({
                     All
                   </button>
 
-                  {componentCategories.map((category) => (
+                  {categorybasedTemplate && categorybasedTemplate.map((category) => (
                     <button
-                      key={category.id}
+                      key={category}
                       type="button"
-                      onClick={() => setSelectedCategory(category.id)}
+                      onClick={() => setSelectedCategory(category)}
                       className={cn(
                         "mt-1 w-full text-left rounded-xl px-3 py-2 text-sm transition",
-                        selectedCategory === category.id
+                        selectedCategory === category
                           ? "bg-slate-100 text-slate-900"
                           : "text-slate-700 hover:bg-slate-50"
                       )}
                     >
-                      {category.label}
+                      {category}
                     </button>
                   ))}
                 </div>
@@ -325,8 +353,8 @@ export function TemplateManager({
                     <ScrollArea className="flex-1 min-h-0 tm-scroll">
                       <div className="p-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {filteredTemplates.map((template) => {
-                            const isSelected = selectedTemplates.includes(template.id);
+                          {filteredTemplates && filteredTemplates.map((template:TemplateDocument) => {
+                            const isSelected = selectedTemplates.includes(template?.templateId??"");
                             return (
                               <Card
                                 key={template.id}
@@ -335,7 +363,7 @@ export function TemplateManager({
                                   "border-slate-200 hover:border-slate-300 hover:shadow-sm",
                                   isSelected && "ring-2 ring-violet-500 border-violet-300"
                                 )}
-                                onClick={() => handleTemplateSelection(template.id)}
+                                onClick={() => handleTemplateSelection(template?.templateId??"")}
                                 onDoubleClick={() => handleTemplateDoubleClick(template)}
                               >
                                 <CardContent className="p-4">
@@ -360,7 +388,7 @@ export function TemplateManager({
                                     )}
                                   </div>
 
-                                  <div className="mt-3 flex items-center justify-between gap-3">
+                                  {/* <div className="mt-3 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
                                       <div className="text-sm font-semibold text-slate-900 truncate">
                                         {template.label}
@@ -377,13 +405,13 @@ export function TemplateManager({
                                       className="h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        onSelectTemplate(template.content, true);
+                                        onSelectTemplate(template?.content??"", true);
                                         setOpen(false);
                                       }}
                                     >
                                       Add
                                     </Button>
-                                  </div>
+                                  </div> */}
                                 </CardContent>
                               </Card>
                             );

@@ -16,6 +16,8 @@ import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
 import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
+import GetAllTemplate from "../admin/templates/GetAllTemplate";
+import EditForm from "./editForm/EditForm";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -34,6 +36,7 @@ export default function GrapesJSEditor() {
     isAiChatOpen,
     setIsAiChatOpen,
     selectedComponentForAi,
+    editForm
   } = useEditor("gjs-editor");
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
@@ -552,6 +555,12 @@ export default function GrapesJSEditor() {
         onClose={() => setIsAiChatOpen(false)}
         component={selectedComponentForAi}
       />
+
+      {/* edit form */}
+      <EditForm componentHtml={editForm} />
+
+      
+      <GetAllTemplate />
     </div>
   );
 }

@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
             status: 'active',
             isPublic: body.isPublic ?? true,
             isPremium: false,
-            tags: body.tags ? (typeof body.tags === 'string' ? body.tags.split(',').map((t: string) => t.trim()) : body.tags) : [body.category],
+            tags: body.tags ? (typeof body.tags === 'string' ? body.tags?.split(',').map((t: string) => t.trim()) : body.tags) : [body.category],
         };
 
         // Create the template
