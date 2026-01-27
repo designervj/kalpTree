@@ -98,7 +98,7 @@ const PostSchema = z.object({
 
   // suggested extra fields
   description: z.string(),
-  tags: z.string().array(), // comma-separated
+  tags: z.union([z.string(), z.array(z.string())]), // comma-separated or array
   demo: z.string(),
   category: z.string(),
   version: z.string(),
@@ -190,6 +190,7 @@ export default function AddTemplatePage() {
     const data = {
       ...values,
       category: values.templateType,
+      tags: typeof values.tags === 'string' ? values.tags.split(',').map((t: string) => t.trim()) : values.tags,
     }
     try {
       await dispatch(createTemplate(data)).unwrap();

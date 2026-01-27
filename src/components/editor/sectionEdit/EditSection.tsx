@@ -41,6 +41,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import CurrentForm from "./CurrentForm";
 
 /** 🎨 Keep the same purple look/feel */
 const ACCENT = "#6D5EF5"; // tweak if your design system has a specific hex
@@ -401,7 +402,15 @@ function AnimationCard({
   );
 }
 
-export function EditSection() {
+export function EditSection({
+  open,
+  setOpen,
+  componentHtml,
+}: {
+  open?: boolean;
+  setOpen?: (open: boolean) => void;
+  componentHtml?: string;
+} = {}) {
   const [tab, setTab] = React.useState<
     "general" | "fields" | "button" | "style" | "animation"
   >("general");
@@ -446,7 +455,7 @@ export function EditSection() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <form onSubmit={onSave}>
         <DialogTrigger asChild>
           <Button variant="ghost" size="sm" className="h-8 text-xs">
@@ -472,7 +481,7 @@ export function EditSection() {
             />
           </div>
 
-            <hr />
+          <hr />
 
           {/* Scroll content like the snapshot */}
           <ScrollArea className="h-[560px] border-b border-gray-200">
@@ -597,72 +606,9 @@ export function EditSection() {
 
               {/* FIELDS */}
               {tab === "fields" ? (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Select
-                      onValueChange={(v) => addField(v as FieldType)}
-                    >
-                      <SelectTrigger className="h-11 rounded-xl">
-                        <SelectValue placeholder="Add new form field" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {(
-                          [
-                            "phone",
-                            "company",
-                            "website",
-                          ] as FieldType[]
-                        ).map((t) => (
-                          <SelectItem key={t} value={t}>
-                            {FIELD_PRESETS[t].label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    {settings.fields.map((f, idx) => (
-                      <FieldRow
-                        key={f.id}
-                        field={f}
-                        onToggleEnabled={() =>
-                          setSettings((s) => ({
-                            ...s,
-                            fields: s.fields.map((x) =>
-                              x.id === f.id
-                                ? { ...x, enabled: !x.enabled }
-                                : x
-                            ),
-                          }))
-                        }
-                        onToggleRequired={() =>
-                          setSettings((s) => ({
-                            ...s,
-                            fields: s.fields.map((x) =>
-                              x.id === f.id
-                                ? { ...x, required: !x.required }
-                                : x
-                            ),
-                          }))
-                        }
-                        onRename={(v) =>
-                          setSettings((s) => ({
-                            ...s,
-                            fields: s.fields.map((x) =>
-                              x.id === f.id ? { ...x, label: v } : x
-                            ),
-                          }))
-                        }
-                        onMove={(dir) => moveField(idx, dir)}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="pt-2 text-xs text-slate-400">
-                    Tip: You can reorder fields with ↑ ↓ (drag handle is visual).
-                  </div>
-                </div>
+                <CurrentForm 
+                componentHtml={componentHtml}
+                />
               ) : null}
 
               {/* BUTTON */}
@@ -718,9 +664,9 @@ export function EditSection() {
                             style={
                               active
                                 ? {
-                                    outline: `2px solid ${ACCENT}`,
-                                    background: "white",
-                                  }
+                                  outline: `2px solid ${ACCENT}`,
+                                  background: "white",
+                                }
                                 : undefined
                             }
                             onClick={() => set("buttonPosition", pos)}
@@ -1048,7 +994,7 @@ export function EditSection() {
               ) : null}
             </div>
           </ScrollArea>
-        
+
 
 
 

@@ -17,7 +17,7 @@ import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-v
 interface GrapesJSEditor {
   getHtml: () => string;
   getCss: () => string | undefined;
-  getJs?: () => string;
+  getJs?: () => string; 
   setJs?: (js: string) => void;
   setComponents: (components: string | object) => any;
   addComponents: (components: string | object) => any;
@@ -106,12 +106,13 @@ export function useEditor(containerId: string) {
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
+  const [editForm, setEditForm] = useState<any>(null);
   useEffect(() => {
     const initEditor = async () => {
       try {
         // Dynamically import GrapesJS
         const grapesjs = await import("grapesjs");
-        // const gjsPresetWebpage = await import("grapesjs-preset-webpage");
+        const gjsPresetWebpage = await import("grapesjs-preset-webpage");
         const gjsBlocksBasic = await import("grapesjs-blocks-basic");
         const gjsScriptEditor = await import("grapesjs-script-editor");
 
@@ -137,20 +138,20 @@ export function useEditor(containerId: string) {
         const config = {
           ...createEditorConfig(containerEl, {}),
           plugins: [
-            // gjsPresetWebpage.default,
+            gjsPresetWebpage.default,
             gjsBlocksBasic.default,
             gjsScriptEditor.default,
           ],
           pluginsOpts: {
-            // [String(gjsPresetWebpage.default)]: {
-            //   blocksBasicOpts: {
-            //     blocks: [],
-            //     flexGrid: true,
-            //   },
-            //   exportOpts: {},
-            //   aviaryOpts: false,
-            //   filestackOpts: false,
-            // },
+            [String(gjsPresetWebpage.default)]: {
+              blocksBasicOpts: {
+                blocks: [],
+                flexGrid: true,
+              },
+              exportOpts: {},
+              aviaryOpts: false,
+              filestackOpts: false,
+            },
             [String(gjsBlocksBasic.default)]: {
               blocks: [], // Empty array to not include any blocks from the plugin
             },
@@ -254,6 +255,56 @@ export function useEditor(containerId: string) {
 
         const domc = editor.DomComponents;
         const bm = editor.BlockManager;
+
+        // Register Form component to ensure it's recognized even from raw HTML
+        domc.addType("form", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'FORM') {
+              return { type: 'form' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              name: 'Form',
+              tagName: "form",
+              droppable: ':not(form)',
+              draggable: ':not(form)',
+              attributes: { class: "gjs-form" },
+              traits: [
+                {
+                  type: 'text',
+                  name: 'action',
+                  label: 'Action',
+                },
+                {
+                  type: 'select',
+                  name: 'method',
+                  label: 'Method',
+                  options: [
+                    { id: 'get', value: 'get', name: 'GET' },
+                    { id: 'post', value: 'post', name: 'POST' },
+                  ],
+                },
+                {
+                  type: 'select',
+                  name: 'enctype',
+                  label: 'Encoding',
+                  options: [
+                    { id: 'application/x-www-form-urlencoded', value: 'application/x-www-form-urlencoded', name: 'URL Encoded' },
+                    { id: 'multipart/form-data', value: 'multipart/form-data', name: 'Multipart' },
+                    { id: 'text/plain', value: 'text/plain', name: 'Text Plain' },
+                  ]
+                }
+              ]
+            },
+          },
+          view: {
+            events: {
+              submit: (e: Event) => e.preventDefault(),
+            } as any,
+          }
+        });
 
         domc.addType("product-list", {
           model: {
@@ -506,6 +557,17 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
+      console.log("component selected--mans", component)
+      if(component?.attributes?.name === 'Form') {
+         // how to know the child of form
+           const componentHtml = component.toHTML();
+           console.log("componentHtml", componentHtml)
+          //editForm
+          setEditForm(componentHtml)
+         
+      }else{
+        setEditForm(null)
+      }
       // Validate component exists before processing
       if (!component) {
         console.warn('component:selected fired with no component');
@@ -516,9 +578,13 @@ export function useEditor(containerId: string) {
         ...prev,
         selectedElement: component,
       }));
-      updateStylesFromComponent(component);
+      updateStylesFromComponent(component); 
 
       // Initialize interactions if not already present
+
+       // Custom toolbar for Form component
+       console.log("component", component.get('type'))
+    
       try {
         if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
           if (component.set && typeof component.set === 'function') {
@@ -528,6 +594,8 @@ export function useEditor(containerId: string) {
       } catch (error) {
         console.error('Error initializing interactions:', error);
       }
+
+     
 
       // Add custom toolbar button only if it doesn't already exist
       const defaultToolbar = component.get('toolbar');
@@ -547,7 +615,7 @@ export function useEditor(containerId: string) {
               <path d="M9 14s1 1 3 1 3-1 3-1"></path>
             </svg>`,
             command: (editor: any) => {
-              console.log('AI Chat button clicked!', component);
+       
 
               // Get component HTML
               const componentHtml = component.toHTML();
@@ -1846,5 +1914,6 @@ body {
     isAiChatOpen,
     setIsAiChatOpen,
     selectedComponentForAi,
+    editForm
   };
 }

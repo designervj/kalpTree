@@ -87,12 +87,13 @@ export function BlocksPanel({ blocks, onAddBlock }: BlocksPanelProps) {
                 key={block.id}
                 className="cursor-move hover:border-indigo-500 transition-colors bg-slate-800 border-slate-700"
                 onClick={() => {
+                  const tagName = block.id === 'form' ? 'form' : 'div';
                   const content =
                     typeof block.content === "string"
                       ? block.content
-                      : `<div data-gjs-type="${block.id}">
+                      : `<${tagName} data-gjs-type="${block.id}">
                     ${block.label}
-                    </div>`;
+                    </${tagName}>`;
                   onAddBlock(content);
                 }}
               >
