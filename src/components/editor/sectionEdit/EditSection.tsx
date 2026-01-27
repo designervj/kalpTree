@@ -9,8 +9,11 @@ import {
   ChevronDown,
   ExternalLink,
   GripVertical,
-  Minus,
+  Trash2,
+  Plus,
   X,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -27,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import {
@@ -42,9 +45,16 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import CurrentForm from "./CurrentForm";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 /** 🎨 Keep the same purple look/feel */
-const ACCENT = "#6D5EF5"; // tweak if your design system has a specific hex
+const ACCENT = "#6D5EF5";
 
 type FormMode = "standalone" | "connected";
 type SubmitAction = "message" | "link";
@@ -53,21 +63,23 @@ type StyleElement = "form_fields" | "button" | "labels";
 type StyleState = "normal" | "hover";
 type Anim = "none" | "fade" | "slide" | "scale";
 
-type FieldType =
-  | "name"
-  | "last_name"
-  | "email"
-  | "message"
-  | "phone"
-  | "company"
-  | "website";
+/** ✅ New field input types as per screenshot */
+type FieldInputType = "short" | "paragraph" | "single" | "multi";
 
 type FormField = {
   id: string;
-  type: FieldType;
   label: string;
-  required: boolean;
+
   enabled: boolean;
+  required: boolean;
+
+  inputType: FieldInputType;
+  placeholder: string;
+
+  requiredMessage: string;
+
+  // only for single/multi choice
+  options: string[];
 };
 
 type FormSettings = {
@@ -105,35 +117,72 @@ type FormSettings = {
   animation: Anim;
 };
 
-const uid = () => Math.random().toString(36).slice(2, 10);
+const uid = () =>
+  typeof crypto !== "undefined" && "randomUUID" in crypto
+    ? // @ts-ignore
+      crypto.randomUUID()
+    : Math.random().toString(36).slice(2, 10);
+
+const INPUT_TYPE_PRESETS: Record<
+  FieldInputType,
+  Pick<FormField, "label" | "placeholder" | "options">
+> = {
+  short: { label: "Short answer", placeholder: "Your answer", options: [] },
+  paragraph: {
+    label: "Paragraph",
+    placeholder: "Write your message...",
+    options: [],
+  },
+  single: { label: "Single choice", placeholder: "", options: ["Option 1", "Option 2"] },
+  multi: { label: "Multiple choice", placeholder: "", options: ["Option 1", "Option 2"] },
+};
 
 const DEFAULT_SETTINGS: FormSettings = {
   mode: "standalone",
   formName: "Contact form 1",
   notifyEmail: "mail2deepakrai@gmail.com",
 
+  // ✅ fields now match screenshot behavior (accordion editable)
   fields: [
-    { id: uid(), type: "name", label: "Name", required: true, enabled: true },
     {
       id: uid(),
-      type: "last_name",
+      label: "Name",
+      enabled: true,
+      required: true,
+      inputType: "short",
+      placeholder: "Your name",
+      requiredMessage: "This field is required",
+      options: [],
+    },
+    {
+      id: uid(),
       label: "Last name",
-      required: true,
       enabled: true,
+      required: true,
+      inputType: "short",
+      placeholder: "Your last name",
+      requiredMessage: "This field is required",
+      options: [],
     },
     {
       id: uid(),
-      type: "email",
       label: "Email",
-      required: true,
       enabled: true,
+      required: true,
+      inputType: "short",
+      placeholder: "Your email",
+      requiredMessage: "This field is required",
+      options: [],
     },
     {
       id: uid(),
-      type: "message",
       label: "Message",
-      required: true,
       enabled: true,
+      required: true,
+      inputType: "paragraph",
+      placeholder: "Write your message...",
+      requiredMessage: "This field is required",
+      options: [],
     },
   ],
 
@@ -158,16 +207,6 @@ const DEFAULT_SETTINGS: FormSettings = {
   spacing: 15,
 
   animation: "slide",
-};
-
-const FIELD_PRESETS: Record<FieldType, Pick<FormField, "label" | "required">> = {
-  name: { label: "Name", required: true },
-  last_name: { label: "Last name", required: true },
-  email: { label: "Email", required: true },
-  message: { label: "Message", required: true },
-  phone: { label: "Phone", required: false },
-  company: { label: "Company", required: false },
-  website: { label: "Website", required: false },
 };
 
 function TabHeader() {
@@ -229,8 +268,6 @@ function PillTabs({
           </TabsTrigger>
         ))}
       </TabsList>
-
-      {/* CONTENT injected by caller */}
     </Tabs>
   );
 }
@@ -292,94 +329,11 @@ function IconRadio({
   );
 }
 
-function FieldRow({
-  field,
-  onToggleEnabled,
-  onToggleRequired,
-  onRename,
-  onMove,
-}: {
-  field: FormField;
-  onToggleEnabled: () => void;
-  onToggleRequired: () => void;
-  onRename: (v: string) => void;
-  onMove: (dir: "up" | "down") => void;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-xl border bg-white px-3 py-2">
-      <div className="flex items-center gap-2">
-        <GripVertical className="h-4 w-4 text-slate-400" />
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <Input
-              value={field.label}
-              onChange={(e) => onRename(e.target.value)}
-              className="h-8 w-[180px] border-transparent bg-transparent px-2 text-sm font-medium focus-visible:ring-0"
-            />
-            {field.required ? (
-              <span className="text-xs text-slate-500">*</span>
-            ) : null}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 px-2 text-xs text-slate-600"
-          onClick={onToggleRequired}
-        >
-          {field.required ? "Required" : "Optional"}
-          <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
-        </Button>
-
-        <Switch
-          checked={field.enabled}
-          onCheckedChange={onToggleEnabled}
-          className="data-[state=checked]:bg-[var(--accent)]"
-          style={
-            {
-              ["--accent" as any]: ACCENT,
-            } as React.CSSProperties
-          }
-        />
-
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onMove("up")}
-            aria-label="Move up"
-          >
-            ↑
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => onMove("down")}
-            aria-label="Move down"
-          >
-            ↓
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function AnimationCard({
-  value,
   active,
   title,
   onClick,
 }: {
-  value: Anim;
   active: boolean;
   title: string;
   onClick: () => void;
@@ -420,37 +374,9 @@ export function EditSection({
   const set = <K extends keyof FormSettings>(key: K, val: FormSettings[K]) =>
     setSettings((s) => ({ ...s, [key]: val }));
 
-  const addField = (type: FieldType) => {
-    const preset = FIELD_PRESETS[type];
-    setSettings((s) => ({
-      ...s,
-      fields: [
-        ...s.fields,
-        {
-          id: uid(),
-          type,
-          label: preset.label,
-          required: preset.required,
-          enabled: true,
-        },
-      ],
-    }));
-  };
-
-  const moveField = (idx: number, dir: "up" | "down") => {
-    setSettings((s) => {
-      const next = [...s.fields];
-      const to = dir === "up" ? idx - 1 : idx + 1;
-      if (to < 0 || to >= next.length) return s;
-      const [item] = next.splice(idx, 1);
-      next.splice(to, 0, item);
-      return { ...s, fields: next };
-    });
-  };
-
   const onSave = (e: React.FormEvent) => {
     e.preventDefault();
-    // ✅ you can send `settings` to API / store
+    // ✅ send `settings` to API / store
     // console.log(settings)
   };
 
@@ -473,12 +399,7 @@ export function EditSection({
 
           {/* Tabs */}
           <div className="px-6">
-            <PillTabs
-              value={tab}
-              onValueChange={(v) =>
-                setTab(v as typeof tab)
-              }
-            />
+            <PillTabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} />
           </div>
 
           <hr />
@@ -520,7 +441,7 @@ export function EditSection({
                     </div>
                   </div>
 
-                  {/* Form mode radios (styled like screenshot) */}
+                  {/* Form mode radios */}
                   <RadioGroup
                     value={settings.mode}
                     onValueChange={(v) => set("mode", v as FormMode)}
@@ -604,11 +525,17 @@ export function EditSection({
                 </div>
               ) : null}
 
-              {/* FIELDS */}
+              {/* FIELDS (✅ replaced with accordion UI like screenshot) */}
               {tab === "fields" ? (
                 <CurrentForm 
                 componentHtml={componentHtml}
                 />
+                // <div className="space-y-4">
+                //   <FieldsEditor
+                //     fields={settings.fields}
+                //     onChange={(next) => set("fields", next)}
+                //   />
+                // </div>
               ) : null}
 
               {/* BUTTON */}
@@ -647,7 +574,10 @@ export function EditSection({
                       {(
                         [
                           ["left", <AlignLeft key="l" className="h-4 w-4" />],
-                          ["center", <AlignCenter key="c" className="h-4 w-4" />],
+                          [
+                            "center",
+                            <AlignCenter key="c" className="h-4 w-4" />,
+                          ],
                           ["right", <AlignRight key="r" className="h-4 w-4" />],
                         ] as const
                       ).map(([pos, icon]) => {
@@ -814,9 +744,7 @@ export function EditSection({
                         onClick={() =>
                           set(
                             "fontFamily",
-                            settings.fontFamily === "Poppins"
-                              ? "Inter"
-                              : "Poppins"
+                            settings.fontFamily === "Poppins" ? "Inter" : "Poppins"
                           )
                         }
                       >
@@ -966,25 +894,21 @@ export function EditSection({
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <AnimationCard
-                      value="none"
                       title="No animation"
                       active={settings.animation === "none"}
                       onClick={() => set("animation", "none")}
                     />
                     <AnimationCard
-                      value="fade"
                       title="Fade"
                       active={settings.animation === "fade"}
                       onClick={() => set("animation", "fade")}
                     />
                     <AnimationCard
-                      value="slide"
                       title="Slide"
                       active={settings.animation === "slide"}
                       onClick={() => set("animation", "slide")}
                     />
                     <AnimationCard
-                      value="scale"
                       title="Scale"
                       active={settings.animation === "scale"}
                       onClick={() => set("animation", "scale")}

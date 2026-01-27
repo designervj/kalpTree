@@ -63,6 +63,9 @@ import CompanyInformation from "../storeSetting/CompanyInformation";
 import Payments from "../storeSetting/Payments";
 import Shipping from "../storeSetting/Shipping";
 import Checkout from "../storeSetting/Checkout";
+import Emails from "../storeSetting/Emails";
+import Taxes from "../storeSetting/Taxes";
+import Invoices from "../storeSetting/Invoices";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavChild = { id: string; label: string };
@@ -117,6 +120,10 @@ const NAV: NavItem[] = [
       { id: "payments", label: "Payments" },
       { id: "shipping", label: "Shipping" },
       { id: "checkout", label: "Checkout" },
+      { id: "emails", label: "Emails" },
+      { id: "taxes", label: "Taxes" },
+      { id: "invoices", label: "Invoices" },
+
         ],
   },
   { id: "integrations", label: "Integrations", icon: <Boxes className="h-4 w-4" /> },
@@ -1066,6 +1073,12 @@ function RightContent({ active }: { active: string }) {
   if (active === "payments") return <Payments  />;
   if (active === "shipping") return <Shipping  />;
   if (active === "checkout") return <Checkout  />;
+
+  if (active === "emails") return <Emails  />;
+  if (active === "taxes") return <Taxes  />;
+  if (active === "invoices") return <Invoices  />;
+
+
 
   return <ProductsPage />;
 }

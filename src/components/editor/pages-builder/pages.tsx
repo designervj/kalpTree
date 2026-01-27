@@ -531,7 +531,7 @@ export default function Pages({ open, setOpen }: Props) {
       <div className="h-full">
         <div
           className={cx(
-            "rounded-none overflow-hidden",
+            "rounded-none overflow-hidden p-1",
             "bg-white ",
             "dark:bg-[#0b1220] dark:border-slate-800",
           )}
@@ -549,8 +549,8 @@ export default function Pages({ open, setOpen }: Props) {
           <div className="px-0 pb-6">
             {/* Main navigation */}
             <div>
-              <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3">
-                Main navigation
+              <div>
+                <h6 className="text-sm font-semibold mb-2">Main navigation</h6>
               </div>
 
               <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -560,22 +560,37 @@ export default function Pages({ open, setOpen }: Props) {
                       const isDragOver = dragOverId === p.id;
                       const isDragging = draggingIdRef.current === p.id;
 
-                      return (
-                        <div
-                          key={p.id}
-                          draggable
-                          onDragStart={onDragStart(p.id)}
-                          onDragOver={onDragOver(p.id)}
-                          onDrop={onDrop(p.id)}
-                          onDragEnd={onDragEnd}
-                          className={cx(
-                            "flex items-center gap-3 py-3",
-                            "border-b border-slate-200 last:border-b-0",
-                            "dark:border-slate-800",
-                            "transition-colors",
-                            isDragOver && "bg-slate-50 dark:bg-white/5",
-                            isDragging && "opacity-60",
-                          )}
+                    return (
+                      <div
+                        key={p.id}
+                        draggable
+                        onDragStart={onDragStart(p.id)}
+                        onDragOver={onDragOver(p.id)}
+                        onDrop={onDrop(p.id)}
+                        onDragEnd={onDragEnd}
+                        className={cx(
+                          "flex items-center gap-3 py-3",
+                          "border-b border-slate-200 last:border-b-0",
+                          "dark:border-slate-800",
+                          "transition-colors",
+                          isDragOver && "bg-slate-50 dark:bg-white/5",
+                          isDragging && "opacity-60"
+                        )}
+                      >
+                        {/* ✅ drag handle look (still draggable on whole row) */}
+                        {/* <div className="w-7 grid place-items-center text-slate-400 1">
+                         
+                        </div> */}
+                            
+                        <div className="w-7 flex gap-1  items-center text-slate-700 dark:text-slate-200">
+                          <span> <GripVertical className="w-4 h-4 cursor-move" /></span>
+                          <span>{IconFor(p)}</span>
+                        </div>
+
+                        <div className="flex-1 min-w-0 ms-1"
+                        onClick={()=>{
+                        handlePages(p)
+                        }}
                         >
                           {/* ✅ drag handle look (still draggable on whole row) */}
                           <div className="w-7 grid place-items-center text-slate-400">
@@ -609,8 +624,21 @@ export default function Pages({ open, setOpen }: Props) {
                             onDelete={() => deletePage(p)}
                           />
                         </div>
-                      );
-                    })}
+
+                        {/* {p.seoIssue ? <SeoPill /> : null} */}
+
+                        <PageMenu
+                          open={openMenuId === p.id}
+                          onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
+                          page={p}
+                          onMakeHomepage={() => makeHomepage(p.id)}
+                          onToggleNav={() => toggleNav(p)}
+                          onCopyUrl={() => copyUrl(p)}
+                          onDelete={() => deletePage(p)}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

@@ -333,7 +333,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           </div>
 
           {/* content */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-2">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3">
             {renderRightContent()}
           </div>
         </div>

@@ -523,7 +523,7 @@ export default function ShippingPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-10 p-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">
+        <h1 className="text-2xl font-semibold tracking-tight">
           Shipping & Delivery
         </h1>
         <p className="text-muted-foreground">

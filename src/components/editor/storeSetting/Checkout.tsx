@@ -120,7 +120,7 @@ const Checkout = () => {
     <div className="min-h-screen w-full bg-[#f6f7fb] text-slate-900 dark:bg-[#0b1220] dark:text-slate-100">
       <div className="mx-auto w-full max-w-[820px] px-5 py-0">
         {/* <div className="text-[34px] font-semibold leading-none">Checkout</div> */}
-      <h1 className="text-2xl font-bold tracking-tight">Checkout</h1>
+      <h1 className="text-2xl font-semibold tracking-tight">Checkout</h1>
         <div className="mt-4 space-y-4">
           {/* Shopping bag settings */}
           

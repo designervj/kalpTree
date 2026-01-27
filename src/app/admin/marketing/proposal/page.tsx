@@ -788,7 +788,7 @@ export default function Page() {
       {/* Topbar */}
       <div className="sticky top-0 z-20 h-16 border-b border-[var(--ui-border)] bg-[var(--ui-surface)]">
         <div className="mx-auto flex h-full max-w-[1500px] items-center justify-between px-4">
-          <div className="text-[18px] font-semibold tracking-tight">Resume Builder</div>
+          <div className="text-[18px] font-semibold tracking-tight">Resume Builder </div>
 
           <div className="flex items-center gap-3">
             {/* Mode segmented */}

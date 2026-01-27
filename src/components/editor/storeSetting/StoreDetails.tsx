@@ -25,7 +25,7 @@ const StoreDetails = () => {
         {/* Page title */}
         <div>
             {/* <h4 className="text-[28px] font-semibold leading-none">Store details</h4> */}
-                  <h1 className="text-2xl font-bold tracking-tight">Store details</h1>
+                  <h1 className="text-2xl font-semibold  tracking-tight">Store details </h1>
         </div>
 
         {/* Main card */}
