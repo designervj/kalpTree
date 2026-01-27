@@ -21,9 +21,11 @@ import { Button } from "@/components/ui/button";
 import AttributeForm from "../forms/AttributeForm";
 const AttributeTable = () => {
   const { listAttribute, isAttributeLoading } = useSelector(
-    (state: RootState) => state.attribute
+    (state: RootState) => state.attribute,
   );
-  const { listCategory } = useSelector((state: RootState) => state.category);
+  const { listProductTypeCategory } = useSelector(
+    (state: RootState) => state.category,
+  );
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
@@ -34,7 +36,7 @@ const AttributeTable = () => {
     useState<MaterialAttributes | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newAttribute, setNewAttribute] = useState<MaterialAttributes | null>(
-    null
+    null,
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
@@ -53,7 +55,6 @@ const AttributeTable = () => {
     setIsAddDialogOpen(true);
   };
 
-  console.log(newAttribute);
 
   const handleSaveAdd = async () => {
     if (!newAttribute) return;
@@ -108,27 +109,6 @@ const AttributeTable = () => {
 
   const currentUser = useSelector((state: RootState) => state.user.user);
 
-  const filterCategory = listCategory.filter(
-    (item) => item.websiteId === currentWebsite?._id
-  );
-  const product_attribute = useMemo(() => {
-    if (
-      listCategory &&
-      listCategory.length &&
-      listAttribute &&
-      listAttribute.length > 0
-    ) {
-      return listAttribute.map((item) => {
-        const catId = item.category_id;
-        const category = listCategory.find((cat) => cat._id == catId);
-        return {
-          ...item,
-          category: category,
-        };
-      });
-    }
-    return [];
-  }, [listCategory, listAttribute]);
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
@@ -235,7 +215,7 @@ const AttributeTable = () => {
     <div>
       <DataTableExt
         title="Attributes"
-        data={product_attribute ?? []}
+        data={listAttribute ?? []}
         onCreate={handleAdd}
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
@@ -260,7 +240,7 @@ const AttributeTable = () => {
                   }
                 }}
                 fieldErrors={fieldErrors}
-                filterCategory={filterCategory}
+                filterCategory={listProductTypeCategory}
               />
               <div className="flex justify-end gap-2 pt-4">
                 <Button
@@ -301,7 +281,7 @@ const AttributeTable = () => {
                   }
                 }}
                 fieldErrors={fieldErrors}
-                filterCategory={filterCategory}
+                filterCategory={listProductTypeCategory}
               />
 
               <div className="flex justify-end gap-2 pt-4">

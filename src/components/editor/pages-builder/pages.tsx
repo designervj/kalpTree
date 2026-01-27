@@ -48,7 +48,7 @@ const cx = (...classes: Array<string | false | null | undefined>) =>
 /** click outside helper */
 function useClickOutside<T extends HTMLElement>(
   onOutside: () => void,
-  enabled: boolean
+  enabled: boolean,
 ) {
   const ref = React.useRef<T | null>(null);
 
@@ -81,7 +81,7 @@ function SeoPill() {
         "inline-flex items-center gap-1.5 px-3 py-1 rounded-full",
         "text-[12px] font-semibold",
         "bg-amber-50 text-amber-700 border border-amber-200",
-        "dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/20"
+        "dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/20",
       )}
     >
       <AlertCircle className="w-4 h-4" />
@@ -105,14 +105,14 @@ function ToggleSwitch({
         "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
         checked
           ? "bg-violet-600 dark:bg-violet-500"
-          : "bg-slate-300 dark:bg-slate-700"
+          : "bg-slate-300 dark:bg-slate-700",
       )}
       aria-pressed={checked}
     >
       <span
         className={cx(
           "inline-block h-5 w-5 transform rounded-full bg-white transition-transform",
-          checked ? "translate-x-5" : "translate-x-1"
+          checked ? "translate-x-5" : "translate-x-1",
         )}
       />
     </button>
@@ -140,10 +140,14 @@ function MenuItem({
         "w-full px-4 py-3 flex items-center gap-3 text-left",
         danger
           ? "text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
-          : "text-slate-800 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-white/5"
+          : "text-slate-800 hover:bg-slate-50 dark:text-slate-100 dark:hover:bg-white/5",
       )}
     >
-      <span className={cx(danger ? "text-red-500" : "text-slate-700 dark:text-slate-200")}>
+      <span
+        className={cx(
+          danger ? "text-red-500" : "text-slate-700 dark:text-slate-200",
+        )}
+      >
         {icon}
       </span>
       <span className="text-sm font-medium flex-1">{label}</span>
@@ -178,8 +182,6 @@ function PageMenu({
   const [mounted, setMounted] = React.useState(false);
 
   const EXTRA_LEFT_PX = 20;
-
-
 
   React.useEffect(() => setMounted(true), []);
 
@@ -242,7 +244,6 @@ function PageMenu({
   }, [open, onOpenChange]);
 
   return (
-
     <>
       <button
         ref={btnRef}
@@ -251,7 +252,7 @@ function PageMenu({
         className={cx(
           "h-9 w-9 rounded-lg grid place-items-center transition-colors",
           "text-slate-600 hover:bg-slate-100",
-          "dark:text-slate-200 dark:hover:bg-white/5"
+          "dark:text-slate-200 dark:hover:bg-white/5",
         )}
         aria-label="Open menu"
       >
@@ -260,72 +261,82 @@ function PageMenu({
 
       {mounted && open
         ? createPortal(
-          <div
-            ref={menuRef}
-            style={{ position: "fixed", top: pos.top, }}
-            className={cx(
-              "z-[9999] w-72 overflow-hidden rounded-2xl left-80",
-              "bg-white border border-slate-200 shadow-xl",
-              "dark:bg-[#0b1220] dark:border-slate-800"
-            )}
-          >
-            <MenuItem
-              icon={<Home className="w-4 h-4" />}
-              label={page.isHomepage ? "Homepage" : "Make homepage"}
-              onClick={() => {
-                if (!page.isHomepage) onMakeHomepage();
-                onOpenChange(false);
-              }}
-            />
-            <MenuItem
-              icon={<LinkLucide className="w-4 h-4" />}
-              label="Page URL"
-              onClick={() => {
-                onCopyUrl();
-                onOpenChange(false);
-              }}
-            />
-            <MenuItem icon={<Pencil className="w-4 h-4" />} label="Rename" />
-            <MenuItem icon={<Copy className="w-4 h-4" />} label="Duplicate" />
+            <div
+              ref={menuRef}
+              style={{ position: "fixed", top: pos.top }}
+              className={cx(
+                "z-[9999] w-72 overflow-hidden rounded-2xl left-80",
+                "bg-white border border-slate-200 shadow-xl",
+                "dark:bg-[#0b1220] dark:border-slate-800",
+              )}
+            >
+              <MenuItem
+                icon={<Home className="w-4 h-4" />}
+                label={page.isHomepage ? "Homepage" : "Make homepage"}
+                onClick={() => {
+                  if (!page.isHomepage) onMakeHomepage();
+                  onOpenChange(false);
+                }}
+              />
+              <MenuItem
+                icon={<LinkLucide className="w-4 h-4" />}
+                label="Page URL"
+                onClick={() => {
+                  onCopyUrl();
+                  onOpenChange(false);
+                }}
+              />
+              <MenuItem icon={<Pencil className="w-4 h-4" />} label="Rename" />
+              <MenuItem icon={<Copy className="w-4 h-4" />} label="Duplicate" />
 
-            <MenuItem
-              icon={<EyeOff className="w-4 h-4" />}
-              label={page.inNavigation ? "Hide from navigation" : "Show in navigation"}
-              onClick={() => {
-                onToggleNav();
-                onOpenChange(false);
-              }}
-            />
+              <MenuItem
+                icon={<EyeOff className="w-4 h-4" />}
+                label={
+                  page.inNavigation
+                    ? "Hide from navigation"
+                    : "Show in navigation"
+                }
+                onClick={() => {
+                  onToggleNav();
+                  onOpenChange(false);
+                }}
+              />
 
-            <MenuItem icon={<KeyRound className="w-4 h-4" />} label="Password" />
+              <MenuItem
+                icon={<KeyRound className="w-4 h-4" />}
+                label="Password"
+              />
 
-            <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+              <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
 
-            <MenuItem
-              icon={<Search className="w-4 h-4" />}
-              label="SEO settings"
-              rightIcon={<AlertCircle className="w-4 h-4 text-amber-500" />}
-            />
-            <MenuItem
-              icon={<ImageIcon className="w-4 h-4" />}
-              label="Social image"
-            />
-            <MenuItem icon={<QrCode className="w-4 h-4" />} label="Create QR code" />
+              <MenuItem
+                icon={<Search className="w-4 h-4" />}
+                label="SEO settings"
+                rightIcon={<AlertCircle className="w-4 h-4 text-amber-500" />}
+              />
+              <MenuItem
+                icon={<ImageIcon className="w-4 h-4" />}
+                label="Social image"
+              />
+              <MenuItem
+                icon={<QrCode className="w-4 h-4" />}
+                label="Create QR code"
+              />
 
-            <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
+              <div className="my-2 h-px bg-slate-200 dark:bg-slate-800" />
 
-            <MenuItem
-              icon={<Trash2 className="w-4 h-4" />}
-              label="Delete"
-              danger
-              onClick={() => {
-                onDelete();
-                onOpenChange(false);
-              }}
-            />
-          </div>,
-          document.body
-        )
+              <MenuItem
+                icon={<Trash2 className="w-4 h-4" />}
+                label="Delete"
+                danger
+                onClick={() => {
+                  onDelete();
+                  onOpenChange(false);
+                }}
+              />
+            </div>,
+            document.body,
+          )
         : null}
     </>
   );
@@ -339,28 +350,52 @@ function reorder<T>(list: T[], fromIndex: number, toIndex: number) {
   return next;
 }
 
-type Props={
+type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
-}
+};
 
-export default function Pages({open,setOpen}: Props) {
+export default function Pages({ open, setOpen }: Props) {
   const [comingSoon, setComingSoon] = React.useState(false);
-  const { websitePages } = useSelector((state: RootState) => state.websitePage)
-  const dispatch=useDispatch<AppDispatch>()
-  const { currentWebsite } = useSelector((state: RootState) => state.websites)
+  const { websitePages } = useSelector((state: RootState) => state.websitePage);
+  const dispatch = useDispatch<AppDispatch>();
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const [mainNav, setMainNav] = React.useState<PageItem[]>([
-    { id: "home", title: "Home", icon: "home", seoIssue: true, inNavigation: true, isHomepage: true, url: "/" },
-    { id: "shop", title: "Shop", icon: "doc", seoIssue: true, inNavigation: true, url: "/shop" },
-    { id: "products", title: "Products", icon: "doc", seoIssue: true, inNavigation: true, url: "/products" },
+    {
+      id: "home",
+      title: "Home",
+      icon: "home",
+      seoIssue: true,
+      inNavigation: true,
+      isHomepage: true,
+      url: "/",
+    },
+    {
+      id: "shop",
+      title: "Shop",
+      icon: "doc",
+      seoIssue: true,
+      inNavigation: true,
+      url: "/shop",
+    },
+    {
+      id: "products",
+      title: "Products",
+      icon: "doc",
+      seoIssue: true,
+      inNavigation: true,
+      url: "/products",
+    },
   ]);
 
-
   const allPages = useMemo(() => {
-    if (websitePages &&
+    if (
+      websitePages &&
       websitePages.length > 0 &&
-      currentWebsite && currentWebsite.primaryDomain &&
-      currentWebsite.primaryDomain.length > 0) {
+      currentWebsite &&
+      currentWebsite.primaryDomain &&
+      currentWebsite.primaryDomain.length > 0
+    ) {
       const primaryDomain = currentWebsite.primaryDomain[0];
       return websitePages.map((page): PageItem => {
         return {
@@ -371,14 +406,20 @@ export default function Pages({open,setOpen}: Props) {
           inNavigation: true,
           isHomepage: false,
           url: `${primaryDomain}/${page.slug}`,
-        }
-      })
+        };
+      });
     }
     return [];
-  }, [websitePages, currentWebsite])
+  }, [websitePages, currentWebsite]);
 
   const [hiddenNav, setHiddenNav] = React.useState<PageItem[]>([
-    { id: "terms", title: "Terms & conditions", icon: "doc", inNavigation: false, url: "/terms" },
+    {
+      id: "terms",
+      title: "Terms & conditions",
+      icon: "doc",
+      inNavigation: false,
+      url: "/terms",
+    },
   ]);
 
   const [openMenuId, setOpenMenuId] = React.useState<string | null>(null);
@@ -401,7 +442,8 @@ export default function Pages({open,setOpen}: Props) {
 
   const onDrop = (id: string) => (e: React.DragEvent) => {
     e.preventDefault();
-    const fromId = draggingIdRef.current ?? e.dataTransfer.getData("text/plain");
+    const fromId =
+      draggingIdRef.current ?? e.dataTransfer.getData("text/plain");
     draggingIdRef.current = null;
     setDragOverId(null);
 
@@ -463,9 +505,7 @@ export default function Pages({open,setOpen}: Props) {
   };
 
   const makeHomepage = (id: string) => {
-    setMainNav((prev) =>
-      prev.map((p) => ({ ...p, isHomepage: p.id === id }))
-    );
+    setMainNav((prev) => prev.map((p) => ({ ...p, isHomepage: p.id === id })));
   };
 
   const deletePage = (page: PageItem) => {
@@ -473,17 +513,18 @@ export default function Pages({open,setOpen}: Props) {
     else setHiddenNav((p) => p.filter((x) => x.id !== page.id));
   };
 
-  const handlePages=(page:PageItem)=>{
-
-    const currentPage=websitePages.find((p)=>p._id===page.id)
-    if(currentPage){
-      dispatch(setPageEdit({
-        page:currentPage,
-      type:"page"
-      }))
+  const handlePages = (page: PageItem) => {
+    console.log("I ran")
+    const currentPage = websitePages.find((p) => p._id === page.id);
+    if (currentPage) {
+      dispatch(
+        setPageEdit({
+          page: currentPage,
+          type: "page",
+        }),
+      );
     }
-    
-  }
+  };
 
   return (
     <TooltipProvider delayDuration={150}>
@@ -492,13 +533,11 @@ export default function Pages({open,setOpen}: Props) {
           className={cx(
             "rounded-none overflow-hidden",
             "bg-white ",
-            "dark:bg-[#0b1220] dark:border-slate-800"
+            "dark:bg-[#0b1220] dark:border-slate-800",
           )}
         >
           {/* Header */}
           <div className="relative">
-
-
             {/* <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
               Pages and navigation
             </h2> */}
@@ -516,61 +555,62 @@ export default function Pages({open,setOpen}: Props) {
 
               <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
                 <div className="px-3">
-                  {
-                  allPages.length>0 && allPages.map((p) => {
-                    const isDragOver = dragOverId === p.id;
-                    const isDragging = draggingIdRef.current === p.id;
+                  {allPages.length > 0 &&
+                    allPages.map((p) => {
+                      const isDragOver = dragOverId === p.id;
+                      const isDragging = draggingIdRef.current === p.id;
 
-                    return (
-                      <div
-                        key={p.id}
-                        draggable
-                        onDragStart={onDragStart(p.id)}
-                        onDragOver={onDragOver(p.id)}
-                        onDrop={onDrop(p.id)}
-                        onDragEnd={onDragEnd}
-                        className={cx(
-                          "flex items-center gap-3 py-3",
-                          "border-b border-slate-200 last:border-b-0",
-                          "dark:border-slate-800",
-                          "transition-colors",
-                          isDragOver && "bg-slate-50 dark:bg-white/5",
-                          isDragging && "opacity-60"
-                        )}
-                      >
-                        {/* ✅ drag handle look (still draggable on whole row) */}
-                        <div className="w-7 grid place-items-center text-slate-400">
-                          <GripVertical className="w-4 h-4" />
-                        </div>
-
-                        <div className="w-7 grid place-items-center text-slate-700 dark:text-slate-200">
-                          {IconFor(p)}
-                        </div>
-
-                        <div className="flex-1 min-w-0"
-                        onClick={()=>{
-                        handlePages(p)
-                        }}
+                      return (
+                        <div
+                          key={p.id}
+                          draggable
+                          onDragStart={onDragStart(p.id)}
+                          onDragOver={onDragOver(p.id)}
+                          onDrop={onDrop(p.id)}
+                          onDragEnd={onDragEnd}
+                          className={cx(
+                            "flex items-center gap-3 py-3",
+                            "border-b border-slate-200 last:border-b-0",
+                            "dark:border-slate-800",
+                            "transition-colors",
+                            isDragOver && "bg-slate-50 dark:bg-white/5",
+                            isDragging && "opacity-60",
+                          )}
                         >
-                          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                            {p.title}
+                          {/* ✅ drag handle look (still draggable on whole row) */}
+                          <div className="w-7 grid place-items-center text-slate-400">
+                            <GripVertical className="w-4 h-4" />
                           </div>
+
+                          <div className="w-7 grid place-items-center text-slate-700 dark:text-slate-200">
+                            {IconFor(p)}
+                          </div>
+
+                          <div
+                            className="flex-1 min-w-0"
+                            onClick={() => {
+                              handlePages(p);
+                            }}
+                          >
+                            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                              {p.title}
+                            </div>
+                          </div>
+
+                          {p.seoIssue ? <SeoPill /> : null}
+
+                          <PageMenu
+                            open={openMenuId === p.id}
+                            onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
+                            page={p}
+                            onMakeHomepage={() => makeHomepage(p.id)}
+                            onToggleNav={() => toggleNav(p)}
+                            onCopyUrl={() => copyUrl(p)}
+                            onDelete={() => deletePage(p)}
+                          />
                         </div>
-
-                        {p.seoIssue ? <SeoPill /> : null}
-
-                        <PageMenu
-                          open={openMenuId === p.id}
-                          onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
-                          page={p}
-                          onMakeHomepage={() => makeHomepage(p.id)}
-                          onToggleNav={() => toggleNav(p)}
-                          onCopyUrl={() => copyUrl(p)}
-                          onDelete={() => deletePage(p)}
-                        />
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </div>
 
@@ -591,7 +631,7 @@ export default function Pages({open,setOpen}: Props) {
                   <div
                     className={cx(
                       "flex items-center gap-3 py-3",
-                      "border-b border-slate-200 dark:border-slate-800"
+                      "border-b border-slate-200 dark:border-slate-800",
                     )}
                   >
                     <div className="w-7 grid place-items-center text-slate-700 dark:text-slate-200">
@@ -605,13 +645,16 @@ export default function Pages({open,setOpen}: Props) {
                       className={cx(
                         "h-9 w-9 rounded-lg grid place-items-center",
                         "text-slate-500 hover:bg-slate-100",
-                        "dark:text-slate-200 dark:hover:bg-white/5"
+                        "dark:text-slate-200 dark:hover:bg-white/5",
                       )}
                       aria-label="Info"
                     >
                       <Info className="w-5 h-5" />
                     </button>
-                    <ToggleSwitch checked={comingSoon} onChange={setComingSoon} />
+                    <ToggleSwitch
+                      checked={comingSoon}
+                      onChange={setComingSoon}
+                    />
                   </div>
 
                   <div className="flex items-center gap-3 py-3">
@@ -634,8 +677,8 @@ export default function Pages({open,setOpen}: Props) {
               </div>
 
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">
-                These pages are accessible through search engines and URLs but do
-                not appear in your navigation.
+                These pages are accessible through search engines and URLs but
+                do not appear in your navigation.
               </p>
 
               <div className="rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -646,7 +689,7 @@ export default function Pages({open,setOpen}: Props) {
                       className={cx(
                         "flex items-center gap-3 py-3",
                         "border-b border-slate-200 last:border-b-0",
-                        "dark:border-slate-800"
+                        "dark:border-slate-800",
                       )}
                     >
                       <div className="w-7 grid place-items-center text-slate-400">
@@ -682,14 +725,14 @@ export default function Pages({open,setOpen}: Props) {
             className={cx(
               "px-0 py-4 flex items-center justify-between",
               "border-t border-slate-200 bg-white",
-              "dark:border-slate-800 dark:bg-[#0b1220]"
+              "dark:border-slate-800 dark:bg-[#0b1220]",
             )}
           >
             <button
               type="button"
               className={cx(
                 "inline-flex items-center gap-2 rounded-xl px-4 py-2.5 font-semibold",
-                "bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+                "bg-violet-600 text-white hover:bg-violet-700 transition-colors",
               )}
               onClick={() => setOpen(true)}
             >
@@ -697,15 +740,13 @@ export default function Pages({open,setOpen}: Props) {
               Add page
             </button>
 
-
-
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 className={cx(
                   "h-11 w-11 rounded-xl grid place-items-center",
                   "border border-slate-200 text-slate-700 hover:bg-slate-100",
-                  "dark:border-slate-800 dark:text-slate-200 dark:hover:bg-white/5"
+                  "dark:border-slate-800 dark:text-slate-200 dark:hover:bg-white/5",
                 )}
                 aria-label="Add to list"
               >
@@ -717,7 +758,7 @@ export default function Pages({open,setOpen}: Props) {
                 className={cx(
                   "h-11 w-11 rounded-xl grid place-items-center",
                   "border border-slate-200 text-slate-700 hover:bg-slate-100",
-                  "dark:border-slate-800 dark:text-slate-200 dark:hover:bg-white/5"
+                  "dark:border-slate-800 dark:text-slate-200 dark:hover:bg-white/5",
                 )}
                 aria-label="Link"
               >

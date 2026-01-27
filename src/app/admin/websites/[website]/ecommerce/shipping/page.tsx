@@ -451,7 +451,7 @@ export default function ShippingPage() {
           setZones([...zones, res.data]);
         }
       }
-      // closeZoneDialog();
+      closeZoneDialog();
     } catch (error) {
       console.error(error);
     }

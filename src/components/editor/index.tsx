@@ -10,7 +10,6 @@ import { DeviceConfig } from "../../../types/editor";
 import TopToolbar from "./GrapesJSEditor/toolbars/TopToolbar";
 import BottomToolbar from "./GrapesJSEditor/toolbars/BottomToolbar";
 
-
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
@@ -27,12 +26,7 @@ type PropertiesSidebarProps = {
   onInteractivityChange: (config: any) => void;
 };
 
-
 export default function GrapesJSEditor() {
-
-
-
-
   const containerRef = useRef<HTMLDivElement>(null);
   const {
     state,
@@ -55,20 +49,22 @@ export default function GrapesJSEditor() {
   const dispatch = require("react-redux").useDispatch();
   const { page } = useSelector((state: RootState) => state.pageEdit);
 
-
   function extractScriptsFromHtml(html: string): string {
     const matches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
     if (!matches) return "";
-    return matches.map(scriptTag => {
-      // Skip external scripts (those with src attribute)
-      if (scriptTag.includes('src=')) return "";
-      const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-      return inner ? inner[1] : "";
-    }).filter(script => script.trim()).join("\n");
+    return matches
+      .map((scriptTag) => {
+        // Skip external scripts (those with src attribute)
+        if (scriptTag.includes("src=")) return "";
+        const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+        return inner ? inner[1] : "";
+      })
+      .filter((script) => script.trim())
+      .join("\n");
   }
 
-  const isCalled = useRef<boolean>(false)
-  const contentLoadedRef = useRef<boolean>(false)
+  const isCalled = useRef<boolean>(false);
+  const contentLoadedRef = useRef<boolean>(false);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
@@ -86,13 +82,13 @@ export default function GrapesJSEditor() {
       // Enhanced check for editor readiness
       const isEditorReady =
         state.editor &&
-        typeof state.editor.setComponents === 'function' &&
+        typeof state.editor.setComponents === "function" &&
         state.editor.Components &&
-        typeof state.editor.Components.getWrapper === 'function' &&
+        typeof state.editor.Components.getWrapper === "function" &&
         state.editor.Canvas; // Ensure Canvas is available
 
       if (!isEditorReady) {
-        console.warn('Editor not fully initialized yet, retrying...');
+        console.warn("Editor not fully initialized yet, retrying...");
         // Retry after a short delay if editor is not ready
         setTimeout(loadContent, 100);
         return;
@@ -108,13 +104,13 @@ export default function GrapesJSEditor() {
 
           // Extract and set CSS from the content
           const css = extractStyles(data);
-          if (css && typeof state.editor.setStyle === 'function') {
+          if (css && typeof state.editor.setStyle === "function") {
             state.editor.setStyle(css);
             setEditorCss(css);
           }
 
           const js = extractScriptsFromHtml(data);
-          if (js && typeof state.editor.setJs === 'function') {
+          if (js && typeof state.editor.setJs === "function") {
             state.editor.setJs(js);
             setEditorJs(js);
           }
@@ -122,7 +118,7 @@ export default function GrapesJSEditor() {
 
         contentLoadedRef.current = true;
       } catch (error) {
-        console.error('Error setting editor content:', error);
+        console.error("Error setting editor content:", error);
         // Don't crash the app, just log the error
       }
     };
@@ -140,16 +136,13 @@ export default function GrapesJSEditor() {
       handleLoad();
     } else {
       // Wait for load event
-      state.editor?.on('load', handleLoad);
+      state.editor?.on("load", handleLoad);
     }
 
     return () => {
-      state.editor?.off('load', handleLoad);
+      state.editor?.off("load", handleLoad);
     };
-
   }, [state.editor, state.isLoading, page?.content]);
-
-
 
   useEffect(() => {
     if (!state.editor) return;
@@ -190,7 +183,7 @@ export default function GrapesJSEditor() {
     setTimeout(() => {
       const importButton = document.getElementById("import-button");
       const importCode = document.getElementById(
-        "import-code"
+        "import-code",
       ) as HTMLTextAreaElement | null;
 
       if (importButton && importCode) {
@@ -222,7 +215,7 @@ export default function GrapesJSEditor() {
 
   const handleUpdateDevice = (
     deviceId: string,
-    updates: Partial<DeviceConfig>
+    updates: Partial<DeviceConfig>,
   ) => {
     if (!state.editor?.DeviceManager) return;
 
@@ -297,9 +290,9 @@ export default function GrapesJSEditor() {
   // Code editor sync
   // ─────────────────────────────
   const handleUpdateHtml = (html: string) => {
-    console.log("update html")
+    console.log("update html");
     if (!state.editor) return;
-    console.log("html ---", html)
+    console.log("html ---", html);
     state.editor.setComponents(html);
     setEditorHtml(html);
   };
@@ -368,7 +361,7 @@ export default function GrapesJSEditor() {
     try {
       const savedRecentBlocks = localStorage.getItem("grapesjs-recent-blocks");
       const savedFavoriteBlocks = localStorage.getItem(
-        "grapesjs-favorite-blocks"
+        "grapesjs-favorite-blocks",
       );
 
       if (savedRecentBlocks) {
@@ -443,8 +436,6 @@ export default function GrapesJSEditor() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.editor]);
 
-
-
   const allDevices = [
     ...(state.editor?.DeviceManager?.getAll()?.models?.map((model: any) => ({
       id: model.id,
@@ -454,26 +445,34 @@ export default function GrapesJSEditor() {
     ...customDevices,
   ];
 
-
   // Fix: handleStyleChange to match expected signature
   const handleStyleChange = (property: string, value: string) => {
-
     if (property && value) {
       actions.updateStyle(property, value);
     }
-  }
+  };
 
   // Fix: handleStyleChange to match expected signature
   const handleUpdateInteractivity = (data: any) => {
-
-    if (data && data.type && data.event && data.action && data.target && data.options) {
-      actions.updateInteractivity(data.type, data.event, data.action, data.target, data.options);
+    if (
+      data &&
+      data.type &&
+      data.event &&
+      data.action &&
+      data.target &&
+      data.options
+    ) {
+      actions.updateInteractivity(
+        data.type,
+        data.event,
+        data.action,
+        data.target,
+        data.options,
+      );
     }
-  }
+  };
 
   const [open, setOpen] = useState(false);
-
-
 
   return (
     <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
@@ -508,8 +507,9 @@ export default function GrapesJSEditor() {
         <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
           {/* Canvas */}
           <div
-            className={`${showSidebar ? "w-[90%]" : "w-full"
-              } transition-all duration-300 ease-in-out relative`}
+            className={`${
+              showSidebar ? "w-[90%]" : "w-full"
+            } transition-all duration-300 ease-in-out relative`}
           >
             {state.isLoading && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">

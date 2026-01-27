@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
@@ -32,8 +32,16 @@ export default function AttributeSetForm({
   setAttributeSet,
   fieldErrors,
 }: AttributeSetFormProps) {
-  const { listCategory } = useSelector((state: RootState) => state.category);
+  const { listProductTypeCategory } = useSelector(
+    (state: RootState) => state.category,
+  );
   const { listAttribute } = useSelector((state: RootState) => state.attribute);
+
+  const finalAttributes = useMemo(() => {
+    return listAttribute.filter((d) => {
+      return d.category_id?.includes(attributeSet.categoryId);
+    });
+  }, [attributeSet.categoryId]);
 
   const handleAddAttribute = () => {
     setAttributeSet({
@@ -89,8 +97,8 @@ export default function AttributeSetForm({
           className="mt-1 block w-full rounded-md border p-2"
         >
           <option value="">Select a category</option>
-          {listCategory &&
-            listCategory.map((cat: any) => (
+          {listProductTypeCategory &&
+            listProductTypeCategory.map((cat: any) => (
               <option key={cat._id || cat.id} value={cat._id || cat.id}>
                 {cat.name}
               </option>
@@ -140,8 +148,8 @@ export default function AttributeSetForm({
                       className="block w-full rounded-md border p-2 text-sm"
                     >
                       <option value="">Select an attribute</option>
-                      {listAttribute &&
-                        listAttribute.map((attribute: any) => (
+                      {finalAttributes &&
+                        finalAttributes.map((attribute: any) => (
                           <option
                             key={attribute._id || attribute.id}
                             value={attribute._id || attribute.id}

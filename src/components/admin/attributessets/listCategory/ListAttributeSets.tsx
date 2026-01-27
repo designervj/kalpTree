@@ -3,7 +3,6 @@ import { AppDispatch, RootState } from "@/store/store";
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DataTableExt } from "@/components/admin/DataTableExt";
-import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
 import {
@@ -144,7 +143,7 @@ const ListAttributeSets = () => {
     if (!ok) return;
 
     try {
-      const res = await fetch(`/api/admin/attribute-sets?id=${id}`, {
+      const res = await fetch(`/api/admin/attributessets?id=${id}`, {
         method: "DELETE",
       });
 

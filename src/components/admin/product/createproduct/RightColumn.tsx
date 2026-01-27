@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // shadcn/ui
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,11 +28,22 @@ import {
 import CategoryForm from "../../category/forms/CategoryForm";
 import { CategoryItem } from "./CategoryItem";
 
-export const RightColumn = ({ formData, handleInputChange }: any) => {
-  const { listCategory, isCategoryLoading } = useSelector(
-    (state: RootState) => state.category,
-  );
+export const RightColumn = ({
+  formData,
+  handleInputChange,
+  producttypecategory,
+  setProductTypeCategory,
+}: any) => {
+  const {
+    listCategory,
+    isCategoryLoading,
+    listProductType,
+    listProductTypeCategory,
+  } = useSelector((state: RootState) => state.category);
 
+  const handleProductTypeCategory = (e: string) => {
+    setProductTypeCategory(e);
+  };
   // helper: make Select work like your handleInputChange
   const handleSelectChange = (name: string, value: string) => {
     handleInputChange({ target: { name, value } });
@@ -139,6 +150,7 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
     setIsAddDialogOpen(true);
   };
 
+
   return (
     <>
       <div className="relative lg:col-span-1">
@@ -158,15 +170,49 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
 
               <Select
                 value={formData.productType}
-                onValueChange={(v) => handleSelectChange("productType", v)}
+                onValueChange={(v) => {
+                  handleSelectChange("productType", v);
+                  handleProductTypeCategory("");
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select segment type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="hotel">Hotel</SelectItem>
+                  {listProductType.map((d) => {
+                    return (
+                      <SelectItem value={String(d._id)}>{d.name}</SelectItem>
+                    );
+                  })}
+                  {/* <SelectItem value="hotel">Hotel</SelectItem>
                   <SelectItem value="packages">Packages</SelectItem>
-                  <SelectItem value="clothing">Clothing</SelectItem>
+                  <SelectItem value="clothing">Clothing</SelectItem> */}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="Product Category Type">
+                Product Category Type <span className="text-red-500">*</span>
+              </Label>
+
+              <Select
+                value={producttypecategory}
+                onValueChange={(v) => handleProductTypeCategory(v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Product Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {listProductTypeCategory
+                    .filter((d) => {
+                      return d.product_type === formData.productType;
+                    })
+                    .map((d) => {
+                      return (
+                        <SelectItem value={String(d._id)}>{d.name}</SelectItem>
+                      );
+                    })}
                 </SelectContent>
               </Select>
             </div>
@@ -198,7 +244,7 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
             </div> */}
 
             {/* Brands */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="brands">
                 Brands <span className="text-red-500">*</span>
               </Label>
@@ -218,10 +264,10 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
                   <SelectItem value="Behr">Behr</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
 
             {/* Tags */}
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="tags">
                 Tags <span className="text-gray-400 text-xs">Optional</span>
               </Label>
@@ -233,7 +279,7 @@ export const RightColumn = ({ formData, handleInputChange }: any) => {
                 onChange={handleInputChange}
                 placeholder="e.g. premium, exterior"
               />
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 

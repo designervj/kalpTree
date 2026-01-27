@@ -34,11 +34,13 @@ export async function POST(req: NextRequest) {
       basePrice,
       description,
       categories,
-      brands,
-      tags,
+      // brands,
+      // tags,
       options,
       images,
       bookingConfg,
+      allcategories,
+      productType,
     } = jsondata.productdata;
 
     let imageUrls: string[] = [];
@@ -70,15 +72,17 @@ export async function POST(req: NextRequest) {
     const productresponse = await products.insertOne({
       title,
       categories,
-      brands,
-      tags,
+      // brands,
+      // tags,
       options,
       imageUrls,
       description,
       basePrice,
+      productType: new ObjectId(productType),
       websiteId: new ObjectId(websiteId),
       tenantId: new ObjectId(tenantId),
       bookingConfg: bookingConfg ? bookingConfg : null,
+      allcategories: allcategories.length > 0 ? allcategories : null,
     });
 
     const productvariants = jsondata.variantData;

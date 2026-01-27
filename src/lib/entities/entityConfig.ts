@@ -27,7 +27,21 @@ import {
   listProducts,
   deleteProduct,
 } from "@/lib/material/product";
-import { createAttributessets, deleteAttributeSets, getAttributeSetsById, listAttributeSets, updateAttributeSets } from "../material/attributessets";
+import {
+  createAttributessets,
+  deleteAttributeSets,
+  getAttributeSetsById,
+  listAttributeSets,
+  updateAttributeSets,
+} from "../material/attributessets";
+import {
+  createProductType,
+  deleteProductType,
+  getProductTypeById,
+  listProductTypes,
+  updateProductType,
+} from "../material/product_type";
+import { createProductTypeCategory, deleteProductTypeCategory, getProductTypeCategoryById, listProductTypeCategories, updateProductTypeCategory } from "../material/product_type_category";
 
 export interface EntityOperations {
   create: (data: any) => Promise<any>;
@@ -74,6 +88,21 @@ export const entityConfig: Record<string, EntityOperations> = {
     getById: getAttributeSetsById,
     update: updateAttributeSets,
     delete: deleteAttributeSets,
+  },
+
+  producttype: {
+    create: createProductType,
+    list: listProductTypes,
+    getById: getProductTypeById,
+    update: updateProductType,
+    delete: deleteProductType,
+  },
+  producttypecategory: {
+    create: createProductTypeCategory,
+    list: listProductTypeCategories,
+    getById: getProductTypeCategoryById,
+    update: updateProductTypeCategory,
+    delete: deleteProductTypeCategory,
   },
   // Add more entities here as needed
 };

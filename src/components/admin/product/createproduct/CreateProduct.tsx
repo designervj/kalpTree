@@ -26,8 +26,8 @@ interface FormData {
   description: string;
   productType: string;
   categories: string;
-  brands: string;
-  tags: string;
+  brands?: string;
+  tags?: string;
   allcategories?: string[];
 }
 
@@ -74,14 +74,23 @@ export function CreateProduct({ productId }: { productId?: string }) {
   const { listAttribute: attributes, isAttributeLoading } = useSelector(
     (state: RootState) => state.attribute,
   );
+  const { listAttributeSets } = useSelector(
+    (state: RootState) => state.attributeSets,
+  );
+
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+
 
   const { listProduct, isProductLoading } = useSelector(
     (state: RootState) => state.product,
   );
 
-  const singleSelectedProduct = useMemo(() => {
-    return listProduct.find((d) => d._id == productId);
-  }, [productId, listProduct]);
+  const [producttypecategory, setProductTypeCategory] = useState("");
+
+  // const singleSelectedProduct = useMemo(() => {
+  //   return listProduct.find((d) => d._id == productId);
+  // }, [productId, listProduct]);
 
   const [formData, setFormData] = useState<FormData>({
     title: "",
@@ -89,8 +98,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
     description: "",
     productType: "",
     categories: "",
-    brands: "",
-    tags: "",
+    // brands: "",
+    // tags: "",
     allcategories: [],
   });
 
@@ -150,20 +159,19 @@ export function CreateProduct({ productId }: { productId?: string }) {
     }
   }, [listProduct, productId]);
 
-  console.log(variantConfigs);
 
   useEffect(() => {
-    // if (!formData.categories) {
-    //   setProductOptions([]);
-    //   return;
-    // }
+    if (!productId && producttypecategory) {
+      const attr = listAttributeSets.find((d) => {
+        return d.categoryId == producttypecategory;
+      })?.attributes;
 
-    // const relevantAttrs = attributes && attributes.length>0 && attributes.filter((attr) =>
-    //   attr.category_id?.includes(formData.categories),
-    // );
-
-    if (!productId) {
-      const relevantAttrs = attributes.length > 0 ? attributes : [];
+      const relevantAttrs =
+        attr && attr.length > 0
+          ? attributes.filter((d) => {
+              return attr?.includes(String(d._id));
+            })
+          : [];
 
       if (relevantAttrs.length > 0) {
         setProductOptions((prev: any) => {
@@ -182,7 +190,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
         });
       }
     }
-  }, [formData.categories, attributes]);
+  }, [producttypecategory]);
 
   const generateVariants = () => {
     const variantOptions = productOptions.filter(
@@ -418,7 +426,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
 
     try {
       const req = await fetch(
-        `/api/admin/product?tenantId=696729dde1222ee82bdd906a&websiteId=696729dde1222ee82bdd906d`,
+        `/api/admin/product?tenantId=${currentWebsite?.tenantId}&websiteId=${currentWebsite?._id}`,
         {
           method: "POST",
           body: JSON.stringify(finalObj),
@@ -734,6 +742,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
           <RightColumn
             formData={formData}
             handleInputChange={handleInputChange}
+            producttypecategory={producttypecategory}
+            setProductTypeCategory={setProductTypeCategory}
           />
         </div>
         {formData.productType === "hotel" && (

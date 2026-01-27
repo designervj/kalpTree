@@ -76,6 +76,8 @@ import {
   BedDouble,
   IndianRupee,
   ScrollText,
+  LayoutGridIcon,
+  TypeIcon,
 } from "lucide-react";
 
 import {
@@ -377,6 +379,18 @@ export const currentWebsiteSections: NavSection[] = [
         label: "Pricing Rules & Discount",
         href: "/admin/pricing-rules",
         icon: CircleDollarSign,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+        {
+        label: "Product Type Category",
+        href: "/admin/product-type-category",
+        icon: LayoutGridIcon,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+        {
+        label: "Product Type",
+        href: "/admin/product-type",
+        icon: TypeIcon,
         permission: ["product:read", "product:update", "product:delete"],
       },
     ],

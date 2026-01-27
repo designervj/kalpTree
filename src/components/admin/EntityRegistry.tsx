@@ -4,6 +4,8 @@ import BrandHome from "./brand/BrandHome";
 import AttributeHome from "./attribute/AttributeHome";
 import ProductHome from "./product/ProductHome";
 import AttributeSetsHome from "./attributessets/AttributesetsHome";
+import ProductTypeCategoryHome from "./product-type-category/ProductTypeCategoryHome";
+import ProductTypeHome from "./product-type/ProductTypeHome";
 
 // Entity component registry
 export const entityComponents: Record<string, React.ComponentType> = {
@@ -12,6 +14,9 @@ export const entityComponents: Record<string, React.ComponentType> = {
   attribute: AttributeHome,
   products: ProductHome,
   attributessets: AttributeSetsHome,
+  "product-type-category": ProductTypeCategoryHome,
+  "product-type": ProductTypeHome,
+
   // agencies:AgenciesHome
   // Add more entities here as needed
 };
