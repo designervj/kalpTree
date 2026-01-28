@@ -12,6 +12,7 @@ import {
   Box,
   CheckCircle2,
   LayoutGrid,
+  Layers,
   MoreHorizontal,
   MousePointer,
   Palette,
@@ -126,6 +127,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
     );
   };
 
+  const handleOpenSeoModal = () => {
+  setTab("seo");
+  };
+
   const renderRightContent = () => {
     switch (tab) {
       case "style":
@@ -184,7 +189,9 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       case "pages":
         return <Pages
           setOpen={setOpen}
-          open={open} />
+          open={open} 
+          openSeoModal={handleOpenSeoModal}
+          />
 
 
       // ✅ HERE: show the Pages component when Pages tab is selected
@@ -227,12 +234,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           <SeobuilderPage />
         );
 
-        case "seo":
+      case "seo":
         return renderPlaceholder(
           <SeobuilderPage />
         );
 
-        case "more":
+      case "more":
         return renderPlaceholder(
           <AllBuilderPage />
         );
@@ -279,7 +286,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             active={tab === "layer"}
             label="Layer"
             onClick={() => setTab("layer")}
-            icon={<LayoutGrid className="w-5 h-5" />}
+            icon={<Layers className="w-5 h-5" />}
           />
           <IconTab
             active={tab === "setup"}

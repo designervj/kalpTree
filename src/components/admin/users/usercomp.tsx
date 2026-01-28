@@ -204,7 +204,7 @@ export default function BusinessCreatePage({
       });
 
       const result = await res.json();
-    console.log("result created agency",result)
+
       if (result?.tenantId && 
         result?.agency && 
         result?.business &&

@@ -13,6 +13,10 @@ const page = async ({
 }) => {
     const param = await params;
 
+    if (!param?.id || !ObjectId.isValid(param.id)) {
+        return <div>Invalid Website ID</div>
+    }
+
     const db = await getDatabase();
     const websiteColl = await db.collection("websites");
     const website = await websiteColl.findOne({ _id: new ObjectId(param?.id) });
@@ -38,6 +42,7 @@ const page = async ({
         serviceType: website.serviceType,
         status: website.status,
         lang: website.lang,
+        isComingSoon:website.isComingSoon??true
     };
 
     const serializedPages: WebsitePageModel[] = pagesData.map((page) => ({
@@ -50,7 +55,7 @@ const page = async ({
         seo: page.seo,
         status: page.status,
         isHomePage: page.isHomePage,
-        createdAt:page.createdAt,
+        createdAt: page.createdAt,
         updatedAt: page.updatedAt,
         publishedAt: page.publishedAt,
     }));

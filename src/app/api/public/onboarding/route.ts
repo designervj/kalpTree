@@ -194,6 +194,7 @@ export async function POST(req: Request) {
       primaryDomain: primaryDomain,
       systemSubdomain: `${business_url}.kalptree.xyz`,
       lang,
+      isComingSoon: true,
     });
 
     const pageColl = await getCollection("pages");
@@ -209,9 +210,12 @@ export async function POST(req: Request) {
           metaDescription: "",
           focusKeywords: [{
             keyword: "",
-            score: false
+            isSelected: false
           }],
-          hideFromSearchResults: false
+          hideFromSearchResults: false,
+          inNavigation: false,
+          isHomePage: false,
+          
         },
 
       };

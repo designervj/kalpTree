@@ -87,7 +87,7 @@ import { ObjectId } from "mongodb";
 
 interface WebsitePageState {
   websitePages: WebsitePageModel[];
-  currentpage:WebsitePageModel|{};
+  currentpage:WebsitePageModel|null;
   hasFetched: boolean;
   isLoading: boolean;
   error: string | null;
@@ -95,7 +95,7 @@ interface WebsitePageState {
 
 const initialState: WebsitePageState = {
   websitePages: [],
-  currentpage:{},
+  currentpage:null,
   hasFetched: false,
   isLoading: false,
   error: null,
@@ -154,7 +154,15 @@ const websitePageSlice = createSlice({
         const idx = state.websitePages.findIndex(
           (p) => p._id === action.payload._id
         );
+
         if (idx !== -1) state.websitePages[idx] = action.payload;
+
+        // update isHomePage
+        if (action.payload.isHomePage) {
+          state.websitePages.forEach((p) => {
+            if (p._id !== action.payload._id) p.isHomePage = false;
+          });
+        }
       })
       // Delete
       .addCase(deleteWebsitePage.fulfilled, (state, action) => {

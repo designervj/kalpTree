@@ -19,11 +19,12 @@ export interface WebsitePageModel {
 }
 export interface SeoModel {
 	title?: string;
+	slug?: string;
 	metaDescription?: string;
-	focusKeywords?:{
+	focusKeywords?:[{
 		keyword:string;
 		isSelected:boolean;
 		
-	};
+	}];
 	hideFromSearchResults?: boolean;
 };
