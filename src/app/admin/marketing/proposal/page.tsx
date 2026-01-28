@@ -196,7 +196,7 @@ const TEMPLATES: Record<TemplateKey, ResumeTemplate> = {
           <aside class="left">
             <div class="h">SKILLS</div>
             <div class="chips">
-              <span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">Next.js</span>
+              <span class="chip">React</span><span class="chip">TypeScript</span><span class="chip">KalpTree Enterprise Solution</span>
               <span class="chip">FastAPI</span><span class="chip">AWS</span><span class="chip">Postgres</span>
             </div>
 

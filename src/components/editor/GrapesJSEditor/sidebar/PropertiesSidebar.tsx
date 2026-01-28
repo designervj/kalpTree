@@ -34,6 +34,7 @@ import ElemetsPage from "../../blogbuilder/BlogPage";
 import BlogPage from "../../blogbuilder/BlogPage";
 import { GoNote } from "react-icons/go";
 import PageLayer from "./PageLayer";
+import AllBuilderPage from "../../allbuilderpage/AllBuilderPage";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -226,13 +227,23 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           <SeobuilderPage />
         );
 
-      case "more":
+        case "seo":
         return renderPlaceholder(
-          <span className="inline-flex items-center gap-2">
-            <MoreHorizontal className="w-4 h-4" /> More
-          </span>,
-          "Project settings, export, integrations, and advanced options."
+          <SeobuilderPage />
         );
+
+        case "more":
+        return renderPlaceholder(
+          <AllBuilderPage />
+        );
+
+      // case "more":
+      //   return renderPlaceholder(
+      //     <span className="inline-flex items-center gap-2">
+      //       <AllBuilderPage className="w-4 h-4" /> More
+      //     </span>,
+      //     "Project settings, export, integrations, and advanced options."
+      //   );
 
       default:
         return null;
