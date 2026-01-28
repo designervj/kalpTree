@@ -84,6 +84,15 @@ export async function PUT(req: Request) {
       publishedAt: body.status === "published" ? body.publishedAt || now : null,
     };
     delete updateDoc._id;
+
+    if (updateDoc.isHomePage) {
+      // update all other pages isHomePage to false
+      await collection.updateMany(
+        { websiteId: updateDoc.websiteId,_id:{$ne:updateDoc._id}},
+        { $set: { isHomePage: false } }
+      );
+    }
+
     const updateResult = await collection.updateOne(
       { _id: id },
       { $set: updateDoc }

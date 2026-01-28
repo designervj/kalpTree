@@ -137,6 +137,7 @@ export type Website = {
   serviceType: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
   lang?: [{ name: string; code: string }];
+  isComingSoon?: boolean;
 };
 
 export type User = {

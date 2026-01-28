@@ -29,6 +29,8 @@ import { createPortal } from "react-dom";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 import PageMenu from "./PageMenu";
+import SeoPill from "./SeoPill";
+
 
 export type PageItem = {
   id: string;
@@ -52,21 +54,24 @@ function IconFor(item: PageItem) {
     <FileText className="w-4 h-4" />
   );
 }
-function SeoPill() {
-  return (
-    <span
-      className={cx(
-        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full",
-        "text-[12px] font-semibold",
-        "bg-amber-50 text-amber-700 border border-amber-200",
-        "dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/20",
-      )}
-    >
-      <AlertCircle className="w-4 h-4" />
-      SEO
-    </span>
-  );
-}
+// function SeoPill() {
+//   return (
+//     <span
+//       className={cx(
+//         "inline-flex items-center gap-1.5 px-3 py-1 rounded-full",
+//         "text-[12px] font-semibold",
+//         "bg-amber-50 text-amber-700 border border-amber-200",
+//         "dark:bg-amber-500/10 dark:text-amber-200 dark:border-amber-500/20",
+//       )}
+//       onClick={() => {
+//         handleOpenSeoModal()
+//       }}
+//     >
+//       <AlertCircle className="w-4 h-4" />
+//       SEO
+//     </span>
+//   );
+// }
 
 function ToggleSwitch({
   checked,
@@ -110,9 +115,10 @@ function reorder<T>(list: T[], fromIndex: number, toIndex: number) {
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  openSeoModal: () => void;
 };
 
-export default function Pages({ open, setOpen }: Props) {
+export default function Pages({ open, setOpen, openSeoModal }: Props) {
   const [comingSoon, setComingSoon] = React.useState(false);
   const { websitePages } = useSelector((state: RootState) => state.websitePage);
   const dispatch = useDispatch<AppDispatch>();
@@ -128,6 +134,7 @@ export default function Pages({ open, setOpen }: Props) {
       currentWebsite.primaryDomain.length > 0
     ) {
       const primaryDomain = currentWebsite.primaryDomain[0];
+      setComingSoon(currentWebsite?.isComingSoon ?? true);
       return websitePages.map((page): PageItem => {
         return {
           id: page._id,
@@ -258,6 +265,10 @@ export default function Pages({ open, setOpen }: Props) {
     }
   };
 
+  const handleOpenSeoModal = () => {
+ openSeoModal()
+  };
+
   return (
     <TooltipProvider delayDuration={150}>
       <div className="h-full">
@@ -324,18 +335,20 @@ export default function Pages({ open, setOpen }: Props) {
 
                           <div
                             className="flex-1 min-w-0"
-                            onClick={() => {
-                              handlePages(p);
-                            }}
+                           
                           >
-                            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100"
+                            
+                             onClick={() => {
+                              handlePages(p);
+                            }}>
                               {p.title}
                             </div>
                           </div>
 
                           {/* {p.seoIssue ? <SeoPill /> : null} */}
 
-                          {/* <PageMenu
+                          <PageMenu
                             open={openMenuId === p.id}
                             onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
                             page={p}
@@ -343,12 +356,15 @@ export default function Pages({ open, setOpen }: Props) {
                             onToggleNav={() => toggleNav(p)}
                             onCopyUrl={() => copyUrl(p)}
                             onDelete={() => deletePage(p)}
-                          /> */}
+                          />
                         </div>
 
-                        {/* {p.seoIssue ? <SeoPill /> : null} */}
+                        {p.seoIssue ? <SeoPill 
+                         pages={p}
+                         openSeoModal={handleOpenSeoModal}
+                        /> : null}
 
-                        
+                      
                       </div>
                     );
                   })}
