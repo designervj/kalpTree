@@ -280,8 +280,8 @@ export default function Pages({ open, setOpen }: Props) {
                 <h6 className="text-sm font-semibold mb-2">Main navigation</h6>
               </div>
 
-              <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
-                <div className="px-0">
+              <div className="rounded-none dark:border-slate-800 overflow-hidden">
+                <div className="px-0 border-b border-slate-200">
                   {allPages.length > 0 &&
                     allPages.map((p) => {
                       const isDragOver = dragOverId === p.id;
@@ -296,7 +296,7 @@ export default function Pages({ open, setOpen }: Props) {
                         onDrop={onDrop(p.id)}
                         onDragEnd={onDragEnd}
                         className={cx(
-                          "flex items-center gap-2 py-1 px-2",
+                          "flex items-center gap-2 py-3 px-2 hover:bg-gray-50",
                           "border-b border-slate-200 last:border-b-0",
                           "dark:border-slate-800",
                           "transition-colors",
