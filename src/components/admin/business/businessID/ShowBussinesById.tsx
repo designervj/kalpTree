@@ -173,49 +173,108 @@ console.log("bussinessWebsite--->",bussinessWebsite)
                   </span>
                 </div>
 
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="h-12 w-12 rounded-md bg-slate-900 text-white grid place-items-center font-semibold">
+       
+                  <div className="grid items-center flex-wrap">
+                
+
+                  <div className="flex gap-3 items-center">
+
+                      <div className="h-12 w-12 rounded-md bg-slate-900 text-white grid place-items-center font-semibold">
                     {(business.name?.[0] || "B").toUpperCase()}
                     {(business.name?.[1] || "Z").toUpperCase()}
                   </div>
 
-                  <div>
                     <h1 className="text-[26px] md:text-[32px] font-semibold text-slate-900 leading-tight">
                       {business.name || "Business"}
                     </h1>
                     <div className="mt-1 flex items-center gap-2 flex-wrap">
                       <Badge
-                        className="rounded-full text-white"
-                        variant="secondary"
+                        className="rounded-full text-primary"
+                        variant="outline"
                       >
                         {(business.plan || "—").toUpperCase()}
                       </Badge>
                       {statusPill(business.subscriptionStatus)}
-                      {statusPill(business.status)}
-                      {business.email ? (
+                      {/* {statusPill(business.status)} */}
+                      {/* {business.email ? (
                         <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail className="h-4 w-4" />
                           {business.email}
                         </span>
-                      ) : null}
+                      ) : null} */}
                     </div>
                   </div>
-                </div>
+
+                        {bussinessWebsite?.length ? (
+                      bussinessWebsite.map((w: any, idx: number) => {
+                        const dom = w?.primaryDomain?.[0] || "—";
+
+                        const domain = w?.primaryDomain?.find((d: string) =>
+                          d?.includes("kalptree.xyz")
+                        );
+
+                        const agencyId =
+                          user?.role === "agency"
+                            ? (user?.tenantId?.toString() ?? null)
+                            : (currentAgencyId ?? null);
+
+                        const href = toCreateHref(
+                          domain,
+                          w?.tenantId?.toString() ?? null,
+                          agencyId,
+                          user?.role!
+                        );
+
+                        return (
+                          <div
+                            key={`${w?.name || "website"}-${idx}`}
+                            className="rounded-md "
+                          >
+                            <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                              <Globe className="h-4 w-4" />
+                              <span className="truncate">{dom}</span>
+
+                              {dom !== "—" ? (
+                                <Link
+                                  href={href}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1 text-slate-900 hover:underline"
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </Link>
+                              ) : null}
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : null}
+
+                  </div>
+
+
+                
+
+
+              
+
+
+               
               </div>
 
               <div className="flex items-center gap-2">
-                <Button variant="outline" className="rounded-full" asChild>
+                <Button variant="outline" className="rounded-full px-6" asChild>
                   <Link href="/admin/businesses">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    <ArrowLeft className=" h-4 w-4" />
                     Back
                   </Link>
                 </Button>
 
-                <Button className="rounded-full" asChild>
-                  <Button onClick={() => handleOpenModal("business")}>
-                    <Sparkles className="mr-2 h-4 w-4" />
+                <Button className="rounded-full px-6" asChild>
+                  <span onClick={() => handleOpenModal("business")}>
+                    <Sparkles className=" h-4 w-4" />
                     Edit
-                  </Button>
+                  </span>
                 </Button>
               </div>
             </div>
@@ -290,7 +349,7 @@ console.log("bussinessWebsite--->",bussinessWebsite)
               </CardHeader>
               <CardContent className="p-5 pt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button className="rounded-md h-12 justify-between" asChild>
+                  <Button className="rounded-md h-12 justify-between" asChild >
                     <Link href={`/admin/businesses/${id}/websites`}>
                       <span className="inline-flex items-center gap-2">
                         <Store className="h-4 w-4" /> Manage websites
@@ -386,7 +445,7 @@ console.log("bussinessWebsite--->",bussinessWebsite)
                               </div>
                               {statusPill(w.status)}
                               <Badge
-                                className="rounded-full text-white"
+                                className="rounded-full "
                                 variant="secondary"
                               >
                                 {w.serviceType || "—"}

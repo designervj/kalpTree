@@ -281,7 +281,7 @@ export default function Pages({ open, setOpen }: Props) {
               </div>
 
               <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
-                <div className="px-3">
+                <div className="px-0">
                   {allPages.length > 0 &&
                     allPages.map((p) => {
                       const isDragOver = dragOverId === p.id;
@@ -296,7 +296,7 @@ export default function Pages({ open, setOpen }: Props) {
                         onDrop={onDrop(p.id)}
                         onDragEnd={onDragEnd}
                         className={cx(
-                          "flex items-center gap-3 py-3",
+                          "flex items-center gap-2 py-1 px-2",
                           "border-b border-slate-200 last:border-b-0",
                           "dark:border-slate-800",
                           "transition-colors",
@@ -305,20 +305,22 @@ export default function Pages({ open, setOpen }: Props) {
                         )}
                       >
                     
+                        {/* ✅ drag handle look (still draggable on whole row) */}
+                        {/* <div className="w-7 grid place-items-center text-slate-400 1">
+                         
+                        </div> */}
+                            
+                        <div className=" flex gap-1  items-center text-slate-700 dark:text-slate-200">
+                          <span> <GripVertical className="w-4 h-4 cursor-move" /></span>
+                          <span>{IconFor(p)}</span>
+                        </div>
 
                         <div className="flex-1 min-w-0 ms-1"
                         onClick={()=>{
                         handlePages(p)
                         }}
                         >
-                          {/* ✅ drag handle look (still draggable on whole row) */}
-                          <div className="w-7 grid place-items-center text-slate-400">
-                            <GripVertical className="w-4 h-4" />
-                          </div>
-
-                          <div className="w-7 grid place-items-center text-slate-700 dark:text-slate-200">
-                            {IconFor(p)}
-                          </div>
+                        
 
                           <div
                             className="flex-1 min-w-0"
@@ -331,9 +333,9 @@ export default function Pages({ open, setOpen }: Props) {
                             </div>
                           </div>
 
-                          {p.seoIssue ? <SeoPill /> : null}
+                          {/* {p.seoIssue ? <SeoPill /> : null} */}
 
-                          <PageMenu
+                          {/* <PageMenu
                             open={openMenuId === p.id}
                             onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
                             page={p}
@@ -341,7 +343,7 @@ export default function Pages({ open, setOpen }: Props) {
                             onToggleNav={() => toggleNav(p)}
                             onCopyUrl={() => copyUrl(p)}
                             onDelete={() => deletePage(p)}
-                          />
+                          /> */}
                         </div>
 
                         {/* {p.seoIssue ? <SeoPill /> : null} */}
@@ -369,7 +371,7 @@ export default function Pages({ open, setOpen }: Props) {
                 <div className="px-3">
                   <div
                     className={cx(
-                      "flex items-center gap-3 py-3",
+                      "flex items-center gap-3 py-3 ",
                       "border-b border-slate-200 dark:border-slate-800",
                     )}
                   >
@@ -431,9 +433,9 @@ export default function Pages({ open, setOpen }: Props) {
                         "dark:border-slate-800",
                       )}
                     >
-                      <div className="w-7 grid place-items-center text-slate-400">
+                      {/* <div className="w-7 grid place-items-center text-slate-400">
                         <GripVertical className="w-4 h-4" />
-                      </div>
+                      </div> */}
 
                       <div className="w-7 grid place-items-center text-slate-700 dark:text-slate-200">
                         <FileText className="w-4 h-4" />

@@ -937,12 +937,12 @@ export function AppShell({
               <Button
                 variant="ghost"
                 size="icon"
-                className="hover:bg-transparent"
+                className="hover:bg-transparent text-black"
               >
-                <Avatar className="h-7 w-7">
+                <Avatar className="h-7 w-7 text-black">
                   <AvatarFallback
                     className={cn(
-                      "h-7 w-7 flex items-center justify-center rounded-full font-semibold",
+                      "h-7 w-7 flex items-center justify-center text-black rounded-full font-semibold",
                       getRoleAvatarClass(user?.role),
                     )}
                   >

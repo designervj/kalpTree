@@ -66,6 +66,10 @@ import Checkout from "../storeSetting/Checkout";
 import Emails from "../storeSetting/Emails";
 import Taxes from "../storeSetting/Taxes";
 import Invoices from "../storeSetting/Invoices";
+import ProductCategoryPage from "./ProductCategoryPage";
+import ProductReviews from "./ProductReviews";
+import { AddProduct } from "./AddProduct";
+import { IoClose } from "react-icons/io5";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavChild = { id: string; label: string };
@@ -124,7 +128,7 @@ const NAV: NavItem[] = [
       { id: "taxes", label: "Taxes" },
       { id: "invoices", label: "Invoices" },
 
-        ],
+    ],
   },
   { id: "integrations", label: "Integrations", icon: <Boxes className="h-4 w-4" /> },
 ];
@@ -223,7 +227,7 @@ function SidebarNav({
             </div>
           </div>
 
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm dark:bg-white/5 dark:text-slate-200">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-sm bg-white text-slate-600 shadow-sm dark:bg-white/5 dark:text-slate-200">
             <Sparkles className="h-4 w-4" />
           </span>
         </div>
@@ -231,7 +235,7 @@ function SidebarNav({
         <Button
           variant="outline"
           className={cn(
-            "mt-3 h-10 w-full justify-start rounded-xl",
+            "mt-3 h-10 w-full justify-start rounded-sm",
             "border-violet-200 bg-white text-violet-700 hover:bg-slate-50",
             "dark:border-violet-500/25 dark:bg-transparent dark:text-violet-200 dark:hover:bg-white/5"
           )}
@@ -240,7 +244,7 @@ function SidebarNav({
           Add payment method
         </Button>
       </div>
-      <hr/>
+      <hr />
 
       {/* Nav */}
       <div className="mt-4 space-y-1 max-h-[50vh]  overflow-y-auto px-2">
@@ -279,7 +283,7 @@ function SidebarNav({
                 type="button"
                 onClick={onClick}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-left transition-colors",
+                  "flex w-full items-center justify-between rounded-sm px-3 py-2.5 text-left transition-colors",
                   activeGroup
                     ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
                     : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/5"
@@ -320,7 +324,7 @@ function SidebarNav({
                         type="button"
                         onClick={() => setActive(c.id)}
                         className={cn(
-                          "flex w-full items-center rounded-xl px-3 py-2 text-left text-sm transition-colors",
+                          "flex w-full items-center rounded-sm px-3 py-2 text-left text-sm transition-colors",
                           isActive
                             ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
                             : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
@@ -343,7 +347,7 @@ function SidebarNav({
                         type="button"
                         onClick={() => setActive(c.id)}
                         className={cn(
-                          "flex w-full items-center rounded-xl px-3 py-2 text-left text-sm transition-colors",
+                          "flex w-full items-center rounded-sm px-3 py-2 text-left text-sm transition-colors",
                           isActive
                             ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
                             : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
@@ -365,7 +369,7 @@ function SidebarNav({
         <button
           type="button"
           className={cn(
-            "mt-3 flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left ",
+            "mt-3 flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left ",
             "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
           )}
         >
@@ -379,11 +383,11 @@ function SidebarNav({
       <div className="mt-auto pt-4 px-2">
         <Separator className="bg-slate-200 dark:bg-slate-800" />
         <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-          <div className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+          <div className="flex items-center gap-3 rounded-sm px-3 py-2.5">
             <span className="inline-flex h-4 w-4 items-center justify-center rounded border border-slate-300 dark:border-slate-700" />
             Feedback
           </div>
-          <div className="flex items-center gap-3 rounded-xl px-3 py-2.5">
+          <div className="flex items-center gap-3 rounded-sm px-3 py-2.5">
             <span className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-slate-300 dark:border-slate-700">
               ?
             </span>
@@ -397,62 +401,62 @@ function SidebarNav({
 
 /* -------------------- Pages (Right side) -------------------- */
 
-function Banner() {
-  return (
-    <div className="relative rounded-2xl border border-violet-200/60 bg-violet-50 p-6 dark:border-violet-500/20 dark:bg-violet-500/10">
-      <div className="flex items-start justify-between gap-6">
-        <div className="max-w-[620px]">
-          <div className="flex items-center gap-2">
-            <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-              Sell custom products. Skip the logistics.
-            </div>
-            <Badge className="rounded-full bg-white text-slate-700 dark:bg-white/10 dark:text-slate-200">
-              New
-            </Badge>
-          </div>
-          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            Create and sell branded products with Printful. No inventory, no upfront costs.
-          </div>
+// function Banner() {
+//   return (
+//     <div className="relative rounded-2xl border border-violet-200/60 bg-violet-50 p-6 dark:border-violet-500/20 dark:bg-violet-500/10">
+//       <div className="flex items-start justify-between gap-6">
+//         <div className="max-w-[620px]">
+//           <div className="flex items-center gap-2">
+//             <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+//               Sell custom products. Skip the logistics.
+//             </div>
+//             <Badge className="rounded-full bg-white text-slate-700 dark:bg-white/10 dark:text-slate-200">
+//               New
+//             </Badge>
+//           </div>
+//           <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+//             Create and sell branded products with Printful. No inventory, no upfront costs.
+//           </div>
 
-          <div className="mt-5 flex items-center gap-4">
-            <Button className="rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">
-              Get started
-            </Button>
-            <Button
-              variant="ghost"
-              className="rounded-xl text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
-            >
-              Learn more <ExternalLink className="ml-2 h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+//           <div className="mt-5 flex items-center gap-4">
+//             <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
+//               Get started
+//             </Button>
+//             <Button
+//               variant="ghost"
+//               className="rounded-sm text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
+//             >
+//               Learn more <ExternalLink className="ml-2 h-4 w-4" />
+//             </Button>
+//           </div>
+//         </div>
 
-        <div className="hidden w-[340px] shrink-0 items-center justify-center md:flex">
-          <div className="relative h-[140px] w-full rounded-2xl bg-white/70 ring-1 ring-slate-200 dark:bg-white/5 dark:ring-slate-800">
-            <button
-              type="button"
-              className="absolute right-3 top-3 rounded-full p-1.5 text-slate-500 hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5"
-              aria-label="Close banner"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+//         <div className="hidden w-[340px] shrink-0 items-center justify-center md:flex">
+//           <div className="relative h-[140px] w-full rounded-2xl bg-white/70 ring-1 ring-slate-200 dark:bg-white/5 dark:ring-slate-800">
+//             <button
+//               type="button"
+//               className="absolute right-3 top-3 rounded-full p-1.5 text-slate-500 hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5"
+//               aria-label="Close banner"
+//             >
+//               <X className="h-4 w-4" />
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 function ProductsPage() {
   return (
     <div className="space-y-6">
-      <Banner />
+      {/* <Banner /> */}
 
       <div className="flex items-end justify-between gap-4">
         <div>
-          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">
+          <div className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
             Products{" "}
-            <span className="text-base font-normal text-slate-500 dark:text-slate-400">
+            <span className="text-sm font-normal text-slate-500 dark:text-slate-400">
               (10 products)
             </span>
           </div>
@@ -461,26 +465,24 @@ function ProductsPage() {
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className="h-10 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+            className=" rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
           >
             Import products
           </Button>
-          <Button className="h-10 rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">
-            Add product
-          </Button>
+          <AddProduct />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
         <div>
           <div className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-200">
             Category
           </div>
           <Select defaultValue="all">
-            <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+            <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectItem value="all">Select category</SelectItem>
               <SelectItem value="decor">Decor</SelectItem>
               <SelectItem value="food">Food</SelectItem>
@@ -493,10 +495,10 @@ function ProductsPage() {
             Product
           </div>
           <Select defaultValue="all">
-            <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
               <SelectValue placeholder="Select filter" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+            <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectItem value="all">Select filter</SelectItem>
               <SelectItem value="active">Active</SelectItem>
               <SelectItem value="draft">Draft</SelectItem>
@@ -509,10 +511,10 @@ function ProductsPage() {
             Sort by
           </div>
           <Select defaultValue="newest">
-            <SelectTrigger className="h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+            <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectItem value="newest">Created: Newest first</SelectItem>
               <SelectItem value="oldest">Created: Oldest first</SelectItem>
             </SelectContent>
@@ -526,7 +528,7 @@ function ProductsPage() {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <Input
-              className="h-11 rounded-xl border-slate-200 bg-white pl-9 dark:border-slate-800 dark:bg-[#0b1220]"
+              className="h-11 rounded-sm border-slate-200 bg-white pl-9 dark:border-slate-800 dark:bg-[#0b1220]"
               placeholder="Search for product"
             />
           </div>
@@ -658,7 +660,7 @@ function IntegrationsPage() {
                 ) : (
                   <Button
                     variant="outline"
-                    className="h-10 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+                    className="h-10 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
                   >
                     Get started
                   </Button>
@@ -680,13 +682,13 @@ function AnalyticsPage() {
       <div className="flex flex-wrap items-center gap-3">
         <Button
           variant="outline"
-          className="h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+          className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
         >
           Dec 28, 2025 — Jan 26, 2026 <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
         <Button
           variant="outline"
-          className="h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+          className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
         >
           No comparison <ChevronDown className="ml-2 h-4 w-4" />
         </Button>
@@ -695,20 +697,20 @@ function AnalyticsPage() {
       <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
         <div className="text-sm text-slate-600 dark:text-slate-300">Total Sales</div>
         <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-        <div className="mt-4 h-[220px] rounded-xl bg-slate-50 dark:bg-white/5" />
+        <div className="mt-4 h-[220px] rounded-sm bg-slate-50 dark:bg-white/5" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
           <div className="text-sm text-slate-600 dark:text-slate-300">Total Orders</div>
           <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">0</div>
-          <div className="mt-4 h-[200px] rounded-xl bg-slate-50 dark:bg-white/5" />
+          <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
           <div className="text-sm text-slate-600 dark:text-slate-300">Average order value</div>
           <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-          <div className="mt-4 h-[200px] rounded-xl bg-slate-50 dark:bg-white/5" />
+          <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
         </div>
       </div>
 
@@ -749,10 +751,10 @@ function CustomersPage() {
               Connect with your subscribers and grow your brand by sending newsletters.
             </div>
             <div className="mt-5 flex items-center gap-4">
-              <Button className="rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">Get started</Button>
+              <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">Get started</Button>
               <Button
                 variant="ghost"
-                className="rounded-xl text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
+                className="rounded-sm text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
               >
                 Learn more <ExternalLink className="ml-2 h-4 w-4" />
               </Button>
@@ -774,7 +776,7 @@ function CustomersPage() {
         <Button
           variant="outline"
           disabled
-          className="h-11 rounded-xl border-slate-200 bg-white text-slate-400 dark:border-slate-800 dark:bg-[#0b1220]"
+          className="h-11 rounded-sm border-slate-200 bg-white text-slate-400 dark:border-slate-800 dark:bg-[#0b1220]"
         >
           Export to CSV
         </Button>
@@ -789,7 +791,7 @@ function CustomersPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button className="rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">
+          <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
             Go to checkout settings
           </Button>
           <button type="button" className="rounded-full p-2 text-slate-500 hover:bg-white/60 dark:text-slate-300 dark:hover:bg-white/5">
@@ -801,10 +803,10 @@ function CustomersPage() {
       <div className="space-y-2">
         <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Marketing consent</div>
         <Select defaultValue="granted">
-          <SelectTrigger className="h-11 w-[220px] rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+          <SelectTrigger className="h-11 w-[220px] rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
             <SelectValue placeholder="Granted" />
           </SelectTrigger>
-          <SelectContent className="rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+          <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
             <SelectItem value="granted">Granted</SelectItem>
             <SelectItem value="not-granted">Not granted</SelectItem>
           </SelectContent>
@@ -838,7 +840,7 @@ function DiscountsPage() {
             type="button"
             onClick={() => setType("percentage")}
             className={cn(
-              "flex items-center gap-2 rounded-xl border px-4 py-3 text-sm",
+              "flex items-center gap-2 rounded-sm border px-4 py-3 text-sm",
               type === "percentage"
                 ? "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/25 dark:bg-violet-500/10 dark:text-violet-200"
                 : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200"
@@ -851,7 +853,7 @@ function DiscountsPage() {
             type="button"
             onClick={() => setType("fixed")}
             className={cn(
-              "flex items-center gap-2 rounded-xl border px-4 py-3 text-sm",
+              "flex items-center gap-2 rounded-sm border px-4 py-3 text-sm",
               type === "fixed"
                 ? "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/25 dark:bg-violet-500/10 dark:text-violet-200"
                 : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200"
@@ -865,7 +867,7 @@ function DiscountsPage() {
           <div>
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">* Discount code</div>
             <Input
-              className="mt-2 h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+              className="mt-2 h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
               placeholder="e.g., BLACKFRIDAY50"
             />
           </div>
@@ -873,7 +875,7 @@ function DiscountsPage() {
           <div>
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Discount name</div>
             <Input
-              className="mt-2 h-11 rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+              className="mt-2 h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
               placeholder="e.g., Black Friday Campaign"
             />
             <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
@@ -887,7 +889,7 @@ function DiscountsPage() {
             * Discount
           </div>
           <Input
-            className="mt-2 h-11 max-w-[260px] rounded-xl border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+            className="mt-2 h-11 max-w-[260px] rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
             defaultValue="1"
           />
         </div>
@@ -919,10 +921,10 @@ function DiscountsPage() {
       <div className="fixed bottom-0 left-0 right-0 z-50">
         <div className="mx-auto w-full max-w-[calc(100vw-40px)] rounded-b-2xl border-x border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-[#0b1220]">
           <div className="flex justify-end gap-3">
-            <Button variant="outline" className="h-11 rounded-xl border-slate-200 dark:border-slate-800">
+            <Button variant="outline" className="h-11 rounded-sm border-slate-200 dark:border-slate-800">
               Cancel
             </Button>
-            <Button className="h-11 rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">
+            <Button className="h-11 rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
               Save
             </Button>
           </div>
@@ -935,35 +937,8 @@ function DiscountsPage() {
 
 function CategoriesPage() {
   return (
-    <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Categories</div>
-          <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            To show products by category on your website, add eCommerce section in the editor and adjust its settings.{" "}
-            <span className="text-violet-700 dark:text-violet-200">Learn more.</span>
-          </div>
-        </div>
 
-        <button type="button" className="inline-flex items-center gap-2 text-sm font-semibold text-violet-700 dark:text-violet-200">
-          <span className="text-lg">+</span> Add category
-        </button>
-      </div>
-
-      <div className="max-w-[360px] rounded-2xl border border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-[#0b1220]">
-        <div className="flex items-center justify-between px-5 py-5">
-          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">All products</div>
-          <button type="button" className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5">
-            <MoreHorizontal className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="px-5 pb-5 text-sm text-slate-600 dark:text-slate-300">10 products</div>
-      </div>
-
-      <div className="text-sm text-slate-600 dark:text-slate-300">
-        <span className="font-semibold underline">Rate category management experience.</span> Help us improve.
-      </div>
-    </div>
+    <ProductCategoryPage />
   );
 }
 
@@ -993,7 +968,7 @@ function StoreSetupPage() {
 
         <div className="px-6 py-5">
           <div className="flex items-start gap-5">
-            <div className="h-[110px] w-[140px] rounded-xl bg-violet-100/60 dark:bg-violet-500/10" />
+            <div className="h-[110px] w-[140px] rounded-sm bg-violet-100/60 dark:bg-violet-500/10" />
             <div className="flex-1">
               <div className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
                 Connect a payment provider to receive orders
@@ -1002,7 +977,7 @@ function StoreSetupPage() {
                 To accept and let your customers pay, add at least one payment method.
               </div>
             </div>
-            <Button className="mt-6 h-11 rounded-xl bg-violet-600 text-white hover:bg-violet-600/90">
+            <Button className="mt-6 h-11 rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
               Add payments
             </Button>
           </div>
@@ -1047,7 +1022,7 @@ function SimplePage({ title }: { title: string }) {
       <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
         Page UI placeholder (wireframe) — replace with your real content.
       </div>
-      <div className="mt-6 h-[260px] rounded-xl bg-slate-50 dark:bg-white/5" />
+      <div className="mt-6 h-[260px] rounded-sm bg-slate-50 dark:bg-white/5" />
     </div>
   );
 }
@@ -1063,20 +1038,20 @@ function RightContent({ active }: { active: string }) {
   if (active === "categories") return <CategoriesPage />;
   if (active === "store-setup") return <StoreSetupPage />;
 
-  if (active === "product-reviews") return <SimplePage title="Product reviews" />;
-  if (active === "overview") return <OverviewPage  />;
+  if (active === "product-reviews") return <ProductReviews />;
+  if (active === "overview") return <OverviewPage />;
   if (active === "orders") return <SimplePage title="Orders" />;
   if (active === "settings") return <SimplePage title="Settings" />;
 
   if (active === "store-details") return <StoreDetails />;
   if (active === "company-information") return <CompanyInformation />;
-  if (active === "payments") return <Payments  />;
-  if (active === "shipping") return <Shipping  />;
-  if (active === "checkout") return <Checkout  />;
+  if (active === "payments") return <Payments />;
+  if (active === "shipping") return <Shipping />;
+  if (active === "checkout") return <Checkout />;
 
-  if (active === "emails") return <Emails  />;
-  if (active === "taxes") return <Taxes  />;
-  if (active === "invoices") return <Invoices  />;
+  if (active === "emails") return <Emails />;
+  if (active === "taxes") return <Taxes />;
+  if (active === "invoices") return <Invoices />;
 
 
 
@@ -1098,7 +1073,7 @@ export default function StorePage() {
         <DialogTrigger asChild>
           {/* <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200 dark:hover:bg-white/5"
+            className="inline-flex items-center gap-2 rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200 dark:hover:bg-white/5"
           >
             Open Store manager <ChevronRight className="h-4 w-4" />
           </button> */}
@@ -1124,6 +1099,12 @@ export default function StorePage() {
               <DialogTitle className="text-base font-semibold text-slate-900 dark:text-slate-100">
                 Store manager
               </DialogTitle>
+
+              <DialogClose asChild>
+                <Button variant="outline" className="rounded-full w-8 h-8 cursor-pointer">
+                  <IoClose />
+                </Button>
+              </DialogClose>
 
               {/* <DialogClose asChild>
                 <button

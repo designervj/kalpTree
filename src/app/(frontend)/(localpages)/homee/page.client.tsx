@@ -59,7 +59,7 @@ export default function RootClientPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <button
               onClick={handleLogin}
-              className="group px-10 py-4 bg-white text-primary hover:bg-secondary hover:text-white font-bold rounded-full transition-all shadow-[0_0_30px_rgba(0,0,0,0.2)] flex items-center gap-2"
+              className="group px-10 py-4 bg-white text-primary hover:bg-secondary  font-bold rounded-full transition-all shadow-[0_0_30px_rgba(0,0,0,0.2)] flex items-center gap-2"
             >
               Go to Admin Dashboard{" "}
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
