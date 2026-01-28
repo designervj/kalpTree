@@ -12,11 +12,12 @@ import {
     bulkUpdatePageSEOStatus,
 } from "./WebsiteSEOThunk";
 import { PageSEOModel } from "@/components/admin/website_seo/PageSEOModel";
+import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 
 export type WebsiteSEOState = {
-    listPageSEO: PageSEOModel[];
-    currentPageSEO: PageSEOModel | null;
-    mainPageSEO: PageSEOModel | null;
+    listPageSEO: WebsitePageModel[];
+    currentPageSEO: WebsitePageModel | null;
+    mainPageSEO: WebsitePageModel | null;
     isPageSEOLoading: boolean;
     hasFetched: boolean;
     error: string | null;
@@ -35,24 +36,24 @@ const websiteSEOSlice = createSlice({
     name: "websiteSEO",
     initialState,
     reducers: {
-        setPageSEO(state, action: PayloadAction<PageSEOModel[]>) {
+        setPageSEO(state, action: PayloadAction<WebsitePageModel[]>) {
             state.listPageSEO = action.payload;
         },
-        setCurrentPageSEO(state, action: PayloadAction<PageSEOModel | null>) {
+        setCurrentPageSEO(state, action: PayloadAction<WebsitePageModel | null>) {
             state.currentPageSEO = action.payload;
         },
-        addPageSEOToList(state, action: PayloadAction<PageSEOModel>) {
+        addPageSEOToList(state, action: PayloadAction<  WebsitePageModel>) {
             state.listPageSEO.push(action.payload);
         },
-        updatePageSEOInList(state, action: PayloadAction<PageSEOModel>) {
+        updatePageSEOInList(state, action: PayloadAction<WebsitePageModel>) {
             const updated = action.payload;
-            const idx = state.listPageSEO.findIndex((page:PageSEOModel) => {
+            const idx = state.listPageSEO.findIndex((page:WebsitePageModel) => {
                 if (!page) return false;
                 if ((page as any)._id && (updated as any)._id)
                     return String((page as any)._id) === String((updated as any)._id);
                 if (page.slug && updated.slug)
                     return page.slug === updated.slug;
-                return page.pageName === updated.pageName;
+                return page.title === updated.title;
             });
             if (idx !== -1) {
                 state.listPageSEO[idx] = {
@@ -63,14 +64,14 @@ const websiteSEOSlice = createSlice({
         },
         removePageSEOFromList(state, action: PayloadAction<string | undefined>) {
             const id = action.payload;
-            state.listPageSEO = state.listPageSEO.filter((page) => {
-                if (!page) return false;
-                if ((page as any)._id && id)
-                    return String((page as any)._id) !== String(id);
-                if (page.slug && id)
-                    return page.slug !== id;
-                return page.pageName !== String(id);
-            });
+            // state.listPageSEO = state.listPageSEO.filter((page) => {
+            //     if (!page) return false;
+            //     if ((page as any)._id && id)
+            //         return String((page as any)._id) !== String(id);
+            //     if (page.slug && id)
+            //         return page.slug !== id;
+            //     return page.pageName !== String(id);
+            // });
         },
         clearPageSEO(state) {
             state.listPageSEO = [];
@@ -94,9 +95,9 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 fetchPageSEOByWebsite.fulfilled,
                 (state, action: PayloadAction<PageSEOModel[]>) => {
-                    state.listPageSEO = action.payload;
-                    state.hasFetched = true;
-                    state.isPageSEOLoading = false;
+                    // state.listPageSEO = action.payload;
+                    // state.hasFetched = true;
+                    // state.isPageSEOLoading = false;
                 }
             )
             .addCase(fetchPageSEOByWebsite.rejected, (state, action) => {
@@ -112,8 +113,8 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 fetchPageSEOById.fulfilled,
                 (state, action: PayloadAction<PageSEOModel>) => {
-                    state.currentPageSEO = action.payload;
-                    state.isPageSEOLoading = false;
+                    // state.currentPageSEO = action.payload;
+                    // state.isPageSEOLoading = false;
                 }
             )
             .addCase(fetchPageSEOById.rejected, (state, action) => {
@@ -129,8 +130,8 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 fetchPageSEOBySlug.fulfilled,
                 (state, action: PayloadAction<PageSEOModel>) => {
-                    state.currentPageSEO = action.payload;
-                    state.isPageSEOLoading = false;
+                    // state.currentPageSEO = action.payload;
+                    // state.isPageSEOLoading = false;
                 }
             )
             .addCase(fetchPageSEOBySlug.rejected, (state, action) => {
@@ -146,9 +147,9 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 createPageSEO.fulfilled,
                 (state, action: PayloadAction<PageSEOModel>) => {
-                    state.listPageSEO.push(action.payload);
-                    state.currentPageSEO = action.payload;
-                    state.isPageSEOLoading = false;
+                    // state.listPageSEO.push(action.payload);
+                    // state.currentPageSEO = action.payload;
+                    // state.isPageSEOLoading = false;
                 }
             )
             .addCase(createPageSEO.rejected, (state, action) => {
@@ -172,11 +173,11 @@ const websiteSEOSlice = createSlice({
                         return false;
                     });
                     if (idx !== -1) {
-                        state.listPageSEO[idx] = updated;
+                        // state.listPageSEO[idx] = updated;
                     }
                     if (state.currentPageSEO &&
                         String((state.currentPageSEO as any)._id) === String((updated as any)._id)) {
-                        state.currentPageSEO = updated;
+                        // state.currentPageSEO = updated;
                     }
                     state.isPageSEOLoading = false;
                 }
@@ -219,7 +220,7 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 fetchMainPageSEO.fulfilled,
                 (state, action: PayloadAction<PageSEOModel>) => {
-                    state.mainPageSEO = action.payload;
+                    // state.mainPageSEO = action.payload;
                     state.isPageSEOLoading = false;
                 }
             )
@@ -236,7 +237,7 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 fetchPageSEOByStatus.fulfilled,
                 (state, action: PayloadAction<PageSEOModel[]>) => {
-                    state.listPageSEO = action.payload;
+                    // state.listPageSEO = action.payload;
                     state.isPageSEOLoading = false;
                 }
             )
@@ -253,7 +254,7 @@ const websiteSEOSlice = createSlice({
             .addCase(
                 searchPageSEO.fulfilled,
                 (state, action: PayloadAction<PageSEOModel[]>) => {
-                    state.listPageSEO = action.payload;
+                    // state.listPageSEO = action.payload;
                     state.isPageSEOLoading = false;
                 }
             )

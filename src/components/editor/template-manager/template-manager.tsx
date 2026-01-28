@@ -79,8 +79,7 @@ export function TemplateManager({
     return Array.from(uniqueCategories);
   }, [allTemplate]);
 
-  console.log("categorybasedTemplate", categorybasedTemplate)
-
+  
   const filteredTemplates = useMemo(() => {
     return allTemplate.filter((template: TemplateDocument) => {
       if (!template.category)

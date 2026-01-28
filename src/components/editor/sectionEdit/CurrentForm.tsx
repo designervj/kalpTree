@@ -11,6 +11,12 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, GripVertical } from 'lucide-react';
 import { Switch } from '@radix-ui/react-switch';
 import { Input } from '@/components/ui/input';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 
 type FormMode = "standalone" | "connected";
@@ -135,94 +141,13 @@ type FormSettings = {
     animation?: Anim;
 };
 
-function FieldRow({
-    field,
-    onToggleEnabled,
-    onToggleRequired,
-    onRename,
-    onMove,
-}: {
-    field: FormField;
-    onToggleEnabled: () => void;
-    onToggleRequired: () => void;
-    onRename: (v: string) => void;
-    onMove: (dir: "up" | "down") => void;
-}) {
-    return (
-        <div className="flex items-center justify-between gap-3 rounded-xl border bg-white px-3 py-2">
-            <div className="flex items-center gap-2">
-                <GripVertical className="h-4 w-4 text-slate-400" />
-                <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                        <Input
-                            value={field.label}
-                            onChange={(e) => onRename(e.target.value)}
-                            className="h-8 w-[180px] border-transparent bg-transparent px-2 text-sm font-medium focus-visible:ring-0"
-                        />
-                        {field.required ? (
-                            <span className="text-xs text-slate-500">*</span>
-                        ) : null}
-                    </div>
-                </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-                <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 px-2 text-xs text-slate-600"
-                    onClick={onToggleRequired}
-                >
-                    {field.required ? "Required" : "Optional"}
-                    <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
-                </Button>
-
-                <Switch
-                    checked={field.enabled}
-                    onCheckedChange={onToggleEnabled}
-                    className="data-[state=checked]:bg-[var(--accent)]"
-                    style={
-                        {
-                            ["--accent" as any]: ACCENT,
-                        } as React.CSSProperties
-                    }
-                />
-
-                <div className="flex items-center gap-1">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => onMove("up")}
-                        aria-label="Move up"
-                    >
-                        ↑
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => onMove("down")}
-                        aria-label="Move down"
-                    >
-                        ↓
-                    </Button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 
 type Props = {
     componentHtml?: string;
 }
 const CurrentForm = ({ componentHtml }: Props) => {
-    console.log("componentHtml", componentHtml)
-    const [settings, setSettings] = React.useState<FormSettings|null>(null);
+
+    const [settings, setSettings] = React.useState<FormSettings | null>(null);
 
     React.useEffect(() => {
         if (componentHtml) {
@@ -234,34 +159,33 @@ const CurrentForm = ({ componentHtml }: Props) => {
 
             formGroups.forEach((group) => {
                 const labelEl = group.querySelector("label");
-                const inputEl = group.querySelector("input, textarea");
-              
-                if (labelEl && inputEl) {
-                    const inputlabel = inputEl.getAttribute("name") || "";
-                    const inputType = inputEl.getAttribute("type") || "";
-                    const inputPlaceholder = inputEl.getAttribute("placeholder") || "";
-                    const labelName = labelEl.getAttribute("name") || ""
-                    console.log("group", group)
-                     console.log("inputlabel", inputlabel)
-                     console.log("inputType", inputType)
-                     console.log("inputPlaceholder", inputPlaceholder)
-                     console.log("labelName", labelName)
-                  
-                    if (inputlabel && inputType && inputPlaceholder) {
-                        const required = inputEl.hasAttribute("required");
-                        let label = labelName || "";
-                        // Clean label: remove * if present
-                        if (label.endsWith("*")) {
-                            label = label.slice(0, -1);
-                        }
+                const inputEl = group.querySelector("input");
+                const inputTextEl = group.querySelector("textarea");
+                console.log("labelEl--->", labelEl)
+                console.log("inputElgroup--->", inputEl)
+                console.log("inputTextElgroup--->", inputTextEl)
+                if (labelEl && (inputEl || inputTextEl)) {
+                    const fieldEl = inputEl || inputTextEl;
+                    const inputName = fieldEl?.getAttribute("name") || "";
+                    const inputType = inputTextEl ? "textarea" : inputEl?.getAttribute("type") || "text";
+                    const inputPlaceholder = fieldEl?.getAttribute("placeholder") || "";
+                    let labelText = labelEl.textContent?.trim() || inputName;
+
+                    // Clean label: remove * if present at the end
+                    if (labelText.endsWith("*")) {
+                        labelText = labelText.slice(0, -1);
+                    }
+
+                    if (inputName) {
+                        const required = fieldEl?.hasAttribute("required");
 
                         newFields.push({
-                            id: uid(), // Use HTML ID if available
-                            type:inputType,
-                            label:inputlabel,
-                            inputName:inputlabel,
-                            placeholder:inputPlaceholder,
-                            required,
+                            id: uid(),
+                            type: inputType,
+                            label: labelText,
+                            inputName: inputName,
+                            placeholder: inputPlaceholder,
+                            required: required ?? false,
                             enabled: true
                         });
                     }
@@ -269,6 +193,7 @@ const CurrentForm = ({ componentHtml }: Props) => {
             });
 
             if (newFields.length > 0) {
+                console.log("newFields", newFields)
                 setSettings(prev => ({
                     ...prev,
                     fields: newFields
@@ -287,31 +212,34 @@ const CurrentForm = ({ componentHtml }: Props) => {
         website: { label: "Website", required: false },
     };
     const moveField = (idx: number, dir: "up" | "down") => {
-        // setSettings((s) => {
-        //     const next = [...s?.fields];
-        //     const to = dir === "up" ? idx - 1 : idx + 1;
-        //     if (to < 0 || to >= next.length) return s;
-        //     const [item] = next.splice(idx, 1);
-        //     next.splice(to, 0, item);
-        //     return { ...s, fields: next };
-        // });
+        setSettings((s) => {
+            if (!s?.fields) return s;
+            const next = [...s.fields];
+            const to = dir === "up" ? idx - 1 : idx + 1;
+            if (to < 0 || to >= next.length) return s;
+            const [item] = next.splice(idx, 1);
+            next.splice(to, 0, item);
+            return { ...s, fields: next };
+        });
     };
 
     const addField = (type: FieldType) => {
         const preset = FIELD_PRESETS[type];
-        // setSettings((s) => ({
-        //     ...s,
-        //     fields: [
-        //         ...s.fields,
-        //         {
-        //             id: uid(),
-        //             type,
-        //             label: preset.label,
-        //             required: preset.required,
-        //             enabled: true,
-        //         },
-        //     ],
-        // }));
+        setSettings((s) => ({
+            ...s,
+            fields: [
+                ...(s?.fields || []),
+                {
+                    id: uid(),
+                    type,
+                    label: preset.label,
+                    inputName: type, // Assuming inputName is same as type for new fields
+                    placeholder: preset.label, // Assuming placeholder is same as label for new fields
+                    required: preset.required,
+                    enabled: true,
+                },
+            ],
+        }));
     };
 
     return (
@@ -339,43 +267,89 @@ const CurrentForm = ({ componentHtml }: Props) => {
                 </Select>
             </div>
 
-            <div className="space-y-2">
+            <Accordion type="single" collapsible className="w-full space-y-2">
                 {settings && settings.fields && settings.fields.map((f, idx) => (
-                    <FieldRow
-                        key={f.id}
-                        field={f}
-                        onToggleEnabled={() =>
-                            setSettings((s) => ({
-                                ...s,
-                                fields: s?.fields?.map((x) =>
-                                    x.id === f.id
-                                        ? { ...x, enabled: !x.enabled }
-                                        : x
-                                ),
-                            }))
-                        }
-                        onToggleRequired={() =>
-                            setSettings((s) => ({
-                                ...s,
-                                fields: s?.fields?.map((x) =>
-                                    x.id === f.id
-                                        ? { ...x, required: !x.required }
-                                        : x
-                                ),
-                            }))
-                        }
-                        onRename={(v) =>
-                            setSettings((s) => ({
-                                ...s,
-                                fields: s?.fields?.map((x) =>
-                                    x.id === f.id ? { ...x, label: v } : x
-                                ),
-                            }))
-                        }
-                        onMove={(dir) => moveField(idx, dir)}
-                    />
+                    <AccordionItem key={f.id} value={f.id} className="border rounded-xl bg-white px-0 overflow-hidden">
+                        <AccordionTrigger className="px-3 py-2 hover:no-underline hover:bg-slate-50 [&[data-state=open]]:bg-slate-50">
+                            <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                                <GripVertical className="h-4 w-4 text-slate-400" />
+                                <span>{f.label}</span>
+                                {f.required && <span className="text-xs text-red-500">*</span>}
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="px-3 pb-3 pt-2 bg-slate-50 border-t">
+                            <div className="space-y-4">
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-medium text-slate-500">Label</label>
+                                    <Input
+                                        value={f.label}
+                                        onChange={(e) =>
+                                            setSettings((s) => ({
+                                                ...s,
+                                                fields: s?.fields?.map((x) =>
+                                                    x.id === f.id ? { ...x, label: e.target.value } : x
+                                                ),
+                                            }))
+                                        }
+                                        className="h-8 bg-white"
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Switch
+                                            checked={f.required}
+                                            onCheckedChange={() =>
+                                                setSettings((s) => ({
+                                                    ...s,
+                                                    fields: s?.fields?.map((x) =>
+                                                        x.id === f.id
+                                                            ? { ...x, required: !x.required }
+                                                            : x
+                                                    ),
+                                                }))
+                                            }
+                                            id={`required-${f.id}`}
+                                            className="data-[state=checked]:bg-[#6D5EF5] relative inline-flex h-[20px] w-[36px] items-center rounded-full border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                        >
+                                            <span
+                                                className={`${f.required ? 'translate-x-[18px]' : 'translate-x-0.5'
+                                                    } pointer-events-none block h-[16px] w-[16px] rounded-full bg-white shadow-lg ring-0 transition-transform`}
+                                            />
+                                        </Switch>
+                                        <label htmlFor={`required-${f.id}`} className="text-sm text-slate-600 cursor-pointer select-none">Required</label>
+                                    </div>
+
+                                    <div className="flex items-center gap-1">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="h-7 w-7"
+                                            onClick={(e) => { e.stopPropagation(); moveField(idx, "up"); }}
+                                            disabled={idx === 0}
+                                        >
+                                            <span className="sr-only">Move up</span>
+                                            <svg width="10" height="10" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3 w-3"><path d="M7.14645 2.14645C7.34171 1.95118 7.65829 1.95118 7.85355 2.14645L11.8536 6.14645C12.0488 6.34171 12.0488 6.65829 11.8536 6.85355C11.6583 7.04882 11.3417 7.04882 11.1464 6.85355L7.5 3.20711L3.85355 6.85355C3.65829 7.04882 3.34171 7.04882 3.14645 6.85355C2.95118 6.65829 2.95118 6.34171 3.14645 6.14645L7.14645 2.14645Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            className="h-7 w-7"
+                                            onClick={(e) => { e.stopPropagation(); moveField(idx, "down"); }}
+                                            disabled={idx === (settings.fields?.length || 0) - 1}
+                                        >
+                                            <span className="sr-only">Move down</span>
+                                            <svg width="10" height="10" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-3 w-3"><path d="M7.5 11.2071L11.1464 7.56066C11.3417 7.3654 11.6583 7.3654 11.8536 7.56066C12.0488 7.75592 12.0488 8.0725 11.8536 8.26777L7.85355 12.2678C7.65829 12.463 7.34171 12.463 7.14645 12.2678L3.14645 8.26777C2.95118 8.0725 2.95118 7.75592 3.14645 7.56066C3.34171 7.3654 3.65829 7.3654 3.85355 7.56066L7.5 11.2071Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </AccordionContent>
+                    </AccordionItem>
                 ))}
-            </div>
+            </Accordion>
 
             <div className="pt-2 text-xs text-slate-400">
                 Tip: You can reorder fields with ↑ ↓ (drag handle is visual).
