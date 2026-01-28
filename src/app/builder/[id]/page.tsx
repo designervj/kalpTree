@@ -49,9 +49,10 @@ const page = async ({
         content: page.content,
         seo: page.seo,
         status: page.status,
-        createdAt:"",
-        updatedAt: "",
-        publishedAt: "",
+        isHomePage: page.isHomePage,
+        createdAt:page.createdAt,
+        updatedAt: page.updatedAt,
+        publishedAt: page.publishedAt,
     }));
 
     return (

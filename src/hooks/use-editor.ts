@@ -557,11 +557,11 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component selected--mans", component)
+ 
       if(component?.attributes?.name === 'Form') {
          // how to know the child of form
            const componentHtml = component.toHTML();
-           console.log("componentHtml", componentHtml)
+      
           //editForm
           setEditForm(componentHtml)
          
