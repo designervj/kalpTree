@@ -8,8 +8,16 @@ import {
   XCircle,
   Link2,
 } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { useSelector } from "react-redux";
 
 export default function Page() {
+
+  const dispatch= useDispatch<AppDispatch>()
+    const {websites,hasfetched,currentWebsite}=useSelector((state:RootState)=>state.websites)
+
+
   return (
     <div className="min-h-screen  p-8">
       {/* PAGE HEADER */}
@@ -42,18 +50,22 @@ export default function Page() {
       </div>
 
       {/* DOMAIN LIST */}
-      <div className="bg-white rounded-2xl border shadow-sm p-6 max-w-4xl">
+     {currentWebsite?.primaryDomain && 
+      currentWebsite.primaryDomain.length>0 &&
+    
+     <div className="bg-white rounded-2xl border shadow-sm p-6 max-w-4xl">
         <h2 className="text-lg font-semibold mb-4">
           Connected Domains
         </h2>
 
         <div className="divide-y">
           {/* DOMAIN ITEM */}
+          {currentWebsite.primaryDomain.map((domain,index)=>(
           <div className="py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Globe className="text-blue-600" />
               <div>
-                <p className="font-medium">admincms.com</p>
+                <p className="font-medium">{domain}</p>
                 <p className="text-sm text-gray-500">
                   Primary Domain
                 </p>
@@ -63,6 +75,7 @@ export default function Page() {
               <CheckCircle size={16} /> Connected
             </span>
           </div>
+          ))}
 
           {/* DOMAIN ITEM */}
           <div className="py-4 flex items-center justify-between">
@@ -81,7 +94,7 @@ export default function Page() {
           </div>
 
           {/* DOMAIN ITEM */}
-          <div className="py-4 flex items-center justify-between">
+          {/* <div className="py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Globe className="text-gray-400" />
               <div>
@@ -94,9 +107,9 @@ export default function Page() {
             <span className="flex items-center gap-1 text-red-600 text-sm font-medium">
               <XCircle size={16} /> Not Connected
             </span>
-          </div>
+          </div> */}
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

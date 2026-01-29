@@ -259,7 +259,7 @@ export function useEditor(containerId: string) {
         // Register Form component to ensure it's recognized even from raw HTML
         domc.addType("form", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'FORM') {
+            if (el.tagName === 'form') {
               return { type: 'form' };
             }
             return false;
@@ -557,8 +557,8 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
- 
-      if(component?.attributes?.name === 'Form') {
+      console.log("component selected", component);
+      if(component?.attributes?.tagName === 'form') {
          // how to know the child of form
            const componentHtml = component.toHTML();
       
