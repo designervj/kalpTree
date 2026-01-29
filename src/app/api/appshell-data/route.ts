@@ -123,7 +123,7 @@ export async function GET(req: NextRequest) {
   } else if (user?.role == "business") {
 
 
- 
+
 
     business = await agencyColl
       .find({ _id: new ObjectId(user.tenantId) })
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
       .toArray();
 
 
-         agencies = await agencyColl
+    agencies = await agencyColl
       .find({ type: "agency", _id: new ObjectId(business[0].tenantId) })
       .project({
         _id: 1,
@@ -171,9 +171,13 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const response = NextResponse.json({ success: true });
 
+  // Delete all application-specific cookies
+  response.cookies.delete("admin-cart-token");
+  response.cookies.delete("current_website_data");
+  response.cookies.delete("current_website");
+  response.cookies.delete("current_website_id");
   response.cookies.delete("current_selected_agency_id");
   response.cookies.delete("current_selected_business_id");
-  response.cookies.delete("current_website_id");
 
   return response;
 }
