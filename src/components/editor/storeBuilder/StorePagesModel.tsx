@@ -70,6 +70,7 @@ import ProductCategoryPage from "./ProductCategoryPage";
 import ProductReviews from "./ProductReviews";
 import { AddProduct } from "./AddProduct";
 import { IoClose } from "react-icons/io5";
+import Analytics from "./Analytics";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavChild = { id: string; label: string };
@@ -676,65 +677,66 @@ function IntegrationsPage() {
 
 function AnalyticsPage() {
   return (
-    <div className="space-y-6">
-      <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Analytics</div>
+    // <div className="space-y-6">
+    //   <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Analytics</div>
+    //   <div className="flex flex-wrap items-center gap-3">
+    //     <Button
+    //       variant="outline"
+    //       className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+    //     >
+    //       Dec 28, 2025 — Jan 26, 2026 <ChevronDown className="ml-2 h-4 w-4" />
+    //     </Button>
+    //     <Button
+    //       variant="outline"
+    //       className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+    //     >
+    //       No comparison <ChevronDown className="ml-2 h-4 w-4" />
+    //     </Button>
+    //   </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Button
-          variant="outline"
-          className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-        >
-          Dec 28, 2025 — Jan 26, 2026 <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-        <Button
-          variant="outline"
-          className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-        >
-          No comparison <ChevronDown className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
+    //   <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
+    //     <div className="text-sm text-slate-600 dark:text-slate-300">Total Sales</div>
+    //     <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
+    //     <div className="mt-4 h-[220px] rounded-sm bg-slate-50 dark:bg-white/5" />
+    //   </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-        <div className="text-sm text-slate-600 dark:text-slate-300">Total Sales</div>
-        <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-        <div className="mt-4 h-[220px] rounded-sm bg-slate-50 dark:bg-white/5" />
-      </div>
+    //   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    //     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
+    //       <div className="text-sm text-slate-600 dark:text-slate-300">Total Orders</div>
+    //       <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">0</div>
+    //       <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
+    //     </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-          <div className="text-sm text-slate-600 dark:text-slate-300">Total Orders</div>
-          <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">0</div>
-          <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
-        </div>
+    //     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
+    //       <div className="text-sm text-slate-600 dark:text-slate-300">Average order value</div>
+    //       <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
+    //       <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
+    //     </div>
+    //   </div>
 
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-          <div className="text-sm text-slate-600 dark:text-slate-300">Average order value</div>
-          <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-          <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
-        </div>
-      </div>
+    //   <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
+    //     <div className="flex items-center justify-between">
+    //       <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Total sales by product</div>
+    //       <button type="button" className="text-sm font-medium text-violet-700 dark:text-violet-200">
+    //         Sort by: Sales ↑
+    //       </button>
+    //     </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-        <div className="flex items-center justify-between">
-          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Total sales by product</div>
-          <button type="button" className="text-sm font-medium text-violet-700 dark:text-violet-200">
-            Sort by: Sales ↑
-          </button>
-        </div>
+    //     <div className="mt-4 space-y-4">
+    //       {PRODUCTS.map((p) => (
+    //         <div key={p.id} className="flex items-center justify-between">
+    //           <div className="flex items-center gap-3">
+    //             <div className="h-10 w-10 rounded-lg bg-slate-100 dark:bg-white/5" />
+    //             <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{p.name}</div>
+    //           </div>
+    //           <div className="text-sm text-slate-600 dark:text-slate-300">0 sales</div>
+    //         </div>
+    //       ))}
+    //     </div>
+    //   </div>
+    // </div>
+    <Analytics />
 
-        <div className="mt-4 space-y-4">
-          {PRODUCTS.map((p) => (
-            <div key={p.id} className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-slate-100 dark:bg-white/5" />
-                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{p.name}</div>
-              </div>
-              <div className="text-sm text-slate-600 dark:text-slate-300">0 sales</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
 

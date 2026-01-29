@@ -27,6 +27,7 @@ import { BlocksManager } from "../../blocks-manager/blocks-manager";
 import { CodeEditor } from "../../code-editor/code-editor";
 import { TemplateManager } from "../../template-manager/template-manager";
 import { EditSection } from "../../sectionEdit/EditSection";
+import HeaderEditForm from "../../sectionEdit/HeaderEditForm";
 
 type TopToolbarProps = {
   editor: any;
@@ -159,6 +160,16 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
               <EditSection/>
             </TooltipTrigger>
             <TooltipContent side="bottom">Form</TooltipContent>
+          </Tooltip>
+
+            <Tooltip>
+            <TooltipTrigger asChild>
+             
+
+              <HeaderEditForm />
+
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Header Edit Form</TooltipContent>
           </Tooltip>
 
           
