@@ -72,4 +72,5 @@ export interface BussinessDetailModel {
   phone?: string;
   headquarters?: string;
   brand_name?: string;
+  service?: string;
 }

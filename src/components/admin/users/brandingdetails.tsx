@@ -5,6 +5,7 @@ export const Brandingdetails = ({
   handleInputChange,
   formData,
 }: any) => {
+  
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
@@ -65,13 +66,13 @@ export const Brandingdetails = ({
               <input
                 type="color"
                 name="branding.primary_color"
-                value={formData.branding.primary_color}
+                value={formData?.branding?.primary_color}
                 onChange={handleInputChange}
                 className="w-16 h-12 rounded-lg cursor-pointer border-2 border-gray-300"
               />
               <input
                 type="text"
-                value={formData.branding.primary_color}
+                value={formData ?.branding?.primary_color}
                 onChange={(e) =>
                   handleInputChange({
                     target: {
@@ -93,13 +94,13 @@ export const Brandingdetails = ({
               <input
                 type="color"
                 name="branding.secondary_color"
-                value={formData.branding.secondary_color}
+                value={formData?.branding?.secondary_color}
                 onChange={handleInputChange}
                 className="w-16 h-12 rounded-lg cursor-pointer border-2 border-gray-300"
               />
               <input
                 type="text"
-                value={formData.branding.secondary_color}
+                value={formData?.branding?.secondary_color}
                 onChange={(e) =>
                   handleInputChange({
                     target: {
@@ -121,13 +122,13 @@ export const Brandingdetails = ({
               <input
                 type="color"
                 name="branding.tertiary_color"
-                value={formData.branding.tertiary_color}
+                value={formData?.branding?.tertiary_color}
                 onChange={handleInputChange}
                 className="w-16 h-12 rounded-lg cursor-pointer border-2 border-gray-300"
               />
               <input
                 type="text"
-                value={formData.branding.tertiary_color}
+                value={formData?.branding?.tertiary_color}
                 onChange={(e) =>
                   handleInputChange({
                     target: {
@@ -149,15 +150,15 @@ export const Brandingdetails = ({
           <div className="flex gap-4">
             <div
               className="flex-1 h-20 rounded-lg shadow-md transition-all hover:scale-105"
-              style={{ backgroundColor: formData.branding.primary_color }}
+              style={{ backgroundColor: formData?.branding?.primary_color }}
             />
             <div
               className="flex-1 h-20 rounded-lg shadow-md transition-all hover:scale-105"
-              style={{ backgroundColor: formData.branding.secondary_color }}
+              style={{ backgroundColor: formData?.branding?.secondary_color }}
             />
             <div
               className="flex-1 h-20 rounded-lg shadow-md transition-all hover:scale-105"
-              style={{ backgroundColor: formData.branding.tertiary_color }}
+              style={{ backgroundColor: formData?.branding?.tertiary_color }}
             />
           </div>
         </div>
@@ -177,7 +178,7 @@ export const Brandingdetails = ({
             <label
               key={font}
               className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
-                formData.branding.typography === font
+                formData?.branding?.typography === font
                   ? "border-indigo-500 bg-indigo-50"
                   : "border-gray-200 hover:border-gray-300 bg-white"
               }`}
@@ -186,7 +187,7 @@ export const Brandingdetails = ({
                 type="radio"
                 name="branding.typography"
                 value={font}
-                checked={formData.branding.typography === font}
+                checked={formData.branding?.typography === font}
                 onChange={handleInputChange}
                 className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
               />

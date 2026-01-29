@@ -52,7 +52,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { setBusinessWebsite, setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
+import { setBusinessWebsite, setCurrentBusiness, setEditBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { IBusiness } from "@/models/business";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -79,12 +79,12 @@ const ShowBusiness = () => {
   const params = useSearchParams();
   const itemsperpage = params.get("itemsperpage") || 30;
   const router = useRouter();
-
+  const { websites } = useSelector((state: RootState) => state.websites);
   const dispatch = useDispatch<AppDispatch>();
 
 
   const [filtersOpen, setFiltersOpen] = useState(false);
-
+  const [status, setStatus] = useState("__all__");
   const [q, setQ] = useState("");
 
   const handlePageChange = (newPage: number) => {
@@ -155,10 +155,18 @@ const ShowBusiness = () => {
   };
 
   const handleDeleteBusiness = async (business: IBusiness) => {
-   const response= await dispatch(deleteBusiness(business?._id?.toString() || "")).unwrap();
-     if(response){
-        toast.success("Business deleted successfully");
-     }
+    const response = await dispatch(deleteBusiness(business?._id?.toString() || "")).unwrap();
+    if (response) {
+      toast.success("Business deleted successfully");
+    }
+  };
+
+  const handleEditBusiness = (business: IBusiness) => {
+
+    const website = websites.find((website) => website.tenantId === business._id);
+    console.log("website current", website);
+    dispatch(setEditBusiness(business));
+    router.push(`/admin/businesses/edit`);
   };
   return (
     <div className="w-full space-y-6">
@@ -211,7 +219,7 @@ const ShowBusiness = () => {
       {/* Items per page selector */}
 
 
-        <Card className="rounded-xl border bg-white shadow-sm py-2">
+      <Card className="rounded-xl border bg-white shadow-sm py-2">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
             {/* Search */}
@@ -231,7 +239,7 @@ const ShowBusiness = () => {
             {/* Filters */}
             <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <SheetTrigger asChild>
-                <Button 
+                <Button
                   variant="outline"
                   className="h-11 rounded-md px-6 text-base font-semibold"
                 >
@@ -250,10 +258,10 @@ const ShowBusiness = () => {
                     <Label>Status</Label>
                     <Select
                       value={status}
-                      // onValueChange={(v) => {
-                      //   setStatus(v);
-                      //   setPage(1);
-                      // }}
+                    // onValueChange={(v) => {
+                    //   setStatus(v);
+                    //   setPage(1);
+                    // }}
                     >
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue placeholder="All " />
@@ -270,11 +278,11 @@ const ShowBusiness = () => {
                   <div className="space-y-2">
                     <Label>Sort</Label>
                     <Select
-                      // value={sortBy}
-                      // onValueChange={(v) => {
-                      //   setSortBy(v as "newest" | "oldest" | "name");
-                      //   setPage(1);
-                      // }}
+                    // value={sortBy}
+                    // onValueChange={(v) => {
+                    //   setSortBy(v as "newest" | "oldest" | "name");
+                    //   setPage(1);
+                    // }}
                     >
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue placeholder="Newest" />
@@ -291,7 +299,7 @@ const ShowBusiness = () => {
 
                   <div className="flex items-center gap-2">
                     <Button
-                    
+
                       className="flex-1"
                       onClick={() => setFiltersOpen(false)}
                     >
@@ -300,7 +308,7 @@ const ShowBusiness = () => {
                     <Button
                       variant="outline"
                       className="flex-1"
-                      // onClick={resetFilters}
+                    // onClick={resetFilters}
                     >
                       Reset
                     </Button>
@@ -317,7 +325,7 @@ const ShowBusiness = () => {
           </div>
         </CardContent>
       </Card>
-     
+
 
       {/* Business List */}
       <div className="space-y-4">
@@ -328,144 +336,144 @@ const ShowBusiness = () => {
           >
             <CardContent className="p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-       <div className="flex items-start gap-5">
-  {/* Left icon card (like screenshot) */}
-  <div className="h-14 w-14 rounded-2xl bg-indigo-600 shadow-sm grid place-items-center">
-    {/* simple “doc” icon look */}
-    <div className="relative h-8 w-8 rounded-lg bg-white/15 border border-white/25 grid place-items-center">
-      <div className="h-5 w-4 rounded-sm border-2 border-white/80 relative">
-        <div className="absolute left-1 top-1 h-1 w-2.5 rounded bg-white/80" />
-        <div className="absolute left-1 top-3 h-1 w-2 rounded bg-white/70" />
-        <div className="absolute left-1 top-5 h-1 w-2.5 rounded bg-white/60" />
-      </div>
-    </div>
-  </div>
+                <div className="flex items-start gap-5">
+                  {/* Left icon card (like screenshot) */}
+                  <div className="h-14 w-14 rounded-2xl bg-indigo-600 shadow-sm grid place-items-center">
+                    {/* simple “doc” icon look */}
+                    <div className="relative h-8 w-8 rounded-lg bg-white/15 border border-white/25 grid place-items-center">
+                      <div className="h-5 w-4 rounded-sm border-2 border-white/80 relative">
+                        <div className="absolute left-1 top-1 h-1 w-2.5 rounded bg-white/80" />
+                        <div className="absolute left-1 top-3 h-1 w-2 rounded bg-white/70" />
+                        <div className="absolute left-1 top-5 h-1 w-2.5 rounded bg-white/60" />
+                      </div>
+                    </div>
+                  </div>
 
-  {/* Right content */}
-  <div className="min-w-0 flex-1">
-    <div className="flex items-start gap-3 flex-wrap">
-      <div className="text-[28px] font-semibold text-slate-900 leading-tight">
-        {b.name}
-      </div>
+                  {/* Right content */}
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-start gap-3 flex-wrap">
+                      <div className="text-[28px] font-semibold text-slate-900 leading-tight">
+                        {b.name}
+                      </div>
 
-      {/* Active badge like screenshot */}
-      <span
-        className={[
-          "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold",
-          b.status === "active"
-            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-            : "bg-rose-50 text-rose-700 border border-rose-200",
-        ].join(" ")}
-      >
-        <span
-          className={[
-            "h-2 w-2 rounded-full",
-            b.status === "active" ? "bg-emerald-500" : "bg-rose-500",
-          ].join(" ")}
-        />
-        {b.status === "active" ? "Active" : "Inactive"}
-      </span>
-    </div>
+                      {/* Active badge like screenshot */}
+                      <span
+                        className={[
+                          "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold",
+                          b.status === "active"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-rose-50 text-rose-700 border border-rose-200",
+                        ].join(" ")}
+                      >
+                        <span
+                          className={[
+                            "h-2 w-2 rounded-full",
+                            b.status === "active" ? "bg-emerald-500" : "bg-rose-500",
+                          ].join(" ")}
+                        />
+                        {b.status === "active" ? "Active" : "Inactive"}
+                      </span>
+                    </div>
 
-    {/* tagline (optional) */}
-    {b?.tagline ? (
-      <p className="mt-1 text-[15px] text-slate-600">
-        {b.tagline}
-      </p>
-    ) : null}
+                    {/* tagline (optional) */}
+                    {b?.tagline ? (
+                      <p className="mt-1 text-[15px] text-slate-600">
+                        {b.tagline}
+                      </p>
+                    ) : null}
 
-    {/* meta pills row */}
-    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
-      {/* {b?.industry ? (/ */}
-        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
-          <Building2 className="h-4 w-4 text-slate-600" />
-          {/* {b.industry} */}
-        </span>
-      {/* ) : null}/ */}
+                    {/* meta pills row */}
+                    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+                      {/* {b?.industry ? (/ */}
+                      <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+                        <Building2 className="h-4 w-4 text-slate-600" />
+                        {/* {b.industry} */}
+                      </span>
+                      {/* ) : null}/ */}
 
-      {/* {b?.foundedYear ? ( */}
-        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
-          <Calendar className="h-4 w-4 text-slate-600" />
-          Founded 
-          {/* {b.foundedYear} */}
-        </span>
-      {/* ) : null} */}
+                      {/* {b?.foundedYear ? ( */}
+                      <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+                        <Calendar className="h-4 w-4 text-slate-600" />
+                        Founded
+                        {/* {b.foundedYear} */}
+                      </span>
+                      {/* ) : null} */}
 
-      {b?.createdAt ? (
-        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
-          <Calendar className="h-4 w-4 text-slate-600" />
-          Joined 
-          {/* {formatDate(b.createdAt)} */}
-        </span>
-      ) : null}
-    </div>
+                      {b?.createdAt ? (
+                        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+                          <Calendar className="h-4 w-4 text-slate-600" />
+                          Joined
+                          {/* {formatDate(b.createdAt)} */}
+                        </span>
+                      ) : null}
+                    </div>
 
-    {/* action pills (like screenshot) */}
-    <div className="mt-4 flex flex-wrap items-center gap-2">
-      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
-        <Link
-          href={`/admin/businesses/${b._id}/websites`}
-          className="flex items-center gap-2"
-        >
-          <Globe className="h-4 w-4" />
-          View dashboard
-        </Link>
-      </Button>
+                    {/* action pills (like screenshot) */}
+                    <div className="mt-4 flex flex-wrap items-center gap-2">
+                      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+                        <Link
+                          href={`/admin/businesses/${b._id}/websites`}
+                          className="flex items-center gap-2"
+                        >
+                          <Globe className="h-4 w-4" />
+                          View dashboard
+                        </Link>
+                      </Button>
 
-      {b.email ? (
-        <Button
-          asChild
-          variant="outline"
-          className="h-11 rounded-xl px-5"
-        >
-          <a href={`mailto:${b.email}`} className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            {b.email}
-          </a>
-        </Button>
-      ) : null}
+                      {b.email ? (
+                        <Button
+                          asChild
+                          variant="outline"
+                          className="h-11 rounded-xl px-5"
+                        >
+                          <a href={`mailto:${b.email}`} className="flex items-center gap-2">
+                            <Mail className="h-4 w-4" />
+                            {b.email}
+                          </a>
+                        </Button>
+                      ) : null}
 
-      {/* {b?.website ? ( */}
-        
-        <Button asChild variant="outline" className="h-11 rounded-xl px-5">
-          <Link
-          //  href={b.website.startsWith("http") ? b.website : `https://${b.website}`}
-            href="#"
-            target="_blank"
-            className="flex items-center gap-2"
-          >
-            <ExternalLink className="h-4 w-4" />
-            Visit site
-          </Link>
-        </Button>
-      {/* ) : null}  */}
-    </div>
+                      {/* {b?.website ? ( */}
 
-    {/* Feature pills row */}
-    <div className="mt-3 flex flex-wrap gap-2">
-      {b?.features?.websiteEnabled ? (
-        <span className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">
-          Website
-        </span>
-      ) : null}
-      {b?.features?.ecommerceEnabled ? (
-        <span className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
-          E-commerce
-        </span>
-      ) : null}
-      {b?.features?.blogEnabled ? (
-        <span className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
-          Blog
-        </span>
-      ) : null}
-      {b?.features?.invoicesEnabled ? (
-        <span className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
-          Invoices
-        </span>
-      ) : null}
-    </div>
-  </div>
-</div>
+                      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+                        <Link
+                          //  href={b.website.startsWith("http") ? b.website : `https://${b.website}`}
+                          href="#"
+                          target="_blank"
+                          className="flex items-center gap-2"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          Visit site
+                        </Link>
+                      </Button>
+                      {/* ) : null}  */}
+                    </div>
+
+                    {/* Feature pills row */}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {b?.features?.websiteEnabled ? (
+                        <span className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">
+                          Website
+                        </span>
+                      ) : null}
+                      {b?.features?.ecommerceEnabled ? (
+                        <span className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
+                          E-commerce
+                        </span>
+                      ) : null}
+                      {b?.features?.blogEnabled ? (
+                        <span className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+                          Blog
+                        </span>
+                      ) : null}
+                      {b?.features?.invoicesEnabled ? (
+                        <span className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+                          Invoices
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
 
 
                 <div className="flex flex-wrap items-center gap-3 justify-start lg:justify-end">
@@ -486,34 +494,26 @@ const ShowBusiness = () => {
                     Open Dashboard
                     {/* </Link> */}
                   </Button>
-                   <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-11 w-11 rounded-xl"
-                        onClick={() => handleDeleteBusiness(b)}
-                        title="Delete"
-                      >
-                        <Trash2 className="h-5 w-5 text-rose-600" />
-                      </Button>
-
-                     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline"><HiDotsVertical /></Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-10 me-6" align="start">
 
 
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline"><HiDotsVertical /></Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-10 me-6" align="start">
 
-
-
-        <DropdownMenuGroup>
-          <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer">
-            Delete 
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                          onClick={() => handleEditBusiness(b)}>
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                          onClick={() => handleDeleteBusiness(b)}>
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
 
                 </div>
               </div>
@@ -523,15 +523,15 @@ const ShowBusiness = () => {
       </div>
 
 
-       <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Show</span>
           <Select
             value={String(itemsperpage)}
             onValueChange={handleItemsPerPageChange}
-            
+
           >
-            
+
             <SelectTrigger className="w-[80px] bg-white">
               <SelectValue />
             </SelectTrigger>

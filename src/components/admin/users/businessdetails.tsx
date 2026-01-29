@@ -84,7 +84,7 @@ export const Businessdetails = ({
   const [checked, setChecked] = useState<null | Boolean>(null);
 
   const selected = formData?.businessdetails?.service ?? "";
-
+   console.log("formdata",formData)
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-md border border-indigo-100">
@@ -107,7 +107,7 @@ export const Businessdetails = ({
               <input
                 type="email"
                 name="businessdetails.email"
-                value={formData.businessdetails.email}
+                value={formData?.businessdetails?.email}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
@@ -123,7 +123,7 @@ export const Businessdetails = ({
                 <input
                   type={showPassword ? "text" : "password"}
                   name="businessdetails.password"
-                  value={formData.businessdetails.password}
+                  value={formData?.businessdetails?.password}
                   onChange={handleInputChange}
                   required
                   className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
@@ -150,7 +150,7 @@ export const Businessdetails = ({
               <input
                 type="text"
                 name="businessdetails.business_name"
-                value={formData.businessdetails.business_name}
+                value={formData?.businessdetails?.business_name}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
@@ -165,7 +165,7 @@ export const Businessdetails = ({
               <input
                 type="text"
                 name="businessdetails.brand_name"
-                value={formData.businessdetails.brand_name}
+                value={formData?.businessdetails?.brand_name}
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
                 placeholder="KaplTree"
@@ -210,19 +210,19 @@ export const Businessdetails = ({
                 <input
                   type="text"
                   name="businessdetails.businsess_url"
-                  value={formData.businessdetails.business_url}
+                  value={formData?.businessdetails?.business_url}
                   // onChange={handleInputChange}
                   className="flex-1 px-3 py-3 outline-none"
                   placeholder="kalptree"
                   disabled={true}
                 />
-                <span className="px-2 text-gray-500">.kalptree.com</span>
+                <span className="px-2 text-gray-500">.kalptree.xyz</span>
                 {!checked && (
                   <button
                     type="button"
                     onClick={() =>
                       handleCheck(
-                        formatBrandSlug(formData.businessdetails.brand_name)
+                        formatBrandSlug(formData?.businessdetails?.brand_name)
                       )
                     }
                     className="px-4 py-3.5 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
@@ -232,10 +232,10 @@ export const Businessdetails = ({
                 )}
               </div>
 
-              {formData.businessdetails.brand_name && (
+              {formData?.businessdetails?.brand_name && (
                 <p className="mt-2">
                   Complete URL: https://
-                  {formatBrandSlug(formData.businessdetails.brand_name)}
+                  {formatBrandSlug(formData?.businessdetails?.brand_name)}
                   .kalptree.xyz
                 </p>
               )}
@@ -251,7 +251,7 @@ export const Businessdetails = ({
             <input
               type="text"
               name="businessdetails.tagline"
-              value={formData.businessdetails.tagline}
+              value={formData?.businessdetails?.tagline}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="AI-Powered Architecture & Design"
@@ -300,7 +300,7 @@ export const Businessdetails = ({
                     id={id}
                     type="radio"
                     name="businessdetails.service"
-                    value={opt.value}
+                    value={formData?.businessdetails?.service}
                     checked={checked}
                     onChange={handleInputChange}
                     className="sr-only"
@@ -357,7 +357,7 @@ export const Businessdetails = ({
         </label>
         <textarea
           name="businessdetails.about"
-          value={formData.businessdetails.about}
+          value={formData?.businessdetails?.about}
           onChange={handleInputChange}
           rows={4}
           maxLength={500}
@@ -365,7 +365,7 @@ export const Businessdetails = ({
           placeholder="KalpTree is the leading platform for visualizing home exteriors using advanced AI material rendering."
         />
         <div className="text-xs text-gray-500 mt-1 text-right">
-          {formData.businessdetails.about.length}/500 characters
+          {formData?.businessdetails?.about?.length}/500 characters
         </div>
       </div>
 
@@ -384,7 +384,7 @@ export const Businessdetails = ({
               <input
                 type="text"
                 name="businessdetails.business_website_url"
-                value={formData.businessdetails.business_website_url}
+                value={formData?.businessdetails?.business_website_url}
                 onChange={handleInputChange}
                 className="flex-1 px-2 py-3 outline-none"
                 placeholder="KalpTree.com"
@@ -399,7 +399,7 @@ export const Businessdetails = ({
             <input
               type="email"
               name="businessdetails.public_email"
-              value={formData.businessdetails.public_email}
+              value={formData?.businessdetails?.public_email}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="contact@KalpTree.com"
@@ -413,7 +413,7 @@ export const Businessdetails = ({
             <input
               type="tel"
               name="businessdetails.phone"
-              value={formData.businessdetails.phone}
+              value={formData?.businessdetails?.phone}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="+1 (555) 123-4567"
@@ -427,7 +427,7 @@ export const Businessdetails = ({
             <input
               type="text"
               name="businessdetails.headquarters"
-              value={formData.businessdetails.headquarters}
+              value={formData?.businessdetails?.headquarters}
               onChange={handleInputChange}
               className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white"
               placeholder="123 Innovation Dr, Tech City, CA"
@@ -444,7 +444,7 @@ export const Businessdetails = ({
 
           <select
             name="businessdetails.tenantId"
-            value={formData.businessdetails.tenantId || ""}
+            value={formData?.businessdetails?.tenantId || ""}
             onChange={handleInputChange}
             required={user?.role === "superadmin"}
             className="w-full px-4 py-3 border border-gray-300 bg-white rounded-md focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
@@ -453,9 +453,9 @@ export const Businessdetails = ({
               Select an agency
             </option>
 
-            {agencies.map((agency: any) => (
-              <option key={agency._id} value={agency._id}>
-                {agency.name}
+            {agencies &&agencies.map((agency: any) => (
+              <option key={agency?._id} value={agency?._id}>
+                {agency?.name}
               </option>
             ))}
           </select>

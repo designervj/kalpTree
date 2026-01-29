@@ -18,10 +18,11 @@ import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatBrandSlug } from "@/lib/utils";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addCreatedAgency } from "@/hooks/slices/user/agencySlice";
 import { addCreatedBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { addCreatedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
+import { RootState } from "@/store/store";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
@@ -32,10 +33,12 @@ export default function BusinessCreatePage({
   user?: any;
   agencies?: any[];
 }) {
+
+
   const path = usePathname();
   const router = useRouter();
   const isAgencyPath = path.includes("agencies");
-   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
@@ -71,7 +74,7 @@ export default function BusinessCreatePage({
     businessdetails: {
       email: "",
       password: "",
-      service: "ECOMMERCE",
+      service: "",
       business_name: "",
       business_url: "",
       tagline: "",
@@ -83,6 +86,7 @@ export default function BusinessCreatePage({
       headquarters: "",
       brand_name: "",
       lang: [],
+     
     },
 
     branding: {
@@ -95,6 +99,7 @@ export default function BusinessCreatePage({
 
     createdById: safeUser.id,
   }));
+
 
   React.useEffect(() => {
     setFormData((prev: any) => ({
@@ -205,18 +210,18 @@ export default function BusinessCreatePage({
 
       const result = await res.json();
 
-      if (result?.tenantId && 
-        result?.agency && 
+      if (result?.tenantId &&
+        result?.agency &&
         result?.business &&
         result?.website) {
-          // dispatch add created agency
-          dispatch(addCreatedAgency(result.agency));
+        // dispatch add created agency
+        dispatch(addCreatedAgency(result.agency));
 
-          // dispatch add created business
-          dispatch(addCreatedBusiness(result.business));
+        // dispatch add created business
+        dispatch(addCreatedBusiness(result.business));
 
-          // dispatch add created website
-          dispatch(addCreatedWebsite(result.website));
+        // dispatch add created website
+        dispatch(addCreatedWebsite(result.website));
         toast.success(result.message);
         setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
@@ -240,14 +245,14 @@ export default function BusinessCreatePage({
 
   const tabs = isAgencyPath
     ? [
-        { id: "agency", label: "Agency Details", icon: User },
-        { id: "business", label: "Business Details", icon: Briefcase },
-        { id: "branding", label: "Branding", icon: Palette },
-      ]
+      { id: "agency", label: "Agency Details", icon: User },
+      { id: "business", label: "Business Details", icon: Briefcase },
+      { id: "branding", label: "Branding", icon: Palette },
+    ]
     : [
-        { id: "business", label: "Business Details", icon: Briefcase },
-        { id: "branding", label: "Branding", icon: Palette },
-      ];
+      { id: "business", label: "Business Details", icon: Briefcase },
+      { id: "branding", label: "Branding", icon: Palette },
+    ];
 
   return (
     <div className="min-h-screen bg-transparent p-8">
@@ -271,11 +276,10 @@ export default function BusinessCreatePage({
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
-                      activeTab === tab.id
+                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${activeTab === tab.id
                         ? "text-primary"
                         : "text-gray-500 hover:text-gray-700"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Icon className="w-5 h-5" />
@@ -293,11 +297,10 @@ export default function BusinessCreatePage({
           <div className="p-8">
             {message.text && (
               <div
-                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                  message.type === "success"
+                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === "success"
                     ? "bg-green-50 text-green-800 border border-green-200"
                     : "bg-red-50 text-red-800 border border-red-200"
-                }`}
+                  }`}
               >
                 {message.type === "success" ? (
                   <CheckCircle className="w-5 h-5" />
