@@ -294,7 +294,21 @@ const CurrentForm = ({ componentHtml }: Props) => {
                                         className="h-8 bg-white"
                                     />
                                 </div>
-
+                               <div className="grid gap-2">
+                                    <label className="text-xs font-medium text-slate-500">placeholder</label>
+                                    <Input
+                                        value={f.placeholder}
+                                        onChange={(e) =>
+                                            setSettings((s) => ({
+                                                ...s,
+                                                fields: s?.fields?.map((x) =>
+                                                    x.id === f.id ? { ...x, placeholder: e.target.value } : x
+                                                ),
+                                            }))
+                                        }
+                                        className="h-8 bg-white"
+                                    />
+                                </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Switch

@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { setCurrentWebsite } from '@/hooks/slices/websites/WebsiteSlice';
 import { fetchWebsitePages } from '@/hooks/slices/website/websitePageSlice';
+import { useRouter } from 'next/navigation';
+import ComingSoonPage from '@/components/comingsoon/ComingSoonPage';
 
 type props = {
     html: string,
@@ -23,7 +25,7 @@ type props = {
 
 }
 const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerData }: props) => {
-  
+    const router = useRouter();
     const {currentWebsite:currentWebsiteData} = useSelector((state: RootState) => state.websites);
 
       const {websitePages, hasFetched} = useSelector((state: RootState) => state.websitePage);
@@ -32,6 +34,7 @@ const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerD
        const dispatch = useDispatch<AppDispatch>();
          useEffect(()=>{
             if(currentWebsiteData==null && currentWebsite){
+               
                 dispatch(setCurrentWebsite(currentWebsite))
             }
          },[currentWebsite,currentWebsiteData,dispatch])
@@ -49,7 +52,13 @@ const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerD
 
 
     return (
-        <div className="primary-main">
+        <>
+    
+       { currentWebsite && currentWebsite.isComingSoon?(
+        <>
+        <ComingSoonPage/>
+        </>
+       ):(<div className="primary-main">
         <EditeBuilderHome/>
            
             <EditButton
@@ -66,7 +75,8 @@ const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerD
                 footerData={footerData || {}}
             />
             </div>
-        </div>
+        </div>)}
+        </>
     )
 }
 

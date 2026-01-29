@@ -269,6 +269,10 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
  openSeoModal()
   };
 
+
+  const handleComingSoon = async (checked: boolean) => {
+    setComingSoon(checked);
+  };
   return (
     <TooltipProvider delayDuration={150}>
       <div className="h-full">
@@ -410,7 +414,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
                     </button>
                     <ToggleSwitch
                       checked={comingSoon}
-                      onChange={setComingSoon}
+                      onChange={handleComingSoon}
                     />
                   </div>
 

@@ -387,18 +387,18 @@ export function TemplateManager({
                                     )}
                                   </div>
 
-                                  {/* <div className="mt-3 flex items-center justify-between gap-3">
+                                  <div className="mt-3 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
                                       <div className="text-sm font-semibold text-slate-900 truncate">
                                         {template.label}
                                       </div>
-                                      <div className="text-xs text-slate-500 truncate">
+                                      {/* <div className="text-xs text-slate-500 truncate">
                                         {componentCategories.find((c) => c.id === template.category)
                                           ?.label || template.category}
-                                      </div>
+                                      </div> */}
                                     </div>
 
-                                    <Button
+                                    {/* <Button
                                       variant="outline"
                                       size="sm"
                                       className="h-9 rounded-xl border-slate-200 bg-white hover:bg-slate-50"
@@ -409,8 +409,8 @@ export function TemplateManager({
                                       }}
                                     >
                                       Add
-                                    </Button>
-                                  </div> */}
+                                    </Button> */}
+                                  </div> 
                                 </CardContent>
                               </Card>
                             );

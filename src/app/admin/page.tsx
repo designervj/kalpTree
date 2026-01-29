@@ -2,7 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cookies } from "next/headers";
-import type { ElementType } from "react";
+import { type ElementType } from "react";
 import {
   ExternalLink,
   Globe,
@@ -29,6 +29,7 @@ import GetAllWebsites from "@/components/admin/website/GetAllWebsites";
 import AdminHeader from "@/components/adminDashBoard/AdminHeader";
 import { auth } from "@/auth";
 import Promo from "@/components/adminDashBoard/Promo";
+import { redirect } from "next/navigation";
 
 /* ------------------------------------------
    Helpers
@@ -117,8 +118,8 @@ async function fetchWebsites(): Promise<BusinessSite[]> {
         wordpressAdminHref:
           platform === "wordpress"
             ? `/admin/wordpress?website=${encodeURIComponent(
-                String(w._id || w.id || "")
-              )}`
+              String(w._id || w.id || "")
+            )}`
             : undefined,
         iconStyle: platform === "wordpress" ? "wp" : "code",
       } satisfies BusinessSite;
@@ -241,6 +242,11 @@ function PillButton({
 export default async function AdminIndex() {
   const session = await auth();
 
+  // Server-side authentication check
+  if (!session) {
+    redirect("/auth/signin");
+  }
+
   const actions: ActionCard[] = [
     {
       title: "Create a new page",
@@ -284,7 +290,7 @@ export default async function AdminIndex() {
         {/* Top Row: Promo + Quick Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Promo */}
-         <Promo />
+          <Promo />
 
           {/* Quick Tools (right) */}
           <QuickTool />
