@@ -67,10 +67,9 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const request = await req;
   const body = await request.json();
-  const { searchParams } = new URL(request.url);
-  const id = new ObjectId(searchParams.get("id")!);
+  const {email,password} = body;
   const userscoll = await getCollection("users");
-  const exist = await userscoll.findOne({ _id: id });
+  const exist = await userscoll.findOne({ email });
 
   if (!exist)
     return NextResponse.json({
@@ -78,9 +77,9 @@ export async function PUT(req: NextRequest) {
     });
 
   const finalResult = await userService.updatepasswordafterverification({
-    id: id!,
-    name: body.name,
-    password: body.password,
+    id: exist._id!,
+    name: exist.name,
+    password: password,
   });
 
   return NextResponse.json({ message: "User Verified Successfully" });

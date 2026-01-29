@@ -38,6 +38,25 @@ export const createCustomer = createAsyncThunk<
   }
 });
 
+export const updatePassword = createAsyncThunk<
+  IUser,
+  { email: string; password: string },
+  { rejectValue: any }
+>("user/updatePassword", async ({ email, password }, { rejectWithValue }) => {
+  try {
+    const response = await fetch(`/api/user/createwithemail`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password , email}),
+    });
+    return response.json();
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || error.message);
+  }
+});
+
 interface UserState {
   user: IUser | null;
   isSecondDashBoard: boolean;

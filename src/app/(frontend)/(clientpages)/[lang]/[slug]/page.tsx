@@ -32,7 +32,7 @@ export default async function PageTemplate({
 
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
-  console.log("websiteData", websiteData);
+
   let website = websiteData ? JSON.parse(websiteData) : null;
   const currentWebsiteData = jar.get("current_website")?.value || null;
   let currentWebsite = currentWebsiteData

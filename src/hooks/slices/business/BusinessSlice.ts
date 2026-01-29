@@ -29,7 +29,7 @@ interface BusinessState {
   allSelectedBusiness: IBusiness[];
   businessWebsite: IBusiness | null;
   currentBusiness: IBusiness | null;
-
+  editBusiness: IBusiness | null;
   hasFetchedBusiness: boolean;
   isLoading: boolean;
   error: string | null;
@@ -41,6 +41,7 @@ const initialState: BusinessState = {
   allSelectedBusiness: [],
   businessWebsite: null,
   currentBusiness: null,
+  editBusiness: null,
   hasFetchedBusiness: false,
   isLoading: false,
   error: null,
@@ -60,6 +61,9 @@ const businessSlice = createSlice({
     },
     setBusinessWebsite: (state, action) => {
       state.businessWebsite = action.payload;
+    },
+    setEditBusiness: (state, action) => {
+      state.editBusiness = action.payload;
     },
     setCurrentBusiness(state, action: PayloadAction<IBusiness | null>) {
       state.currentBusiness = action.payload;
@@ -164,18 +168,19 @@ const businessSlice = createSlice({
       })
       .addCase(updateBusiness.fulfilled, (state, action) => {
         state.isLoading = false;
+        const {business}=action.payload
         const index = state.allBusiness.findIndex(
-          (b) => b._id?.toString() === action.payload._id?.toString()
+          (b) => b._id?.toString() === business._id?.toString()
         );
         if (index !== -1) {
-          state.allBusiness[index] = action.payload;
+          state.allBusiness[index] = business;
         }
         // Update currentBusiness if it's the same one
         if (
           state.currentBusiness?._id?.toString() ===
-          action.payload._id?.toString()
+          business._id?.toString()
         ) {
-          state.currentBusiness = action.payload;
+          state.currentBusiness = business;
         }
       })
       .addCase(updateBusiness.rejected, (state, action) => {
@@ -295,6 +300,8 @@ const businessSlice = createSlice({
                 state.allSelectedBusiness = state.allSelectedBusiness.filter((b: IBusiness) => b.tenantId !== agencyId);
              
             })
+
+          
   },
 });
 
@@ -304,6 +311,7 @@ export const {
   setCurrentBusiness,
   setSelectedBusiness,
   setBusinessWebsite,
+  setEditBusiness,
   setLoading,
   setError,
   addCreatedBusiness

@@ -174,7 +174,7 @@ export const createBusiness = createAsyncThunk(
 export const updateBusiness = createAsyncThunk(
   "business/update",
   async (
-    { businessId, input }: { businessId: string; input: UpdateBusinessInput },
+    { businessId, input, password }: { businessId: string; input: IBusiness , password?:string},
     { rejectWithValue }
   ) => {
     try {
@@ -195,7 +195,10 @@ export const updateBusiness = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data.business as IBusiness;
+      return {
+        business: input as IBusiness,
+        success: true,
+      }
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to update business");
     }
