@@ -1,10 +1,22 @@
 "use client"
-import { RootState } from '@/store/store'
-import React from 'react'
-import { useSelector } from 'react-redux'
+import { setUser } from '@/hooks/slices/user/userSlice'
+import { IUser } from '@/models/user'
+import { AppDispatch, RootState } from '@/store/store'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
-const AdminHeader = () => {
+type props={
+    sessionUser:IUser
+}
+const AdminHeader = ({sessionUser}:props) => {
     const { user } = useSelector((state: RootState) => state.user)
+ 
+      const dispatch = useDispatch<AppDispatch>();
+    useEffect(()=>{
+        if(sessionUser &&user==null){
+            dispatch(setUser(sessionUser))
+        }
+    },[sessionUser,dispatch,user])
     return (
         <>
             <div className="flex flex-col gap-1">

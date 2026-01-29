@@ -10,6 +10,7 @@ import ModernCartPage from "@/components/admin/product/Cart/Cart";
 import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
+import { redirect } from "next/navigation";
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -39,6 +40,10 @@ export default async function PageTemplate({
     : null;
 
   const session = await auth();
+ 
+  if(!session){
+    redirect("/auth/signin");
+  }
   let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
 
@@ -160,6 +165,7 @@ export default async function PageTemplate({
           html={processedHtml}
           headerData={serializedHeaderData}
           footerData={serializedFooterData}
+          
         />
 
         {/* <EditButton

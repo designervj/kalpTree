@@ -14,6 +14,7 @@ import { setCurrentWebsite } from '@/hooks/slices/websites/WebsiteSlice';
 import { fetchWebsitePages } from '@/hooks/slices/website/websitePageSlice';
 import { useRouter } from 'next/navigation';
 import ComingSoonPage from '@/components/comingsoon/ComingSoonPage';
+import { setUser } from '@/hooks/slices/user/userSlice';
 
 type props = {
     html: string,
@@ -27,7 +28,7 @@ type props = {
 const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerData }: props) => {
     const router = useRouter();
     const {currentWebsite:currentWebsiteData} = useSelector((state: RootState) => state.websites);
-
+  const {user:userdata} = useSelector((state: RootState) => state.user);
       const {websitePages, hasFetched} = useSelector((state: RootState) => state.websitePage);
 
       // update current website
@@ -50,6 +51,13 @@ const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerD
             }
          },[currentWebsite,websitePages,hasFetched,dispatch])
 
+         // update the user
+         useEffect(()=>{
+            debugger
+            if(user && userdata===null){
+                dispatch(setUser(user))
+            }
+         },[user,dispatch,userdata])
 
     return (
         <>

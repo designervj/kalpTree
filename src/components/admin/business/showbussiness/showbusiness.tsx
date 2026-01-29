@@ -23,6 +23,7 @@ import {
   ChevronRight,
   Search,
   SlidersHorizontal,
+  Trash2,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -34,6 +35,8 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { deleteBusiness } from "@/hooks/slices/business/BusinessThunk";
+import { toast } from "sonner";
 
 
 
@@ -128,7 +131,12 @@ const ShowBusiness = () => {
     router.push(`/admin/businesses/${business._id}`);
   };
 
-  
+  const handleDeleteBusiness = async (business: IBusiness) => {
+   const response= await dispatch(deleteBusiness(business?._id?.toString() || "")).unwrap();
+     if(response){
+        toast.success("Business deleted successfully");
+     }
+  };
   return (
     <div className="w-full space-y-6">
       {/* Header */}
@@ -314,7 +322,7 @@ const ShowBusiness = () => {
                             : "text-purple-600"
                         }`}
                     >
-                      {b.name.substring(0, 2).toUpperCase()}
+                      {b?.name?.substring(0, 2).toUpperCase()}
                     </span>
                   </div>
 
@@ -388,6 +396,16 @@ const ShowBusiness = () => {
                     Open Dashboard
                     {/* </Link> */}
                   </Button>
+                   <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-11 w-11 rounded-xl"
+                        onClick={() => handleDeleteBusiness(b)}
+                        title="Delete"
+                      >
+                        <Trash2 className="h-5 w-5 text-rose-600" />
+                      </Button>
                 </div>
               </div>
             </CardContent>

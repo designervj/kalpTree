@@ -246,7 +246,6 @@ export default async function AdminIndex() {
   if (!session) {
     redirect("/auth/signin");
   }
-
   const actions: ActionCard[] = [
     {
       title: "Create a new page",
@@ -285,7 +284,9 @@ export default async function AdminIndex() {
       <GetAllWebsites />
       <div className="w-full space-y-10">
         {/* Header */}
-        <AdminHeader />
+        <AdminHeader 
+        sessionUser={session?.user}
+        />
 
         {/* Top Row: Promo + Quick Links */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
