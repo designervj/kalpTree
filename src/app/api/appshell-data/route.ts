@@ -179,5 +179,12 @@ export async function POST(req: NextRequest) {
   response.cookies.delete("current_selected_agency_id");
   response.cookies.delete("current_selected_business_id");
 
+  // Delete NextAuth cookies (these are also handled by signOut() but we delete them here too for safety)
+  response.cookies.delete("authjs.session-token");
+  response.cookies.delete("authjs.csrf-token");
+  response.cookies.delete("authjs.callback-url");
+  response.cookies.delete("__Secure-authjs.session-token");
+  response.cookies.delete("__Host-authjs.csrf-token");
+
   return response;
 }
