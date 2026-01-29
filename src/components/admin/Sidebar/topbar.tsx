@@ -42,21 +42,42 @@ export function Topbar({
   const router = useRouter();
 
   const handleSignOut = async () => {
-  
+
     try {
+      // Step 1: Call server-side API to delete cookies
+      await fetch("/api/appshell-data", {
+        method: "POST",
+      });
+
+      // Step 2: Clear Redux state
       resetRedux();
+
+      // Step 3: Clear client-side storage
       localStorage.clear();
       sessionStorage.clear();
-       router.push("/");
 
-      // const res = await fetch("/api/appshell-data", {
-      //   method: "POST",
-      // });
-      // const result = await res.json();
-      // console.log("result", result)
-      // if (result.success) {
-      //   await signOut({ callbackUrl: "/", redirect: true });
-      // }
+      // Step 4: Clear client-side cookies (as backup)
+      const cookiesToClear = [
+        'admin-cart-token',
+        'current_website_data',
+        'current_website',
+        'current_website_id',
+        'authjs.session-token',
+        'authjs.csrf-token',
+        'authjs.callback-url',
+        '__Secure-authjs.session-token',
+        '__Host-authjs.csrf-token'
+      ];
+
+      cookiesToClear.forEach((cookieName) => {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        const domain = window.location.hostname.split('.').slice(-2).join('.');
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+      });
+
+      // Step 5: Sign out with NextAuth
+      await signOut({ callbackUrl: "/" });
     } catch (error) {
       console.error("Error during sign out:", error);
       await signOut({ callbackUrl: "/" });

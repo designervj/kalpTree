@@ -79,12 +79,40 @@ export function AppSidebar({ handleSwitchTab, ...rest }: AppSidebarProps) {
   const { open } = useSidebar();
 
   const handleDeleteAllCookies = async () => {
-    const res = await fetch("/api/appshell-data", {
-      method: "POST",
-    });
-    const result = await res.json();
+    try {
+      // Step 1: Call server-side API to delete cookies
+      await fetch("/api/appshell-data", {
+        method: "POST",
+      });
 
-    if (result.success) {
+      // Step 2: Clear client-side storage
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // Step 3: Clear client-side cookies (as backup)
+      const cookiesToClear = [
+        'admin-cart-token',
+        'current_website_data',
+        'current_website',
+        'current_website_id',
+        'authjs.session-token',
+        'authjs.csrf-token',
+        'authjs.callback-url',
+        '__Secure-authjs.session-token',
+        '__Host-authjs.csrf-token'
+      ];
+
+      cookiesToClear.forEach((cookieName) => {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+        const domain = window.location.hostname.split('.').slice(-2).join('.');
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+      });
+
+      // Step 4: Sign out with NextAuth
+      await signOut();
+    } catch (error) {
+      console.error("Error during sign out:", error);
       await signOut();
     }
   };
