@@ -15,6 +15,11 @@ import { Button } from "@/components/ui/button";
 import AgencyGrid from "./AgencyGrid";
 import Link from "next/link";
 const AgencyList = () => {
+
+
+  
+    // Server-side authentication check
+   
   const { user } = useSelector((state: RootState) => state.user);
   const { allAgencies, isAgencyLoading } = useSelector(
     (state: RootState) => state.agency

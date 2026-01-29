@@ -382,13 +382,13 @@ export const currentWebsiteSections: NavSection[] = [
         icon: CircleDollarSign,
         permission: ["product:read", "product:update", "product:delete"],
       },
-        {
+      {
         label: "Product Type Category",
         href: "/admin/product-type-category",
         icon: LayoutGridIcon,
         permission: ["product:read", "product:update", "product:delete"],
       },
-        {
+      {
         label: "Product Type",
         href: "/admin/product-type",
         icon: TypeIcon,
@@ -857,6 +857,16 @@ export function AppShell({
       resetRedux();
       localStorage.clear();
       sessionStorage.clear();
+
+      // Clear all cookies
+      document.cookie.split(";").forEach((cookie) => {
+        const cookieName = cookie.split("=")[0].trim();
+        // Set cookie to expire in the past to delete it
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        // Also try with domain to ensure cookies are cleared across subdomains
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+      });
+
       await signOut({ callbackUrl: "/auth/signin" });
     } catch (error) {
       console.error("Error during sign out:", error);

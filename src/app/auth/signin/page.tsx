@@ -54,13 +54,13 @@ function SignInForm() {
         domain,
         // tenantSlug,
       });
-       console.log("result=====>", result)
+       
       if (result && (result as any).error) {
-        console.log("error=====>", (result as any).error)
+       
         throw new Error((result as any).error || "Sign-in failed");
       }
       const session = await getSession();
-       console.log("session=====>", session)
+       
       if (session?.user) {
 
         const mappedUser = {
