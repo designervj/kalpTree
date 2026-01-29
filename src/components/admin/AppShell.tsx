@@ -123,6 +123,7 @@ import { ObjectId } from "mongodb";
 import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
+import { clearUser } from "@/hooks/slices/user/userSlice";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -877,7 +878,7 @@ export function AppShell({
   const resetRedux = () => {
     dispatch(clearAttributes());
     dispatch(clearBrands());
-
+   dispatch(clearUser())
     dispatch(clearCategories());
   };
   const dispatch = useDispatch();
