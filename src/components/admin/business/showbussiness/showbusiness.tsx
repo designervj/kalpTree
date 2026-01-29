@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { HiDotsVertical } from "react-icons/hi";
+
 import {
   Select,
   SelectContent,
@@ -24,6 +26,23 @@ import {
   Search,
   SlidersHorizontal,
 } from "lucide-react";
+
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
@@ -388,6 +407,25 @@ const ShowBusiness = () => {
                     Open Dashboard
                     {/* </Link> */}
                   </Button>
+
+                     <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline"><HiDotsVertical /></Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-10 me-6" align="start">
+
+
+
+
+
+        <DropdownMenuGroup>
+          <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer">
+            Delete 
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+
                 </div>
               </div>
             </CardContent>
