@@ -59,3 +59,61 @@ export async function GET(req: Request) {
         );
     }
 }
+
+
+// Delete API
+export async function DELETE(req: Request) {
+    try {
+        const session = await auth();
+        const user = session?.user;
+
+        if (!user || !user.id || !user.role) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
+        const { searchParams } = new URL(req.url);
+        const businessId = searchParams.get("businessId");
+
+        if (!businessId) {
+            return NextResponse.json({ error: "Business ID is required" }, { status: 400 });
+        }
+
+        // Validate ObjectId format
+        if (!ObjectId.isValid(businessId)) {
+            return NextResponse.json({ error: "Invalid business ID format" }, { status: 400 });
+        }
+
+        const tenantcoll = await getCollection("tenants");
+
+        // Check if business exists
+        const business = await tenantcoll.findOne({ _id: new ObjectId(businessId) });
+
+        if (!business) {
+            return NextResponse.json({ error: "Business not found" }, { status: 404 });
+        }
+
+        // Authorization check: only superadmin or agency (if it's their tenant) can delete
+        if (user.role === "agency" && business.tenantId?.toString() !== user.id) {
+            return NextResponse.json({ error: "Forbidden: You don't have permission to delete this business" }, { status: 403 });
+        }
+
+        // Delete the business
+        const result = await tenantcoll.deleteOne({ _id: new ObjectId(businessId) });
+
+        if (result.deletedCount === 0) {
+            return NextResponse.json({ error: "Failed to delete business" }, { status: 500 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: "Business deleted successfully"
+        }, { status: 200 });
+
+    } catch (error) {
+        console.error("BUSINESS DELETE API ERROR:", error);
+        return NextResponse.json(
+            { error: "Internal server error" },
+            { status: 500 }
+        );
+    }
+}

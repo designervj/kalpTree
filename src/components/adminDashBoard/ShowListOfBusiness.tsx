@@ -132,7 +132,8 @@ const ShowListOfBusiness = () => {
                                                     {/* Pills */}
                                                     <div className="mt-3 flex flex-wrap items-center gap-2 rounded-md">
                                                         <PillButton
-                                                            href={site?.businessdetails?.business_website_url ?? site.name}
+                                                        href='#'
+                                                            // href={site?.businessdetails?.business_website_url ?? site.name}
                                                             icon={Globe}
                                                             label="Manage domain"
                                                         />
