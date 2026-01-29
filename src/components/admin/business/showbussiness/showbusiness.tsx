@@ -26,6 +26,10 @@ import {
   Search,
   SlidersHorizontal,
   Trash2,
+  ExternalLink,
+  Mail,
+  Building2,
+  Calendar,
 } from "lucide-react";
 
 
@@ -324,78 +328,145 @@ const ShowBusiness = () => {
           >
             <CardContent className="p-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div className="flex items-start gap-5">
-                  <div
-                    className={`h-12 w-12 rounded-lg grid place-items-center ${idx % 3 === 0
-                        ? "bg-blue-100"
-                        : idx % 3 === 1
-                          ? "bg-slate-100"
-                          : "bg-purple-100"
-                      }`}
-                  >
-                    <span
-                      className={`text-lg font-bold ${idx % 3 === 0
-                          ? "text-blue-600"
-                          : idx % 3 === 1
-                            ? "text-slate-600"
-                            : "text-purple-600"
-                        }`}
-                    >
-                      {b?.name?.substring(0, 2).toUpperCase()}
-                    </span>
-                  </div>
+       <div className="flex items-start gap-5">
+  {/* Left icon card (like screenshot) */}
+  <div className="h-14 w-14 rounded-2xl bg-indigo-600 shadow-sm grid place-items-center">
+    {/* simple “doc” icon look */}
+    <div className="relative h-8 w-8 rounded-lg bg-white/15 border border-white/25 grid place-items-center">
+      <div className="h-5 w-4 rounded-sm border-2 border-white/80 relative">
+        <div className="absolute left-1 top-1 h-1 w-2.5 rounded bg-white/80" />
+        <div className="absolute left-1 top-3 h-1 w-2 rounded bg-white/70" />
+        <div className="absolute left-1 top-5 h-1 w-2.5 rounded bg-white/60" />
+      </div>
+    </div>
+  </div>
 
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <div className="text-[26px] font-semibold text-slate-900 truncate">
-                        {b.name}
-                      </div>
-                      <Badge variant="secondary">{b.plan}</Badge>
-                      <Badge
-                        variant={
-                          b.status === "active" ? "default" : "destructive"
-                        }
-                      >
-                        {b.status}
-                      </Badge>
-                    </div>
+  {/* Right content */}
+  <div className="min-w-0 flex-1">
+    <div className="flex items-start gap-3 flex-wrap">
+      <div className="text-[28px] font-semibold text-slate-900 leading-tight">
+        {b.name}
+      </div>
 
-                    <div className="mt-3 flex flex-wrap items-center gap-2">
-                      <Button asChild variant="outline">
-                        <Link
-                          href={`/admin/businesses/${b._id}/websites`}
-                          className="flex items-center gap-2"
-                        >
-                          <Globe className="h-4 w-4" />
-                          Websites
-                          <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
-                            {b.websitesCount ?? 0}
-                          </span>
-                        </Link>
-                      </Button>
+      {/* Active badge like screenshot */}
+      <span
+        className={[
+          "inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-semibold",
+          b.status === "active"
+            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+            : "bg-rose-50 text-rose-700 border border-rose-200",
+        ].join(" ")}
+      >
+        <span
+          className={[
+            "h-2 w-2 rounded-full",
+            b.status === "active" ? "bg-emerald-500" : "bg-rose-500",
+          ].join(" ")}
+        />
+        {b.status === "active" ? "Active" : "Inactive"}
+      </span>
+    </div>
 
-                      <Button asChild variant="outline">
-                        <Link
-                          href={`/admin/businesses/${b._id}/users`}
-                          className="flex items-center gap-2"
-                        >
-                          <Users className="h-4 w-4" />
-                          Members
-                          <span className="ml-1 rounded-md bg-white/50 px-2 py-0.5 text-xs">
-                            {b.membersCount ?? 0}
-                          </span>
-                        </Link>
-                      </Button>
+    {/* tagline (optional) */}
+    {b?.tagline ? (
+      <p className="mt-1 text-[15px] text-slate-600">
+        {b.tagline}
+      </p>
+    ) : null}
 
-                      {b.email && (
-                        <Badge>
-                          <Globe className="mr-1 h-3.5 w-3.5" />
-                          {b.email}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
+    {/* meta pills row */}
+    <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600">
+      {/* {b?.industry ? (/ */}
+        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+          <Building2 className="h-4 w-4 text-slate-600" />
+          {/* {b.industry} */}
+        </span>
+      {/* ) : null}/ */}
+
+      {/* {b?.foundedYear ? ( */}
+        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+          <Calendar className="h-4 w-4 text-slate-600" />
+          Founded 
+          {/* {b.foundedYear} */}
+        </span>
+      {/* ) : null} */}
+
+      {b?.createdAt ? (
+        <span className="flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-2">
+          <Calendar className="h-4 w-4 text-slate-600" />
+          Joined 
+          {/* {formatDate(b.createdAt)} */}
+        </span>
+      ) : null}
+    </div>
+
+    {/* action pills (like screenshot) */}
+    <div className="mt-4 flex flex-wrap items-center gap-2">
+      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+        <Link
+          href={`/admin/businesses/${b._id}/websites`}
+          className="flex items-center gap-2"
+        >
+          <Globe className="h-4 w-4" />
+          View dashboard
+        </Link>
+      </Button>
+
+      {b.email ? (
+        <Button
+          asChild
+          variant="outline"
+          className="h-11 rounded-xl px-5"
+        >
+          <a href={`mailto:${b.email}`} className="flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            {b.email}
+          </a>
+        </Button>
+      ) : null}
+
+      {/* {b?.website ? ( */}
+        
+        <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+          <Link
+          //  href={b.website.startsWith("http") ? b.website : `https://${b.website}`}
+            href="#"
+            target="_blank"
+            className="flex items-center gap-2"
+          >
+            <ExternalLink className="h-4 w-4" />
+            Visit site
+          </Link>
+        </Button>
+      {/* ) : null}  */}
+    </div>
+
+    {/* Feature pills row */}
+    <div className="mt-3 flex flex-wrap gap-2">
+      {b?.features?.websiteEnabled ? (
+        <span className="rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700">
+          Website
+        </span>
+      ) : null}
+      {b?.features?.ecommerceEnabled ? (
+        <span className="rounded-xl border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700">
+          E-commerce
+        </span>
+      ) : null}
+      {b?.features?.blogEnabled ? (
+        <span className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+          Blog
+        </span>
+      ) : null}
+      {b?.features?.invoicesEnabled ? (
+        <span className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700">
+          Invoices
+        </span>
+      ) : null}
+    </div>
+  </div>
+</div>
+
 
                 <div className="flex flex-wrap items-center gap-3 justify-start lg:justify-end">
                   <Button asChild variant="outline" className="rounded-xl">

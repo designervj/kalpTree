@@ -41,9 +41,9 @@ export default async function PageTemplate({
 
   const session = await auth();
  
-  if(!session){
-    redirect("/auth/signin");
-  }
+  // if(!session){
+  //   redirect("/auth/signin");
+  // }
   let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
 

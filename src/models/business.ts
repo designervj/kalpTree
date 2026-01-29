@@ -1,6 +1,7 @@
 import { ObjectId } from "mongodb";
 
 export interface IBusiness {
+  tagline: any;
   _id?: string | ObjectId;
   slug?: string;
   name?: string;

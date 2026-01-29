@@ -403,13 +403,14 @@ export default function AdminIndex() {
                         ) : (
                           <BusinessIcon colors={{ primary: primaryColor }} />
                         )}
+                        
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-3 flex-wrap">
                             <div className="text-[24px] font-semibold text-slate-900">
                               {business.name}
                             </div>
-                            <StatusBadge status={business.status} />
+                            <StatusBadge  />
                           </div>
 
                           {business.businessdetails?.tagline && (
@@ -492,6 +493,9 @@ export default function AdminIndex() {
                             )}
                           </div>
                         </div>
+
+
+
                       </div>
 
                       <div className="flex flex-wrap items-center gap-3 justify-start lg:justify-end">
