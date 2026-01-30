@@ -180,7 +180,9 @@ export const currentWebsiteSections: NavSection[] = [
     id: "dashboard-overview",
     label: "Overview",
     items: [
-      { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+      { label: "Dashboard", href: "/admin", icon: LayoutDashboard,
+        permission: "dashboard:update",
+       },
       {
         label: "Analytics",
         href: "/admin/overview/analytics",

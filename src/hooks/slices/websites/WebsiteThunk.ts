@@ -1,6 +1,5 @@
 import { Website } from "@/components/admin/AppShell";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ObjectId } from "mongodb";
 
 // Thunk to create a Website (createD Website)
 export const createWebsite = createAsyncThunk<
@@ -31,7 +30,7 @@ export const createWebsite = createAsyncThunk<
 // Thunk to get all Websites for a tenant/user
 export const getAllWebsites = createAsyncThunk<
   Website[],
-  { tenantId?: string | ObjectId},
+  { tenantId?: string },
   { rejectValue: string }
 >(
   "websites/getAllWebsites",
@@ -51,7 +50,7 @@ export const getAllWebsites = createAsyncThunk<
 );
 export const getCurrentWebsites = createAsyncThunk<
   Website[],
-  { id?: string | ObjectId},
+  { id?: string },
   { rejectValue: string }
 >(
   "websites/getCurrentWebsites",
@@ -96,26 +95,26 @@ export const deleteWebsite = createAsyncThunk<
 
 // create method update website
 export const updateWebsite = createAsyncThunk<
-    Website,
-    { id: string|ObjectId; websiteData: Partial<Website> },
-    { rejectValue: string }
+  Website,
+  { id: string; websiteData: Partial<Website> },
+  { rejectValue: string }
 >(
-    "websites/updateWebsite",
-    async ({ id, websiteData }, { rejectWithValue }) => {
-        try {
-            const res = await fetch(`/api/domain/website?id=${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(websiteData),
-            });
-            if (!res.ok) {
-                const error = await res.json();
-                return rejectWithValue(error.error || "Failed to update website");
-            }
-            const data = await res.json();
-            return data.item as Website;
-        } catch (err: any) {
-            return rejectWithValue(err.message || "Failed to update website");
-        }
+  "websites/updateWebsite",
+  async ({ id, websiteData }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(`/api/domain/website?id=${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(websiteData),
+      });
+      if (!res.ok) {
+        const error = await res.json();
+        return rejectWithValue(error.error || "Failed to update website");
+      }
+      const data = await res.json();
+      return data.item as Website;
+    } catch (err: any) {
+      return rejectWithValue(err.message || "Failed to update website");
     }
+  }
 );  
