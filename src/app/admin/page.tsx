@@ -241,7 +241,7 @@ function PillButton({
 
 export default async function AdminIndex() {
   const session = await auth();
-  console.log("session=====>", session);
+
   // Server-side authentication check
   if (!session) {
     redirect("/auth/signin");

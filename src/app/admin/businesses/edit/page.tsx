@@ -17,10 +17,10 @@ import { updatePassword } from '@/hooks/slices/user/userSlice'
 type business = {
   id: string;
   name: string;
- 
+
   businessdetails: {
-     email?: string;
-   password?: string;
+    email?: string;
+    password?: string;
     business_website_url: string;
     tagline: string;
     industry: string;
@@ -31,6 +31,7 @@ type business = {
     headquarters: string;
     brand_name: string;
     service: string;
+    business_url: string;
   };
   branding: {
     logo: string;
@@ -44,7 +45,7 @@ const page = () => {
   const { user } = useSelector((state: RootState) => state.user);
   const { editBusiness } = useSelector((state: RootState) => state.business);
   const { curretAgency } = useSelector((state: RootState) => state.agency);
-
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
   const [message, setMessage] = useState({ type: "", text: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,30 +59,57 @@ const page = () => {
     { id: "branding", label: "Branding", icon: Palette },
   ];
 
-  const [formData, setFormData] = useState<business>();
+  const [formData, setFormData] = useState<business>({
+    id: "",
+    name: "",
+    businessdetails: {
+      email: "",
+      password: "",
+      business_website_url: "",
+      tagline: "",
+      industry: "",
+      founded_year: "",
+      about: "",
+      public_email: "",
+      phone: "",
+      headquarters: "",
+      brand_name: "",
+      service: "",
+      business_url: "",
+    },
+    branding: {
+      logo: "",
+      primary_color: "",
+      secondary_color: "",
+      tertiary_color: "",
+      typography: "",
+    },
+  });
 
   React.useEffect(() => {
-    if (editBusiness != null && curretAgency != null) {
+    if (editBusiness != null && curretAgency != null && currentWebsite != null) {
       setFormData((prev: any) => ({
         ...prev,
+        id: editBusiness?._id?.toString() || "",
+        name: editBusiness?.name || "",
         businessdetails: {
+          business_name: editBusiness?.name || "",
           email: editBusiness.email,
           password: "",
+          business_website_url: editBusiness?.businessdetails?.business_website_url || "",
+          tagline: editBusiness?.businessdetails?.tagline || "",
+          industry: editBusiness?.businessdetails?.industry || "",
+          founded_year: editBusiness?.businessdetails?.founded_year || "",
+          about: editBusiness?.businessdetails?.about || "",
+          public_email: editBusiness?.businessdetails?.public_email || "",
+          phone: editBusiness?.businessdetails?.phone || "",
+          headquarters: editBusiness?.businessdetails?.headquarters || "",
+          brand_name: editBusiness?.businessdetails?.brand_name || "",
           service: editBusiness?.businessdetails?.service || "ECOMMERCE",
-          business_name: editBusiness?.name,
-          business_url: editBusiness?.businessdetails?.business_website_url,
-          tagline: editBusiness?.businessdetails?.tagline,
-          industry: editBusiness?.businessdetails?.industry,
-          founded_year: editBusiness?.businessdetails?.founded_year,
-          about: editBusiness?.businessdetails?.about,
-          public_email: editBusiness?.businessdetails?.public_email,
-          phone: editBusiness?.businessdetails?.phone,
-          headquarters: editBusiness?.businessdetails?.headquarters,
-          brand_name: editBusiness?.businessdetails?.brand_name,
-          lang: ["English"],
+          business_url: currentWebsite?.primaryDomain && currentWebsite.primaryDomain.length > 0 ? currentWebsite.primaryDomain[0] : "",
         },
         branding: {
-          logo: editBusiness?.branding?.logo, // Logo file object cannot be restored, only preview
+          logo: editBusiness?.branding?.logo || "",
           primary_color: editBusiness?.branding?.primary_color || "#6366f1",
           secondary_color: editBusiness?.branding?.secondary_color || "#8b5cf6",
           tertiary_color: editBusiness?.branding?.tertiary_color || "#ec4899",
@@ -94,7 +122,8 @@ const page = () => {
         setLogoPreview(editBusiness.branding.logo);
       }
     }
-  }, [editBusiness, curretAgency]);
+  }, [editBusiness, curretAgency, currentWebsite]);
+
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
@@ -103,8 +132,10 @@ const page = () => {
       let newvalu = formatBrandSlug(value);
       console.log(newvalu);
       const cloned = structuredClone(formData);
-      // cloned?.businessdetails?.business_url = newvalu;
-      // setFormData(cloned);
+      if (cloned.businessdetails) {
+        cloned.businessdetails.business_url = newvalu;
+      }
+      setFormData(cloned);
     }
 
     if (name.includes(".")) {
@@ -158,15 +189,15 @@ const page = () => {
   const handleEditSubmit = async () => {
     setIsSubmitting(true);
 
-  if(!editBusiness?._id){
-    toast.error("Business Id not found");
-    return;
-  }
+    if (!editBusiness?._id) {
+      toast.error("Business Id not found");
+      return;
+    }
 
-    const data:IBusiness = {
+    const data: IBusiness = {
       ...editBusiness,
       name: formData?.name,
-   
+
       // password: formData?.businessdetails?.password,
       businessdetails: {
         business_website_url: formData?.businessdetails.business_website_url,
@@ -188,18 +219,18 @@ const page = () => {
         logo: formData?.branding.logo,
       }
     }
-   
-     const response = await  dispatch(updateBusiness({businessId:(editBusiness?._id)?.toString() ,input:data, password:formData?.businessdetails?.password})).unwrap()
 
-     const responsePassword = await  dispatch(updatePassword({email:editBusiness?.email! ,password:formData?.businessdetails?.password!})).unwrap()
-        console.log("update password", responsePassword)  
-     if(response && response.success){
+    const response = await dispatch(updateBusiness({ businessId: (editBusiness?._id)?.toString(), input: data, password: formData?.businessdetails?.password })).unwrap()
 
-        toast.success("Business updated successfully")
-        redirect(`/admin/businesses`)
-       }else{
-        toast.error("Business updated failed")
-       }
+    const responsePassword = await dispatch(updatePassword({ email: editBusiness?.email!, password: formData?.businessdetails?.password! })).unwrap()
+
+    if (response && response.success) {
+
+      toast.success("Business updated successfully")
+      redirect(`/admin/businesses`)
+    } else {
+      toast.error("Business updated failed")
+    }
   };
 
   return (
@@ -249,16 +280,21 @@ const page = () => {
 
 
 
-          {activeTab === "business" && (
-            <Businessdetails
-              handleInputChange={handleInputChange}
-              formData={formData}
-              showPassword={showPassword}
-              setShowPassword={setShowPassword}
-              user={user}
-              agencies={[curretAgency]}
-            />
-          )}
+          {activeTab === "business" &&
+            formData &&
+            formData.businessdetails &&
+            formData.businessdetails.email &&
+            formData.branding &&
+            (
+              <Businessdetails
+                handleInputChange={handleInputChange}
+                formData={formData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                user={user ?? undefined}
+                agencies={curretAgency ? [curretAgency as unknown as IBusiness] : undefined}
+              />
+            )}
 
           {activeTab === "branding" && (
             <Brandingdetails

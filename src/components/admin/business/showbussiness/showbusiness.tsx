@@ -60,6 +60,8 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { deleteBusiness } from "@/hooks/slices/business/BusinessThunk";
 import { toast } from "sonner";
+import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
+import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
 
 
 
@@ -80,6 +82,8 @@ const ShowBusiness = () => {
   const itemsperpage = params.get("itemsperpage") || 30;
   const router = useRouter();
   const { websites } = useSelector((state: RootState) => state.websites);
+  const {user} = useSelector((state: RootState) => state.user);
+  const {allAgencies} = useSelector((state: RootState) => state.agency);
   const dispatch = useDispatch<AppDispatch>();
 
 
@@ -164,7 +168,20 @@ const ShowBusiness = () => {
   const handleEditBusiness = (business: IBusiness) => {
 
     const website = websites.find((website) => website.tenantId === business._id);
-    console.log("website current", website);
+    console.log("current Agency website", website);
+    if(!website){
+      toast.error("Website not found");
+      return;
+    }
+
+    const agency = allAgencies.find((agency) => agency._id === business.tenantId);
+      if(!agency){
+        toast.error("Agency not found");
+        return;
+      }
+    console.log("current Agency", agency);
+    dispatch(setCurretAgency(agency));
+    dispatch(setCurrentWebsite(website));
     dispatch(setEditBusiness(business));
     router.push(`/admin/businesses/edit`);
   };
@@ -618,3 +635,4 @@ const ShowBusiness = () => {
 };
 
 export default ShowBusiness;
+

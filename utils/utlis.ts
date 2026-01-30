@@ -11,1474 +11,734 @@ export const convertName = (name: string) => {
 export const demoPages = [
   {
     title: "Home",
-    content: `
-       <style>
-       :root{
-
-  --primary: #5a2dff;
-
-  --primary-dark: #4a22e8;
-
-  --text: #0f172a;
-
-  --muted: #64748b;
-
-  --bg: #ffffff;
-
-  --soft: #f6f7fb;
-
-  --border: rgba(15, 23, 42, 0.12);
-
-  --shadow: 0 18px 45px rgba(15, 23, 42, 0.10);
-
-  --radius: 16px;
-
-}
- 
-*{ box-sizing: border-box; }
-
-html{ scroll-behavior: smooth; }
-
-body{
-
-  margin: 0;
-
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-
-  color: var(--text);
-
-  background: var(--bg);
-
-}
- 
-a{ color: inherit; text-decoration: none; }
-
-img{ max-width: 100%; display: block; }
- 
-.container{
-
-  width: min(1120px, calc(100% - 48px));
-
-  margin: 0 auto;
-
-}
- 
-.section{ padding: 80px 0; }
-
-.center{ text-align: center; }
-
-.mt-24{ margin-top: 24px; }
- 
-/* ---------------- HEADER ---------------- */
-
-.site-header{
-
-  position: fixed;
-
-  top: 0;
-
-  left: 0;
-
-  right: 0;
-
-  z-index: 50;
-
-  background: rgba(255,255,255,0.70);
-
-  backdrop-filter: blur(10px);
-
-  border-bottom: 1px solid rgba(255,255,255,0.35);
-
-}
- 
-.header-inner{
-
-  height: 74px;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 16px;
-
-}
- 
-.logo{
-
-  font-weight: 800;
-
-  letter-spacing: 0.2px;
-
-  font-size: 22px;
-
-}
- 
-.nav{
-
-  display: flex;
-
-  gap: 24px;
-
-  font-weight: 600;
-
-  font-size: 14px;
-
-  color: rgba(15,23,42,0.85);
-
-}
- 
-.nav a{
-
-  padding: 10px 0;
-
-  position: relative;
-
-}
- 
-.nav a::after{
-
-  content: "";
-
-  position: absolute;
-
-  left: 0;
-
-  bottom: 2px;
-
-  width: 0%;
-
-  height: 2px;
-
-  background: var(--primary);
-
-  transition: width .25s ease;
-
-}
- 
-.nav a:hover::after{ width: 100%; }
- 
-.nav-toggle{
-
-  display: none;
-
-  border: 1px solid var(--border);
-
-  background: #fff;
-
-  border-radius: 12px;
-
-  padding: 10px 12px;
-
-  cursor: pointer;
-
-}
- 
-/* ---------------- HERO ---------------- */
-
-.hero{
-
-  min-height: 92vh;
-
-  display: grid;
-
-  align-items: center;
-
-  position: relative;
-
-  padding-top: 74px;
-
-  background:
-
-    url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&am…
-
-    center/cover no-repeat;
-
-}
- 
-.hero-overlay{
-
-  position: absolute;
-
-  inset: 0;
-
-  background: linear-gradient(
-
-    90deg,
-
-    rgba(15,23,42,0.70) 0%,
-
-    rgba(15,23,42,0.45) 40%,
-
-    rgba(15,23,42,0.25) 100%
-
-  );
-
-}
- 
-.hero-content{
-
-  position: relative;
-
-  z-index: 2;
-
-}
- 
-.hero-text{
-
-  max-width: 640px;
-
-  color: #fff;
-
-}
- 
-.hero h1{
-
-  font-size: clamp(34px, 4vw, 54px);
-
-  line-height: 1.1;
-
-  margin: 0 0 14px;
-
-  font-weight: 850;
-
-  letter-spacing: -0.5px;
-
-}
- 
-.hero p{
-
-  margin: 0 0 22px;
-
-  color: rgba(255,255,255,0.85);
-
-  max-width: 560px;
-
-}
- 
-/* ---------------- BUTTONS ---------------- */
-
-.btn{
-
-  display: inline-flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 10px;
-
-  padding: 12px 26px;
-
-  border-radius: 999px;
-
-  border: 1px solid transparent;
-
-  font-weight: 700;
-
-  font-size: 14px;
-
-  cursor: pointer;
-
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-
-}
- 
-.btn:active{ transform: translateY(1px); }
- 
-.btn-primary{
-
-  background: var(--primary);
-
-  color: #fff;
-
-  box-shadow: 0 12px 25px rgba(90,45,255,0.28);
-
-}
-
-.btn-primary:hover{ background: var(--primary-dark); }
- 
-.btn-outline{
-
-  background: transparent;
-
-  border: 1px solid rgba(90,45,255,0.45);
-
-  color: var(--primary);
-
-}
-
-.btn-outline:hover{
-
-  background: rgba(90,45,255,0.07);
-
-}
- 
-.btn-ghost{
-
-  background: rgba(255,255,255,0.14);
-
-  color: #fff;
-
-  border: 1px solid rgba(255,255,255,0.35);
-
-}
-
-.btn-ghost:hover{
-
-  background: rgba(255,255,255,0.20);
-
-}
- 
-/* ---------------- TITLES ---------------- */
-
-.section-title{ margin-bottom: 34px; }
-
-.section-title h2{
-
-  margin: 8px 0 10px;
-
-  font-size: clamp(26px, 2.6vw, 36px);
-
-  letter-spacing: -0.3px;
-
-}
-
-.section-title p{
-
-  margin: 0 auto;
-
-  color: var(--muted);
-
-  max-width: 720px;
-
-  font-size: 15px;
-
-  line-height: 1.7;
-
-}
- 
-.kicker{
-
-  display: inline-block;
-
-  font-weight: 800;
-
-  letter-spacing: 0.5px;
-
-  font-size: 12px;
-
-  color: var(--primary);
-
-  text-transform: uppercase;
-
-}
-
-.kicker.light{ color: rgba(255,255,255,0.75); }
- 
-/* ---------------- FEATURES ---------------- */
-
-.section-features{ background: #fff; }
- 
-.features-grid{
-
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 26px;
-
-  margin-top: 26px;
-
-}
- 
-.feature-card{
-
-  background: #fff;
-
-  border: 1px solid rgba(15,23,42,0.08);
-
-  border-radius: var(--radius);
-
-  padding: 26px 22px;
-
-  box-shadow: 0 12px 35px rgba(15,23,42,0.05);
-
-  transition: transform .2s ease, box-shadow .2s ease;
-
-}
- 
-.feature-card:hover{
-
-  transform: translateY(-4px);
-
-  box-shadow: var(--shadow);
-
-}
- 
-.feature-icon{
-
-  width: 54px;
-
-  height: 54px;
-
-  border-radius: 999px;
-
-  display: grid;
-
-  place-items: center;
-
-  border: 1px solid rgba(90,45,255,0.22);
-
-  background: rgba(90,45,255,0.06);
-
-  margin: 0 auto 16px;
-
-}
- 
-.feature-icon.fill{
-
-  background: var(--primary);
-
-  border-color: transparent;
-
-}
- 
-.feature-icon svg{
-
-  width: 24px;
-
-  height: 24px;
-
-  fill: var(--primary);
-
-}
- 
-.feature-icon.fill svg{ fill: #fff; }
- 
-.feature-card h3{
-
-  margin: 0 0 8px;
-
-  font-size: 18px;
-
-  text-align: center;
-
-}
-
-.feature-card p{
-
-  margin: 0;
-
-  color: var(--muted);
-
-  line-height: 1.7;
-
-  font-size: 14px;
-
-  text-align: center;
-
-}
- 
-/* ---------------- ABOUT (PURPLE) ---------------- */
-
-.about{
-
-  background: var(--primary);
-
-  color: #fff;
-
-  padding: 90px 0;
-
-}
- 
-.about-grid{
-
-  display: grid;
-
-  grid-template-columns: 1.05fr 0.95fr;
-
-  gap: 36px;
-
-  align-items: center;
-
-}
- 
-.about-text h2{
-
-  margin: 10px 0 12px;
-
-  font-size: clamp(28px, 3vw, 44px);
-
-  letter-spacing: -0.4px;
-
-}
- 
-.about-text p{
-
-  margin: 0 0 12px;
-
-  line-height: 1.8;
-
-  color: rgba(255,255,255,0.86);
-
-}
- 
-.about-text .muted{
-
-  color: rgba(255,255,255,0.72);
-
-}
- 
-.about-media img{
-
-  width: 100%;
-
-  border-radius: 18px;
-
-  box-shadow: 0 18px 50px rgba(0,0,0,0.25);
-
-  border: 1px solid rgba(255,255,255,0.18);
-
-}
- 
-/* ---------------- VIDEO SECTION ---------------- */
-
-.video{
-
-  position: relative;
-
-  padding: 95px 0;
-
-  color: #fff;
-
-  background:
-
-    url("https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2000&am…
-
-    center/cover no-repeat fixed;
-
-}
- 
-.video-overlay{
-
-  position: absolute;
-
-  inset: 0;
-
-  background: linear-gradient(
-
-    180deg,
-
-    rgba(15,23,42,0.62),
-
-    rgba(15,23,42,0.55)
-
-  );
-
-}
-
- 
-.video-inner{
-
-  position: relative;
-
-  z-index: 2;
-
-  text-align: center;
-
-  max-width: 820px;
-
-}
- 
-.video h2{
-
-  margin: 10px 0 10px;
-
-  font-size: clamp(26px, 3vw, 40px);
-
-}
- 
-.video p{
-
-  margin: 0 auto 22px;
-
-  max-width: 650px;
-
-  color: rgba(255,255,255,0.82);
-
-  line-height: 1.8;
-
-}
- 
-.play-btn{
-
-  width: 110px;
-
-  height: 110px;
-
-  margin: 0 auto;
-
-  border-radius: 999px;
-
-  display: grid;
-
-  place-items: center;
-
-  background: rgba(90,45,255,0.95);
-
-  box-shadow: 0 18px 40px rgba(90,45,255,0.35);
-
-  border: 1px solid rgba(255,255,255,0.25);
-
-  gap: 6px;
-
-}
- 
-.play-btn span{
-
-  font-size: 26px;
-
-  margin-top: 6px;
-
-}
-
-.play-btn small{
-
-  font-size: 11px;
-
-  letter-spacing: 0.5px;
-
-  opacity: .9;
-
-  text-transform: uppercase;
-
-}
- 
-/* ---------------- PORTFOLIO ---------------- */
-
-.portfolio{ background: #fff; }
- 
-.portfolio-grid{
-
-  display: grid;
-
-  grid-template-columns: 1.2fr 0.8fr;
-
-  gap: 18px;
-
-}
- 
-.work{
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  border: 1px solid rgba(15,23,42,0.08);
-
-  box-shadow: 0 16px 40px rgba(15,23,42,0.08);
-
-  transition: transform .25s ease;
-
-}
- 
-.work:hover{ transform: translateY(-4px); }
- 
-.work img{
-
-  width: 100%;
-
-  height: 100%;
-
-  object-fit: cover;
-
-}
- 
-.work.tall{
-
-  grid-row: span 2;
-
-}
- 
-@media (min-width: 900px){
-
-  .portfolio-grid{
-
-    grid-template-columns: 1fr 1fr;
-
-  }
-
-}
- 
-/* ---------------- TESTIMONIALS ---------------- */
-
-.testimonials{ background: var(--soft); }
- 
-.testi-grid{
-
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 18px;
-
-  margin-top: 24px;
-
-}
- 
-.testi-card{
-
-  background: #fff;
-
-  border: 1px solid rgba(15,23,42,0.08);
-
-  border-radius: var(--radius);
-
-  padding: 24px 22px;
-
-  box-shadow: 0 12px 34px rgba(15,23,42,0.06);
-
-}
- 
-.quote{
-
-  font-size: 48px;
-
-  line-height: 1;
-
-  color: rgba(90,45,255,0.35);
-
-  margin-bottom: 6px;
-
-  font-weight: 900;
-
-}
- 
-.testi-card p{
-
-  margin: 0 0 18px;
-
-  color: rgba(15,23,42,0.82);
-
-  line-height: 1.8;
-
-  font-size: 14px;
-
-}
- 
-.testi-user{
-
-  display: flex;
-
-  gap: 12px;
-
-  align-items: center;
-
-  border-top: 1px solid rgba(15,23,42,0.08);
-
-  padding-top: 14px;
-
-}
- 
-.testi-user img{
-
-  width: 44px;
-
-  height: 44px;
-
-  border-radius: 999px;
-
-}
- 
-.testi-user strong{ display: block; font-size: 14px; }
-
-.testi-user span{ display: block; font-size: 12px; color: var(--muted); }
- 
-/* ---------------- CTA ---------------- */
-
-.cta{
-
-  position: relative;
-
-  padding: 90px 0;
-
-  color: #fff;
-
-  background:
-
-    url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2000&am…
-
-    center/cover no-repeat fixed;
-
-}
- 
-.cta-overlay{
-
-  position: absolute;
-
-  inset: 0;
-
-  background: rgba(15,23,42,0.60);
-
-}
- 
-.cta-inner{
-
-  position: relative;
-
-  z-index: 2;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: space-between;
-
-  gap: 18px;
-
-}
- 
-.cta h2{
-
-  margin: 0;
-
-  font-size: clamp(22px, 2.6vw, 34px);
-
-  letter-spacing: -0.3px;
-
-}
- 
-/* ---------------- BLOG ---------------- */
-
-.blog{ background: #fff; }
- 
-.blog-grid{
-
-  display: grid;
-
-  grid-template-columns: repeat(3, 1fr);
-
-  gap: 18px;
-
-  margin-top: 18px;
-
-}
- 
-.post{
-
-  border: 1px solid rgba(15,23,42,0.08);
-
-  border-radius: 18px;
-
-  overflow: hidden;
-
-  box-shadow: 0 14px 36px rgba(15,23,42,0.07);
-
-  transition: transform .2s ease;
-
-  background: #fff;
-
-}
- 
-.post:hover{ transform: translateY(-4px); }
- 
-.post img{
-
-  height: 180px;
-
-  width: 100%;
-
-  object-fit: cover;
-
-}
- 
-.post-body{
-
-  padding: 18px 18px 20px;
-
-}
- 
-.post h3{
-
-  margin: 0 0 8px;
-
-  font-size: 17px;
-
-}
- 
-.post p{
-
-  margin: 0 0 12px;
-
-  color: var(--muted);
-
-  line-height: 1.7;
-
-  font-size: 14px;
-
-}
- 
-.post-link{
-
-  color: var(--primary);
-
-  font-weight: 800;
-
-  font-size: 13px;
-
-}
- 
-/* logos row */
-
-.logos{
-
-  margin-top: 28px;
-
-  padding-top: 20px;
-
-  border-top: 1px solid rgba(15,23,42,0.08);
-
-  display: flex;
-
-  flex-wrap: wrap;
-
-  gap: 12px;
-
-  justify-content: center;
-
-}
- 
-.logo-pill{
-
-  padding: 10px 16px;
-
-  border-radius: 999px;
-
-  background: var(--soft);
-
-  border: 1px solid rgba(15,23,42,0.08);
-
-  color: rgba(15,23,42,0.70);
-
-  font-weight: 800;
-
-  font-size: 12px;
-
-  letter-spacing: 0.3px;
-
-}
- 
-/* ---------------- FOOTER ---------------- */
-
-.footer{
-
-  background: #0b1220;
-
-  color: rgba(255,255,255,0.88);
-
-  padding: 60px 0 20px;
-
-}
- 
-.footer-inner{
-
-  display: grid;
-
-  grid-template-columns: 1.2fr 0.8fr 0.8fr 1.2fr;
-
-  gap: 22px;
-
-}
- 
-.footer h4{
-
-  margin: 0 0 12px;
-
-  font-size: 14px;
-
-  letter-spacing: 0.4px;
-
-  text-transform: uppercase;
-
-  color: rgba(255,255,255,0.75);
-
-}
- 
-.footer a{
-
-  display: block;
-
-  padding: 7px 0;
-
-  color: rgba(255,255,255,0.86);
-
-  font-size: 14px;
-
-}
- 
-.footer a:hover{ color: #fff; }
- 
-.footer-logo{
-
-  color: #fff;
-
-  margin-bottom: 10px;
-
-}
- 
-.footer .muted{
-
-  color: rgba(255,255,255,0.68);
-
-  line-height: 1.8;
-
-}
- 
-.newsletter{
-
-  display: flex;
-
-  gap: 10px;
-
-  flex-wrap: wrap;
-
-}
- 
-.newsletter input{
-
-  flex: 1;
-
-  min-width: 200px;
-
-  padding: 12px 14px;
-
-  border-radius: 12px;
-
-  border: 1px solid rgba(255,255,255,0.18);
-
-  outline: none;
-
-  background: rgba(255,255,255,0.06);
-
-  color: #fff;
-
-}
- 
-.newsletter input::placeholder{ color: rgba(255,255,255,0.55); }
- 
-.footer-bottom{
-
-  border-top: 1px solid rgba(255,255,255,0.12);
-
-  margin-top: 32px;
-
-  padding-top: 16px;
-
-  text-align: center;
-
-  color: rgba(255,255,255,0.62);
-
-  font-size: 13px;
-
-}
- 
-/* ---------------- RESPONSIVE ---------------- */
-
-@media (max-width: 980px){
-
-  .features-grid,
-
-  .testi-grid,
-
-  .blog-grid{
-
-    grid-template-columns: 1fr;
-
-  }
- 
-  .about-grid{
-
-    grid-template-columns: 1fr;
-
-  }
- 
-  .cta-inner{
-
-    flex-direction: column;
-
-    text-align: center;
-
-  }
- 
-  .footer-inner{
-
-    grid-template-columns: 1fr;
-
-  }
- 
-  .nav{
-
-    position: fixed;
-
-    top: 74px;
-
-    right: 16px;
-
-    left: 16px;
-
-    background: #fff;
-
-    border: 1px solid rgba(15,23,42,0.10);
-
-    border-radius: 16px;
-
-    padding: 14px;
-
-    flex-direction: column;
-
-    gap: 10px;
-
-    box-shadow: var(--shadow);
-
-    transform: translateY(-10px);
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transition: .2s ease;
-
-  }
- 
-  body.nav-open .nav{
-
-    transform: translateY(0);
-
-    opacity: 1;
-
-    pointer-events: auto;
-
-  }
- 
-  .nav-toggle{ display: inline-flex; }
-
-}
- 
-       </style>
-       <body>
-       <header class="site-header">
-      <div class="container header-inner">
-        <a class="logo" href="#">Joy</a>
- 
-        <nav class="nav">
-          <a href="#home">Home</a>
-          <a href="#services">Services</a>
-          <a href="#portfolio">Portfolio</a>
-          <a href="#blog">Blog</a>
-          <a href="#contact">Contact</a>
-        </nav>
- 
-        <button class="nav-toggle" aria-label="Open menu" onclick="document.body.classList.toggle('nav-open')">
-          ☰
-        </button>
-      </div>
+     content:`<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitalmin - Expert Skincare</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-light: #e3f0e1;
+            --bg-mid: #d2e1d0;
+            --bg-dark-green: #6c9366;
+            --accent-green: #5a8254;
+            --text-dark: #2c2c2c;
+            --text-muted: #555;
+            --white: #ffffff;
+            --container-width: 1200px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        .container {
+            max-width: var(--container-width);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--bg-light);
+            padding: 20px 0;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .nav-icons {
+            display: flex;
+            gap: 20px;
+            font-size: 18px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background-color: var(--bg-light);
+            padding: 60px 0 100px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .step-tag {
+            background: #cbdcc9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 36px;
+            font-weight: 500;
+            line-height: 1.1;
+        }
+
+        .hero-title span {
+            display: block;
+            font-size: 80px;
+            font-style: italic;
+            margin-top: -10px;
+        }
+
+        .hero-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 320px;
+            margin: 20px 0;
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .price-label { font-size: 18px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 15px;}
+        .price-value { font-size: 24px; font-weight: 700; }
+
+        .btn-primary {
+            background-color: var(--accent-green);
+            color: white;
+            padding: 14px 35px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            box-shadow: 0 10px 20px rgba(90, 130, 84, 0.2);
+        }
+
+        .btn-link {
+            margin-left: 20px;
+            text-decoration: underline;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+
+        /* Hero Center Image */
+        .hero-center {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .main-bottle {
+            width: 250px;
+            z-index: 2;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
+        }
+
+        .podium {
+            width: 220px;
+            height: 120px;
+            background: #fff;
+            border-radius: 50%;
+            margin-top: -60px;
+            z-index: 1;
+        }
+
+        .succulent {
+            position: absolute;
+            right: 0;
+            bottom: 40px;
+            width: 150px;
+            z-index: 2;
+        }
+
+        /* Hero Right */
+        .badge-new {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 30px;
+            position: relative;
+            animation: rotate 10s linear infinite;
+        }
+
+        @keyframes rotate { from {transform: rotate(0deg)} to {transform: rotate(360deg)} }
+
+        .promo-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 140px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        .promo-card img { width: 50px; margin-bottom: 10px; }
+        .promo-card p { font-weight: 700; font-size: 18px; }
+
+        /* --- Partner Section --- */
+        .partners {
+            background-color: var(--bg-dark-green);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .partners h2 { font-size: 28px; font-weight: 500; margin-bottom: 40px; }
+
+        .logo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            opacity: 0.9;
+        }
+
+        /* --- Featured Products --- */
+        .featured { padding: 100px 0; }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 60px;
+        }
+
+        .section-header h2 { font-size: 44px; flex: 1; }
+        .section-header p { flex: 1; padding-left: 40px; color: var(--text-muted); font-size: 14px; border-left: 1px solid #ddd; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .feat-card {
+            background: #fdfdfd;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+        }
+
+        .feat-card-header {
+            background-color: var(--accent-green);
+            color: white;
+            width: fit-content;
+            padding: 10px 30px;
+            border-radius: 0 0 15px 0;
+            font-size: 14px;
+        }
+
+        .feat-content {
+            padding: 40px;
+            display: flex;
+            align-items: center;
+        }
+
+        .feat-text { flex: 1.2; }
+        .feat-img { flex: 0.8; text-align: right; }
+        .feat-img img { width: 100%; max-width: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); }
+
+        .feat-text h3 { font-size: 24px; margin: 15px 0; font-family: 'Inter', sans-serif; font-weight: 600;}
+        .feat-text p { font-size: 13px; color: var(--text-muted); margin-bottom: 30px; }
+
+        .shop-btn-large {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0;
+            background: var(--accent-green);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        /* --- About Brand Section --- */
+        .about-brand {
+            background-color: var(--bg-light);
+            padding: 100px 0;
+            position: relative;
+        }
+
+        .palm-leaf { position: absolute; width: 250px; opacity: 0.6; pointer-events: none; }
+        .leaf-top-right { top: 0; right: 0; transform: rotate(180deg); }
+        .leaf-bottom-left { bottom: 0; left: 0; }
+
+        .brand-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .gallery-item p { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+        /* --- Skincare Tips --- */
+        .tips { padding: 100px 0; }
+
+        .tip-row {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+
+        .tip-row.reverse { flex-direction: row-reverse; }
+
+        .tip-text { flex: 1; }
+        .tip-img { flex: 1; }
+        .tip-img img { width: 100%; border-radius: 15px; }
+
+        .tip-text h3 { font-size: 24px; margin-bottom: 20px; }
+        .tip-text p { color: var(--text-muted); margin-bottom: 20px; font-size: 14px;}
+
+        .btn-outline {
+            display: block;
+            width: 180px;
+            margin: 40px auto 0;
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-dark);
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        /* --- Expert Products --- */
+        .expert-products { padding: 100px 0; background: #fff; }
+
+        .prod-carousel {
+            display: flex;
+            gap: 20px;
+            margin-top: 40px;
+            overflow-x: auto;
+            padding-bottom: 40px;
+        }
+
+        .prod-card {
+            min-width: 250px;
+            flex: 1;
+            background: #fdfdfd;
+            border: 1px solid #f0f0f0;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .prod-card img { height: 180px; object-fit: contain; margin-bottom: 15px; }
+        .prod-card h4 { font-size: 16px; margin-bottom: 5px; }
+        .prod-card span { font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 15px;}
+        .buy-now { color: var(--accent-green); text-decoration: underline; font-size: 13px; font-weight: 600; cursor: pointer;}
+
+        /* --- Newsletter --- */
+        .newsletter {
+            padding: 60px 0;
+            background: white;
+        }
+
+        .news-box {
+            background: white;
+            border: 1px solid #eee;
+            padding: 60px;
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .news-input-wrap {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 450px;
+        }
+
+        .news-input-wrap input {
+            border: none;
+            padding: 15px 20px;
+            flex: 1;
+            outline: none;
+        }
+
+        .news-input-wrap button {
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 0 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background: #333;
+            color: #888;
+            padding: 60px 0 20px;
+        }
+
+        .footer-top {
+            display: flex;
+            justify-content: space-between;
+            padding-bottom: 40px;
+            border-bottom: 1px solid #444;
+        }
+
+        .footer-logo { color: white; font-size: 22px; font-weight: 700; }
+        .footer-links a { color: #888; text-decoration: none; margin-left: 25px; font-size: 13px; }
+        .footer-socials i { margin-left: 20px; color: white; cursor: pointer; }
+
+        .copyright { text-align: center; padding-top: 20px; font-size: 12px; }
+
+        /* Responsive Mobile */
+        @media (max-width: 992px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-title span { font-size: 60px; }
+            .hero-desc { margin: 20px auto; }
+            .price-row { justify-content: center; }
+            .hero-center { margin: 50px 0; }
+            .section-header { flex-direction: column; gap: 20px; }
+            .section-header p { padding: 0; border: none; }
+            .product-grid, .brand-gallery, .tip-row { grid-template-columns: 1fr; display: block; }
+            .tip-row { margin-bottom: 40px; }
+            .news-box { flex-direction: column; gap: 30px; text-align: center; }
+            .news-input-wrap { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Vitalmin</div>
+                <div class="nav-links">
+                    <a href="#">Product</a>
+                    <a href="#">Features</a>
+                    <a href="#">Reviews</a>
+                    <a href="#">About us</a>
+                </div>
+                <div class="nav-icons">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <i class="fa-regular fa-user"></i>
+                </div>
+            </nav>
+        </div>
     </header>
- 
-    <section id="home" class="hero">
-      <div class="hero-overlay"></div>
- 
-      <div class="container hero-content">
-        <div class="hero-text">
-          <h1>This is an awesome company<br />for creatives.</h1>
-          <p>
-            We craft beautiful websites and digital products for startups, agencies and brands.
-            Simple, clean, and modern — feel free to explore the sections below.
-          </p>
-          <a class="btn btn-primary" href="#services">Get Started</a>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <!-- Left -->
+                <div class="hero-left">
+                    <span class="step-tag">01</span>
+                    <h1 class="hero-title">
+                        Unlock Your Skin's Natural
+                        <span>Beauty</span>
+                    </h1>
+                    <p class="hero-desc">Welcome to the world of Vitalmin Skincare, where we believe that beauty starts with healthy, radiant skin. Our mission is simple yet transformative.</p>
+                    <div class="price-row">
+                        <span class="price-label">Price</span>
+                        <span class="price-value">$39.99</span>
+                    </div>
+                    <div>
+                        <a href="#" class="btn-primary">Shop Now</a>
+                        <a href="#" class="btn-link">Learn More</a>
+                    </div>
+                </div>
+
+                <!-- Center -->
+                <div class="hero-center">
+                    <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=600" alt="Serum Bottle" class="main-bottle">
+                    <div class="podium"></div>
+                    <img src="https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&q=80&w=400" alt="Plant" class="succulent">
+                </div>
+
+                <!-- Right -->
+                <div class="hero-right">
+                    <img src="https://cdn-icons-png.flaticon.com/512/8146/8146003.png" alt="New Badge" class="badge-new">
+                    <div class="promo-card">
+                        <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=100" alt="Mini Product">
+                        <p>$49.99</p>
+                    </div>
+                    <div style="font-size: 14px;">
+                        <h4 style="margin-bottom: 5px;">What we offer</h4>
+                        <p style="color: var(--text-muted); margin-bottom: 10px;">Our Serums Offer You Not Just Skincare, But An Experience.</p>
+                        <a href="#" style="color: black; font-weight: 600;">Explore More &rarr;</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </section>
- 
-    <!-- FEATURES -->
-    <section id="services" class="section section-features">
-      <div class="container">
-        <div class="section-title center">
-          <span class="kicker">Our Service</span>
-          <h2>We Design Creative & Innovative Solutions</h2>
-          <p>
-            A clean and minimal layout with strong typography, clear spacing and a modern purple accent.
-          </p>
+
+    <!-- Partners -->
+    <section class="partners">
+        <div class="container">
+            <h2>Joining with industry leaders.</h2>
+            <div class="logo-row">
+                <span>Dove</span>
+                <span>L'ORÉAL</span>
+                <span>NIVEA</span>
+                <span>Garnier</span>
+                <span>Avon</span>
+            </div>
         </div>
- 
-        <div class="features-grid">
-          <div class="feature-card">
-            <div class="feature-icon">
-              <!-- simple inline icon -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M4 6h16v10H4V6zm2 2v6h12V8H6zm-2 12h16v2H4v-2z"></path>
-              </svg>
-            </div>
-            <h3>Creativity</h3>
-            <p>
-              Unique ideas, modern UI blocks and a polished visual style that feels premium.
-            </p>
-          </div>
- 
-          <div class="feature-card">
-            <div class="feature-icon fill">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 2a7 7 0 017 7c0 2.5-1.3 4.2-2.4 5.3-.7.7-1.1 1.6-1.1 2.6V18H8.5v-1.2c0-1-.4-1.9-1.1-2.6C6.3 13.2 5 11.5 5 9a7 7 0 017-7zm-3 18h6v2H9v-2z"></path>
-              </svg>
-            </div>
-            <h3>Professional</h3>
-            <p>
-              Built with structure, reusable sections, and a consistent spacing system.
-            </p>
-          </div>
- 
-          <div class="feature-card">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M20 4H4a2 2 0 00-2 2v12a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"></path>
-              </svg>
-            </div>
-            <h3>Fast Support</h3>
-            <p>
-              We respond quickly and keep the project moving with clear communication.
-            </p>
-          </div>
-        </div>
-      </div>
     </section>
- 
-    <!-- ABOUT (PURPLE SECTION) -->
-    <section class="section about">
-      <div class="container about-grid">
-        <div class="about-text">
-          <span class="kicker light">About Us</span>
-          <h2>The Creation</h2>
-          <p>
-            We build modern web experiences with great typography, clean components,
-            and layouts that look professional on every device.
-          </p>
-          <p class="muted">
-            This section matches the screenshot style: purple background, white text,
-            and a clean button.
-          </p>
-          <a class="btn btn-ghost" href="#portfolio">Read More</a>
-        </div>
- 
-        <div class="about-media">
-          <img
-            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&am…
-            alt="Office"
-          />
-        </div>
-      </div>
-    </section>
- 
-    <!-- VIDEO / PARALLAX -->
-    <section class="video">
-      <div class="video-overlay"></div>
-      <div class="container video-inner">
-        <span class="kicker light">Who Choose Us?</span>
-        <h2>We Lead From The Front</h2>
-        <p>
-          Strong visuals with an overlay + call-to-action. Perfect for agency style pages.
-        </p>
- 
-        <a class="play-btn" href="javascript:void(0)" aria-label="Play video">
-          <span>▶</span>
-          <small>Play Video</small>
-        </a>
-      </div>
-    </section>
- 
-    <!-- PORTFOLIO -->
-    <section id="portfolio" class="section portfolio">
-      <div class="container">
-        <div class="section-title">
-          <span class="kicker">Our Portfolio</span>
-          <h2>The Inspirations</h2>
-        </div>
- 
-        <div class="portfolio-grid">
-          <a class="work" href="#">
-            <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=900&q=80%22 alt="Work 1" />
-          </a>
- 
-          <a class="work tall" href="#">
-            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=900&q=80%22 alt="Work 2" />
-          </a>
- 
-          <a class="work" href="#">
-            <img src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=900&q=80%22 alt="Work 3" />
-          </a>
- 
-          <a class="work" href="#">
-            <img src="https://images.unsplash.com/photo-1519181245277-cffeb31da2fb?auto=format&fit=crop&w=900&q=80%22 alt="Work 4" />
-          </a>
-        </div>
- 
-        <div class="center mt-24">
-          <a class="btn btn-outline" href="#">View All</a>
-        </div>
-      </div>
-    </section>
- 
-    <!-- TESTIMONIALS -->
-    <section class="section testimonials">
-      <div class="container">
-        <div class="section-title center">
-          <span class="kicker">Testimonial</span>
-          <h2>The Pleasure</h2>
-        </div>
- 
-        <div class="testi-grid">
-          <div class="testi-card">
-            <div class="quote">“</div>
-            <p>
-              They delivered an amazing design with clean sections and perfect spacing. Very professional team.
-            </p>
-            <div class="testi-user">
-              <img src="https://i.pravatar.cc/100?img=12" alt="User" />
-              <div>
-                <strong>Mr Jacob James</strong>
-                <span>UI Designer</span>
-              </div>
+
+    <!-- Featured Products -->
+    <section class="featured">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Products</h2>
+                <p>Our featured collection showcases the best of our skincare expertise, designed to address a variety of skin concerns and deliver exceptional results. Each crafted to elevate your skincare routine.</p>
             </div>
-          </div>
- 
-          <div class="testi-card">
-            <div class="quote">“</div>
-            <p>
-              Smooth process, fast support, and the final page looks premium. Love the purple theme!
-            </p>
-            <div class="testi-user">
-              <img src="https://i.pravatar.cc/100?img=32" alt="User" />
-              <div>
-                <strong>Mrs Emma Clark</strong>
-                <span>Product Owner</span>
-              </div>
+
+            <div class="product-grid">
+                <!-- Serum Card -->
+                <div class="feat-card">
+                    <div class="feat-card-header">Serums</div>
+                    <div class="feat-content">
+                        <div class="feat-text">
+                            <h3>Vitality Serum</h3>
+                            <p>Welcome to the world of Vitalmin Skincare, where we believe beauty starts with radiant skin. Simple yet transformative.</p>
+                        </div>
+                        <div class="feat-img">
+                            <img src="https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&q=80&w=400" alt="Serum">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Oil Card -->
+                <div class="feat-card" style="background-color: #f1f8f0;">
+                    <div class="feat-card-header">Oils</div>
+                    <div class="feat-content">
+                        <div class="feat-text">
+                            <h3>Natural Glow Oil</h3>
+                            <p>Oils have emollient properties to support the skin barrier and lock in moisture. Naturally rich in antioxidants.</p>
+                        </div>
+                        <div class="feat-img">
+                            <img src="https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&q=80&w=400" alt="Oil">
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
- 
-          <div class="testi-card">
-            <div class="quote">“</div>
-            <p>
-              Great typography, modern layout and responsive design. Everything looks clean on mobile too.
-            </p>
-            <div class="testi-user">
-              <img src="https://i.pravatar.cc/100?img=18" alt="User" />
-              <div>
-                <strong>Mr Sam Smith</strong>
-                <span>Founder</span>
-              </div>
-            </div>
-          </div>
+            <a href="#" class="shop-btn-large">Shop Now</a>
         </div>
-      </div>
     </section>
- 
-    <!-- CTA -->
-    <section id="contact" class="cta">
-      <div class="cta-overlay"></div>
-      <div class="container cta-inner">
-        <h2>Feel Free To Get In Touch With Us!</h2>
-        <a class="btn btn-primary" href="#">Contact</a>
-      </div>
+
+    <!-- About Brand -->
+    <section class="about-brand">
+        <img src="https://pngimg.com/uploads/palm_leaf/palm_leaf_PNG28.png" class="palm-leaf leaf-top-right">
+        <img src="https://pngimg.com/uploads/palm_leaf/palm_leaf_PNG28.png" class="palm-leaf leaf-bottom-left">
+        
+        <div class="container">
+            <div style="max-width: 600px;">
+                <span class="step-tag">About Us</span>
+                <h2 style="font-size: 40px; margin-bottom: 20px;">About Our Brand</h2>
+                <p style="font-size: 14px; color: var(--text-muted);">Welcome to Vitalmin Skincare, where we believe that beauty starts with healthy, radiant skin. Our mission is simple yet transformative: to unlock your skin's natural beauty potential.</p>
+            </div>
+
+            <div class="brand-gallery">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=400" alt="Process">
+                    <p>Our journey began with a passion for skincare and the belief that everyone deserves high-quality products.</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=400" alt="Brushes">
+                    <p>At Vitalmin, our commitment is to your skin's health and your confidence. We take that responsibility seriously.</p>
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1481325544411-6650b848063e?auto=format&fit=crop&q=80&w=400" alt="Model">
+                    <p>Our serums harness the power of science and nature to deliver results. We pair expert advice with cutting-edge tech.</p>
+                </div>
+            </div>
+        </div>
     </section>
- 
-    <!-- BLOG -->
-    <section id="blog" class="section blog">
-      <div class="container">
-        <div class="section-title">
-          <span class="kicker">Blog Post</span>
-          <h2>Lastest News</h2>
-        </div>
- 
-        <div class="blog-grid">
-          <article class="post">
-            <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&am… alt="Blog 1" />
-            <div class="post-body">
-              <h3>Test MBA Market in Ready</h3>
-              <p>Short clean description for your blog post. Keep it crisp and readable.</p>
-              <a class="post-link" href="#">Read More →</a>
+
+    <!-- Skincare Tips -->
+    <section class="tips">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <span class="step-tag">Tips</span>
+                    <h2>Skincare Tips And Insights</h2>
+                </div>
+                <p>We believe that achieving beautiful skin goes beyond using our products—it's about understanding your unique needs and nurturing it with care.</p>
             </div>
-          </article>
- 
-          <article class="post">
-            <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1200&am… alt="Blog 2" />
-            <div class="post-body">
-              <h3>5 Tips for the developer</h3>
-              <p>Use consistent spacing, clear hierarchy, and keep your sections structured.</p>
-              <a class="post-link" href="#">Read More →</a>
+
+            <div class="tip-row">
+                <div class="tip-text">
+                    <h3>1. The Power of Face Serums</h3>
+                    <p>Face serums are skincare superheroes that deliver concentrated ingredients to your skin. They're lightweight, fast-absorbing, and can address specific concerns like hydration, anti-aging, or brightening.</p>
+                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=400" style="width: 100%; height: 250px; object-fit: cover; border-radius: 15px;">
+                </div>
+                <div class="tip-img">
+                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=600" alt="Model 1">
+                </div>
             </div>
-          </article>
- 
-          <article class="post">
-            <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&am… alt="Blog 3" />
-            <div class="post-body">
-              <h3>Harvest Great Ideas</h3>
-              <p>Good design is a balance of typography, layout grid, and meaningful contrast.</p>
-              <a class="post-link" href="#">Read More →</a>
+
+            <div class="tip-row reverse">
+                <div class="tip-text">
+                    <h3>2. The Importance of a Routine</h3>
+                    <p>Consistency is key to healthy skin. Establishing a daily routine that includes cleansing, toning, serum application, and moisturizing can make a significant difference in the long-term health and appearance of your skin.</p>
+                    <div style="height: 150px; border: 1px solid #eee; border-radius: 15px; padding: 30px;">
+                        <i>"Consistency is the key to seeing real transformation in your skin health."</i>
+                    </div>
+                </div>
+                <div class="tip-img">
+                    <img src="https://images.unsplash.com/photo-1591130901618-3f31f2a104e7?auto=format&fit=crop&q=80&w=600" alt="Model 2">
+                </div>
             </div>
-          </article>
+
+            <a href="#" class="btn-outline">See more</a>
         </div>
- 
-        <div class="logos">
-          <div class="logo-pill">Creative</div>
-          <div class="logo-pill">Unique</div>
-          <div class="logo-pill">Delicious</div>
-          <div class="logo-pill">Modern</div>
-          <div class="logo-pill">Premium</div>
-        </div>
-      </div>
     </section>
- 
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="container footer-inner">
-        <div class="footer-col">
-          <div class="logo footer-logo">Joy</div>
-          <p class="muted">
-            A clean agency landing page layout inspired by your screenshot. Replace text/images as needed.
-          </p>
+
+    <!-- Expert Skincare -->
+    <section class="expert-products">
+        <div class="container">
+            <span class="step-tag">Products</span>
+            <div class="section-header" style="margin-bottom: 20px;">
+                <h2>Expert Skincare For Your Beautiful Skin</h2>
+                <p>Our specialized collection is designed to give you that extra boost of radiance and confidence every single day.</p>
+            </div>
+
+            <div class="prod-carousel">
+                <div class="prod-card">
+                    <img src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&q=80&w=200">
+                    <h4>Hydro Boost Hyaluronic</h4>
+                    <span>$124.00</span>
+                    <div class="buy-now">Buy Now</div>
+                </div>
+                <div class="prod-card">
+                    <img src="https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&q=80&w=200">
+                    <h4>Anti-Aging Serum</h4>
+                    <span>$144.00</span>
+                    <div class="buy-now">Buy Now</div>
+                </div>
+                <div class="prod-card">
+                    <img src="https://images.unsplash.com/photo-1594125350485-c5dfd4cd5121?auto=format&fit=crop&q=80&w=200">
+                    <h4>Brightening Serum</h4>
+                    <span>$135.00</span>
+                    <div class="buy-now">Buy Now</div>
+                </div>
+                <div class="prod-card">
+                    <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=200">
+                    <h4>Vitamin C Serums</h4>
+                    <span>$149.00</span>
+                    <div class="buy-now">Buy Now</div>
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 10px;">
+                <a href="#" style="color: black; font-weight: 600;">See all</a>
+            </div>
         </div>
- 
-        <div class="footer-col">
-          <h4>Company</h4>
-          <a href="#home">Home</a>
-          <a href="#services">Services</a>
-          <a href="#portfolio">Portfolio</a>
-          <a href="#blog">Blog</a>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+        <div class="container">
+            <div class="news-box">
+                <div>
+                    <h2 style="font-size: 32px; font-family: 'Inter', sans-serif;">Get Discount 20% off</h2>
+                    <p style="color: var(--text-muted);">Subscribe our news letter and get 20% off</p>
+                </div>
+                <div class="news-input-wrap">
+                    <input type="email" placeholder="Your email address">
+                    <button>Subscribe</button>
+                </div>
+            </div>
         </div>
- 
-        <div class="footer-col">
-          <h4>Support</h4>
-          <a href="#">Help Center</a>
-          <a href="#">Terms</a>
-          <a href="#">Privacy</a>
-          <a href="#">Contact</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-logo">Vitalmin</div>
+                <div class="footer-links">
+                    <a href="#">Product</a>
+                    <a href="#">Features</a>
+                    <a href="#">Reviews</a>
+                    <a href="#">About us</a>
+                </div>
+                <div class="footer-socials">
+                    <i class="fa-brands fa-facebook-f"></i>
+                    <i class="fa-brands fa-instagram"></i>
+                    <i class="fa-brands fa-twitter"></i>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2023 Vitalmin. All rights reserved.
+            </div>
         </div>
- 
-        <div class="footer-col">
-          <h4>Newsletter</h4>
-          <form class="newsletter" onsubmit="return false;">
-            <input type="email" placeholder="Email address" required />
-            <button class="btn btn-primary" type="submit">Subscribe</button>
-          </form>
-        </div>
-      </div>
- 
-      <div class="container footer-bottom">
-        <p>© <span id="year"></span> Joy. All Rights Reserved.</p>
-      </div>
     </footer>
-    </body>
-       `,
+
+</body>
+</html>`,
     slug: "home",
     status: "published",
     createdAt: new Date(),

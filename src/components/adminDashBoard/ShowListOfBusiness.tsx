@@ -6,15 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-import {
-    ExternalLink,
-    Globe,
-    Mail,
 
-    Image as ImageIcon,
-
-    Plus,
-} from "lucide-react";
 import { useRouter } from 'next/navigation';
 import { IBusiness } from '@/models/business';
 import { setBusinessWebsite } from '@/hooks/slices/business/BusinessSlice';

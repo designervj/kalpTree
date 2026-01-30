@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     let createByTenant = "";
 
-    let logo_url = "";
+    let logo_url = "";  
 
     let message = "";
 

@@ -23,6 +23,8 @@ import { addCreatedAgency } from "@/hooks/slices/user/agencySlice";
 import { addCreatedBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { addCreatedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { RootState } from "@/store/store";
+import { IUser } from "@/models/user";
+import { IBusiness } from "@/models/business";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 
@@ -30,8 +32,8 @@ export default function BusinessCreatePage({
   user,
   agencies,
 }: {
-  user?: any;
-  agencies?: any[];
+  user?: IUser;
+  agencies?: IBusiness[];
 }) {
 
 
@@ -86,7 +88,7 @@ export default function BusinessCreatePage({
       headquarters: "",
       brand_name: "",
       lang: [],
-     
+
     },
 
     branding: {
@@ -97,7 +99,7 @@ export default function BusinessCreatePage({
       typography: "Inter",
     },
 
-    createdById: safeUser.id,
+    createdById: safeUser?.id,
   }));
 
 
@@ -186,7 +188,7 @@ export default function BusinessCreatePage({
         fd.append("agency_password", formData.agency_password || "");
       }
 
-      fd.append("createdById", formData.createdById);
+      fd.append("createdById", safeUser?.id.toString());
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
 
       fd.append(
@@ -277,8 +279,8 @@ export default function BusinessCreatePage({
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex-1 px-6 py-4 font-semibold transition-all relative ${activeTab === tab.id
-                        ? "text-primary"
-                        : "text-gray-500 hover:text-gray-700"
+                      ? "text-primary"
+                      : "text-gray-500 hover:text-gray-700"
                       }`}
                   >
                     <div className="flex items-center justify-center gap-2">
@@ -298,8 +300,8 @@ export default function BusinessCreatePage({
             {message.text && (
               <div
                 className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === "success"
-                    ? "bg-green-50 text-green-800 border border-green-200"
-                    : "bg-red-50 text-red-800 border border-red-200"
+                  ? "bg-green-50 text-green-800 border border-green-200"
+                  : "bg-red-50 text-red-800 border border-red-200"
                   }`}
               >
                 {message.type === "success" ? (
