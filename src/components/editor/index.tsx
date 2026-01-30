@@ -99,9 +99,14 @@ export default function GrapesJSEditor() {
 
       try {
         const data = page.content;
+        console.log('📄 Page content exists?', !!data);
+        console.log('📄 Page content length:', data?.length);
+
         if (data) {
           // Safely set components with error handling
           state?.editor?.setComponents(data);
+          console.log('✅ Components set in editor');
+
           const { body } = extractHtmlParts(data);
           setEditorHtml(body);
 
@@ -117,6 +122,36 @@ export default function GrapesJSEditor() {
             state.editor.setJs(js);
             setEditorJs(js);
           }
+
+          // Refresh layers after content is loaded
+          // Use longer delay and retry mechanism to ensure components are parsed
+          console.log('🔄 Content loaded, refreshing layers...');
+
+          let retryCount = 0;
+          const maxRetries = 3;
+
+          const tryRefreshLayers = () => {
+            console.log(`🔄 Attempt ${retryCount + 1}/${maxRetries} - Calling refreshLayers...`);
+
+            // Check if wrapper has components before refreshing
+            const wrapper = state.editor?.Components?.getWrapper();
+            const hasComponents = wrapper?.components?.()?.length > 0;
+
+            console.log(`🔍 Wrapper has components? ${hasComponents}`);
+
+            if (hasComponents || retryCount >= maxRetries - 1) {
+              actions.refreshLayers();
+              if (!hasComponents) {
+                console.warn('⚠️ No components found after max retries');
+              }
+            } else {
+              retryCount++;
+              console.log(`⏳ No components yet, retrying in 300ms...`);
+              setTimeout(tryRefreshLayers, 300);
+            }
+          };
+
+          setTimeout(tryRefreshLayers, 500);
         }
 
         contentLoadedRef.current = true;
@@ -510,9 +545,8 @@ export default function GrapesJSEditor() {
         <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
           {/* Canvas */}
           <div
-            className={`${
-              showSidebar ? "w-[90%]" : "w-full"
-            } transition-all duration-300 ease-in-out relative`}
+            className={`${showSidebar ? "w-[90%]" : "w-full"
+              } transition-all duration-300 ease-in-out relative`}
           >
             {state.isLoading && (
               <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
@@ -559,7 +593,7 @@ export default function GrapesJSEditor() {
       {/* edit form */}
       <EditForm componentHtml={editForm} />
 
-      
+
       <GetAllTemplate />
     </div>
   );

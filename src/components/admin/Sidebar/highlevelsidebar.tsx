@@ -65,7 +65,17 @@ const navigationItems = [
       { label: "Add New Business", href: "/admin/businesses/create" },
     ],
   },
-
+{
+    id: "users",
+    label: "Users",
+    icon: Network,
+    href: "/admin/users",
+    hasSubmenu: true,
+    submenuItems: [
+      { label: "Users list", href: "/admin/users" },
+      { label: "Add New User", href: "/admin/users/create" },
+    ],
+  },
   {
     id: "domains",
     label: "Domains",

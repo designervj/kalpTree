@@ -17,7 +17,7 @@ import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-v
 interface GrapesJSEditor {
   getHtml: () => string;
   getCss: () => string | undefined;
-  getJs?: () => string; 
+  getJs?: () => string;
   setJs?: (js: string) => void;
   setComponents: (components: string | object) => any;
   addComponents: (components: string | object) => any;
@@ -257,9 +257,138 @@ export function useEditor(containerId: string) {
         const bm = editor.BlockManager;
 
         // Register Form component to ensure it's recognized even from raw HTML
+        // Register custom component types for form children to prevent selection
+        domc.addType("form-input", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'INPUT' && el.closest('form')) {
+              return { type: 'form-input' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-textarea", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'TEXTAREA' && el.closest('form')) {
+              return { type: 'form-textarea' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-select", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'SELECT' && el.closest('form')) {
+              return { type: 'form-select' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-label", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'LABEL' && el.closest('form')) {
+              return { type: 'form-label' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        // Add form-div component type to make divs inside forms non-selectable
+        domc.addType("form-div", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'DIV' && el.closest('form')) {
+              return { type: 'form-div' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        // Add form-button component type
+        domc.addType("form-button", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'BUTTON' && el.closest('form')) {
+              return { type: 'form-button' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
         domc.addType("form", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'form') {
+            if (el.tagName === 'FORM') {
               return { type: 'form' };
             }
             return false;
@@ -294,15 +423,67 @@ export function useEditor(containerId: string) {
                     { id: 'application/x-www-form-urlencoded', value: 'application/x-www-form-urlencoded', name: 'URL Encoded' },
                     { id: 'multipart/form-data', value: 'multipart/form-data', name: 'Multipart' },
                     { id: 'text/plain', value: 'text/plain', name: 'Text Plain' },
-                  ]
+                  ],
                 }
               ]
             },
+            init() {
+              // Recursively disable selection on all children when form is initialized
+              this.on('component:add', (component: any) => {
+                this.disableChildrenSelection(component);
+              });
+
+              // Disable selection on existing children
+              this.get('components')?.forEach((child: any) => {
+                this.disableChildrenSelection(child);
+              });
+            },
+            disableChildrenSelection(component: any) {
+              if (!component) return;
+
+              // Set the component to be non-selectable
+              component.set({
+                selectable: false,
+                hoverable: false,
+                draggable: false,
+                droppable: false,
+                editable: false,
+                layerable: false,
+                highlightable: false,
+                badgable: false,
+              });
+
+              // Recursively disable children
+              const children = component.get('components');
+              if (children && children.length > 0) {
+                children.forEach((child: any) => {
+                  this.disableChildrenSelection(child);
+                });
+              }
+            }
           },
           view: {
             events: {
               submit: (e: Event) => e.preventDefault(),
             } as any,
+            onRender() {
+              if (this.el) {
+                // Disable all form inputs at DOM level
+                const inputs = this.el.querySelectorAll('input, textarea, select, button');
+                inputs.forEach((input) => {
+                  (input as any).disabled = true;
+                  (input as HTMLElement).style.pointerEvents = 'none';
+                  (input as HTMLElement).style.userSelect = 'none';
+                });
+
+                // Make all children non-selectable via CSS
+                const allChildren = this.el.querySelectorAll('*');
+                allChildren.forEach((child) => {
+                  (child as HTMLElement).style.pointerEvents = 'none';
+                  (child as HTMLElement).style.userSelect = 'none';
+                });
+              }
+            },
           }
         });
 
@@ -557,15 +738,15 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component selected", component);
-      if(component?.attributes?.tagName === 'form') {
-         // how to know the child of form
-           const componentHtml = component.toHTML();
-      
-          //editForm
-          setEditForm(componentHtml)
-         
-      }else{
+
+      if (component?.attributes?.tagName === 'form') {
+        // how to know the child of form
+        const componentHtml = component.toHTML();
+
+        //editForm
+        setEditForm(componentHtml)
+
+      } else {
         setEditForm(null)
       }
       // Validate component exists before processing
@@ -578,13 +759,13 @@ export function useEditor(containerId: string) {
         ...prev,
         selectedElement: component,
       }));
-      updateStylesFromComponent(component); 
+      updateStylesFromComponent(component);
 
       // Initialize interactions if not already present
 
-       // Custom toolbar for Form component
-       console.log("component", component.get('type'))
-    
+      // Custom toolbar for Form component
+      console.log("component", component.get('type'))
+
       try {
         if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
           if (component.set && typeof component.set === 'function') {
@@ -595,7 +776,7 @@ export function useEditor(containerId: string) {
         console.error('Error initializing interactions:', error);
       }
 
-     
+
 
       // Add custom toolbar button only if it doesn't already exist
       const defaultToolbar = component.get('toolbar');
@@ -615,7 +796,7 @@ export function useEditor(containerId: string) {
               <path d="M9 14s1 1 3 1 3-1 3-1"></path>
             </svg>`,
             command: (editor: any) => {
-       
+
 
               // Get component HTML
               const componentHtml = component.toHTML();
@@ -790,16 +971,48 @@ export function useEditor(containerId: string) {
     }
 
     try {
-      // Add additional check for getComponents method
-      if (typeof editor.Components.getComponents !== 'function') {
-        console.warn('getComponents method not available on editor.Components');
+      // Get the wrapper component first, then get its children
+      const wrapper = editor.Components.getWrapper();
+
+      console.log('🔍 Wrapper:', wrapper);
+
+      if (!wrapper) {
+        console.warn('⚠️ Wrapper component not available');
+        setState((prev) => ({
+          ...prev,
+          layers: [],
+        }));
         return;
       }
 
-      const components = editor.Components.getComponents();
+      // Get components from the wrapper
+      let components = [];
+      console.log('🔍 Wrapper has components method?', typeof wrapper.components === 'function');
+      console.log('🔍 Wrapper has get method?', typeof wrapper.get === 'function');
+
+      if (typeof wrapper.components === 'function') {
+        components = wrapper.components();
+        console.log('✅ Got components via wrapper.components():', components);
+      } else if (wrapper.get && typeof wrapper.get === 'function') {
+        const comps = wrapper.get('components');
+        console.log('🔍 wrapper.get("components"):', comps);
+        console.log('🔍 Has models?', comps && typeof comps.models !== 'undefined');
+
+        if (comps && typeof comps.models !== 'undefined') {
+          components = comps.models;
+          console.log('✅ Got components via comps.models:', components);
+        } else if (Array.isArray(comps)) {
+          components = comps;
+          console.log('✅ Got components as array:', components);
+        }
+      }
+
+      console.log('📊 Final components array:', components);
+      console.log('📊 Components length:', components?.length);
 
       // Verify components is valid before mapping
-      if (!components) {
+      if (!components || !Array.isArray(components) || components.length === 0) {
+        console.log('❌ No components found, layers will be empty');
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -808,6 +1021,7 @@ export function useEditor(containerId: string) {
       }
 
       const layerItems = mapComponentsToLayers(components);
+      console.log('✅ Layer items created:', layerItems);
 
       setState((prev) => ({
         ...prev,
@@ -1903,6 +2117,12 @@ body {
         if (editorRef.current) {
           editorRef.current.refresh();
         }
+      }
+    },
+
+    refreshLayers: () => {
+      if (editorRef.current) {
+        updateLayers(editorRef.current);
       }
     },
   };

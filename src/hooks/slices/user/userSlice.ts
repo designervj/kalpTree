@@ -8,9 +8,10 @@ export const getAllUser = createAsyncThunk<IUser[]>(
   "user/getAllUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/admin/getAllUsers");
+      const response = await  fetch("/api/admin/getAllUsers");
+      const data = await response.json();
       // API returns { users: IUser[] } with superadmin filtered out
-      return response.data.users;
+      return data.users;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -65,6 +66,7 @@ interface UserState {
   hasFetched: boolean;
   hasFetchedAllUsers: boolean;
   websiteCount: number;
+  currentUser: IUser | null;
 }
 
 const initialState: UserState = {
@@ -75,6 +77,7 @@ const initialState: UserState = {
   hasFetched: false,
   hasFetchedAllUsers: false,
   websiteCount: 0,
+  currentUser: null,
 };
 
 const userSlice = createSlice({
@@ -94,6 +97,9 @@ const userSlice = createSlice({
     },
     updateIsSecondDashBoard: (state, action) => {
       state.isSecondDashBoard = action.payload;
+    },
+    setCurrentUser: (state, action: PayloadAction<IUser | null>) => {
+      state.currentUser = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -129,5 +135,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, clearUser, updateUser, updateIsSecondDashBoard } = userSlice.actions;
+export const { setUser, clearUser, updateUser, updateIsSecondDashBoard, setCurrentUser } = userSlice.actions;
 export default userSlice.reducer;

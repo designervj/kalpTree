@@ -94,7 +94,7 @@ const LayerItem: React.FC<LayerItemProps> = ({
       editForm
     } = useEditor("gjs-editor");
 
- console.log("layers",  state?.editor?.Components?.getWrapper()?.components());
+    console.log("state of canvas", state);
 
   return (
     <div className="layer-item">
