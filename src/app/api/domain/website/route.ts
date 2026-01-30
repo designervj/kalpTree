@@ -2,6 +2,29 @@ import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
+// Helper function to serialize MongoDB documents for Redux
+function serializeDocument(doc: any) {
+  if (!doc) return doc;
+
+  const serialized: any = {};
+  for (const key in doc) {
+    const value = doc[key];
+    if (value instanceof ObjectId) {
+      serialized[key] = value.toString();
+    } else if (value instanceof Date) {
+      serialized[key] = value.toISOString();
+    } else if (Array.isArray(value)) {
+      serialized[key] = value.map(item =>
+        typeof item === 'object' ? serializeDocument(item) : item
+      );
+    } else if (value && typeof value === 'object') {
+      serialized[key] = serializeDocument(value);
+    } else {
+      serialized[key] = value;
+    }
+  }
+  return serialized;
+}
 
 // GET: Get website by id
 export async function GET(req: NextRequest) {
@@ -29,7 +52,9 @@ export async function GET(req: NextRequest) {
     websites = await collection.find({}).toArray();
   }
 
-  return NextResponse.json({ item: websites });
+  // Serialize the documents before returning
+  const serializedWebsites = websites.map(serializeDocument);
+  return NextResponse.json({ item: serializedWebsites });
 
 }
 
@@ -45,7 +70,7 @@ export async function POST(req: Request) {
     updatedAt: new Date(),
   });
   const website = await collection.findOne({ _id: result.insertedId });
-  return NextResponse.json({ item: website }, { status: 201 });
+  return NextResponse.json({ item: serializeDocument(website) }, { status: 201 });
 }
 
 // PUT: Update website by id
@@ -62,7 +87,7 @@ export async function PUT(req: Request) {
   updateData.updatedAt = new Date();
   await collection.updateOne({ _id }, { $set: updateData });
   const website = await collection.findOne({ _id });
-  return NextResponse.json({ item: website });
+  return NextResponse.json({ item: serializeDocument(website) });
 }
 
 // DELETE: Delete website by id
