@@ -22,7 +22,7 @@ export const fetchAllAgencies = createAsyncThunk<
 
 // Thunk to delete an agency by id
 export const deleteAgency = createAsyncThunk<
-  {success:boolean,agencyId:string}, // return type (deleted agency id)
+  { success: boolean, agencyId: string }, // return type (deleted agency id)
   string, // argument type (agency id)
   { rejectValue: string }
 >("agency/deleteAgency", async (agencyId, { rejectWithValue }) => {
@@ -35,7 +35,7 @@ export const deleteAgency = createAsyncThunk<
       throw new Error(data?.error || `HTTP ${res.status}`);
     }
     return {
-      success:true,
+      success: true,
       agencyId
     }
   } catch (err: any) {
@@ -55,7 +55,7 @@ export const fetchSingleAgency = createAsyncThunk<
       throw new Error(data?.error || `HTTP ${res.status}`);
     }
     const data = await res.json();
-    console.log("data agency", data.data);
+ 
     return data.data;
   } catch (err: any) {
     return rejectWithValue(err?.message || "Failed to fetch agencies");
@@ -72,7 +72,7 @@ interface AgencyState {
   agencies: IUser[];
   hasfetched: boolean;
   isAgencyLoading: boolean;
-  curretAgency: IUser | null;
+  curretAgency: IUser | null | IBusiness;
 }
 
 const initialState: AgencyState = {
@@ -91,11 +91,11 @@ const agencySlice = createSlice({
       state.agencies = action.payload;
       state.hasfetched = true;
     },
- 
+
     setAgencyLoading(state, action: PayloadAction<boolean>) {
       state.isAgencyLoading = action.payload;
     },
-    setCurretAgency(state, action: PayloadAction<IUser | null>) {
+    setCurretAgency(state, action: PayloadAction<IUser | IBusiness | null>) {
       state.curretAgency = action.payload;
     },
     addCreatedAgency(state, action: PayloadAction<IBusiness>) {
@@ -125,7 +125,7 @@ const agencySlice = createSlice({
         state.isAgencyLoading = true;
       })
       .addCase(deleteAgency.fulfilled, (state, action) => {
-        const {success,agencyId}=action.payload
+        const { success, agencyId } = action.payload
         state.isAgencyLoading = false;
         state.agencies = state.agencies.filter((a) => a._id !== agencyId);
       })
@@ -152,7 +152,7 @@ const agencySlice = createSlice({
       })
       .addCase(fetchSingleAgency.fulfilled, (state, action) => {
         const data = action.payload;
-        state.allAgencies=[data]
+        state.allAgencies = [data]
         state.curretAgency = data;
         state.hasfetched = true;
       })
@@ -160,10 +160,10 @@ const agencySlice = createSlice({
         state.isAgencyLoading = false;
       });
 
- 
+
   },
 });
 
-export const { setAgencies, setAgencyLoading, setCurretAgency, clearAgencies,addCreatedAgency } =
+export const { setAgencies, setAgencyLoading, setCurretAgency, clearAgencies, addCreatedAgency } =
   agencySlice.actions;
 export default agencySlice.reducer;

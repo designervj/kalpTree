@@ -87,7 +87,7 @@ function PillButton({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
+function  StatusBadge({ status }: { status: string }) {
   const isActive = status === "active";
 
   return (
@@ -103,7 +103,7 @@ function StatusBadge({ status }: { status: string }) {
       ) : (
         <Clock className="h-3 w-3" />
       )}
-      {status.charAt(0).toUpperCase() + status.slice(1)}
+      {status?.charAt(0)?.toUpperCase() + status?.slice(1)}
     </div>
   );
 }
@@ -410,7 +410,9 @@ export default function AdminIndex() {
                             <div className="text-[24px] font-semibold text-slate-900">
                               {business.name}
                             </div>
-                            <StatusBadge  />
+                            <StatusBadge 
+                            status={business?.status!}
+                             />
                           </div>
 
                           {business.businessdetails?.tagline && (
@@ -434,7 +436,7 @@ export default function AdminIndex() {
                             )}
                             <span className="flex items-center gap-1 px-2 py-1 bg-slate-100 rounded-md">
                               <Calendar className="h-3 w-3" />
-                              Joined {formatDate(business.createdAt)}
+                              Joined {formatDate(business?.createdAt!)}
                             </span>
                           </div>
 

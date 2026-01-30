@@ -18,6 +18,8 @@ import { useEffect, useState } from "react";
 import { setrelatedtowebsites } from "../../../../utils/helperSet";
 import { toast } from "sonner";
 import { LanguageSelector } from "./languageSupport";
+import { IUser } from "@/models/user";
+import { IBusiness } from "@/models/business";
 
 const SERVICE_OPTIONS = [
   {
@@ -46,21 +48,26 @@ const SERVICE_OPTIONS = [
   },
 ];
 
+interface Props {
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  formData: any;
+  showPassword: boolean;
+  setShowPassword: (value: boolean) => void;
+  user?: IUser;
+  agencies?: IBusiness[];
+}
+
 export const Businessdetails = ({
   handleInputChange,
   formData,
   showPassword,
   setShowPassword,
   user,
-  agencies = [
-    {
-      _id: "234234",
-      name: "Admin",
-    },
-  ],
-}: any) => {
+  agencies
+}: Props) => {
   const path = usePathname();
 
+  console.log(agencies);
   useEffect(() => {
     (async () => {
       const req = await fetch("/api/websites");
@@ -84,7 +91,7 @@ export const Businessdetails = ({
   const [checked, setChecked] = useState<null | Boolean>(null);
 
   const selected = formData?.businessdetails?.service ?? "";
-   console.log("formdata",formData)
+
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-md border border-indigo-100">
@@ -197,9 +204,9 @@ export const Businessdetails = ({
                       <CircleDotDashed className="text-orange-500" size={16} />
                     ),
                   }[
-                    checked === true
-                      ? "true"
-                      : checked === false
+                  checked === true
+                    ? "true"
+                    : checked === false
                       ? "false"
                       : "pending"
                   ]
@@ -264,7 +271,7 @@ export const Businessdetails = ({
             <IndustryRadioList
               formData={formData}
               handleInputChange={handleInputChange}
-              // industries={yourDynamicIndustryArray} // optional (if you have API data)
+            // industries={yourDynamicIndustryArray} // optional (if you have API data)
             />
           </div>
         </div>
@@ -453,7 +460,7 @@ export const Businessdetails = ({
               Select an agency
             </option>
 
-            {agencies &&agencies.map((agency: any) => (
+            {agencies && agencies.map((agency: any) => (
               <option key={agency?._id} value={agency?._id}>
                 {agency?.name}
               </option>
