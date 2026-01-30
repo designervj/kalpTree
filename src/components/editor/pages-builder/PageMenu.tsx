@@ -258,8 +258,8 @@ const PageMenu = ({
         type="button"
         onClick={() => onOpenChange(!open)}
         className={cx(
-          "h-9 w-9 rounded-lg grid place-items-center transition-colors",
-          "text-slate-600 hover:bg-slate-100",
+          "h-9 w-9 rounded-lg grid place-items-center transition-colors bg-transprant cursor-pointer",
+          "text-slate-600 hover:bg-transparent",
           "dark:text-slate-200 dark:hover:bg-white/5",
         )}
         aria-label="Open menu"
@@ -273,7 +273,7 @@ const PageMenu = ({
               ref={menuRef}
               style={{ position: "fixed", top: pos.top }}
               className={cx(
-                "z-[9999] w-72 overflow-hidden rounded-2xl left-80",
+                "z-[9999] w-72 overflow-hidden rounded-2xl left-80 top-30",
                 "bg-white border border-slate-200 shadow-xl",
                 "dark:bg-[#0b1220] dark:border-slate-800",
               )}

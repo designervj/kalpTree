@@ -279,7 +279,7 @@ export const UpperBar = () => {
               {selectedWebsites.map((site) => (
                 <SelectItem key={site._id?.toString()} value={site._id?.toString() ?? ""}>
                   <div className="flex flex-col">
-                    <span className="font-medium">{site.name}</span>
+                    <span className="font-medium">{site.name} a</span>
                     <span className="text-xs text-muted-foreground">
                       {site.primaryDomain || site.systemSubdomain}
                     </span>
