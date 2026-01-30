@@ -118,6 +118,7 @@ export default function BusinessCreatePage({
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
+    console.log(name, value, type, files);
 
     if (name == "businessdetails.brand_name") {
       let newvalu = formatBrandSlug(value);
