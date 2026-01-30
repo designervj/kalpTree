@@ -46,6 +46,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { HiDotsVertical } from "react-icons/hi";
 
 type Agency = {
   _id: string;
@@ -169,6 +171,9 @@ export default function AgencyList() {
     const startIndex0 = totalCount === 0 ? 0 : (safePage - 1) * itemsPerPage;
     const endIndex0 = Math.min(startIndex0 + itemsPerPage, totalCount);
 
+
+
+
     return {
       page: safePage,
       perPage: itemsPerPage,
@@ -265,6 +270,10 @@ export default function AgencyList() {
     setSortBy("newest");
     setPage(1);
   };
+
+
+
+    
 
   return (
     <div className="w-full space-y-4">
@@ -508,7 +517,7 @@ export default function AgencyList() {
                         <ArrowRight className="ml-2 h-4 w-4" />
                       </Button>
 
-                      <Button
+                      {/* <Button
                         type="button"
                         variant="ghost"
                         size="icon"
@@ -517,7 +526,30 @@ export default function AgencyList() {
                         title="Delete"
                       >
                         <Trash2 className="h-5 w-5 text-rose-600" />
-                      </Button>
+                        
+                      </Button> */}
+
+
+                       <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="outline"><HiDotsVertical /></Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-10 me-6" align="start">
+      
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                                >
+                                  {/* onClick={() => handleEditBusiness(b)} */}
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                                 onClick={() => handleDelete(a)}>
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                                        
                     </div>
                   </div>
                 </CardContent>
