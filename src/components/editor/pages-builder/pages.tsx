@@ -30,6 +30,10 @@ import { setPageEdit } from "@/hooks/slices/pageEditSlice";
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 import PageMenu from "./PageMenu";
 import SeoPill from "./SeoPill";
+import { Website } from "@/components/admin/AppShell";
+import CurrentForm from "../sectionEdit/CurrentForm";
+import { updateWebsite } from "@/hooks/slices/websites/WebsiteThunk";
+import { toast } from "sonner";
 
 
 export type PageItem = {
@@ -272,7 +276,15 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
 
   const handleComingSoon = async (checked: boolean) => {
     setComingSoon(checked);
-  };
+    const data = {
+      ...currentWebsite,
+      isComingSoon: checked,
+    }
+      const response= await dispatch(updateWebsite({id:data._id?.toString()||"",websiteData:data})).unwrap();
+      if(response){
+        toast.success("Website updated successfully");
+      }
+  }
   return (
     <TooltipProvider delayDuration={150}>
       <div className="h-full">

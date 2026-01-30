@@ -7,29 +7,29 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
   const tenantIdParam = searchParams.get("tenantId");
-    const websiteIdParam = searchParams.get("websiteId");
-    const idParam = searchParams.get("id");
-    const db = await getDatabase();
+  const websiteIdParam = searchParams.get("websiteId");
+  const idParam = searchParams.get("id");
+  const db = await getDatabase();
   const collection = db.collection("websites");
 
-    // If tenantId is provided, filter by it; otherwise fetch all websites
-    let websites;
-    if (tenantIdParam!=="" && tenantIdParam!==null) {
-        const tenantId = new ObjectId(tenantIdParam);
-        websites = await collection.find({ tenantId: tenantId }).toArray();
-    } else if (websiteIdParam!=="" && websiteIdParam!==null) {
-        const websiteId = new ObjectId(websiteIdParam);
-        websites = await collection.find({ _id: websiteId }).toArray();
-    }
-    else if (idParam!=="" && idParam!==null) {
-        const id = new ObjectId(idParam);
-        websites = await collection.find({ _id: id }).toArray();
-    }
-    else {
-        websites = await collection.find({}).toArray();
-    }
+  // If tenantId is provided, filter by it; otherwise fetch all websites
+  let websites;
+  if (tenantIdParam !== "" && tenantIdParam !== null) {
+    const tenantId = new ObjectId(tenantIdParam);
+    websites = await collection.find({ tenantId: tenantId }).toArray();
+  } else if (websiteIdParam !== "" && websiteIdParam !== null) {
+    const websiteId = new ObjectId(websiteIdParam);
+    websites = await collection.find({ _id: websiteId }).toArray();
+  }
+  else if (idParam !== "" && idParam !== null) {
+    const id = new ObjectId(idParam);
+    websites = await collection.find({ _id: id }).toArray();
+  }
+  else {
+    websites = await collection.find({}).toArray();
+  }
 
-    return NextResponse.json({ item: websites });
+  return NextResponse.json({ item: websites });
 
 }
 
@@ -53,7 +53,8 @@ export async function PUT(req: Request) {
   const db = await getDatabase();
   const collection = db.collection("websites");
   const body = await req.json();
-  const { id, ...updateData } = body;
+  const { _id: id, ...updateData } = body;
+
   if (!id) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
