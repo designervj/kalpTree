@@ -270,7 +270,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
   };
 
   const handleOpenSeoModal = () => {
- openSeoModal()
+    openSeoModal()
   };
 
 
@@ -280,10 +280,10 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
       ...currentWebsite,
       isComingSoon: checked,
     }
-      const response= await dispatch(updateWebsite({id:data._id?.toString()||"",websiteData:data})).unwrap();
-      if(response){
-        toast.success("Website updated successfully");
-      }
+    const response = await dispatch(updateWebsite({ id: data._id?.toString() || "", websiteData: data })).unwrap();
+    if (response) {
+      toast.success("Website updated successfully");
+    }
   }
   return (
     <TooltipProvider delayDuration={150}>
@@ -297,7 +297,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
         >
           {/* Header */}
           <div className="relative">
-          
+
           </div>
 
           <div className="px-0 pb-6">
@@ -314,76 +314,77 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
                       const isDragOver = dragOverId === p.id;
                       const isDragging = draggingIdRef.current === p.id;
 
-                    return (
-                      <div
-                        key={p.id}
-                        draggable
-                        onDragStart={onDragStart(p.id)}
-                        onDragOver={onDragOver(p.id)}
-                        onDrop={onDrop(p.id)}
-                        onDragEnd={onDragEnd}
-                        className={cx(
-                          "flex items-center gap-2 py-3 px-2 hover:bg-gray-50",
-                          "border-b border-slate-200 last:border-b-0",
-                          "dark:border-slate-800",
-                          "transition-colors",
-                          isDragOver && "bg-slate-50 dark:bg-white/5",
-                          isDragging && "opacity-60"
-                        )}
-                      >
-                    
-                        {/* ✅ drag handle look (still draggable on whole row) */}
-                        {/* <div className="w-7 grid place-items-center text-slate-400 1">
+                      return (
+                        <div
+                          key={p.id}
+                          draggable
+                          onDragStart={onDragStart(p.id)}
+                          onDragOver={onDragOver(p.id)}
+                          onDrop={onDrop(p.id)}
+                          onDragEnd={onDragEnd}
+                          className={cx(
+                            "flex items-center gap-2 py-3 px-2 hover:bg-gray-50",
+                            "border-b border-slate-200 last:border-b-0",
+                            "dark:border-slate-800",
+                            "transition-colors",
+                            isDragOver && "bg-slate-50 dark:bg-white/5",
+                            isDragging && "opacity-60"
+                          )}
+                        >
+
+                          {/* ✅ drag handle look (still draggable on whole row) */}
+                          {/* <div className="w-7 grid place-items-center text-slate-400 1">
                          
                         </div> */}
-                            
-                        <div className=" flex gap-1  items-center text-slate-700 dark:text-slate-200">
-                          <span> <GripVertical className="w-4 h-4 cursor-move" /></span>
-                          <span>{IconFor(p)}</span>
-                        </div>
 
-                        <div className="flex-1 min-w-0 ms-1"
-                        onClick={()=>{
-                        handlePages(p)
-                        }}
-                        >
-                        
+                          <div className=" flex gap-1  items-center text-slate-700 dark:text-slate-200">
+                            <span> <GripVertical className="w-4 h-4 cursor-move" /></span>
+                            <span>{IconFor(p)}</span>
+                          </div>
 
-                          <div
-                            className="flex-1 min-w-0"
-                           
+                          <div className="flex items-center justify-between w-full"
+                            onClick={() => {
+                              handlePages(p)
+                            }}
                           >
+
+
+
                             <div className="text-sm font-semibold text-slate-900 dark:text-slate-100"
-                            
-                             onClick={() => {
-                              handlePages(p);
-                            }}>
+
+                              onClick={() => {
+                                handlePages(p);
+                              }}>
                               {p.title}
+                            </div>
+
+
+                            {/* {p.seoIssue ? <SeoPill /> : null} */}
+
+                            <div className="flex items-center">
+                              {p.seoIssue ? <SeoPill
+                                pages={p}
+                                openSeoModal={handleOpenSeoModal}
+                              /> : null}
+
+                              <PageMenu
+                                open={openMenuId === p.id}
+                                onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
+                                page={p}
+                                onMakeHomepage={() => makeHomepage(p.id)}
+                                onToggleNav={() => toggleNav(p)}
+                                onCopyUrl={() => copyUrl(p)}
+                                onDelete={() => deletePage(p)}
+                              />
                             </div>
                           </div>
 
-                          {/* {p.seoIssue ? <SeoPill /> : null} */}
 
-                          <PageMenu
-                            open={openMenuId === p.id}
-                            onOpenChange={(v) => setOpenMenuId(v ? p.id : null)}
-                            page={p}
-                            onMakeHomepage={() => makeHomepage(p.id)}
-                            onToggleNav={() => toggleNav(p)}
-                            onCopyUrl={() => copyUrl(p)}
-                            onDelete={() => deletePage(p)}
-                          />
+
+
                         </div>
-
-                        {p.seoIssue ? <SeoPill 
-                         pages={p}
-                         openSeoModal={handleOpenSeoModal}
-                        /> : null}
-
-                      
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
                 </div>
               </div>
 

@@ -11,704 +11,612 @@ export const convertName = (name: string) => {
 export const demoPages = [
   {
     title: "Home",
-     content:`<html lang="en">
+     content:`
+     <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vitalmin - Expert Skincare</title>
+    <title>ParentGood - Parenting Advice on Demand</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-light: #e3f0e1;
-            --bg-mid: #d2e1d0;
-            --bg-dark-green: #6c9366;
-            --accent-green: #5a8254;
-            --text-dark: #2c2c2c;
-            --text-muted: #555;
+            --primary-coral: #FF8A71;
+            --primary-dark: #1D2951;
+            --bg-light: #FFFBF9;
+            --text-gray: #667085;
             --white: #ffffff;
-            --container-width: 1200px;
+            --border-light: #f2f4f7;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            scroll-behavior: smooth;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            color: var(--text-dark);
-            background-color: #fff;
+            background-color: var(--white);
+            color: var(--primary-dark);
+            overflow-x: hidden;
             line-height: 1.6;
         }
 
-        h1, h2, h3, .serif {
-            font-family: 'Playfair Display', serif;
-        }
-
         .container {
-            max-width: var(--container-width);
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* --- Header --- */
-        header {
-            background-color: var(--bg-light);
-            padding: 20px 0;
+        /* Buttons */
+        .btn {
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            cursor: pointer;
         }
 
-        nav {
+        .btn-primary {
+            background-color: var(--primary-coral);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 138, 113, 0.3);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            border: 1.5px solid #d0d5dd;
+            color: var(--primary-dark);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: #f9fafb;
+        }
+
+        /* Header */
+        header {
+            padding: 25px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-dark);
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-coral);
+            letter-spacing: -0.5px;
         }
 
-        .nav-links {
+        .logo span { color: var(--primary-dark); font-weight: 600; }
+
+        nav ul {
             display: flex;
+            list-style: none;
             gap: 30px;
         }
 
-        .nav-links a {
+        nav ul li a {
             text-decoration: none;
-            color: var(--text-muted);
+            color: var(--primary-dark);
             font-size: 14px;
             font-weight: 500;
+            transition: color 0.3s;
         }
 
-        .nav-icons {
-            display: flex;
-            gap: 20px;
-            font-size: 18px;
-        }
+        nav ul li a:hover { color: var(--primary-coral); }
 
-        /* --- Hero Section --- */
+        /* Hero Section */
         .hero {
-            background-color: var(--bg-light);
-            padding: 60px 0 100px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .step-tag {
-            background: #cbdcc9;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-
-        .hero-title {
-            font-size: 36px;
-            font-weight: 500;
-            line-height: 1.1;
-        }
-
-        .hero-title span {
-            display: block;
-            font-size: 80px;
-            font-style: italic;
-            margin-top: -10px;
-        }
-
-        .hero-desc {
-            font-size: 14px;
-            color: var(--text-muted);
-            max-width: 320px;
-            margin: 20px 0;
-        }
-
-        .price-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .price-label { font-size: 18px; font-weight: 500; border-right: 1px solid #ccc; padding-right: 15px;}
-        .price-value { font-size: 24px; font-weight: 700; }
-
-        .btn-primary {
-            background-color: var(--accent-green);
-            color: white;
-            padding: 14px 35px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-block;
-            box-shadow: 0 10px 20px rgba(90, 130, 84, 0.2);
-        }
-
-        .btn-link {
-            margin-left: 20px;
-            text-decoration: underline;
-            color: var(--text-dark);
-            font-weight: 600;
-        }
-
-        /* Hero Center Image */
-        .hero-center {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .main-bottle {
-            width: 250px;
-            z-index: 2;
-            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.15));
-        }
-
-        .podium {
-            width: 220px;
-            height: 120px;
-            background: #fff;
-            border-radius: 50%;
-            margin-top: -60px;
-            z-index: 1;
-        }
-
-        .succulent {
-            position: absolute;
-            right: 0;
-            bottom: 40px;
-            width: 150px;
-            z-index: 2;
-        }
-
-        /* Hero Right */
-        .badge-new {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 30px;
-            position: relative;
-            animation: rotate 10s linear infinite;
-        }
-
-        @keyframes rotate { from {transform: rotate(0deg)} to {transform: rotate(360deg)} }
-
-        .promo-card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            width: 140px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            margin-bottom: 30px;
-        }
-        .promo-card img { width: 50px; margin-bottom: 10px; }
-        .promo-card p { font-weight: 700; font-size: 18px; }
-
-        /* --- Partner Section --- */
-        .partners {
-            background-color: var(--bg-dark-green);
-            color: white;
-            padding: 60px 0;
-            text-align: center;
-        }
-
-        .partners h2 { font-size: 28px; font-weight: 500; margin-bottom: 40px; }
-
-        .logo-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'Playfair Display', serif;
-            font-size: 24px;
-            opacity: 0.9;
-        }
-
-        /* --- Featured Products --- */
-        .featured { padding: 100px 0; }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 60px;
-        }
-
-        .section-header h2 { font-size: 44px; flex: 1; }
-        .section-header p { flex: 1; padding-left: 40px; color: var(--text-muted); font-size: 14px; border-left: 1px solid #ddd; }
-
-        .product-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-        }
-
-        .feat-card {
-            background: #fdfdfd;
-            border-radius: 20px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.03);
-        }
-
-        .feat-card-header {
-            background-color: var(--accent-green);
-            color: white;
-            width: fit-content;
-            padding: 10px 30px;
-            border-radius: 0 0 15px 0;
-            font-size: 14px;
-        }
-
-        .feat-content {
-            padding: 40px;
-            display: flex;
-            align-items: center;
-        }
-
-        .feat-text { flex: 1.2; }
-        .feat-img { flex: 0.8; text-align: right; }
-        .feat-img img { width: 100%; max-width: 180px; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1)); }
-
-        .feat-text h3 { font-size: 24px; margin: 15px 0; font-family: 'Inter', sans-serif; font-weight: 600;}
-        .feat-text p { font-size: 13px; color: var(--text-muted); margin-bottom: 30px; }
-
-        .shop-btn-large {
-            display: block;
-            width: 200px;
-            margin: 20px auto 0;
-            background: var(--accent-green);
-            color: white;
-            text-align: center;
-            padding: 15px;
-            border-radius: 10px;
-            text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-        }
-
-        /* --- About Brand Section --- */
-        .about-brand {
             background-color: var(--bg-light);
             padding: 100px 0;
             position: relative;
         }
 
-        .palm-leaf { position: absolute; width: 250px; opacity: 0.6; pointer-events: none; }
-        .leaf-top-right { top: 0; right: 0; transform: rotate(180deg); }
-        .leaf-bottom-left { bottom: 0; left: 0; }
-
-        .brand-gallery {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 20px;
-            margin-top: 50px;
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0;
+            width: 40%; height: 100%;
+            background: radial-gradient(circle, rgba(255,138,113,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: 0;
         }
 
-        .gallery-item img {
-            width: 100%;
-            height: 350px;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 15px;
-        }
-
-        .gallery-item p { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
-
-        /* --- Skincare Tips --- */
-        .tips { padding: 100px 0; }
-
-        .tip-row {
+        .hero-flex {
             display: flex;
             align-items: center;
-            gap: 60px;
-            margin-bottom: 80px;
+            justify-content: space-between;
+            position: relative;
+            z-index: 1;
         }
 
-        .tip-row.reverse { flex-direction: row-reverse; }
+        .hero-content { flex: 1; padding-right: 50px; }
+        .hero-image { flex: 1; display: flex; justify-content: flex-end; }
 
-        .tip-text { flex: 1; }
-        .tip-img { flex: 1; }
-        .tip-img img { width: 100%; border-radius: 15px; }
+        .hero h1 {
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 25px;
+        }
 
-        .tip-text h3 { font-size: 24px; margin-bottom: 20px; }
-        .tip-text p { color: var(--text-muted); margin-bottom: 20px; font-size: 14px;}
+        .hero h1 span { color: var(--primary-coral); }
 
-        .btn-outline {
-            display: block;
-            width: 180px;
-            margin: 40px auto 0;
-            border: 1px solid #ddd;
-            padding: 12px;
+        .hero p {
+            color: var(--text-gray);
+            font-size: 17px;
+            margin-bottom: 35px;
+            max-width: 520px;
+        }
+
+        .hero-btns { display: flex; gap: 15px; align-items: center; margin-bottom: 40px; }
+
+        .app-badges { display: flex; gap: 15px; }
+        .app-badges img { height: 42px; cursor: pointer; }
+
+        .phone-mockup {
+            width: 320px;
+            height: 640px;
+            background: #000;
+            border: 12px solid #333;
+            border-radius: 45px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .phone-mockup img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* Section Global Styles */
+        .section-header {
             text-align: center;
-            text-decoration: none;
-            color: var(--text-dark);
-            border-radius: 8px;
+            padding: 100px 0 50px;
+        }
+
+        .section-header h2 { font-size: 36px; font-weight: 700; margin-bottom: 15px; }
+        .section-header p { color: var(--text-gray); max-width: 850px; margin: 0 auto; line-height: 1.8; }
+
+        /* Challenges Grid */
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+            margin-bottom: 100px;
+        }
+
+        .challenge-card {
+            background: var(--white);
+            padding: 40px 25px;
+            border-radius: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+        }
+
+        .challenge-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+            border-color: #fcece8;
+        }
+
+        .challenge-card .icon-box {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .challenge-card i { font-size: 40px; color: var(--primary-coral); }
+        .challenge-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #101828; }
+        .challenge-card p { font-size: 13px; color: var(--text-gray); line-height: 1.5; }
+
+        /* Info Section (What is ParentGood) */
+        .info-section {
+            padding: 100px 0;
+            background: linear-gradient(to right, #ffffff 50%, #fffcfb 50%);
+        }
+
+        .info-flex { display: flex; align-items: center; gap: 80px; }
+        .info-content { flex: 1; }
+        .info-visual { flex: 1; position: relative; display: flex; justify-content: center; }
+
+        .callout {
+            background: #F9FAFB;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            font-size: 14px;
+            line-height: 1.7;
+            border-left: 5px solid var(--primary-coral);
+            color: #475467;
+        }
+
+        /* Float bubbles on mockup */
+        .bubble-container { position: relative; }
+        .bubble {
+            position: absolute;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 250px;
+            z-index: 2;
+        }
+        .b1 { top: 10%; right: -120px; }
+        .b2 { top: 40%; left: -140px; }
+        .b3 { bottom: 15%; right: -130px; }
+
+        /* How Does it Work */
+        .steps-flex {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .step-card img {
+            width: 100%;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            border: 6px solid #fff;
+        }
+
+        .step-card h4 { font-size: 15px; font-weight: 600; color: #344054; }
+
+        /* Experts Section */
+        .expert-card {
+            display: flex;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+            max-width: 1000px;
+            margin: 60px auto;
+            border: 1px solid #f2f4f7;
+        }
+
+        .expert-img { flex: 1; position: relative; overflow: hidden; height: 480px;}
+        .expert-img img { width: 100%; height: 100%; object-fit: cover; }
+
+        .expert-details { flex: 1.2; padding: 50px; }
+
+        .rec-label {
+            background: #FFF1EE;
+            color: var(--primary-coral);
+            padding: 6px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .expert-details h3 { font-size: 26px; font-weight: 700; margin-bottom: 20px; }
+        .tag-row { display: flex; gap: 10px; margin-bottom: 30px; }
+        .tag {
+            background: #fdf2f0;
+            color: var(--primary-coral);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
             font-weight: 500;
         }
 
-        /* --- Expert Products --- */
-        .expert-products { padding: 100px 0; background: #fff; }
+        .expert-details h4 { font-size: 16px; font-weight: 700; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .expert-details p { color: var(--text-gray); font-size: 14px; line-height: 1.8; }
 
-        .prod-carousel {
-            display: flex;
-            gap: 20px;
-            margin-top: 40px;
-            overflow-x: auto;
-            padding-bottom: 40px;
-        }
+        .slider-dots { display: flex; justify-content: center; gap: 10px; padding-bottom: 80px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #eaecf0; cursor: pointer; }
+        .dot.active { background: var(--primary-coral); width: 25px; border-radius: 10px; }
 
-        .prod-card {
-            min-width: 250px;
-            flex: 1;
-            background: #fdfdfd;
-            border: 1px solid #f0f0f0;
-            padding: 20px;
-            border-radius: 15px;
+        /* Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 60px 0 100px;
             text-align: center;
         }
 
-        .prod-card img { height: 180px; object-fit: contain; margin-bottom: 15px; }
-        .prod-card h4 { font-size: 16px; margin-bottom: 5px; }
-        .prod-card span { font-weight: 700; color: var(--text-dark); display: block; margin-bottom: 15px;}
-        .buy-now { color: var(--accent-green); text-decoration: underline; font-size: 13px; font-weight: 600; cursor: pointer;}
+        .feature-item i { font-size: 36px; color: var(--primary-coral); margin-bottom: 20px; }
+        .feature-item h4 { font-size: 18px; font-weight: 600; margin-bottom: 12px; }
+        .feature-item p { font-size: 13px; color: var(--text-gray); line-height: 1.6; }
 
-        /* --- Newsletter --- */
-        .newsletter {
-            padding: 60px 0;
-            background: white;
+        .sub-features {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            margin-top: 20px;
         }
 
-        .news-box {
-            background: white;
-            border: 1px solid #eee;
-            padding: 60px;
-            border-radius: 20px;
+        /* Footer */
+        footer {
+            background: #101828;
+            color: #98A2B3;
+            padding: 100px 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            padding-bottom: 60px;
+            border-bottom: 1px solid #1d2939;
+        }
+
+        .footer-logo { color: white; margin-bottom: 25px; }
+        .footer-col h4 { color: white; margin-bottom: 25px; font-size: 16px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { color: #98A2B3; text-decoration: none; font-size: 14px; transition: 0.3s; }
+        .footer-col ul li a:hover { color: white; }
+
+        .social-links { display: flex; gap: 15px; margin-top: 30px; }
+        .social-links a {
+            width: 36px; height: 36px;
+            background: #1d2939;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .social-links a:hover { background: var(--primary-coral); }
+
+        .footer-bottom {
+            padding-top: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            font-size: 13px;
         }
 
-        .news-input-wrap {
-            display: flex;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            overflow: hidden;
-            width: 450px;
-        }
-
-        .news-input-wrap input {
-            border: none;
-            padding: 15px 20px;
-            flex: 1;
-            outline: none;
-        }
-
-        .news-input-wrap button {
-            background: var(--text-dark);
+        .scroll-top {
+            width: 40px; height: 40px;
+            background: #1d2939;
             color: white;
-            border: none;
-            padding: 0 30px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 6px;
             cursor: pointer;
-            font-weight: 600;
         }
 
-        /* --- Footer --- */
-        footer {
-            background: #333;
-            color: #888;
-            padding: 60px 0 20px;
+        /* Responsiveness */
+        @media (max-width: 1024px) {
+            .challenges-grid, .steps-flex { grid-template-columns: repeat(2, 1fr); }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
 
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            padding-bottom: 40px;
-            border-bottom: 1px solid #444;
-        }
-
-        .footer-logo { color: white; font-size: 22px; font-weight: 700; }
-        .footer-links a { color: #888; text-decoration: none; margin-left: 25px; font-size: 13px; }
-        .footer-socials i { margin-left: 20px; color: white; cursor: pointer; }
-
-        .copyright { text-align: center; padding-top: 20px; font-size: 12px; }
-
-        /* Responsive Mobile */
-        @media (max-width: 992px) {
-            .hero-grid { grid-template-columns: 1fr; text-align: center; }
-            .hero-title span { font-size: 60px; }
-            .hero-desc { margin: 20px auto; }
-            .price-row { justify-content: center; }
-            .hero-center { margin: 50px 0; }
-            .section-header { flex-direction: column; gap: 20px; }
-            .section-header p { padding: 0; border: none; }
-            .product-grid, .brand-gallery, .tip-row { grid-template-columns: 1fr; display: block; }
-            .tip-row { margin-bottom: 40px; }
-            .news-box { flex-direction: column; gap: 30px; text-align: center; }
-            .news-input-wrap { width: 100%; }
+        @media (max-width: 768px) {
+            .hero-flex, .info-flex, .expert-card { flex-direction: column; text-align: center; }
+            .hero-content { padding-right: 0; margin-bottom: 50px; }
+            .hero h1 { font-size: 38px; }
+            .hero-btns { justify-content: center; }
+            .app-badges { justify-content: center; }
+            .expert-img { height: 300px; }
+            .features-grid { grid-template-columns: 1fr; }
+            .sub-features { flex-direction: column; gap: 50px; }
+            nav { display: none; }
         }
     </style>
 </head>
 <body>
 
     <!-- Header -->
-    <header>
-        <div class="container">
+    <div class="container">
+        <header>
+            <div class="logo">Parent<span>good</span></div>
             <nav>
-                <div class="logo">Vitalmin</div>
-                <div class="nav-links">
-                    <a href="#">Product</a>
-                    <a href="#">Features</a>
-                    <a href="#">Reviews</a>
-                    <a href="#">About us</a>
-                </div>
-                <div class="nav-icons">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <i class="fa-regular fa-user"></i>
-                </div>
+                <ul>
+                    <li><a href="#">What is ParentGood</a></li>
+                    <li><a href="#">How it Works</a></li>
+                    <li><a href="#">Common Challenges</a></li>
+                    <li><a href="#">Experts Expertise</a></li>
+                </ul>
             </nav>
-        </div>
-    </header>
+        </header>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="container">
-            <div class="hero-grid">
-                <!-- Left -->
-                <div class="hero-left">
-                    <span class="step-tag">01</span>
-                    <h1 class="hero-title">
-                        Unlock Your Skin's Natural
-                        <span>Beauty</span>
-                    </h1>
-                    <p class="hero-desc">Welcome to the world of Vitalmin Skincare, where we believe that beauty starts with healthy, radiant skin. Our mission is simple yet transformative.</p>
-                    <div class="price-row">
-                        <span class="price-label">Price</span>
-                        <span class="price-value">$39.99</span>
-                    </div>
-                    <div>
-                        <a href="#" class="btn-primary">Shop Now</a>
-                        <a href="#" class="btn-link">Learn More</a>
-                    </div>
+        <div class="container hero-flex">
+            <div class="hero-content">
+                <h1>Need help with?<br><span>Parenting</span> Advice on Demand</h1>
+                <p>Connect face-to-face with trusted child development experts and get solutions that work. High quality developmental experts at your fingertips.</p>
+                <div class="hero-btns">
+                    <a href="#" class="btn btn-primary">Get Started Now</a>
+                    <a href="#" class="btn btn-outline">Free First Consultation</a>
                 </div>
-
-                <!-- Center -->
-                <div class="hero-center">
-                    <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=600" alt="Serum Bottle" class="main-bottle">
-                    <div class="podium"></div>
-                    <img src="https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&q=80&w=400" alt="Plant" class="succulent">
+                <div class="app-badges">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Play Store">
                 </div>
+            </div>
+            <div class="hero-image">
+                <div class="phone-mockup">
+                    <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=400" alt="Video Call Application">
+                </div>
+            </div>
+        </div>
+    </section>
 
-                <!-- Right -->
-                <div class="hero-right">
-                    <img src="https://cdn-icons-png.flaticon.com/512/8146/8146003.png" alt="New Badge" class="badge-new">
-                    <div class="promo-card">
-                        <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=100" alt="Mini Product">
-                        <p>$49.99</p>
-                    </div>
-                    <div style="font-size: 14px;">
-                        <h4 style="margin-bottom: 5px;">What we offer</h4>
-                        <p style="color: var(--text-muted); margin-bottom: 10px;">Our Serums Offer You Not Just Skincare, But An Experience.</p>
-                        <a href="#" style="color: black; font-weight: 600;">Explore More &rarr;</a>
+    <!-- Challenges Section -->
+    <div class="container">
+        <div class="section-header">
+            <h2>What parenting challenges would you like to tackle</h2>
+            <p>All of the professionals in our community are Experienced & Certified and have a Master's or Doctorate degree in their field. They have extensive experience working with children, teachers and parents.</p>
+        </div>
+
+        <div class="challenges-grid">
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-graduation-cap"></i></div>
+                <h3>Behavior & Discipline</h3>
+                <p>Learn effective techniques to correct bad behavior.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-child-reaching"></i></div>
+                <h3>Child Development</h3>
+                <p>Get the advice you need to hit child developmental milestones.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-tablet-screen-button"></i></div>
+                <h3>Digital & Media Limits</h3>
+                <p>Find a healthy balance for your child and digital media.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-school"></i></div>
+                <h3>Education & School</h3>
+                <p>Strategies to help your child get through school challenges.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-apple-whole"></i></div>
+                <h3>Nutrition & Health</h3>
+                <p>Develop good habits that turn your child into a healthy adult.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-regular fa-moon"></i></div>
+                <h3>Sleep & Bedtime</h3>
+                <p>Tips and tricks to help your child (and you) get some sleep.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-bowl-food"></i></div>
+                <h3>Weaning</h3>
+                <p>How to wean your child off breastfeeding, diapers, and more.</p>
+            </div>
+            <div class="challenge-card">
+                <div class="icon-box"><i class="fa-solid fa-baby"></i></div>
+                <h3>Lactation</h3>
+                <p>Get the support you need when nursing isn't going as expected.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- What is ParentGood -->
+    <section class="info-section">
+        <div class="container info-flex">
+            <div class="info-content">
+                <h2 style="font-size: 36px; font-weight: 700;">What is ParentGood</h2>
+                <p style="margin-top: 20px; color: var(--text-gray); font-size: 15px;">Raising a kid is hard, and it doesn't come with a manual. At ParentGood, we want to give parents the support they need by giving them access to top child care professionals. Every kid is different, so we match parents with the right specialist to give personalized advice and coaching.</p>
+                <div class="callout">
+                    Parents can ask a question or schedule a 1on1 session with an expert to tackle any issue. Together, we can make parenting easier and give our kids a strong start in life.
+                </div>
+                <div style="margin-top: 40px;">
+                    <a href="#" class="btn btn-primary">Get Started Now</a>
+                    <p style="margin-top: 15px; color: var(--text-gray); font-size: 14px; font-weight: 500; cursor: pointer;">Free First Consultation</p>
+                </div>
+            </div>
+            <div class="info-visual">
+                <div class="bubble-container">
+                    <div class="bubble b1">Is my baby getting enough sleep?</div>
+                    <div class="bubble b2">How to handle a picky eater?</div>
+                    <div class="bubble b3">What do I do if my son is addicted to his iPad?</div>
+                    <div class="phone-mockup" style="width: 280px; height: 560px; border-width: 8px;">
+                        <img src="https://images.unsplash.com/photo-1587653263995-422546a72569?auto=format&fit=crop&q=80&w=400" alt="App Usage">
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Partners -->
-    <section class="partners">
-        <div class="container">
-            <h2>Joining with industry leaders.</h2>
-            <div class="logo-row">
-                <span>Dove</span>
-                <span>L'ORÉAL</span>
-                <span>NIVEA</span>
-                <span>Garnier</span>
-                <span>Avon</span>
+    <!-- How Does it Work -->
+    <div class="container" style="padding: 100px 0;">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 700;">How Does it Work</h2>
+        <div class="steps-flex">
+            <div class="step-card">
+                <img src="https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=250&h=450" alt="Search">
+                <h4>Search</h4>
+            </div>
+            <div class="step-card">
+                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=250&h=450" alt="Match">
+                <h4>Get Matched</h4>
+            </div>
+            <div class="step-card">
+                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=250&h=450" alt="Chat">
+                <h4>Schedule a 1on1 free video chat</h4>
+            </div>
+            <div class="step-card">
+                <img src="https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?auto=format&fit=crop&q=80&w=250&h=450" alt="Solution">
+                <h4>Get solution to your needs Challenges</h4>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Featured Products -->
-    <section class="featured">
-        <div class="container">
-            <div class="section-header">
-                <h2>Featured Products</h2>
-                <p>Our featured collection showcases the best of our skincare expertise, designed to address a variety of skin concerns and deliver exceptional results. Each crafted to elevate your skincare routine.</p>
+    <!-- Experts Section -->
+    <div class="container">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 700;">Experience & Certified Experts</h2>
+        <div class="expert-card">
+            <div class="expert-img">
+                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=600" alt="Carrington Cunnington">
             </div>
-
-            <div class="product-grid">
-                <!-- Serum Card -->
-                <div class="feat-card">
-                    <div class="feat-card-header">Serums</div>
-                    <div class="feat-content">
-                        <div class="feat-text">
-                            <h3>Vitality Serum</h3>
-                            <p>Welcome to the world of Vitalmin Skincare, where we believe beauty starts with radiant skin. Simple yet transformative.</p>
-                        </div>
-                        <div class="feat-img">
-                            <img src="https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&q=80&w=400" alt="Serum">
-                        </div>
-                    </div>
+            <div class="expert-details">
+                <div class="rec-label">Recommended by 61 people</div>
+                <h3>CARRINGTON CUNNINGTON</h3>
+                <div class="tag-row">
+                    <div class="tag"><i class="fa-regular fa-check-circle"></i> 4 Year Experience</div>
+                    <div class="tag"><i class="fa-regular fa-check-circle"></i> Nutrition & Health</div>
                 </div>
-
-                <!-- Oil Card -->
-                <div class="feat-card" style="background-color: #f1f8f0;">
-                    <div class="feat-card-header">Oils</div>
-                    <div class="feat-content">
-                        <div class="feat-text">
-                            <h3>Natural Glow Oil</h3>
-                            <p>Oils have emollient properties to support the skin barrier and lock in moisture. Naturally rich in antioxidants.</p>
-                        </div>
-                        <div class="feat-img">
-                            <img src="https://images.unsplash.com/photo-1601049541289-9b1b7bbbfe19?auto=format&fit=crop&q=80&w=400" alt="Oil">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <a href="#" class="shop-btn-large">Shop Now</a>
-        </div>
-    </section>
-
-    <!-- About Brand -->
-    <section class="about-brand">
-        <img src="https://pngimg.com/uploads/palm_leaf/palm_leaf_PNG28.png" class="palm-leaf leaf-top-right">
-        <img src="https://pngimg.com/uploads/palm_leaf/palm_leaf_PNG28.png" class="palm-leaf leaf-bottom-left">
-        
-        <div class="container">
-            <div style="max-width: 600px;">
-                <span class="step-tag">About Us</span>
-                <h2 style="font-size: 40px; margin-bottom: 20px;">About Our Brand</h2>
-                <p style="font-size: 14px; color: var(--text-muted);">Welcome to Vitalmin Skincare, where we believe that beauty starts with healthy, radiant skin. Our mission is simple yet transformative: to unlock your skin's natural beauty potential.</p>
-            </div>
-
-            <div class="brand-gallery">
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=400" alt="Process">
-                    <p>Our journey began with a passion for skincare and the belief that everyone deserves high-quality products.</p>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&q=80&w=400" alt="Brushes">
-                    <p>At Vitalmin, our commitment is to your skin's health and your confidence. We take that responsibility seriously.</p>
-                </div>
-                <div class="gallery-item">
-                    <img src="https://images.unsplash.com/photo-1481325544411-6650b848063e?auto=format&fit=crop&q=80&w=400" alt="Model">
-                    <p>Our serums harness the power of science and nature to deliver results. We pair expert advice with cutting-edge tech.</p>
-                </div>
+                <h4>ABOUT ME</h4>
+                <p>I have been a practicing PCI Certified Parent Coach since 2015. I was drawn to coaching through my experience as a stay-at-home mom raising my triplets, born in 2007. The challenges of raising my kids along with the joy of watching them grow gave me a passion to help other parents find confidence and joy in their parenting journeys. I believe healthy relationships are foundational to joyful, vibrant family life.</p>
             </div>
         </div>
-    </section>
-
-    <!-- Skincare Tips -->
-    <section class="tips">
-        <div class="container">
-            <div class="section-header">
-                <div>
-                    <span class="step-tag">Tips</span>
-                    <h2>Skincare Tips And Insights</h2>
-                </div>
-                <p>We believe that achieving beautiful skin goes beyond using our products—it's about understanding your unique needs and nurturing it with care.</p>
-            </div>
-
-            <div class="tip-row">
-                <div class="tip-text">
-                    <h3>1. The Power of Face Serums</h3>
-                    <p>Face serums are skincare superheroes that deliver concentrated ingredients to your skin. They're lightweight, fast-absorbing, and can address specific concerns like hydration, anti-aging, or brightening.</p>
-                    <img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&q=80&w=400" style="width: 100%; height: 250px; object-fit: cover; border-radius: 15px;">
-                </div>
-                <div class="tip-img">
-                    <img src="https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&q=80&w=600" alt="Model 1">
-                </div>
-            </div>
-
-            <div class="tip-row reverse">
-                <div class="tip-text">
-                    <h3>2. The Importance of a Routine</h3>
-                    <p>Consistency is key to healthy skin. Establishing a daily routine that includes cleansing, toning, serum application, and moisturizing can make a significant difference in the long-term health and appearance of your skin.</p>
-                    <div style="height: 150px; border: 1px solid #eee; border-radius: 15px; padding: 30px;">
-                        <i>"Consistency is the key to seeing real transformation in your skin health."</i>
-                    </div>
-                </div>
-                <div class="tip-img">
-                    <img src="https://images.unsplash.com/photo-1591130901618-3f31f2a104e7?auto=format&fit=crop&q=80&w=600" alt="Model 2">
-                </div>
-            </div>
-
-            <a href="#" class="btn-outline">See more</a>
+        <div class="slider-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
         </div>
-    </section>
+    </div>
 
-    <!-- Expert Skincare -->
-    <section class="expert-products">
+    <!-- Features -->
+    <section style="background-color: #FFFBF9; padding: 100px 0;">
         <div class="container">
-            <span class="step-tag">Products</span>
-            <div class="section-header" style="margin-bottom: 20px;">
-                <h2>Expert Skincare For Your Beautiful Skin</h2>
-                <p>Our specialized collection is designed to give you that extra boost of radiance and confidence every single day.</p>
-            </div>
-
-            <div class="prod-carousel">
-                <div class="prod-card">
-                    <img src="https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&q=80&w=200">
-                    <h4>Hydro Boost Hyaluronic</h4>
-                    <span>$124.00</span>
-                    <div class="buy-now">Buy Now</div>
+            <h2 style="text-align: center; font-size: 32px; font-weight: 700; margin-bottom: 50px;">Our Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fa-solid fa-tag"></i>
+                    <h4>Free first session</h4>
+                    <p>Swift Creative Solutions met and exceeded our expectations in designing our website and branding.</p>
                 </div>
-                <div class="prod-card">
-                    <img src="https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?auto=format&fit=crop&q=80&w=200">
-                    <h4>Anti-Aging Serum</h4>
-                    <span>$144.00</span>
-                    <div class="buy-now">Buy Now</div>
+                <div class="feature-item">
+                    <i class="fa-regular fa-comments"></i>
+                    <h4>Message with expert anytime</h4>
+                    <p>Swift Creative Solutions met and exceeded our expectations in designing our website and branding.</p>
                 </div>
-                <div class="prod-card">
-                    <img src="https://images.unsplash.com/photo-1594125350485-c5dfd4cd5121?auto=format&fit=crop&q=80&w=200">
-                    <h4>Brightening Serum</h4>
-                    <span>$135.00</span>
-                    <div class="buy-now">Buy Now</div>
-                </div>
-                <div class="prod-card">
-                    <img src="https://images.unsplash.com/photo-1612817288484-6f916006741a?auto=format&fit=crop&q=80&w=200">
-                    <h4>Vitamin C Serums</h4>
-                    <span>$149.00</span>
-                    <div class="buy-now">Buy Now</div>
+                <div class="feature-item">
+                    <i class="fa-solid fa-video"></i>
+                    <h4>Online Video/Voice calls</h4>
+                    <p>Swift Creative Solutions met and exceeded our expectations in designing our website and branding.</p>
                 </div>
             </div>
-            <div style="text-align: right; margin-top: 10px;">
-                <a href="#" style="color: black; font-weight: 600;">See all</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter -->
-    <section class="newsletter">
-        <div class="container">
-            <div class="news-box">
-                <div>
-                    <h2 style="font-size: 32px; font-family: 'Inter', sans-serif;">Get Discount 20% off</h2>
-                    <p style="color: var(--text-muted);">Subscribe our news letter and get 20% off</p>
+            <div class="sub-features">
+                <div class="feature-item" style="max-width: 350px;">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <h4>Scheduling</h4>
+                    <p>Swift Creative Solutions met and exceeded our expectations in designing our website and branding.</p>
                 </div>
-                <div class="news-input-wrap">
-                    <input type="email" placeholder="Your email address">
-                    <button>Subscribe</button>
+                <div class="feature-item" style="max-width: 350px;">
+                    <i class="fa-regular fa-bell"></i>
+                    <h4>Add to Calendar reminders</h4>
+                    <p>Swift Creative Solutions met and exceeded our expectations in designing our website and branding.</p>
                 </div>
             </div>
         </div>
@@ -717,617 +625,55 @@ export const demoPages = [
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-top">
-                <div class="footer-logo">Vitalmin</div>
-                <div class="footer-links">
-                    <a href="#">Product</a>
-                    <a href="#">Features</a>
-                    <a href="#">Reviews</a>
-                    <a href="#">About us</a>
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="logo footer-logo">Parent<span>good</span></div>
+                    <p style="font-size: 14px; line-height: 1.8;">Popularised in the with the release of Letraset sheets containing passages and more recently with desktop publishing software like Maker including versions.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fa-brands fa-pinterest-p"></i></a>
+                        <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                    </div>
                 </div>
-                <div class="footer-socials">
-                    <i class="fa-brands fa-facebook-f"></i>
-                    <i class="fa-brands fa-instagram"></i>
-                    <i class="fa-brands fa-twitter"></i>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Service</a></li>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">Testimonials</a></li>
+                        <li><a href="#">Contact US</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="#">Customization</a></li>
+                        <li><a href="#">Blockchain</a></li>
+                        <li><a href="#">Digital File</a></li>
+                        <li><a href="#">About us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Support</h4>
+                    <ul>
+                        <li><a href="#">Product help</a></li>
+                        <li><a href="#">Service & warranty</a></li>
+                        <li><a href="#">Righting beach</a></li>
+                        <li><a href="#">Authorized service</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="copyright">
-                © 2023 Vitalmin. All rights reserved.
+            <div class="footer-bottom">
+                <p>Copyrights 2020 Parent Good All right Reserved</p>
+                <div class="scroll-top"><i class="fa-solid fa-arrow-up"></i></div>
             </div>
         </div>
     </footer>
 
 </body>
-</html>`,
-    slug: "home",
-    status: "published",
-    createdAt: new Date(),
-    updatedAr: new Date(),
-    publishedAt: new Date(),
-    websiteId: "",
-    tenantId: "",
-  },
-  {
-    title: "About",
-    content: `
-       <style>
-       :root{
-  --primary:#4f2dff;
-  --primary-dark:#3e21e6;
-  --text:#0f172a;
-  --muted:#64748b;
-  --soft:#f6f7fb;
-  --border:rgba(15,23,42,.10);
-  --radius:16px;
-}
- 
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{
-  margin:0;
-  font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  color:var(--text);
-  background:#fff;
-}
-a{color:inherit;text-decoration:none}
-img{max-width:100%;display:block}
- 
-.container{
-  width:min(1120px,calc(100% - 48px));
-  margin:0 auto;
-}
- 
-.kicker{
-  display:inline-block;
-  font-size:12px;
-  font-weight:800;
-  letter-spacing:.4px;
-  text-transform:uppercase;
-  color:var(--primary);
-}
-.kicker.light{color:rgba(255,255,255,.75)}
- 
-.btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px 22px;
-  border-radius:999px;
-  font-weight:800;
-  font-size:12px;
-  letter-spacing:.4px;
-  border:1px solid transparent;
-  cursor:pointer;
-  transition:.2s ease;
-}
-.btn:active{transform:translateY(1px)}
-.btn.ghost{
-  background:rgba(255,255,255,.14);
-  border-color:rgba(255,255,255,.35);
-  color:#fff;
-}
-.btn.ghost:hover{background:rgba(255,255,255,.22)}
- 
-.section-title{
-  margin-bottom:28px;
-}
-.section-title.center{text-align:center}
-.section-title h2{
-  margin:8px 0 0;
-  font-size:clamp(26px,2.8vw,40px);
-  letter-spacing:-.4px;
-}
- 
-/* ================= HERO ================= */
-.hero{
-  position:relative;
-  min-height:360px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  background:
-    url("https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=2000&am…
-    center/cover no-repeat;
-}
- 
-.hero-overlay{
-  position:absolute; inset:0;
-  background:linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.45));
-}
- 
-.topbar{
-  position:absolute;
-  top:0; left:0; right:0;
-  z-index:5;
-}
-.topbar-inner{
-  height:76px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:18px;
-}
- 
-.brand{
-  font-size:22px;
-  font-weight:900;
-  color:#fff;
-  letter-spacing:.3px;
-}
- 
-.nav{
-  display:flex;
-  align-items:center;
-  gap:22px;
-  color:rgba(255,255,255,.88);
-  font-weight:700;
-  font-size:12px;
-  letter-spacing:.3px;
-  text-transform:uppercase;
-}
-.nav a{
-  opacity:.9;
-  position:relative;
-  padding:10px 0;
-}
-.nav a:hover{opacity:1}
-.nav a.active{opacity:1}
-.nav a.active::after{
-  content:"";
-  position:absolute;
-  left:0; right:0;
-  bottom:4px;
-  height:2px;
-  background:rgba(255,255,255,.9);
-  border-radius:2px;
-}
- 
-.nav-actions{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
- 
-.icon-btn{
-  width:40px; height:40px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.08);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-}
-.icon-btn svg{
-  width:18px; height:18px;
-  fill:#fff;
-  opacity:.9;
-}
- 
-.menu-btn{
-  display:none;
-  width:44px;height:40px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-size:18px;
-  cursor:pointer;
-}
- 
-.hero-content{
-  position:relative;
-  z-index:4;
-  text-align:center;
-  padding-top:40px;
-  padding-bottom:20px;
-}
-.hero-content h1{
-  margin:0 0 8px;
-  color:#fff;
-  font-size:clamp(30px,3.5vw,44px);
-  letter-spacing:-.3px;
-}
-.crumb{
-  margin:0;
-  color:rgba(255,255,255,.80);
-  font-weight:700;
-  font-size:12px;
-}
-.crumb span{margin:0 6px}
-.crumb a{opacity:.95}
-.crumb a:hover{opacity:1}
- 
-.hero-dots{
-  position:absolute;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:18px;
-  z-index:4;
-  display:flex;
-  gap:10px;
-}
-.dot{
-  width:10px;height:10px;
-  border-radius:999px;
-  border:2px solid rgba(255,255,255,.7);
-  opacity:.9;
-}
-.dot.active{
-  background:#fff;
-  border-color:#fff;
-}
- 
-/* ================= ABOUT PURPLE ================= */
-.about{
-  background:var(--primary);
-  padding:90px 0;
-}
-.about-grid{
-  display:grid;
-  grid-template-columns:1.05fr .95fr;
-  gap:36px;
-  align-items:center;
-}
-.about-text{
-  color:#fff;
-  max-width:520px;
-}
-.about-text h2{
-  margin:10px 0 12px;
-  font-size:clamp(28px,3.2vw,44px);
-  letter-spacing:-.4px;
-}
-.about-text p{
-  margin:0 0 12px;
-  line-height:1.85;
-  color:rgba(255,255,255,.85);
-  font-size:14px;
-}
-.about-text p.muted{color:rgba(255,255,255,.72)}
- 
-.about-media img{
-  width:100%;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 18px 50px rgba(0,0,0,.25);
-}
- 
-/* ================= TEAM ================= */
-.team{
-  padding:90px 0;
-  background:#fff;
-}
-.team-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:22px;
-  margin-top:22px;
-}
-.team-card{
-  border:1px solid rgba(15,23,42,.08);
-  border-radius:18px;
-  padding:26px 18px;
-  text-align:center;
-  background:#fff;
-  box-shadow:0 14px 34px rgba(15,23,42,.06);
-  transition:.2s ease;
-}
-.team-card:hover{transform:translateY(-4px)}
-.avatar{
-  width:88px;height:88px;
-  border-radius:999px;
-  margin:0 auto 12px;
-  border:6px solid rgba(79,45,255,.10);
-  object-fit:cover;
-}
-.team-card h3{
-  margin:0 0 6px;
-  font-size:14px;
-}
-.role{
-  margin:0;
-  font-size:12px;
-  color:var(--primary);
-  font-weight:800;
-}
- 
-/* ================= TESTIMONIALS ================= */
-.testimonials{
-  position:relative;
-  padding:90px 0;
-  color:#fff;
-  background:
-    url("https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=2000&am…
-    center/cover no-repeat;
-}
-.testi-overlay{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,.62);
-}
-.testi-inner{
-  position:relative;
-  z-index:3;
-  text-align:center;
-  max-width:900px;
-}
-.testi-inner h2{
-  margin:10px 0 18px;
-  font-size:clamp(26px,3vw,40px);
-  letter-spacing:-.4px;
-}
- 
-.testi-box{
-  display:grid;
-  grid-template-columns:60px 1fr 60px;
-  align-items:center;
-  gap:10px;
-  margin:0 auto;
-  max-width:760px;
-}
- 
-.arrow{
-  width:46px;height:46px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-size:28px;
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  transition:.2s ease;
-}
-.arrow:hover{background:rgba(255,255,255,.14)}
- 
-.testi-content{
-  padding:10px 12px;
-}
-.testi-avatar{
-  width:64px;height:64px;
-  border-radius:999px;
-  margin:0 auto 10px;
-  border:4px solid rgba(255,255,255,.18);
-}
-.testi-content h4{
-  margin:0;
-  font-size:14px;
-}
-.small{
-  margin:6px 0 10px;
-  font-size:11px;
-  letter-spacing:.5px;
-  opacity:.8;
-  font-weight:800;
-}
-.quote{
-  margin:0 auto;
-  max-width:560px;
-  color:rgba(255,255,255,.82);
-  line-height:1.85;
-  font-size:13px;
-}
- 
-/* ================= LOGOS STRIP ================= */
-.logos{
-  background:#fff;
-  padding:26px 0;
-  border-top:1px solid rgba(15,23,42,.06);
-}
-.logos-row{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:16px;
-  flex-wrap:wrap;
-}
-.logo-pill{
-  padding:10px 16px;
-  border-radius:999px;
-  border:1px solid rgba(15,23,42,.10);
-  background:#fafafa;
-  color:rgba(15,23,42,.45);
-  font-weight:900;
-  font-size:12px;
-  letter-spacing:.4px;
-}
-.logo-pill.active{
-  color:var(--primary);
-  border-color:rgba(79,45,255,.30);
-  background:rgba(79,45,255,.06);
-}
- 
-/* ================= FOOTER ================= */
-.footer{
-  padding:24px 0;
-  background:#0b1220;
-  color:rgba(255,255,255,.70);
-  text-align:center;
-  font-size:13px;
-}
- 
-/* ================= RESPONSIVE ================= */
-@media (max-width: 980px){
-  .about-grid{grid-template-columns:1fr}
-  .team-grid{grid-template-columns:1fr}
-  .nav{display:none}
- 
-  .menu-btn{display:inline-flex;align-items:center;justify-content:center}
- 
-  body.menu-open .nav{
-    display:flex;
-    position:absolute;
-    top:76px;
-    left:24px;
-    right:24px;
-    padding:14px;
-    background:rgba(15,23,42,.88);
-    border:1px solid rgba(255,255,255,.12);
-    border-radius:16px;
-    flex-direction:column;
-    gap:10px;
-  }
- 
-  .testi-box{
-    grid-template-columns:48px 1fr 48px;
-  }
-}
-       </style>
-       <body>
-    <!-- HERO + NAV -->
-    <header class="hero">
-      <div class="hero-overlay"></div>
- 
-      <div class="topbar">
-        <div class="container topbar-inner">
-          <a class="brand" href="#">Joy</a>
- 
-          <nav class="nav">
-            <a href="#">Home</a>
-            <a href="#">Services</a>
-            <a href="#">Portfolio</a>
-            <a class="active" href="#">About</a>
-            <a href="#">Pricing</a>
-            <a href="#">Blog</a>
-            <a href="#">Contact</a>
-          </nav>
- 
-          <div class="nav-actions">
-            <button class="icon-btn" aria-label="Search">
-              <!-- search icon -->
-              <svg viewBox="0 0 24 24" aria-hidden="true">
-                <path
-                  d="M10 2a8 8 0 105.3 14l4.4 4.4 1.4-1.4-4.4-4.4A8 8 0 0010 2zm0 2a6 6 0 110 12 6 6 0 010-12z"
-                />
-              </svg>
-            </button>
- 
-            <button class="menu-btn" aria-label="Open menu" onclick="document.body.classList.toggle('menu-open')">
-              ☰
-            </button>
-          </div>
-        </div>
-      </div>
- 
-      <div class="container hero-content">
-        <h1>About us</h1>
-        <p class="crumb">
-          <a href="#">Home</a> <span>»</span> <span>About</span>
-        </p>
-      </div>
- 
-      <div class="hero-dots">
-        <span class="dot"></span>
-        <span class="dot active"></span>
-        <span class="dot"></span>
-      </div>
-    </header>
- 
-    <!-- PURPLE ABOUT SECTION -->
-    <section class="about">
-      <div class="container about-grid">
-        <div class="about-text">
-          <span class="kicker light">About Us</span>
-          <h2>The Creation</h2>
-          <p>
-            In pretium neque a libero congue ullamcorper. In diam lectus, maximus
-            vel nisl eget, gravida magna. Ut in posuere semper. In egestas feugiat
-            interdum.
-          </p>
-          <p class="muted">
-            Clean typography, strong spacing, and a premium purple accent — just
-            like your screenshot.
-          </p>
-          <a class="btn ghost" href="#">READ MORE</a>
-        </div>
- 
-        <div class="about-media">
-          <img
-            src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1200&am…
-            alt="Business"
-          />
-        </div>
-      </div>
-    </section>
- 
-    <!-- TEAM SECTION -->
-    <section class="team">
-      <div class="container">
-        <div class="section-title center">
-          <span class="kicker">Our Team</span>
-          <h2>The Perfect Combine</h2>
-        </div>
- 
-        <div class="team-grid">
-          <article class="team-card">
-            <img class="avatar" src="https://i.pravatar.cc/140?img=47" alt="Mr Jessie James" />
-            <h3>Mr Jessie James</h3>
-            <p class="role">Manager</p>
-          </article>
- 
-          <article class="team-card">
-            <img class="avatar" src="https://i.pravatar.cc/140?img=12" alt="Mrs Karen Guillian" />
-            <h3>Mrs Karen Guillian</h3>
-            <p class="role">Marketer</p>
-          </article>
- 
-          <article class="team-card">
-            <img class="avatar" src="https://i.pravatar.cc/140?img=33" alt="Mr Sam Smith" />
-            <h3>Mr Sam Smith</h3>
-            <p class="role">Product manager</p>
-          </article>
-        </div>
-      </div>
-    </section>
- 
-    <!-- TESTIMONIAL BANNER -->
-    <section class="testimonials">
-      <div class="testi-overlay"></div>
- 
-      <div class="container testi-inner">
-        <span class="kicker light">Testimonial</span>
-        <h2>The Pleasure</h2>
- 
-        <div class="testi-box">
-          <button class="arrow left" aria-label="Previous">‹</button>
- 
-          <div class="testi-content">
-            <img class="testi-avatar" src="https://i.pravatar.cc/120?img=18" alt="Mr Jessie James" />
-            <h4>Mr Jessie James</h4>
-            <p class="small">MANAGER</p>
-            <p class="quote">
-              Thank you for your prompt response and real help. You always have a quick
-              solution to any problem.
-            </p>
-          </div>
- 
-          <button class="arrow right" aria-label="Next">›</button>
-        </div>
-      </div>
-    </section>
- 
-    <!-- LOGOS STRIP -->
-    <section class="logos">
-      <div class="container logos-row">
-        <div class="logo-pill">PREMIUM</div>
-        <div class="logo-pill">Delicious</div>
-        <div class="logo-pill">UNIQUE</div>
-        <div class="logo-pill">Premium</div>
-        <div class="logo-pill">COMPANY</div>
-        <div class="logo-pill active">MARKET</div>
-      </div>
-    </section>
- 
-    <!-- FOOTER -->
-    <footer class="footer">
-      <div class="container footer-inner">
-        <p>© <span id="year"></span> Joy. All Rights Reserved.</p>
-      </div>
-    </footer>
- 
-    <script>
-      document.getElementById("year").textContent = new Date().getFullYear();
-    </script>
-  </body>
+</html>
        `,
     slug: "about",
     status: "published",

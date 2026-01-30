@@ -7,7 +7,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-
+import { RiFileCopy2Line } from "react-icons/ri";
 import {
   Box,
   CheckCircle2,
@@ -21,6 +21,23 @@ import {
   ShoppingCart,
   Sparkles,
 } from "lucide-react";
+
+
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
 
 import { InteractivityEditor } from "../../interactivity/interactivity-editor";
 import { StyleEditor } from "../../style-editor/style-editor";
@@ -36,6 +53,7 @@ import BlogPage from "../../blogbuilder/BlogPage";
 import { GoNote } from "react-icons/go";
 import PageLayer from "./PageLayer";
 import AllBuilderPage from "../../allbuilderpage/AllBuilderPage";
+import FormsPage from "../../forms-manager/FormsPage";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -53,11 +71,9 @@ type PropertiesSidebarProps = {
 
 type TabKey =
   | "style"
-  | "attributes"
-  | "interactivity"
-  | "setup"
-  | "blog"
+  // | "blog"
   | "pages"
+  | "forms"
   | "styles"
   | "ai"
   | "store"
@@ -66,13 +82,14 @@ type TabKey =
   | "layer"
 
 const TAB_TITLES: Record<TabKey, string> = {
-  style: "Style",
-  attributes: "Attributes",
-  interactivity: "Interactivity",
+  style: "Styles & Attributes ",
+  // attributes: "Attributes",
+  // interactivity: "Interactivity",
   layer: "Layer",
-  setup: "Setup",
-  blog: "Blog",
+  //setup: "Setup",
+
   pages: "Pages and Navigation",
+  forms: "Forms",
   styles: "Styles",
   ai: "AI Tools",
   store: "Store",
@@ -128,43 +145,92 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   };
 
   const handleOpenSeoModal = () => {
-  setTab("seo");
+    setTab("seo");
   };
 
   const renderRightContent = () => {
     switch (tab) {
-      case "style":
-        if (!selectedElement) return renderEmptySelectionMessage("Box", "styles");
-        return <StyleEditor styles={styles} onStyleChange={onStyleChange} />;
+      // case "style":
+      //   if (!selectedElement) return renderEmptySelectionMessage("Box", "styles");
+      //   return <StyleEditor styles={styles} onStyleChange={onStyleChange} /> ;
 
-      case "attributes":
+      case "style":
         if (!selectedElement)
           return renderEmptySelectionMessage("Box", "attributes");
         return (
-          <AttributesEditor
-            selectedElement={selectedElement}
-            onAttributeChange={onAttributeChange}
-          />
-        );
+          // <AttributesEditor
+          //   selectedElement={selectedElement}
+          //   onAttributeChange={onAttributeChange}
+          // />
 
-      case "setup":
-        if (!selectedElement) return renderEmptySelectionMessage("Box", "setup");
-        return (
-          <AttributesEditor
-            selectedElement={selectedElement}
-            onAttributeChange={onAttributeChange}
-          />
-        );
+          <Tabs defaultValue="overview" className="">
+            <TabsList>
+              <TabsTrigger value="overview">Style</TabsTrigger>
+              <TabsTrigger value="analytics">Attributes</TabsTrigger>
+              <TabsTrigger value="reports">Interactivity</TabsTrigger>
+              {/* <TabsTrigger value="settings">Settings</TabsTrigger> */}
+            </TabsList>
 
-      case "interactivity":
-        if (!selectedElement)
-          return renderEmptySelectionMessage("MousePointer", "interactivity");
-        return (
+            <TabsContent value="overview">
+              <StyleEditor styles={styles} onStyleChange={onStyleChange} />
+            </TabsContent>
+
+            <TabsContent value="analytics">
+
+              <AttributesEditor
+                selectedElement={selectedElement}
+                onAttributeChange={onAttributeChange}
+              />
+
+            </TabsContent>
+            <TabsContent value="reports">
+              {/* <Card>
+          <CardHeader>
+            <CardTitle>Reports</CardTitle>
+            <CardDescription>
+              Generate and download your detailed reports. Export data in
+              multiple formats for analysis.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-muted-foreground text-sm">
+            You have 5 reports ready and available to export.
+          </CardContent>
+        </Card> */}
+
+              <InteractivityEditor
+                selectedElement={selectedElement}
+                onInteractivityChange={onInteractivityChange}
+              />
+            </TabsContent>
+            {/* <TabsContent value="settings">
+    
           <InteractivityEditor
             selectedElement={selectedElement}
             onInteractivityChange={onInteractivityChange}
           />
+      </TabsContent> */}
+          </Tabs>
+
         );
+
+      // case "setup":
+      //   if (!selectedElement) return renderEmptySelectionMessage("Box", "setup");
+      //   return (
+      //     <AttributesEditor
+      //       selectedElement={selectedElement}
+      //       onAttributeChange={onAttributeChange}
+      //     />
+      //   );
+
+      // case "interactivity":
+      //   if (!selectedElement)
+      //     return renderEmptySelectionMessage("MousePointer", "interactivity");
+      //   return (
+      //     <InteractivityEditor
+      //       selectedElement={selectedElement}
+      //       onInteractivityChange={onInteractivityChange}
+      //     />
+      //   );
 
       case "layer":
 
@@ -172,26 +238,28 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           <PageLayer
           />
         );
-      // case "blog":
+      // case "forms":
       //   return renderPlaceholder(
       //     <span className="inline-flex items-center gap-2">
-      //       <Plus className="w-4 h-4" /> blog
+      //       <Plus className="w-4 h-4" /> Forms
       //     </span>,
       //     "Add/insert components, blocks, and sections here."
       //   );
-      case "blog":
-        return <BlogPage />;
-      // setOpen={setOpen}
-      // open={open}
-      // />;
+
+      // case "forms":
+      //   return <FormsPage />;
+
+      case "forms":
+        return <FormsPage />;
+
 
 
       case "pages":
         return <Pages
           setOpen={setOpen}
-          open={open} 
+          open={open}
           openSeoModal={handleOpenSeoModal}
-          />
+        />
 
 
       // ✅ HERE: show the Pages component when Pages tab is selected
@@ -270,7 +338,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             onClick={() => setTab("style")}
             icon={<Palette className="w-5 h-5" />}
           />
-          <IconTab
+          {/* <IconTab
             active={tab === "attributes"}
             label="Attributes"
             onClick={() => setTab("attributes")}
@@ -281,40 +349,45 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             label="Interactivity"
             onClick={() => setTab("interactivity")}
             icon={<MousePointer className="w-5 h-5" />}
-          />
+          /> */}
           <IconTab
             active={tab === "layer"}
             label="Layer"
             onClick={() => setTab("layer")}
             icon={<Layers className="w-5 h-5" />}
           />
-          <IconTab
+          {/* <IconTab
             active={tab === "setup"}
             label="Setup"
             onClick={() => setTab("setup")}
             icon={<CheckCircle2 className="w-5 h-5" />}
-          />
+          /> */}
 
           <div className="my-1 w-8 h-px bg-slate-200 dark:bg-slate-800/70" />
 
-          <IconTab
-            active={tab === "blog"}
-            label="blog"
-            onClick={() => setTab("blog")}
-            icon={<GoNote className="w-5 h-5" />}
-          />
+
           <IconTab
             active={tab === "pages"}
             label="Pages"
             onClick={() => setTab("pages")}
-            icon={<LayoutGrid className="w-5 h-5" />}
+            icon={<RiFileCopy2Line  className="w-5 h-5" />}
           />
+
           <IconTab
+            active={tab === "forms"}
+            label="Forms"
+            onClick={() => setTab("forms")}
+            icon={<GoNote className="w-5 h-5" />}
+          />
+
+
+          {/* <IconTab
             active={tab === "styles"}
             label="Styles"
             onClick={() => setTab("styles")}
             icon={<Palette className="w-5 h-5" />}
-          />
+          /> */}
+
           <IconTab
             active={tab === "ai"}
             label="AI tools"
@@ -342,7 +415,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         </div>
 
         {/* RIGHT CONTENT */}
-        <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex-1 min-w-0 flex flex-col  border-e border-slate-200 ">
           {/* header */}
           <div className="h-14 px-4 flex items-center border-b border-slate-200 dark:border-slate-800">
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">
@@ -351,7 +424,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           </div>
 
           {/* content */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-3">
+          <div className="flex-1 min-h-0 overflow-y-auto p-3 pt-1">
             {renderRightContent()}
           </div>
         </div>

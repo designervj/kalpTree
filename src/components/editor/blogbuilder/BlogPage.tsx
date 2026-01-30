@@ -93,14 +93,14 @@ const EmptyStartBlog: React.FC<EmptyStartBlogProps> = ({ onStart }) => {
 
   return (
     <div className="flex min-h-[72vh] items-center justify-center">
-      <div className="relative w-full max-w-[420px]  bg-white px-2 pb-6 pt-10 ">
-        <button
+      <div className="relative w-full max-w-[450px]  bg-white px-2 pb-6 pt-0 ">
+        {/* <button
           type="button"
           aria-label="Close"
           className="absolute right-0 -top-2 inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100"
         >
           <X className="h-5 w-5" />
-        </button>
+        </button> */}
 
         <div className="mx-auto w-full max-w-[340px] rounded-xl bg-slate-50 p-4">
           <div className="text-center text-xs font-semibold text-slate-700">
