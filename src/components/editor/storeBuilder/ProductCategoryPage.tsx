@@ -101,7 +101,7 @@ export default function CategoriesPage() {
                 </div>
                 <div className="mt-2 text-sm text-slate-600 dark:text-slate-300 grid">
                   To show products by category on your website, add eCommerce
-                  section in the editor and adjust its settings.{" "}
+                  section in the editor and adjust its settings.
                   <span className="text-violet-700 dark:text-violet-200">
                     Learn more.
                   </span>

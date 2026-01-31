@@ -246,7 +246,7 @@ const CurrentForm = ({ componentHtml }: Props) => {
                 <Select
                     onValueChange={(v) => addField(v as FieldType)}
                 >
-                    <SelectTrigger className="h-11 rounded-xl">
+                    <SelectTrigger className="h-11 rounded-md w-full">
                         <SelectValue placeholder="Add new form field" />
                     </SelectTrigger>
                     <SelectContent>
@@ -267,7 +267,7 @@ const CurrentForm = ({ componentHtml }: Props) => {
 
             <Accordion type="single" collapsible className="w-full space-y-2">
                 {settings && settings.fields && settings.fields.map((f, idx) => (
-                    <AccordionItem key={f.id} value={f.id} className="border rounded-xl bg-white px-0 overflow-hidden">
+                    <AccordionItem key={f.id} value={f.id} className="border rounded-md bg-white px-0 overflow-hidden">
                         <AccordionTrigger className="px-3 py-2 hover:no-underline hover:bg-slate-50 [&[data-state=open]]:bg-slate-50">
                             <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
                                 <GripVertical className="h-4 w-4 text-slate-400" />
@@ -355,14 +355,14 @@ const CurrentForm = ({ componentHtml }: Props) => {
                                                 }))
                                             }
                                             id={`required-${f.id}`}
-                                            className="data-[state=checked]:bg-[#6D5EF5] relative inline-flex h-[20px] w-[36px] items-center rounded-full border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="data-[state=checked]:bg-[#6D5EF5] relative inline-flex h-[20px] border border-gray-200 w-[36px] items-center rounded-full border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                         >
                                             <span
                                                 className={`${f.required ? 'translate-x-[18px]' : 'translate-x-0.5'
                                                     } pointer-events-none block h-[16px] w-[16px] rounded-full bg-white shadow-lg ring-0 transition-transform`}
                                             />
                                         </Switch>
-                                        <label htmlFor={`required-${f.id}`} className="text-sm text-slate-600 cursor-pointer select-none">Required</label>
+                                        <label htmlFor={`required-${f.id}`} className="text-sm text-slate-600 cursor-pointer select-none ">Required</label>
                                     </div>
 
                                     <div className="flex items-center gap-1">
@@ -401,6 +401,6 @@ const CurrentForm = ({ componentHtml }: Props) => {
             </div>
         </div>
     )
-}
+}   
 
 export default CurrentForm
