@@ -99,16 +99,16 @@ function FormActions({
       <Button
         variant="outline"
         onClick={onView}
-        className="h-12 rounded-xl border-slate-200 px-6 text-base font-semibold text-violet-600 hover:bg-slate-50"
+        className="h-10 rounded-sm border-slate-200  text-base font-semibold text-violet-600 hover:bg-slate-50"
       >
-        View <ArrowRight className="ml-2 h-5 w-5" />
+        View <ArrowRight className=" h-5 w-5" />
       </Button>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="h-12 w-12 rounded-xl border border-slate-200 bg-slate-50 p-0 text-slate-700 hover:bg-slate-100"
+            className="h-10 w-12 rounded-sm border border-slate-200 bg-slate-50 p-0 text-slate-700 hover:bg-slate-100"
             aria-label="More"
           >
             <MoreHorizontal className="mx-auto h-5 w-5" />
@@ -254,7 +254,7 @@ export default function FormSubmissionsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
       <div className="relative h-[75vh] w-[96vw] max-w-[900px] overflow-hidden rounded-2xl bg-white shadow-xl">
         {/* =======================
             DETAILS SCREEN (2nd image)
@@ -276,26 +276,26 @@ export default function FormSubmissionsModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-2 text-slate-700 hover:bg-slate-100"
+                className="rounded-full p-2 text-slate-700 hover:bg-slate-100 bg-slate-100"
                 aria-label="Close"
               >
-                <X className="h-7 w-7" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             {/* Form header card */}
             <div className="px-10 pt-6">
-              <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-6 py-5">
+              <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3">
                 <div className="flex items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-200/60 text-slate-700">
-                    <Mail className="h-7 w-7" />
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-200/60 text-slate-700">
+                    <Mail className="h-6 w-6" />
                   </div>
 
                   <div>
-                    <div className="text-xl font-semibold text-slate-900">
+                    <div className="text-lg font-semibold text-slate-900">
                       {activeForm.name}
                     </div>
-                    <div className="mt-1 text-lg text-slate-500">
+                    <div className="text-md text-slate-500">
                       {activeForm.submissions} Submissions
                     </div>
                   </div>
@@ -304,18 +304,18 @@ export default function FormSubmissionsModal({
                 <Button
                   variant="outline"
                   onClick={() => handleDownloadCsv(activeForm)}
-                  className="h-12 rounded-xl border-slate-200 px-6 text-base font-semibold text-slate-700 hover:bg-white"
+                  className="h-10 rounded-sm border-slate-200 px-6 text-sm font-semibold text-slate-700 hover:bg-white"
                 >
-                  <Download className="mr-2 h-5 w-5" />
+                  <Download className=" h-5 w-5" />
                   Download CSV
                 </Button>
               </div>
             </div>
 
             {/* Selected bar */}
-            <div className="px-10 pt-6">
-              <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-6 py-4">
-                <div className="text-base text-slate-700">
+            <div className="px-10 pt-4">
+              <div className="flex items-center gap-4 rounded-md border border-slate-200 bg-white px-6 py-2">
+                <div className="text-sm text-slate-700">
                   Selected: <span className="font-semibold">{selectedCount}</span>
                 </div>
                 <div className="h-6 w-px bg-slate-200" />
@@ -324,20 +324,20 @@ export default function FormSubmissionsModal({
                   onClick={deleteSelected}
                   disabled={selectedCount === 0}
                   className={cx(
-                    "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold",
+                    "inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold",
                     selectedCount === 0
                       ? "text-slate-400"
                       : "text-slate-700 hover:bg-slate-50"
                   )}
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                   Delete
                 </button>
               </div>
             </div>
 
             {/* Table */}
-            <div className="mt-6 flex-1 overflow-y-auto px-10 pb-10">
+            <div className="mt-4 flex-1 overflow-y-auto px-10 pb-10">
               <div className="rounded-[3px] border border-slate-200 bg-white">
                 <Table>
                   <TableHeader>
@@ -349,16 +349,16 @@ export default function FormSubmissionsModal({
                           aria-label="Select all"
                         />
                       </TableHead>
-                      <TableHead className="text-base font-semibold text-slate-800">
+                      <TableHead className="text-sm font-medium text-slate-800">
                         Email
                       </TableHead>
-                      <TableHead className="text-base font-semibold text-slate-800">
+                      <TableHead className="text-sm font-medium text-slate-800">
                         Name
                       </TableHead>
-                      <TableHead className="text-base font-semibold text-slate-800">
+                      <TableHead className="text-sm font-medium text-slate-800">
                         Message
                       </TableHead>
-                      <TableHead className="text-base font-semibold text-slate-800">
+                      <TableHead className="text-sm font-medium text-slate-800">
                         <span className="inline-flex items-center gap-2">
                           Date Added <ArrowUp className="h-4 w-4" />
                         </span>
@@ -399,11 +399,11 @@ export default function FormSubmissionsModal({
                 {/* Empty state */}
                 {detailSubmissions.length === 0 ? (
                   <div className="flex flex-col items-center justify-center px-6 py-24 text-center">
-                    <div className="text-2xl font-semibold text-slate-800">
+                    <div className="text-lg font-semibold text-slate-800">
                       No submissions just yet
                     </div>
-                    <div className="mt-2 max-w-xl text-lg text-slate-500">
-                      This forms submissions will appear here once someone fills it out.
+                    <div>
+                     <p className="mt-2 max-w-xl text-sm text-slate-500 font-normal"> This forms submissions will appear here once someone fills it out.</p>
                     </div>
                   </div>
                 ) : null}
@@ -418,7 +418,7 @@ export default function FormSubmissionsModal({
            ======================= */
           <div className="flex h-full flex-col">
             {/* Header */}
-            <div className="flex items-start justify-between px-10 pt-8">
+            <div className="flex items-start justify-between px-10 pt-6">
               <h2 className="text-[24px] font-semibold text-slate-900">
                 Form submissions
               </h2>
@@ -426,15 +426,15 @@ export default function FormSubmissionsModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-full p-2 text-slate-700 hover:bg-slate-100"
+                className="rounded-full p-2 text-slate-700 hover:bg-slate-100 bg-slate-100"
                 aria-label="Close"
               >
-                <X className="h-7 w-7" />
+                <X className="h-6 w-6" />
               </button>
             </div>
 
             {/* Segmented tabs */}
-            <div className="mt-8 px-10">
+            <div className="mt-4 px-10">
               <div className="rounded-full bg-slate-100 p-2">
                 <div className="flex items-center gap-2">
                   <SegTab active={tab === "subscribe"} onClick={() => setTab("subscribe")}>
@@ -449,14 +449,14 @@ export default function FormSubmissionsModal({
 
             {/* Rows */}
             <div className="mt-6 flex-1 overflow-y-auto px-10 pb-10">
-              <div className="divide-y divide-slate-200 rounded-2xl border border-slate-200 bg-white">
+              <div className="divide-y divide-slate-200 rounded-md border border-slate-200 bg-white">
                 {listData.map((row) => (
-                  <div key={row.id} className="flex items-center justify-between px-2 py-7">
+                  <div key={row.id} className="flex items-center justify-between px-2 py-4">
                     <div className="pl-4">
-                      <div className="text-xl font-semibold text-slate-900">
+                      <div className="text-md font-semibold text-slate-900">
                         {row.name}
                       </div>
-                      <div className="mt-1 text-md text-slate-500">
+                      <div className="mt-1 text-sm text-slate-500">
                         {row.submissions} Submissions
                       </div>
                     </div>

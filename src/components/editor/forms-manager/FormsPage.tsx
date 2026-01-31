@@ -248,7 +248,7 @@ function PillTabs({
                     ["fields", "Fields"],
                     ["button", "Button"],
                     ["style", "Style"],
-                  
+
                 ].map(([k, label]) => (
                     <TabsTrigger
                         key={k}
@@ -324,7 +324,7 @@ function IconRadio({
             </div>
             <div className="min-w-0">
                 <div className="text-sm font-semibold text-slate-900">{title}</div>
-                <div className="text-sm text-slate-500">{desc}</div>
+                <div><p className="text-[12px] text-slate-500">{desc}</p></div>
             </div>
         </div>
     );
@@ -396,7 +396,7 @@ export function FormsPage({
                     {tab === "general" ? (
                         <div className="space-y-5">
                             {/* Purple promo card */}
-                            <div
+                            {/* <div
                                 className="rounded-2xl p-4 text-white"
                                 style={{ backgroundColor: ACCENT }}
                             >
@@ -424,7 +424,7 @@ export function FormsPage({
                                         Learn more
                                     </Button>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {/* Form mode radios */}
                             <RadioGroup
@@ -450,7 +450,7 @@ export function FormsPage({
                                             checked={settings.mode === "connected"}
                                             title="Connected form"
                                             desc="Collects submissions into one list with the connected form"
-                                        />
+                                        />  
                                     </div>
                                 </label>
                             </RadioGroup>
@@ -662,18 +662,19 @@ export function FormsPage({
                     {/* STYLE */}
                     {tab === "style" ? (
                         <div className="space-y-5 ">
-                            <div className="space-y-2">
+                            <div className="space-y-2 ">
                                 <div className="text-sm font-semibold text-slate-900">
                                     Customize elements
                                 </div>
                                 <Select
                                     value={settings.styleElement}
                                     onValueChange={(v) => set("styleElement", v as StyleElement)}
+
                                 >
-                                    <SelectTrigger className="h-11 rounded-xl">
+                                    <SelectTrigger className="h-11 rounded-xl w-full">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="w-full">
                                         <SelectItem value="form_fields">Form fields</SelectItem>
                                         <SelectItem value="labels">Labels</SelectItem>
                                         <SelectItem value="button">Button</SelectItem>
@@ -872,32 +873,32 @@ export function FormsPage({
                                 </div>
                             </div>
 
- {/* ANIMATION */}
+                            {/* ANIMATION */}
 
-    <div className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <AnimationCard
-                                    title="No animation"
-                                    active={settings.animation === "none"}
-                                    onClick={() => set("animation", "none")}
-                                />
-                                <AnimationCard
-                                    title="Fade"
-                                    active={settings.animation === "fade"}
-                                    onClick={() => set("animation", "fade")}
-                                />
-                                <AnimationCard
-                                    title="Slide"
-                                    active={settings.animation === "slide"}
-                                    onClick={() => set("animation", "slide")}
-                                />
-                                <AnimationCard
-                                    title="Scale"
-                                    active={settings.animation === "scale"}
-                                    onClick={() => set("animation", "scale")}
-                                />
+                            <div className="space-y-4">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <AnimationCard
+                                        title="No animation"
+                                        active={settings.animation === "none"}
+                                        onClick={() => set("animation", "none")}
+                                    />
+                                    <AnimationCard
+                                        title="Fade"
+                                        active={settings.animation === "fade"}
+                                        onClick={() => set("animation", "fade")}
+                                    />
+                                    <AnimationCard
+                                        title="Slide"
+                                        active={settings.animation === "slide"}
+                                        onClick={() => set("animation", "slide")}
+                                    />
+                                    <AnimationCard
+                                        title="Scale"
+                                        active={settings.animation === "scale"}
+                                        onClick={() => set("animation", "scale")}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
                         </div>
                     ) : null}

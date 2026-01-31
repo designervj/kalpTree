@@ -39,32 +39,32 @@ type Group = {
 const groups: Group[] = [
   {
     items: [
-      { label: "Blog", icon: <PencilLine className="h-5 w-5" />, view: "blog" },
-      { label: "Appointments", icon: <CalendarDays className="h-5 w-5" />, href: "#" },
+      { label: "Blog", icon: <PencilLine className="h-4 w-4" />, view: "blog" },
+      { label: "Appointments", icon: <CalendarDays className="h-4 w-4" />, href: "#" },
     ],
   },
   {
     items: [
-      { label: "General settings", icon: <Globe2 className="h-5 w-5" />, href: "#" },
-      { label: "Integrations", icon: <Grip className="h-5 w-5" />, href: "#" },
-      { label: "Form submissions", icon: <FileText className="h-5 w-5" />, view: "formSubmissions" }, // ✅ open modal
-      { label: "Analytics", icon: <BarChart3 className="h-5 w-5" />, href: "#" },
+      { label: "General settings", icon: <Globe2 className="h-4 w-4" />, href: "#" },
+      { label: "Integrations", icon: <Grip className="h-4 w-4" />, href: "#" },
+      { label: "Form submissions", icon: <FileText className="h-4 w-4" />, view: "formSubmissions" }, // ✅ open modal
+      { label: "Analytics", icon: <BarChart3 className="h-4 w-4" />, href: "#" },
     ],
   },
   {
     items: [
-      { label: "Media library", icon: <ImageIcon className="h-5 w-5" />, view: "media" },
-      { label: "Multi-language", icon: <Languages className="h-5 w-5" />, href: "#" },
-      { label: "Manage backups", icon: <Cloud className="h-5 w-5" />, href: "#" },
-      { label: "Export content to WordPress", icon: <Cloud className="h-5 w-5" />, href: "#" },
+      { label: "Media library", icon: <ImageIcon className="h-4 w-4" />, view: "media" },
+      { label: "Multi-language", icon: <Languages className="h-4 w-4" />, href: "#" },
+      { label: "Manage backups", icon: <Cloud className="h-4 w-4" />, href: "#" },
+      { label: "Export content to WordPress", icon: <Cloud className="h-4 w-4" />, href: "#" },
     ],
   },
   {
     items: [
-      { label: "Help & Resources", icon: <HelpCircle className="h-5 w-5" />, href: "#" },
+      { label: "Help & Resources", icon: <HelpCircle className="h-4 w-4" />, href: "#" },
       {
         label: "What's new?",
-        icon: <Megaphone className="h-5 w-5" />,
+        icon: <Megaphone className="h-4 w-4" />,
         href: "#",
         trailing: <ExternalLink className="h-4 w-4 opacity-70" />,
       },
@@ -84,13 +84,13 @@ function Row({
       <button
         type="button"
         onClick={() => onOpenView(item.view!)}
-        className="group flex w-full items-center justify-between rounded-sm px-3 py-2 text-left transition hover:bg-slate-50"
+        className="group flex w-full items-center justify-between rounded-sm px-2 py-1 text-left transition hover:bg-slate-200 "
       >
         <div className="flex items-center gap-1">
-          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-slate-700">
+          <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl ">
             {item.icon}
           </span>
-          <span className="text-base font-normal text-slate-700">{item.label}</span>
+          <span className="text-base font-normal ">{item.label}</span>
         </div>
 
         {item.trailing ? <span className="text-slate-500">{item.trailing}</span> : null}
@@ -101,13 +101,13 @@ function Row({
   return (
     <a
       href={item.href ?? "#"}
-      className="group flex items-center justify-between rounded-sm px-3 py-2 transition hover:bg-slate-50"
+      className="group flex items-center justify-between rounded-sm px-2 py-1 transition hover:bg-slate-200"
     >
       <div className="flex items-center gap-1">
-        <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-slate-700">
+        <span className="inline-flex h-8 w-8 items-center justify-center rounded-xl ">
           {item.icon}
         </span>
-        <span className="text-base font-normal text-slate-700">{item.label}</span>
+        <span className="text-base font-normal ">{item.label}</span>
       </div>
 
       {item.trailing ? <span className="text-slate-500">{item.trailing}</span> : null}
@@ -164,9 +164,9 @@ export default function AllBuilderPage() {
 
   // ✅ Menu view
   return (
-    <div className="min-h-screen w-[290px] bg-white">
+    <div className="min-h-screen w-[290px] ">
       <div className="w-full px-0 py-0">
-        <div className="rounded-2xl bg-white">
+        <div className="rounded-2xl ">
           {groups.map((g, idx) => (
             <div key={idx}>
               {g.items.map((item) => (

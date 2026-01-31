@@ -137,9 +137,9 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
           {title}
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
+        {/* <div className="text-xs text-slate-500 dark:text-slate-400">
           {desc ?? "This panel is not implemented yet."}
-        </div>
+        </div> */}
       </div>
     );
   };

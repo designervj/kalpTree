@@ -55,7 +55,9 @@ import {
   MoreHorizontal,
   ArrowLeft,
   Info,
+  LayoutGrid, // ✅ added (for Product pages row)
 } from "lucide-react";
+
 import OverviewPage from "./OverviewPage";
 import AppointmentsPage from "../appointments/AppointmentsPage";
 import StoreDetails from "../storeSetting/StoreDetails";
@@ -98,6 +100,18 @@ const SETUP: SetupItem[] = [
   { id: "company", label: "Update company details", done: false },
 ];
 
+const PRODUCTS_GROUP_CHILD_IDS = ["products", "categories", "product-reviews"] as const;
+const SETTINGS_GROUP_CHILD_IDS = [
+  "store-details",
+  "company-information",
+  "payments",
+  "shipping",
+  "checkout",
+  "emails",
+  "taxes",
+  "invoices",
+] as const;
+
 const NAV: NavItem[] = [
   { id: "overview", label: "Overview", icon: <Home className="h-4 w-4" /> },
   { id: "orders", label: "Orders", icon: <Download className="h-4 w-4" /> },
@@ -128,7 +142,6 @@ const NAV: NavItem[] = [
       { id: "emails", label: "Emails" },
       { id: "taxes", label: "Taxes" },
       { id: "invoices", label: "Invoices" },
-
     ],
   },
   { id: "integrations", label: "Integrations", icon: <Boxes className="h-4 w-4" /> },
@@ -203,6 +216,12 @@ function SidebarNav({
   const [productsOpen, setProductsOpen] = React.useState(true);
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 
+  // ✅ AUTO OPEN GROUPS WHEN ACTIVE IS INSIDE THEM (so "jump" always shows left menu expanded)
+  React.useEffect(() => {
+    if ((PRODUCTS_GROUP_CHILD_IDS as readonly string[]).includes(active)) setProductsOpen(true);
+    if ((SETTINGS_GROUP_CHILD_IDS as readonly string[]).includes(active)) setSettingsOpen(true);
+  }, [active]);
+
   const isGroupActive = (groupId: string, children?: NavChild[]) => {
     if (!children?.length) return active === groupId;
     return children.some((c) => c.id === active) || active === groupId;
@@ -211,7 +230,7 @@ function SidebarNav({
   return (
     <div className="flex h-full flex-col">
       {/* Setup card */}
-      <div className="rounded-2xl border border-violet-200/60 bg-violet-50/60 p-4 dark:border-violet-500/20 dark:bg-violet-500/10 mx-2 mb-2">
+      <div className="mx-2 mb-2 rounded-2xl border border-violet-200/60 bg-violet-50/60 p-4 dark:border-violet-500/20 dark:bg-violet-500/10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white/5">
@@ -222,9 +241,7 @@ function SidebarNav({
 
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Store setup{" "}
-              <span className="font-medium text-slate-500 dark:text-slate-300">
-                (2/4)
-              </span>
+              <span className="font-medium text-slate-500 dark:text-slate-300">(2/4)</span>
             </div>
           </div>
 
@@ -248,7 +265,7 @@ function SidebarNav({
       <hr />
 
       {/* Nav */}
-      <div className="mt-4 space-y-1 max-h-[50vh]  overflow-y-auto px-2">
+      <div className="mt-4 max-h-[50vh] space-y-1 overflow-y-auto px-2">
         {NAV.map((item) => {
           const hasChildren = !!item.children?.length;
           const activeGroup = isGroupActive(item.id, item.children);
@@ -381,7 +398,7 @@ function SidebarNav({
         </button>
       </div>
 
-      <div className="mt-auto pt-4 px-2">
+      <div className="mt-auto px-2 pt-4">
         <Separator className="bg-slate-200 dark:bg-slate-800" />
         <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
           <div className="flex items-center gap-3 rounded-sm px-3 py-2.5">
@@ -402,57 +419,9 @@ function SidebarNav({
 
 /* -------------------- Pages (Right side) -------------------- */
 
-// function Banner() {
-//   return (
-//     <div className="relative rounded-2xl border border-violet-200/60 bg-violet-50 p-6 dark:border-violet-500/20 dark:bg-violet-500/10">
-//       <div className="flex items-start justify-between gap-6">
-//         <div className="max-w-[620px]">
-//           <div className="flex items-center gap-2">
-//             <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-//               Sell custom products. Skip the logistics.
-//             </div>
-//             <Badge className="rounded-full bg-white text-slate-700 dark:bg-white/10 dark:text-slate-200">
-//               New
-//             </Badge>
-//           </div>
-//           <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-//             Create and sell branded products with Printful. No inventory, no upfront costs.
-//           </div>
-
-//           <div className="mt-5 flex items-center gap-4">
-//             <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
-//               Get started
-//             </Button>
-//             <Button
-//               variant="ghost"
-//               className="rounded-sm text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
-//             >
-//               Learn more <ExternalLink className="ml-2 h-4 w-4" />
-//             </Button>
-//           </div>
-//         </div>
-
-//         <div className="hidden w-[340px] shrink-0 items-center justify-center md:flex">
-//           <div className="relative h-[140px] w-full rounded-2xl bg-white/70 ring-1 ring-slate-200 dark:bg-white/5 dark:ring-slate-800">
-//             <button
-//               type="button"
-//               className="absolute right-3 top-3 rounded-full p-1.5 text-slate-500 hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5"
-//               aria-label="Close banner"
-//             >
-//               <X className="h-4 w-4" />
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
 function ProductsPage() {
   return (
     <div className="space-y-6">
-      {/* <Banner /> */}
-
       <div className="flex items-end justify-between gap-4">
         <div>
           <div className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
@@ -466,7 +435,7 @@ function ProductsPage() {
         <div className="flex gap-3">
           <Button
             variant="outline"
-            className=" rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+            className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
           >
             Import products
           </Button>
@@ -480,7 +449,7 @@ function ProductsPage() {
             Category
           </div>
           <Select defaultValue="all">
-            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 w-full rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
@@ -496,7 +465,7 @@ function ProductsPage() {
             Product
           </div>
           <Select defaultValue="all">
-            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 w-full rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectValue placeholder="Select filter" />
             </SelectTrigger>
             <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
@@ -512,7 +481,7 @@ function ProductsPage() {
             Sort by
           </div>
           <Select defaultValue="newest">
-            <SelectTrigger className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220] w-full">
+            <SelectTrigger className="h-11 w-full rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
               <SelectValue placeholder="Sort" />
             </SelectTrigger>
             <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
@@ -536,8 +505,8 @@ function ProductsPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden w-full rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
-        <UITableHeader className="bg-white dark:bg-[#0b1220] border-b border-gray-900 w-[100%]">
+      <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
+        <UITableHeader className="w-[100%] border-b border-gray-900 bg-white dark:bg-[#0b1220]">
           <TableRow className="border-b border-gray-600">
             <TableHead className="w-[48px]">
               <div className="flex justify-center">
@@ -556,7 +525,7 @@ function ProductsPage() {
 
         <TableBody className="w-[100%]">
           {PRODUCTS.map((p) => (
-            <TableRow key={p.id} className="hover:bg-slate-50 dark:hover:bg-white/5 w-[100%]">
+            <TableRow key={p.id} className="w-[100%] hover:bg-slate-50 dark:hover:bg-white/5">
               <TableCell className="w-[48px]">
                 <div className="flex justify-center">
                   <Checkbox />
@@ -572,10 +541,10 @@ function ProductsPage() {
                 </div>
               </TableCell>
 
-              <TableCell className="text-sm text-slate-700 dark:text-slate-200 w-[100px]">{p.price}</TableCell>
-              <TableCell className="text-sm text-slate-700 dark:text-slate-200 w-[100px]">{p.variants}</TableCell>
-              <TableCell className="text-sm text-slate-700 dark:text-slate-200 w-[100px]">{p.inventory}</TableCell>
-              <TableCell className="text-sm text-slate-700 dark:text-slate-200 w-[100px]">{p.sku}</TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.price}</TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.variants}</TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.inventory}</TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.sku}</TableCell>
               <TableCell>
                 <Badge
                   className={cn(
@@ -605,139 +574,12 @@ function ProductsPage() {
   );
 }
 
-function IntegrationsPage() {
-  const rows = [
-    { id: "shippo", title: "Generate shipping labels for your orders (Shippo)", desc: "Generate shipping labels, automate tracking and returns, and access discounted rates.", new: true, openable: false },
-    { id: "printful", title: "Create and sell custom products (Printful)", desc: "Print on demand is free, easy, and risk-free. Skip managing stock and shipping.", new: false, openable: false },
-    { id: "reach", title: "Email marketing with Hostinger Reach", desc: "Connect with your subscribers and grow your brand by sending newsletters.", new: false, openable: false },
-    { id: "whatsapp", title: "WhatsApp", desc: "Engage with customers in real-time through convenient and direct chat.", new: false, openable: true },
-    { id: "meta", title: "Meta Pixel", desc: "Improve ad targeting by tracking visitor actions on your website.", new: false, openable: true },
-  ];
-
-  return (
-    <div className="space-y-5">
-      <div>
-        <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Integrations</div>
-        <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-          Easily link your website to popular tools and services. After connecting an app, update your website to activate it.
-        </div>
-      </div>
-
-      <div className="space-y-4">
-        {rows.map((r) => (
-          <div
-            key={r.id}
-            className={cn(
-              "rounded-2xl border bg-white p-5 shadow-sm dark:bg-[#0b1220]",
-              r.new
-                ? "border-violet-400/70 ring-1 ring-violet-400/40 dark:border-violet-500/40"
-                : "border-slate-200 dark:border-slate-800"
-            )}
-          >
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 h-8 w-8 rounded-full bg-slate-100 dark:bg-white/5" />
-                <div>
-                  <div className="flex items-center gap-2">
-                    {r.new ? (
-                      <Badge className="rounded-full bg-violet-600 text-white">New</Badge>
-                    ) : null}
-                    <div className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                      {r.title}
-                    </div>
-                  </div>
-                  <div className="mt-1 text-sm text-slate-600 dark:text-slate-300">{r.desc}</div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {r.openable ? (
-                  <button
-                    type="button"
-                    className="rounded-full p-2 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/5"
-                  >
-                    <ChevronDown className="h-5 w-5" />
-                  </button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    className="h-10 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-                  >
-                    Get started
-                  </Button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+function CategoriesPage() {
+  return <ProductCategoryPage />;
 }
 
 function AnalyticsPage() {
-  return (
-    // <div className="space-y-6">
-    //   <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Analytics</div>
-    //   <div className="flex flex-wrap items-center gap-3">
-    //     <Button
-    //       variant="outline"
-    //       className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-    //     >
-    //       Dec 28, 2025 — Jan 26, 2026 <ChevronDown className="ml-2 h-4 w-4" />
-    //     </Button>
-    //     <Button
-    //       variant="outline"
-    //       className="h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-    //     >
-    //       No comparison <ChevronDown className="ml-2 h-4 w-4" />
-    //     </Button>
-    //   </div>
-
-    //   <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-    //     <div className="text-sm text-slate-600 dark:text-slate-300">Total Sales</div>
-    //     <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-    //     <div className="mt-4 h-[220px] rounded-sm bg-slate-50 dark:bg-white/5" />
-    //   </div>
-
-    //   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-    //     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-    //       <div className="text-sm text-slate-600 dark:text-slate-300">Total Orders</div>
-    //       <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">0</div>
-    //       <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
-    //     </div>
-
-    //     <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-    //       <div className="text-sm text-slate-600 dark:text-slate-300">Average order value</div>
-    //       <div className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">$0.00</div>
-    //       <div className="mt-4 h-[200px] rounded-sm bg-slate-50 dark:bg-white/5" />
-    //     </div>
-    //   </div>
-
-    //   <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-    //     <div className="flex items-center justify-between">
-    //       <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Total sales by product</div>
-    //       <button type="button" className="text-sm font-medium text-violet-700 dark:text-violet-200">
-    //         Sort by: Sales ↑
-    //       </button>
-    //     </div>
-
-    //     <div className="mt-4 space-y-4">
-    //       {PRODUCTS.map((p) => (
-    //         <div key={p.id} className="flex items-center justify-between">
-    //           <div className="flex items-center gap-3">
-    //             <div className="h-10 w-10 rounded-lg bg-slate-100 dark:bg-white/5" />
-    //             <div className="text-sm font-medium text-slate-900 dark:text-slate-100">{p.name}</div>
-    //           </div>
-    //           <div className="text-sm text-slate-600 dark:text-slate-300">0 sales</div>
-    //         </div>
-    //       ))}
-    //     </div>
-    //   </div>
-    // </div>
-    <Analytics />
-
-  );
+  return <Analytics />;
 }
 
 function CustomersPage() {
@@ -796,23 +638,13 @@ function CustomersPage() {
           <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
             Go to checkout settings
           </Button>
-          <button type="button" className="rounded-full p-2 text-slate-500 hover:bg-white/60 dark:text-slate-300 dark:hover:bg-white/5">
+          <button
+            type="button"
+            className="rounded-full p-2 text-slate-500 hover:bg-white/60 dark:text-slate-300 dark:hover:bg-white/5"
+          >
             <X className="h-4 w-4" />
           </button>
         </div>
-      </div>
-
-      <div className="space-y-2">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Marketing consent</div>
-        <Select defaultValue="granted">
-          <SelectTrigger className="h-11 w-[220px] rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
-            <SelectValue placeholder="Granted" />
-          </SelectTrigger>
-          <SelectContent className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]">
-            <SelectItem value="granted">Granted</SelectItem>
-            <SelectItem value="not-granted">Not granted</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-400">
@@ -885,71 +717,51 @@ function DiscountsPage() {
             </div>
           </div>
         </div>
-
-        <div className="mt-5">
-          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-            * Discount
-          </div>
-          <Input
-            className="mt-2 h-11 max-w-[260px] rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
-            defaultValue="1"
-          />
-        </div>
-
-        <div className="mt-6">
-          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">* Apply to</div>
-          <div className="mt-3 space-y-3 text-sm text-slate-700 dark:text-slate-200">
-            <label className="flex items-center gap-3">
-              <input type="radio" name="applyto" defaultChecked />
-              All products
-            </label>
-            <label className="flex items-center gap-3">
-              <input type="radio" name="applyto" />
-              Specific categories
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-        <div className="text-xl font-semibold text-slate-900 dark:text-slate-100">Discount conditions</div>
-        <label className="mt-4 flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-          <Checkbox />
-          Limit the total number of uses for this discount
-        </label>
-      </div>
-
-      {/* Sticky footer like screenshot */}
-      <div className="fixed bottom-0 left-0 right-0 z-50">
-        <div className="mx-auto w-full max-w-[calc(100vw-40px)] rounded-b-2xl border-x border-b border-slate-200 bg-white px-6 py-4 dark:border-slate-800 dark:bg-[#0b1220]">
-          <div className="flex justify-end gap-3">
-            <Button variant="outline" className="h-11 rounded-sm border-slate-200 dark:border-slate-800">
-              Cancel
-            </Button>
-            <Button className="h-11 rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
-              Save
-            </Button>
-          </div>
-        </div>
       </div>
     </div>
   );
 }
 
-
-function CategoriesPage() {
+/* ✅ NEW: clickable row component like your snippet */
+function JumpRow({
+  icon,
+  label,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+}) {
   return (
-
-    <ProductCategoryPage />
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "w-full rounded-sm px-2 text-left",
+        "hover:bg-slate-50 dark:hover:bg-white/5"
+      )}
+    >
+      <div className="flex items-center gap-3 py-3">
+        <div className="grid w-7 place-items-center text-slate-700 dark:text-slate-200">
+          {icon}
+        </div>
+        <div className="flex-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+          {label}
+        </div>
+        <ChevronRight className="h-4 w-4 text-slate-400" />
+      </div>
+    </button>
   );
 }
 
-function StoreSetupPage() {
+function StoreSetupPage({ onNavigate }: { onNavigate: (id: string) => void }) {
   return (
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Set up your store</div>
+          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">
+            Set up your store
+          </div>
           <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
             Complete these steps to finish setting up your store.
           </div>
@@ -986,7 +798,9 @@ function StoreSetupPage() {
         </div>
 
         <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4 dark:border-slate-800">
-          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Update company information</div>
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            Update company information
+          </div>
           <ChevronDown className="h-5 w-5 text-slate-400 dark:text-slate-500" />
         </div>
 
@@ -998,20 +812,25 @@ function StoreSetupPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Need some guidance?</div>
-        <button type="button" className="text-sm font-semibold text-violet-700 dark:text-violet-200">
-          View all articles <ChevronRight className="ml-1 inline h-4 w-4" />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-          Change order of products in your online store <ChevronRight className="float-right h-5 w-5 text-slate-400" />
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-          Set up your shippings <ChevronRight className="float-right h-5 w-5 text-slate-400" />
-        </div>
+      {/* ✅ THIS SECTION: click Product pages -> jump to Products list */}
+      <div className="rounded-2xl border border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-[#0b1220]">
+        <JumpRow
+          icon={<LayoutGrid className="h-4 w-4" />}
+          label="Product pages"
+          onClick={() => onNavigate("products")} // ✅ jump
+        />
+        <Separator className="bg-slate-200 dark:bg-slate-800" />
+        <JumpRow
+          icon={<Tag className="h-4 w-4" />}
+          label="Categories"
+          onClick={() => onNavigate("categories")}
+        />
+        <Separator className="bg-slate-200 dark:bg-slate-800" />
+        <JumpRow
+          icon={<BarChart3 className="h-4 w-4" />}
+          label="Analytics"
+          onClick={() => onNavigate("analytics")}
+        />
       </div>
     </div>
   );
@@ -1029,16 +848,21 @@ function SimplePage({ title }: { title: string }) {
   );
 }
 
-
-function RightContent({ active }: { active: string }) {
+function RightContent({
+  active,
+  onNavigate,
+}: {
+  active: string;
+  onNavigate: (id: string) => void;
+}) {
   if (active === "products") return <ProductsPage />;
-  if (active === "integrations") return <IntegrationsPage />;
+  if (active === "integrations") return <SimplePage title="Integrations" />;
   if (active === "analytics") return <AnalyticsPage />;
   if (active === "customers") return <CustomersPage />;
   if (active === "discounts") return <DiscountsPage />;
   if (active === "appointments") return <AppointmentsPage />;
   if (active === "categories") return <CategoriesPage />;
-  if (active === "store-setup") return <StoreSetupPage />;
+  if (active === "store-setup") return <StoreSetupPage onNavigate={onNavigate} />; // ✅ pass down
 
   if (active === "product-reviews") return <ProductReviews />;
   if (active === "overview") return <OverviewPage />;
@@ -1050,17 +874,12 @@ function RightContent({ active }: { active: string }) {
   if (active === "payments") return <Payments />;
   if (active === "shipping") return <Shipping />;
   if (active === "checkout") return <Checkout />;
-
   if (active === "emails") return <Emails />;
   if (active === "taxes") return <Taxes />;
   if (active === "invoices") return <Invoices />;
 
-
-
   return <ProductsPage />;
 }
-
-
 
 /* -------------------- Main Component -------------------- */
 
@@ -1068,31 +887,27 @@ export default function StorePage() {
   const [open, setOpen] = React.useState(false);
   const [activeNav, setActiveNav] = React.useState<string>("products");
 
+  // ✅ one navigation function for everything (sidebar + inner page jumps)
+  const onNavigate = React.useCallback((id: string) => {
+    setActiveNav(id);
+  }, []);
+
   return (
-    <div >
+    <div>
       <Dialog open={open} onOpenChange={setOpen}>
-        {/* Replace this trigger with your menu item / icon click */}
         <DialogTrigger asChild>
-          {/* <button
-            type="button"
-            className="inline-flex items-center gap-2 rounded-sm border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200 dark:hover:bg-white/5"
-          >
-            Open Store manager <ChevronRight className="h-4 w-4" />
-          </button> */}
-          <span className="flex justify-end me-auto "
+          <span
+            className="me-auto flex justify-end"
             onClick={() => setOpen(true)}
           >
             <ChevronRight className="h-5 w-5 text-slate-400 dark:text-slate-500" />
           </span>
         </DialogTrigger>
 
-        {/* ✅ FULL WIDTH / FULL HEIGHT MODAL */}
         <DialogContent
           className={cn(
-            "p-0 overflow-hidden",
-            "max-w-[1200px] min-w-[1200px] h-[calc(100vh-40px)]",
-            "sm:w-[calc(100vw-64px)] sm:h-[calc(100vh-64px)]",
-            "rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
+            "h-[calc(100vh-40px)] max-w-[1200px] min-w-[1200px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-[#0b1220]",
+            "sm:h-[calc(100vh-64px)] sm:w-[calc(100vw-64px)]"
           )}
         >
           {/* Header */}
@@ -1103,23 +918,10 @@ export default function StorePage() {
               </DialogTitle>
 
               <DialogClose asChild>
-                <Button variant="outline" className="rounded-full w-8 h-8 cursor-pointer">
+                <Button variant="outline" className="h-8 w-8 cursor-pointer rounded-full">
                   <IoClose />
                 </Button>
               </DialogClose>
-
-              {/* <DialogClose asChild>
-                <button
-                  type="button"
-                  className={cn(
-                    "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                    "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
-                  )}
-                  aria-label="Close"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </DialogClose> */}
             </div>
           </DialogHeader>
 
@@ -1127,12 +929,12 @@ export default function StorePage() {
             <div className="flex h-full">
               {/* Left */}
               <aside className="w-[300px] shrink-0 border-r border-slate-200 bg-white px-0 py-2 dark:border-slate-800 dark:bg-[#0b1220]">
-                <SidebarNav active={activeNav} setActive={setActiveNav} />
+                <SidebarNav active={activeNav} setActive={onNavigate} />
               </aside>
 
               {/* Right */}
-              <main className="flex-1 overflow-y-auto bg-[#f6f7fb] px-8 py-8 dark:bg-[#0a1020] max-h-[90vh]">
-                <RightContent active={activeNav} />
+              <main className="max-h-[90vh] flex-1 overflow-y-auto bg-[#f6f7fb] px-8 py-8 dark:bg-[#0a1020]">
+                <RightContent active={activeNav} onNavigate={onNavigate} />
               </main>
             </div>
           </div>

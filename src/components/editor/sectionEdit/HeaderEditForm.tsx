@@ -284,7 +284,7 @@ export default function HeaderEditForm() {
                     <TabsList className="inline-flex h-12 w-max items-end gap-6 rounded-none bg-transparent p-0">
                       <TabsTrigger
                         value="layout"
-                        className="h-12 rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
+                        className="h-12 border-none bg-transparent   rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-b data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
                       >
                         Layout
                       </TabsTrigger>
