@@ -45,6 +45,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { useEditorContext } from "../EditorContext";
+import { Editor } from "grapesjs";
 
 /* -----------------------
    Theme utility classes
@@ -59,11 +61,11 @@ const UI = {
   microLabel: "text-[10px] text-slate-500 dark:text-slate-400",
 
   input:
-    "text-xs h-8 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
+    "text-[1.75rem] font-['Outfit,_sans-serif'] font-extrabold tracking-[-0.03em] h-8 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
     "focus-visible:ring-2 focus-visible:ring-violet-500/50 " +
     "dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500",
   inputTall:
-    "text-xs h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
+    "text-[1.75rem] font-['Outfit,_sans-serif'] font-extrabold tracking-[-0.03em] h-11 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 " +
     "focus-visible:ring-2 focus-visible:ring-violet-500/50 " +
     "dark:bg-slate-900 dark:border-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500",
 
@@ -95,24 +97,30 @@ const UI = {
 interface StyleEditorProps {
   styles: StyleState;
   onStyleChange: (property: string, value: string) => void;
+  selectedElement?: any;
 }
 interface SectionProps extends StyleEditorProps { }
 
+interface TypographySectionProps {
+  styles: StyleState;
+  onStyleChange: (property: string, value: string) => void;
+  elementStyles: any;
+}
 /* --------------------------
    Sections
 --------------------------- */
-function TypographySection({ styles, onStyleChange }: SectionProps) {
+function TypographySection({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   return (
     <div className="space-y-4">
-      <FontFamilyControl styles={styles} onStyleChange={onStyleChange} />
-      <FontSizeControl styles={styles} onStyleChange={onStyleChange} />
-      <FontWeightControl styles={styles} onStyleChange={onStyleChange} />
-      <LineHeightControl styles={styles} onStyleChange={onStyleChange} />
-      <LetterSpacingControl styles={styles} onStyleChange={onStyleChange} />
-      <TextColorControl styles={styles} onStyleChange={onStyleChange} />
-      <TextAlignmentControl styles={styles} onStyleChange={onStyleChange} />
-      <TextStyleControl styles={styles} onStyleChange={onStyleChange} />
-      <TextShadowControl styles={styles} onStyleChange={onStyleChange} />
+      <FontFamilyControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <FontSizeControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <FontWeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <LineHeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <LetterSpacingControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <TextColorControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <TextAlignmentControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <TextStyleControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <TextShadowControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
     </div>
   );
 }
@@ -141,14 +149,16 @@ function ColorsSection({ styles, onStyleChange }: SectionProps) {
 
 
 // Typography Controls
-function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
+function FontFamilyControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   const [fontFamilyValue, setFontFamilyValue] = useState<string>(
-    styles.typography.fontFamily || "Arial, sans-serif"
+    elementStyles["font-family"]
   );
 
+  console.log("elementStyles", elementStyles);
+  console.log("fontFamilyValue", elementStyles["font-family"]);
   useEffect(() => {
-    setFontFamilyValue(styles.typography.fontFamily || "Arial, sans-serif");
-  }, [styles.typography.fontFamily]);
+    setFontFamilyValue(elementStyles["font-family"]);
+  }, [elementStyles]);
 
   const handleFontFamily = (data: string) => {
     setFontFamilyValue(data);
@@ -186,8 +196,9 @@ function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
             ["Lato, sans-serif", "Lato"],
             ["Montserrat, sans-serif", "Montserrat"],
             ["Poppins, sans-serif", "Poppins"],
+            ["Outfit, sans-serif", "Outfit"],
           ].map(([value, label]) => (
-            <SelectItem key={value} value={value} className={UI.selectItem}>
+            <SelectItem key={value} value={value || "Outfit, sans-serif"} className={UI.selectItem}>
               {label}
             </SelectItem>
           ))}
@@ -197,14 +208,16 @@ function FontFamilyControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function FontSizeControl({ styles, onStyleChange }: SectionProps) {
+function FontSizeControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
+  const getRawValue = () => styles.typography.fontSize || elementStyles["font-size"] || "";
+
   const getFontSizeValue = () =>
-    styles.typography.fontSize.replace("px", "").replace("rem", "").replace("em", "");
+    getRawValue().replace("px", "").replace("rem", "").replace("em", "");
 
   const getFontSizeUnit = () =>
-    styles.typography.fontSize.includes("rem")
+    getRawValue().includes("rem")
       ? "rem"
-      : styles.typography.fontSize.includes("em")
+      : getRawValue().includes("em")
         ? "em"
         : "px";
 
@@ -229,7 +242,7 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
     <div className="space-y-1.5">
       <div className="flex items-center justify-between">
         <Label className={UI.label}>Font Size</Label>
-        <div className={"text-xs " + UI.subtleText}>{styles.typography.fontSize}</div>
+        <div className={"text-xs " + UI.subtleText}>{getRawValue()}</div>
       </div>
 
       <div className="flex items-center gap-2">
@@ -261,7 +274,7 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
 
       <div className="pt-1">
         <Slider
-          value={[Number.parseFloat(getFontSizeValue())]}
+          value={[Number.parseFloat(getFontSizeValue() || "0")]}
           min={0}
           max={getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 10 : 100}
           step={getFontSizeUnit() === "rem" || getFontSizeUnit() === "em" ? 0.1 : 1}
@@ -272,13 +285,22 @@ function FontSizeControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function FontWeightControl({ styles, onStyleChange }: SectionProps) {
+function FontWeightControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
+
+
+  const [elementfrontWeight, setElementFrontWeight] = useState<string>(elementStyles["font-weight"])
+  useEffect(() => {
+    setElementFrontWeight(elementStyles["font-weight"])
+  }, [elementStyles])
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Font Weight</Label>
       <Select
-        value={styles.typography.fontWeight || "400"}
-        onValueChange={(value) => onStyleChange("font-weight", value)}
+        value={elementfrontWeight}
+        onValueChange={(value) => {
+          setElementFrontWeight(value)
+          onStyleChange("font-weight", value)
+        }}
       >
         <SelectTrigger className={UI.selectTrigger}>
           <SelectValue placeholder="Select weight" />
@@ -305,7 +327,7 @@ function FontWeightControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function LineHeightControl({ styles, onStyleChange }: SectionProps) {
+function LineHeightControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Line Height</Label>
@@ -330,7 +352,7 @@ function LineHeightControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function LetterSpacingControl({ styles, onStyleChange }: SectionProps) {
+function LetterSpacingControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   const getLetterSpacingValue = () =>
     (styles.typography.letterSpacing || "0").replace("px", "").replace("em", "");
 
@@ -376,7 +398,7 @@ function LetterSpacingControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function TextColorControl({ styles, onStyleChange }: SectionProps) {
+function TextColorControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Text Color</Label>
@@ -395,7 +417,7 @@ function TextColorControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
+function TextAlignmentControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   const active = styles.typography.textAlign;
 
   const btnClass = (isActive: boolean) =>
@@ -471,7 +493,7 @@ function TextAlignmentControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function TextStyleControl({ styles, onStyleChange }: SectionProps) {
+function TextStyleControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   const isBold =
     styles.typography.fontWeight === "bold" ||
     Number.parseInt(styles.typography.fontWeight || "0") >= 700;
@@ -556,7 +578,7 @@ function TextStyleControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function TextShadowControl({ styles, onStyleChange }: SectionProps) {
+function TextShadowControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
   const updateTextShadow = (
     x: string = styles.typography.textShadowX || "0px",
     y: string = styles.typography.textShadowY || "0px",
@@ -937,11 +959,11 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
         value={styles?.layout?.display || "block"}
         onValueChange={(value) => onStyleChange("display", value)}
       >
-        <SelectTrigger className={UI.selectTrigger} 
-          style={{width:"100%"}}>
+        <SelectTrigger className={UI.selectTrigger}
+          style={{ width: "100%" }}>
           <SelectValue placeholder="Select style" />
         </SelectTrigger>
-        <SelectContent className={UI.selectContent}   style={{width:"100%"}}>
+        <SelectContent className={UI.selectContent} style={{ width: "100%" }}>
           <SelectItem value="block" className={UI.selectItem}>
             Block
           </SelectItem>
@@ -957,119 +979,88 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
 /* --------------------------
    Main StyleEditor component
 --------------------------- */
-export function StyleEditor({ styles, onStyleChange }: StyleEditorProps) {
+export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEditorProps) {
+  const { state } = useEditorContext();
+  const editor = state.editor as Editor | null;
+
+  const classes = selectedElement.getClasses() || [];
+  const [elementStyles, setElementStyles] = useState({});
+
+  useEffect(() => {
+    if (editor && selectedElement) {
+      const currentClasses = selectedElement.getClasses() || [];
+      currentClasses.forEach((className: string) => {
+        const rule = editor.Css.getRule(`.${className}`);
+
+        if (rule) {
+          // console.log(`Styles for class ".${className}":`, rule.getStyle());
+          setElementStyles(rule.getStyle());
+        } else {
+          console.log(`No rule found for class ".${className}"`);
+        }
+      });
+    }
+  }, [editor, selectedElement]);
+
+  console.log("elementStyles", elementStyles);
+
+  const showTypography = [
+    "color",
+    "font-family",
+    "font-size",
+    "font-weight",
+    "letter-spacing",
+  ].some((key) => Object.prototype.hasOwnProperty.call(elementStyles, key));
 
 
   return (
 
     <div>
-{/* 
-    <Tabs defaultValue="overview" className="w-[400px]">
-      <TabsList>
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        <TabsTrigger value="reports">Reports</TabsTrigger>
-        <TabsTrigger value="settings">Settings</TabsTrigger>
-      </TabsList>
-      <TabsContent value="overview">
-        <Card>
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-            <CardDescription>
-              View your key metrics and recent project activity. Track progress
-              across all your active projects.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
-            You have 12 active projects and 3 pending tasks.
-          </CardContent>
-        </Card>
-      </TabsContent>
-      <TabsContent value="analytics">
-        <Card>
-          <CardHeader>
-            <CardTitle>Analytics</CardTitle>
-            <CardDescription>
-              Track performance and user engagement metrics. Monitor trends and
-              identify growth opportunities.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
-            Page views are up 25% compared to last month.
-          </CardContent>
-        </Card>
-      </TabsContent>
-      <TabsContent value="reports">
-        <Card>
-          <CardHeader>
-            <CardTitle>Reports</CardTitle>
-            <CardDescription>
-              Generate and download your detailed reports. Export data in
-              multiple formats for analysis.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
-            You have 5 reports ready and available to export.
-          </CardContent>
-        </Card>
-      </TabsContent>
-      <TabsContent value="settings">
-        <Card>
-          <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>
-              Manage your account preferences and options. Customize your
-              experience to fit your needs.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-muted-foreground text-sm">
-            Configure notifications, security, and themes.
-          </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs> */}
+
+      <Accordion type="single" collapsible defaultValue="typography" className="w-full">
+        {showTypography && (
+          <AccordionItem value="typography" className={UI.accordionItem}>
+            <AccordionTrigger className={UI.sectionTitle}>Typography</AccordionTrigger>
+            <AccordionContent>
+              <TypographySection
+                elementStyles={elementStyles}
+                styles={styles} onStyleChange={onStyleChange} />
+            </AccordionContent>
+          </AccordionItem>
+        )}
+
+        <AccordionItem value="spacing" className={UI.accordionItem}>
+          <AccordionTrigger className={UI.sectionTitle}>Spacing</AccordionTrigger>
+          <AccordionContent>
+            <SpacingSection styles={styles} onStyleChange={onStyleChange} />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="colors" className={UI.accordionItem}>
+          <AccordionTrigger className={UI.sectionTitle}>Colors</AccordionTrigger>
+          <AccordionContent>
+            <ColorsSection styles={styles} onStyleChange={onStyleChange} />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="display" className={UI.accordionItem}>
+          <AccordionTrigger className={UI.sectionTitle}>Display</AccordionTrigger>
+          <AccordionContent>
+            <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
+          </AccordionContent>
+        </AccordionItem>
 
 
-    <Accordion type="single" collapsible defaultValue="typography" className="w-full">
-      <AccordionItem value="typography" className={UI.accordionItem}>
-        <AccordionTrigger className={UI.sectionTitle}>Typography</AccordionTrigger>
-        <AccordionContent>
-          <TypographySection styles={styles} onStyleChange={onStyleChange} />
-        </AccordionContent>
-      </AccordionItem>
+        <AccordionItem value="global" className="border-slate-700">
+          <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
+            Global Styles
+          </AccordionTrigger>
+          <AccordionContent>
+            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
 
-      <AccordionItem value="spacing" className={UI.accordionItem}>
-        <AccordionTrigger className={UI.sectionTitle}>Spacing</AccordionTrigger>
-        <AccordionContent>
-          <SpacingSection styles={styles} onStyleChange={onStyleChange} />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="colors" className={UI.accordionItem}>
-        <AccordionTrigger className={UI.sectionTitle}>Colors</AccordionTrigger>
-        <AccordionContent>
-          <ColorsSection styles={styles} onStyleChange={onStyleChange} />
-        </AccordionContent>
-      </AccordionItem>
-
-      <AccordionItem value="display" className={UI.accordionItem}>
-        <AccordionTrigger className={UI.sectionTitle}>Display</AccordionTrigger>
-        <AccordionContent>
-          <DisplayStyleControl styles={styles} onStyleChange={onStyleChange} />
-        </AccordionContent>
-      </AccordionItem>
-
-
-      <AccordionItem value="global" className="border-slate-700">
-        <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
-          Global Styles
-        </AccordionTrigger>
-        <AccordionContent>
-          <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} />
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-    
     </div>
   );
 }
