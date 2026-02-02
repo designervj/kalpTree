@@ -55,8 +55,10 @@ interface GrapesJSEditor {
   };
   Canvas: {
     getDocument: () => Document | null;
+    getFrameEl?: () => HTMLIFrameElement | null;
   };
   on: (event: string, callback: Function) => void;
+  off: (event?: string, callback?: Function) => void;
   destroy: () => void;
 }
 
@@ -68,6 +70,8 @@ interface ExtendedEditorState extends EditorState {
 
 export function useEditor(containerId: string) {
   const editorRef = useRef<GrapesJSEditor | null>(null);
+
+
   const [state, setState] = useState<ExtendedEditorState>({
     editor: null,
     selectedElement: null,
@@ -108,33 +112,105 @@ export function useEditor(containerId: string) {
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
   useEffect(() => {
+    let isMounted = true;
+
+    // Helper to safely destroy editor
+    const destroyEditor = () => {
+      if (editorRef.current) {
+        try {
+          editorRef.current.off?.(); // Remove all event listeners
+          editorRef.current.destroy();
+        } catch (e) {
+          console.warn("Editor destroy error", e);
+        }
+        editorRef.current = null;
+      }
+    };
+
+    // Destroy existing editor before initializing new one
+    destroyEditor();
+
+    // Wait for iframe to be fully ready
+    const waitForIframe = (editor: any): Promise<void> => {
+      return new Promise((resolve) => {
+        const check = () => {
+          const frame = editor.Canvas?.getFrameEl?.();
+          if (frame?.contentDocument) {
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        };
+        check();
+      });
+    };
+
+    // Inject styles into canvas iframe
+    const injectCanvasStyles = (editor: any, pageContent?: string) => {
+      const frame = editor.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+
+      if (!doc?.head) {
+        console.warn('Canvas iframe document not available');
+        return;
+      }
+
+      // Remove existing custom styles
+      doc.querySelector('[data-root-vars="true"]')?.remove();
+      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+
+      if (pageContent) {
+        // Inject CSS variables
+        const style = doc.createElement("style");
+        style.setAttribute("data-root-vars", "true");
+        style.innerHTML = createCanvasStyleString(pageContent);
+        doc.head.appendChild(style);
+
+        // Inject font links
+        extractFontLinks(pageContent).forEach((url) => {
+          const link = doc.createElement("link");
+          link.rel = "stylesheet";
+          link.href = url;
+          link.setAttribute("data-font", "true");
+          doc.head.appendChild(link);
+        });
+
+        console.log('✅ Canvas styles and fonts injected');
+      }
+    };
+
     const initEditor = async () => {
       try {
-        // Dynamically import GrapesJS
+        await new Promise((r) => requestAnimationFrame(r));
+        if (!isMounted) return;
+
+        // Dynamically import GrapesJS modules
         const grapesjs = await import("grapesjs");
+        if (!isMounted) return;
+
         const gjsPresetWebpage = await import("grapesjs-preset-webpage");
+        if (!isMounted) return;
+
         const gjsBlocksBasic = await import("grapesjs-blocks-basic");
+        if (!isMounted) return;
+
         const gjsScriptEditor = await import("grapesjs-script-editor");
+        if (!isMounted) return;
 
-        // Wait for the container element to be available
+        // Wait for container element
         let containerEl = document.getElementById(containerId);
-
-        // If container doesn't exist yet, wait a bit and try again
         if (!containerEl) {
-          console.log(
-            `Container element with id "${containerId}" not found, waiting...`
-          );
+          console.log(`Container "${containerId}" not found, waiting...`);
           await new Promise((resolve) => setTimeout(resolve, 500));
           containerEl = document.getElementById(containerId);
         }
 
-        if (!containerEl) {
-          console.error(
-            `Container element with id "${containerId}" not found after waiting`
-          );
+        if (!containerEl || !isMounted) {
           setState((prev) => ({ ...prev, isLoading: false }));
           return;
         }
+
+        // Initialize editor with config
         const config = {
           ...createEditorConfig(containerEl, {}),
           plugins: [
@@ -153,105 +229,75 @@ export function useEditor(containerId: string) {
               filestackOpts: false,
             },
             [String(gjsBlocksBasic.default)]: {
-              blocks: [], // Empty array to not include any blocks from the plugin
+              blocks: [],
             },
-            [String(gjsScriptEditor.default)]: {
-              // Script editor options if needed
-            },
+            [String(gjsScriptEditor.default)]: {},
+          },
+          layerManager: {
+            custom: true,
           },
         } as any;
 
+        if (!isMounted) return;
         const editor = grapesjs.default.init(config);
+        if (!editor || !isMounted) return;
+
         editorRef.current = editor as any;
 
-        // Function to inject CSS variables dynamically from page content
-        const injectCanvasStyles = (pageContent?: string) => {
-          const canvas = editor.Canvas;
-          const canvasDoc = canvas.getDocument();
-          const canvasHead = canvasDoc?.head;
-
-          if (!canvasHead) return;
-
-          // Remove existing custom styles if any
-          const existingStyle = canvasDoc.querySelector('[data-custom-root-vars="true"]');
-          if (existingStyle) {
-            existingStyle.remove();
-          }
-
-          // Remove existing font links
-          const existingFonts = canvasDoc.querySelectorAll('link[data-custom-fonts="true"]');
-          existingFonts.forEach(link => link.remove());
-
-          // Extract and inject styles from page content
-          const styleContent = pageContent ? createCanvasStyleString(pageContent) : '';
-
-          if (styleContent) {
-            const styleEl = canvasDoc.createElement('style');
-            styleEl.setAttribute('data-custom-root-vars', 'true');
-            styleEl.innerHTML = styleContent;
-            canvasHead.appendChild(styleEl);
-            console.log('✅ CSS variables dynamically injected from page content');
-          }
-
-          // Extract and inject font links
-          if (pageContent) {
-            const fontUrls = extractFontLinks(pageContent);
-            fontUrls.forEach(fontUrl => {
-              const fontLink = canvasDoc.createElement('link');
-              fontLink.rel = 'stylesheet';
-              fontLink.href = fontUrl;
-              fontLink.setAttribute('data-custom-fonts', 'true');
-              canvasHead.appendChild(fontLink);
-            });
-
-            if (fontUrls.length > 0) {
-              console.log(`✅ ${fontUrls.length} font link(s) injected into canvas`);
-            }
-          }
-        };
-
-        // Inject styles on editor load
-        editor.on('load', () => {
-          // Use page content if available
-          injectCanvasStyles(page?.content);
-        });
-
-        // Add fallback methods if needed
+        // Add JS fallback methods if not present
         if (typeof (editor as any).setJs !== "function") {
-
           (editor as any).setJs = (js: string) => {
-            // Store JS in editor's storage
-            editor.StorageManager.store({
-              jsCode: js
-            });
-
-            // Find or create script component
-            let scriptComponent = editor.Components.getWrapper()?.find(
+            let script = editor.Components.getWrapper()?.find(
               'script[data-gjs-type="custom-script"]'
             )[0];
 
-            if (!scriptComponent) {
-              // Create a new script component if it doesn't exist
+            if (!script) {
               const addedComponents = editor.Components.addComponent({
                 tagName: "script",
                 attributes: { "data-gjs-type": "custom-script" },
                 content: js,
-                removable: false,
-                draggable: false,
-                droppable: false,
-                copyable: false,
-                // Hide from the structure panel
                 layerable: false,
+                draggable: false,
+                removable: false,
               });
-              scriptComponent = Array.isArray(addedComponents)
-                ? addedComponents[0]
-                : addedComponents;
+              script = Array.isArray(addedComponents) ? addedComponents[0] : addedComponents;
             } else {
-              // Update existing script
-              scriptComponent.set("content", js);
+              script.set("content", js);
             }
           };
         }
+
+        if (typeof (editor as any).getJs !== "function") {
+          (editor as any).getJs = () => {
+            const script = editor.Components.getWrapper()?.find(
+              'script[data-gjs-type="custom-script"]'
+            )[0];
+            return script?.get("content") || "";
+          };
+        }
+
+        // Wait for editor to fully load
+        editor.on("load", async () => {
+          if (!isMounted) return;
+
+          // Wait for iframe to be ready
+          await waitForIframe(editor);
+          if (!isMounted) return;
+
+          // Inject canvas styles
+          injectCanvasStyles(editor, page?.content);
+
+          // Setup event listeners
+          setupEventListeners(editor as unknown as GrapesJSEditor);
+
+          // Update state
+          setState((prev) => ({
+            ...prev,
+            editor,
+            isLoading: false,
+          }));
+        });
+
 
         const domc = editor.DomComponents;
         const bm = editor.BlockManager;
@@ -698,34 +744,7 @@ export function useEditor(containerId: string) {
           },
         });
 
-        if (typeof editor.getJs !== "function") {
-          console.log("Adding custom getJs method");
-          editor.getJs = () => {
-            // Try to get from storage first
-            const stored = editor.StorageManager.get("jsCode");
-            if (typeof stored === "string") return stored;
 
-            // Otherwise try to find script component
-            const scriptComponent = editor.Components.getWrapper()?.find(
-              'script[data-gjs-type="custom-script"]'
-            )[0];
-            const content = scriptComponent ? scriptComponent.get("content") : "";
-            return typeof content === "string" ? content : "";
-          };
-        }
-
-        // Set up event listeners
-        setupEventListeners(editor as unknown as GrapesJSEditor);
-
-        // Update state
-        setState((prev) => ({
-          ...prev,
-          editor,
-        }));
-
-        return () => {
-          editor.destroy();
-        };
       } catch (error) {
         console.error("Error initializing GrapesJS:", error);
         setState((prev) => ({ ...prev, isLoading: false }));
@@ -733,7 +752,54 @@ export function useEditor(containerId: string) {
     };
 
     initEditor();
-  }, [containerId]);
+
+    return () => {
+      isMounted = false;
+      destroyEditor();
+    };
+  }, [containerId]); // Only re-initialize when container changes
+
+  // Separate effect to inject styles when page content changes
+  useEffect(() => {
+    if (!editorRef.current || !page?.content) return;
+
+    const editor = editorRef.current;
+    const pageContent = page.content; // Capture content to avoid TypeScript issues in setTimeout
+
+    // Wait a bit to ensure Canvas is ready
+    const timer = setTimeout(() => {
+      const frame = editor.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+
+      if (!doc?.head) {
+        console.warn('Canvas iframe not ready for style injection');
+        return;
+      }
+
+      // Remove existing styles
+      doc.querySelector('[data-root-vars="true"]')?.remove();
+      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+
+      // Inject new styles
+      const style = doc.createElement("style");
+      style.setAttribute("data-root-vars", "true");
+      style.innerHTML = createCanvasStyleString(pageContent);
+      doc.head.appendChild(style);
+
+      // Inject fonts
+      extractFontLinks(pageContent).forEach((url) => {
+        const link = doc.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        link.setAttribute("data-font", "true");
+        doc.head.appendChild(link);
+      });
+
+      console.log('✅ Canvas styles updated');
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [page?.content]);
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
@@ -1531,6 +1597,13 @@ export function useEditor(containerId: string) {
           // Handle global CSS variables
           if (editorRef.current) {
             const canvas = editorRef.current.Canvas;
+
+            // Check if Canvas module and getDocument method exist
+            if (!canvas || typeof canvas.getDocument !== 'function') {
+              console.warn('Canvas module or getDocument method not available');
+              return;
+            }
+
             const canvasDoc = canvas.getDocument();
             const canvasHead = canvasDoc?.head;
 
