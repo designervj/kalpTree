@@ -114,11 +114,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
   // ✅ Hooks must be called BEFORE any early returns
   const {
-    state,
-    actions,
-    isAiChatOpen,
-    setIsAiChatOpen,
-    selectedComponentForAi,
     editForm
   } = useEditorContext();
 
@@ -193,7 +188,9 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             </TabsList>
 
             <TabsContent value="overview">
-              <StyleEditor styles={styles} onStyleChange={onStyleChange} />
+              <StyleEditor
+                selectedElement={selectedElement}
+               styles={styles} onStyleChange={onStyleChange} />
             </TabsContent>
 
             <TabsContent value="analytics">
