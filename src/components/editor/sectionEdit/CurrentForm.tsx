@@ -161,9 +161,7 @@ const CurrentForm = ({ componentHtml }: Props) => {
                 const labelEl = group.querySelector("label");
                 const inputEl = group.querySelector("input");
                 const inputTextEl = group.querySelector("textarea");
-                console.log("labelEl--->", labelEl)
-                console.log("inputElgroup--->", inputEl)
-                console.log("inputTextElgroup--->", inputTextEl)
+             
                 if (labelEl && (inputEl || inputTextEl)) {
                     const fieldEl = inputEl || inputTextEl;
                     const inputName = fieldEl?.getAttribute("name") || "";
@@ -308,6 +306,39 @@ const CurrentForm = ({ componentHtml }: Props) => {
                                         }
                                         className="h-8 bg-white"
                                     />
+                                </div>
+
+                                {/*  input filed type */}
+                                <div className="grid gap-2">
+                                    <label className="text-xs font-medium text-slate-500">Type</label>
+                                    <Select
+                                        value={f.type}
+                                        onValueChange={(value) =>
+                                            setSettings((s) => ({
+                                                ...s,
+                                                fields: s?.fields?.map((x) =>
+                                                    x.id === f.id ? { ...x, type: value } : x
+                                                ),
+                                            }))
+                                        }
+                                    >
+                                        <SelectTrigger className="h-8 bg-white">
+                                            <SelectValue placeholder={f.type} />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="text">Text</SelectItem>
+                                            <SelectItem value="email">Email</SelectItem>
+                                            <SelectItem value="number">Number</SelectItem>
+                                            <SelectItem value="date">Date</SelectItem>
+                                            <SelectItem value="time">Time</SelectItem>
+                                            <SelectItem value="datetime">Datetime</SelectItem>
+                                            <SelectItem value="select">Select</SelectItem>
+                                            <SelectItem value="checkbox">Checkbox</SelectItem>
+                                            <SelectItem value="radio">Radio</SelectItem>
+                                            <SelectItem value="file">File</SelectItem>
+                                            <SelectItem value="password">Password</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">

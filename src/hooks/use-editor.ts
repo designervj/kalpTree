@@ -17,7 +17,7 @@ import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-v
 interface GrapesJSEditor {
   getHtml: () => string;
   getCss: () => string | undefined;
-  getJs?: () => string; 
+  getJs?: () => string;
   setJs?: (js: string) => void;
   setComponents: (components: string | object) => any;
   addComponents: (components: string | object) => any;
@@ -55,8 +55,10 @@ interface GrapesJSEditor {
   };
   Canvas: {
     getDocument: () => Document | null;
+    getFrameEl?: () => HTMLIFrameElement | null;
   };
   on: (event: string, callback: Function) => void;
+  off: (event?: string, callback?: Function) => void;
   destroy: () => void;
 }
 
@@ -68,6 +70,8 @@ interface ExtendedEditorState extends EditorState {
 
 export function useEditor(containerId: string) {
   const editorRef = useRef<GrapesJSEditor | null>(null);
+
+
   const [state, setState] = useState<ExtendedEditorState>({
     editor: null,
     selectedElement: null,
@@ -108,33 +112,105 @@ export function useEditor(containerId: string) {
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
   useEffect(() => {
+    let isMounted = true;
+
+    // Helper to safely destroy editor
+    const destroyEditor = () => {
+      if (editorRef.current) {
+        try {
+          editorRef.current.off?.(); // Remove all event listeners
+          editorRef.current.destroy();
+        } catch (e) {
+          console.warn("Editor destroy error", e);
+        }
+        editorRef.current = null;
+      }
+    };
+
+    // Destroy existing editor before initializing new one
+    destroyEditor();
+
+    // Wait for iframe to be fully ready
+    const waitForIframe = (editor: any): Promise<void> => {
+      return new Promise((resolve) => {
+        const check = () => {
+          const frame = editor.Canvas?.getFrameEl?.();
+          if (frame?.contentDocument) {
+            resolve();
+          } else {
+            requestAnimationFrame(check);
+          }
+        };
+        check();
+      });
+    };
+
+    // Inject styles into canvas iframe
+    const injectCanvasStyles = (editor: any, pageContent?: string) => {
+      const frame = editor.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+
+      if (!doc?.head) {
+        console.warn('Canvas iframe document not available');
+        return;
+      }
+
+      // Remove existing custom styles
+      doc.querySelector('[data-root-vars="true"]')?.remove();
+      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+
+      if (pageContent) {
+        // Inject CSS variables
+        const style = doc.createElement("style");
+        style.setAttribute("data-root-vars", "true");
+        style.innerHTML = createCanvasStyleString(pageContent);
+        doc.head.appendChild(style);
+
+        // Inject font links
+        extractFontLinks(pageContent).forEach((url) => {
+          const link = doc.createElement("link");
+          link.rel = "stylesheet";
+          link.href = url;
+          link.setAttribute("data-font", "true");
+          doc.head.appendChild(link);
+        });
+
+        console.log('✅ Canvas styles and fonts injected');
+      }
+    };
+
     const initEditor = async () => {
       try {
-        // Dynamically import GrapesJS
+        await new Promise((r) => requestAnimationFrame(r));
+        if (!isMounted) return;
+
+        // Dynamically import GrapesJS modules
         const grapesjs = await import("grapesjs");
+        if (!isMounted) return;
+
         const gjsPresetWebpage = await import("grapesjs-preset-webpage");
+        if (!isMounted) return;
+
         const gjsBlocksBasic = await import("grapesjs-blocks-basic");
+        if (!isMounted) return;
+
         const gjsScriptEditor = await import("grapesjs-script-editor");
+        if (!isMounted) return;
 
-        // Wait for the container element to be available
+        // Wait for container element
         let containerEl = document.getElementById(containerId);
-
-        // If container doesn't exist yet, wait a bit and try again
         if (!containerEl) {
-          console.log(
-            `Container element with id "${containerId}" not found, waiting...`
-          );
+          console.log(`Container "${containerId}" not found, waiting...`);
           await new Promise((resolve) => setTimeout(resolve, 500));
           containerEl = document.getElementById(containerId);
         }
 
-        if (!containerEl) {
-          console.error(
-            `Container element with id "${containerId}" not found after waiting`
-          );
+        if (!containerEl || !isMounted) {
           setState((prev) => ({ ...prev, isLoading: false }));
           return;
         }
+
+        // Initialize editor with config
         const config = {
           ...createEditorConfig(containerEl, {}),
           plugins: [
@@ -153,113 +229,212 @@ export function useEditor(containerId: string) {
               filestackOpts: false,
             },
             [String(gjsBlocksBasic.default)]: {
-              blocks: [], // Empty array to not include any blocks from the plugin
+              blocks: [],
             },
-            [String(gjsScriptEditor.default)]: {
-              // Script editor options if needed
-            },
+            [String(gjsScriptEditor.default)]: {},
+          },
+          layerManager: {
+            custom: true,
           },
         } as any;
 
+        if (!isMounted) return;
         const editor = grapesjs.default.init(config);
+        if (!editor || !isMounted) return;
+
         editorRef.current = editor as any;
 
-        // Function to inject CSS variables dynamically from page content
-        const injectCanvasStyles = (pageContent?: string) => {
-          const canvas = editor.Canvas;
-          const canvasDoc = canvas.getDocument();
-          const canvasHead = canvasDoc?.head;
-
-          if (!canvasHead) return;
-
-          // Remove existing custom styles if any
-          const existingStyle = canvasDoc.querySelector('[data-custom-root-vars="true"]');
-          if (existingStyle) {
-            existingStyle.remove();
-          }
-
-          // Remove existing font links
-          const existingFonts = canvasDoc.querySelectorAll('link[data-custom-fonts="true"]');
-          existingFonts.forEach(link => link.remove());
-
-          // Extract and inject styles from page content
-          const styleContent = pageContent ? createCanvasStyleString(pageContent) : '';
-
-          if (styleContent) {
-            const styleEl = canvasDoc.createElement('style');
-            styleEl.setAttribute('data-custom-root-vars', 'true');
-            styleEl.innerHTML = styleContent;
-            canvasHead.appendChild(styleEl);
-            console.log('✅ CSS variables dynamically injected from page content');
-          }
-
-          // Extract and inject font links
-          if (pageContent) {
-            const fontUrls = extractFontLinks(pageContent);
-            fontUrls.forEach(fontUrl => {
-              const fontLink = canvasDoc.createElement('link');
-              fontLink.rel = 'stylesheet';
-              fontLink.href = fontUrl;
-              fontLink.setAttribute('data-custom-fonts', 'true');
-              canvasHead.appendChild(fontLink);
-            });
-
-            if (fontUrls.length > 0) {
-              console.log(`✅ ${fontUrls.length} font link(s) injected into canvas`);
-            }
-          }
-        };
-
-        // Inject styles on editor load
-        editor.on('load', () => {
-          // Use page content if available
-          injectCanvasStyles(page?.content);
-        });
-
-        // Add fallback methods if needed
+        // Add JS fallback methods if not present
         if (typeof (editor as any).setJs !== "function") {
-
           (editor as any).setJs = (js: string) => {
-            // Store JS in editor's storage
-            editor.StorageManager.store({
-              jsCode: js
-            });
-
-            // Find or create script component
-            let scriptComponent = editor.Components.getWrapper()?.find(
+            let script = editor.Components.getWrapper()?.find(
               'script[data-gjs-type="custom-script"]'
             )[0];
 
-            if (!scriptComponent) {
-              // Create a new script component if it doesn't exist
+            if (!script) {
               const addedComponents = editor.Components.addComponent({
                 tagName: "script",
                 attributes: { "data-gjs-type": "custom-script" },
                 content: js,
-                removable: false,
-                draggable: false,
-                droppable: false,
-                copyable: false,
-                // Hide from the structure panel
                 layerable: false,
+                draggable: false,
+                removable: false,
               });
-              scriptComponent = Array.isArray(addedComponents)
-                ? addedComponents[0]
-                : addedComponents;
+              script = Array.isArray(addedComponents) ? addedComponents[0] : addedComponents;
             } else {
-              // Update existing script
-              scriptComponent.set("content", js);
+              script.set("content", js);
             }
           };
         }
+
+        if (typeof (editor as any).getJs !== "function") {
+          (editor as any).getJs = () => {
+            const script = editor.Components.getWrapper()?.find(
+              'script[data-gjs-type="custom-script"]'
+            )[0];
+            return script?.get("content") || "";
+          };
+        }
+
+        // Wait for editor to fully load
+        editor.on("load", async () => {
+          if (!isMounted) return;
+
+          // Wait for iframe to be ready
+          await waitForIframe(editor);
+          if (!isMounted) return;
+
+          // Inject canvas styles
+          injectCanvasStyles(editor, page?.content);
+
+          // Setup event listeners
+          setupEventListeners(editor as unknown as GrapesJSEditor);
+
+          // Update state
+          setState((prev) => ({
+            ...prev,
+            editor,
+            isLoading: false,
+          }));
+        });
+
 
         const domc = editor.DomComponents;
         const bm = editor.BlockManager;
 
         // Register Form component to ensure it's recognized even from raw HTML
+        // Register custom component types for form children to prevent selection
+        domc.addType("form-input", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'INPUT' && el.closest('form')) {
+              return { type: 'form-input' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-textarea", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'TEXTAREA' && el.closest('form')) {
+              return { type: 'form-textarea' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-select", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'SELECT' && el.closest('form')) {
+              return { type: 'form-select' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        domc.addType("form-label", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'LABEL' && el.closest('form')) {
+              return { type: 'form-label' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        // Add form-div component type to make divs inside forms non-selectable
+        domc.addType("form-div", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'DIV' && el.closest('form')) {
+              return { type: 'form-div' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
+        // Add form-button component type
+        domc.addType("form-button", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === 'BUTTON' && el.closest('form')) {
+              return { type: 'form-button' };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              selectable: false,
+              hoverable: false,
+              draggable: false,
+              droppable: false,
+              editable: false,
+              layerable: false,
+              highlightable: false,
+              badgable: false,
+            }
+          }
+        });
+
         domc.addType("form", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'form') {
+            if (el.tagName === 'FORM') {
               return { type: 'form' };
             }
             return false;
@@ -294,15 +469,67 @@ export function useEditor(containerId: string) {
                     { id: 'application/x-www-form-urlencoded', value: 'application/x-www-form-urlencoded', name: 'URL Encoded' },
                     { id: 'multipart/form-data', value: 'multipart/form-data', name: 'Multipart' },
                     { id: 'text/plain', value: 'text/plain', name: 'Text Plain' },
-                  ]
+                  ],
                 }
               ]
             },
+            init() {
+              // Recursively disable selection on all children when form is initialized
+              this.on('component:add', (component: any) => {
+                this.disableChildrenSelection(component);
+              });
+
+              // Disable selection on existing children
+              this.get('components')?.forEach((child: any) => {
+                this.disableChildrenSelection(child);
+              });
+            },
+            disableChildrenSelection(component: any) {
+              if (!component) return;
+
+              // Set the component to be non-selectable
+              component.set({
+                selectable: false,
+                hoverable: false,
+                draggable: false,
+                droppable: false,
+                editable: false,
+                layerable: false,
+                highlightable: false,
+                badgable: false,
+              });
+
+              // Recursively disable children
+              const children = component.get('components');
+              if (children && children.length > 0) {
+                children.forEach((child: any) => {
+                  this.disableChildrenSelection(child);
+                });
+              }
+            }
           },
           view: {
             events: {
               submit: (e: Event) => e.preventDefault(),
             } as any,
+            onRender() {
+              if (this.el) {
+                // Disable all form inputs at DOM level
+                const inputs = this.el.querySelectorAll('input, textarea, select, button');
+                inputs.forEach((input) => {
+                  (input as any).disabled = true;
+                  (input as HTMLElement).style.pointerEvents = 'none';
+                  (input as HTMLElement).style.userSelect = 'none';
+                });
+
+                // Make all children non-selectable via CSS
+                const allChildren = this.el.querySelectorAll('*');
+                allChildren.forEach((child) => {
+                  (child as HTMLElement).style.pointerEvents = 'none';
+                  (child as HTMLElement).style.userSelect = 'none';
+                });
+              }
+            },
           }
         });
 
@@ -517,34 +744,7 @@ export function useEditor(containerId: string) {
           },
         });
 
-        if (typeof editor.getJs !== "function") {
-          console.log("Adding custom getJs method");
-          editor.getJs = () => {
-            // Try to get from storage first
-            const stored = editor.StorageManager.get("jsCode");
-            if (typeof stored === "string") return stored;
 
-            // Otherwise try to find script component
-            const scriptComponent = editor.Components.getWrapper()?.find(
-              'script[data-gjs-type="custom-script"]'
-            )[0];
-            const content = scriptComponent ? scriptComponent.get("content") : "";
-            return typeof content === "string" ? content : "";
-          };
-        }
-
-        // Set up event listeners
-        setupEventListeners(editor as unknown as GrapesJSEditor);
-
-        // Update state
-        setState((prev) => ({
-          ...prev,
-          editor,
-        }));
-
-        return () => {
-          editor.destroy();
-        };
       } catch (error) {
         console.error("Error initializing GrapesJS:", error);
         setState((prev) => ({ ...prev, isLoading: false }));
@@ -552,20 +752,67 @@ export function useEditor(containerId: string) {
     };
 
     initEditor();
-  }, [containerId]);
+
+    return () => {
+      isMounted = false;
+      destroyEditor();
+    };
+  }, [containerId]); // Only re-initialize when container changes
+
+  // Separate effect to inject styles when page content changes
+  useEffect(() => {
+    if (!editorRef.current || !page?.content) return;
+
+    const editor = editorRef.current;
+    const pageContent = page.content; // Capture content to avoid TypeScript issues in setTimeout
+
+    // Wait a bit to ensure Canvas is ready
+    const timer = setTimeout(() => {
+      const frame = editor.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+
+      if (!doc?.head) {
+        console.warn('Canvas iframe not ready for style injection');
+        return;
+      }
+
+      // Remove existing styles
+      doc.querySelector('[data-root-vars="true"]')?.remove();
+      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+
+      // Inject new styles
+      const style = doc.createElement("style");
+      style.setAttribute("data-root-vars", "true");
+      style.innerHTML = createCanvasStyleString(pageContent);
+      doc.head.appendChild(style);
+
+      // Inject fonts
+      extractFontLinks(pageContent).forEach((url) => {
+        const link = doc.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        link.setAttribute("data-font", "true");
+        doc.head.appendChild(link);
+      });
+
+      console.log('✅ Canvas styles updated');
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [page?.content]);
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component selected", component);
-      if(component?.attributes?.tagName === 'form') {
-         // how to know the child of form
-           const componentHtml = component.toHTML();
-      
-          //editForm
-          setEditForm(componentHtml)
-         
-      }else{
+
+      if (component?.attributes?.tagName === 'form') {
+        // how to know the child of form
+        const componentHtml = component.toHTML();
+
+        //editForm
+        setEditForm(componentHtml)
+
+      } else {
         setEditForm(null)
       }
       // Validate component exists before processing
@@ -578,13 +825,13 @@ export function useEditor(containerId: string) {
         ...prev,
         selectedElement: component,
       }));
-      updateStylesFromComponent(component); 
+      updateStylesFromComponent(component);
 
       // Initialize interactions if not already present
 
-       // Custom toolbar for Form component
-       console.log("component", component.get('type'))
-    
+      // Custom toolbar for Form component
+      console.log("component", component.get('type'))
+
       try {
         if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
           if (component.set && typeof component.set === 'function') {
@@ -595,7 +842,7 @@ export function useEditor(containerId: string) {
         console.error('Error initializing interactions:', error);
       }
 
-     
+
 
       // Add custom toolbar button only if it doesn't already exist
       const defaultToolbar = component.get('toolbar');
@@ -615,7 +862,7 @@ export function useEditor(containerId: string) {
               <path d="M9 14s1 1 3 1 3-1 3-1"></path>
             </svg>`,
             command: (editor: any) => {
-       
+
 
               // Get component HTML
               const componentHtml = component.toHTML();
@@ -790,16 +1037,48 @@ export function useEditor(containerId: string) {
     }
 
     try {
-      // Add additional check for getComponents method
-      if (typeof editor.Components.getComponents !== 'function') {
-        console.warn('getComponents method not available on editor.Components');
+      // Get the wrapper component first, then get its children
+      const wrapper = editor.Components.getWrapper();
+
+      console.log('🔍 Wrapper:', wrapper);
+
+      if (!wrapper) {
+        console.warn('⚠️ Wrapper component not available');
+        setState((prev) => ({
+          ...prev,
+          layers: [],
+        }));
         return;
       }
 
-      const components = editor.Components.getComponents();
+      // Get components from the wrapper
+      let components = [];
+      console.log('🔍 Wrapper has components method?', typeof wrapper.components === 'function');
+      console.log('🔍 Wrapper has get method?', typeof wrapper.get === 'function');
+
+      if (typeof wrapper.components === 'function') {
+        components = wrapper.components();
+        console.log('✅ Got components via wrapper.components():', components);
+      } else if (wrapper.get && typeof wrapper.get === 'function') {
+        const comps = wrapper.get('components');
+        console.log('🔍 wrapper.get("components"):', comps);
+        console.log('🔍 Has models?', comps && typeof comps.models !== 'undefined');
+
+        if (comps && typeof comps.models !== 'undefined') {
+          components = comps.models;
+          console.log('✅ Got components via comps.models:', components);
+        } else if (Array.isArray(comps)) {
+          components = comps;
+          console.log('✅ Got components as array:', components);
+        }
+      }
+
+      console.log('📊 Final components array:', components);
+      console.log('📊 Components length:', components?.length);
 
       // Verify components is valid before mapping
-      if (!components) {
+      if (!components || !Array.isArray(components) || components.length === 0) {
+        console.log('❌ No components found, layers will be empty');
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -808,6 +1087,7 @@ export function useEditor(containerId: string) {
       }
 
       const layerItems = mapComponentsToLayers(components);
+      console.log('✅ Layer items created:', layerItems);
 
       setState((prev) => ({
         ...prev,
@@ -1317,6 +1597,13 @@ export function useEditor(containerId: string) {
           // Handle global CSS variables
           if (editorRef.current) {
             const canvas = editorRef.current.Canvas;
+
+            // Check if Canvas module and getDocument method exist
+            if (!canvas || typeof canvas.getDocument !== 'function') {
+              console.warn('Canvas module or getDocument method not available');
+              return;
+            }
+
             const canvasDoc = canvas.getDocument();
             const canvasHead = canvasDoc?.head;
 
@@ -1903,6 +2190,12 @@ body {
         if (editorRef.current) {
           editorRef.current.refresh();
         }
+      }
+    },
+
+    refreshLayers: () => {
+      if (editorRef.current) {
+        updateLayers(editorRef.current);
       }
     },
   };

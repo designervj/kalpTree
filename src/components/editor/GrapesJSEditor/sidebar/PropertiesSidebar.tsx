@@ -54,6 +54,7 @@ import { GoNote } from "react-icons/go";
 import PageLayer from "./PageLayer";
 import AllBuilderPage from "../../allbuilderpage/AllBuilderPage";
 import FormsPage from "../../forms-manager/FormsPage";
+import { useEffect } from "react";
 
 // ✅ import your Pages component (adjust path)
 // <-- change path as per your project
@@ -97,6 +98,8 @@ const TAB_TITLES: Record<TabKey, string> = {
   more: "More",
 };
 
+import { useEditorContext } from "../../EditorContext";
+
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
   selectedElement,
@@ -109,8 +112,26 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 }) => {
   const [tab, setTab] = React.useState<TabKey>("style");
 
-  if (!showSidebar) return null;
+  // ✅ Hooks must be called BEFORE any early returns
+  const {
+    state,
+    actions,
+    isAiChatOpen,
+    setIsAiChatOpen,
+    selectedComponentForAi,
+    editForm
+  } = useEditorContext();
 
+  // open forms page
+  useEffect(() => {
+    if (editForm) {
+      setTab("forms");
+      // setOpen(true);
+    }
+  }, [editForm]);
+
+  // Early return AFTER all hooks
+  if (!showSidebar) return null;
   const renderEmptySelectionMessage = (
     icon: "Box" | "MousePointer",
     type: string
@@ -238,16 +259,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           <PageLayer
           />
         );
-      // case "forms":
-      //   return renderPlaceholder(
-      //     <span className="inline-flex items-center gap-2">
-      //       <Plus className="w-4 h-4" /> Forms
-      //     </span>,
-      //     "Add/insert components, blocks, and sections here."
-      //   );
-
-      // case "forms":
-      //   return <FormsPage />;
 
       case "forms":
         return <FormsPage />;
@@ -370,7 +381,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             active={tab === "pages"}
             label="Pages"
             onClick={() => setTab("pages")}
-            icon={<RiFileCopy2Line  className="w-5 h-5" />}
+            icon={<RiFileCopy2Line className="w-5 h-5" />}
           />
 
           <IconTab

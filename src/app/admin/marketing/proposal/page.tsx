@@ -418,6 +418,19 @@ export default function Page() {
   const applyCanvasBg = (color: string) => {
     const ed = editorRef.current;
     if (!ed) return;
+
+    // Check if Canvas module exists
+    if (!ed.Canvas) {
+      console.warn('Canvas module not available');
+      return;
+    }
+
+    // Check if getFrameEl method exists
+    if (typeof ed.Canvas.getFrameEl !== 'function') {
+      console.warn('Canvas.getFrameEl is not a function');
+      return;
+    }
+
     const iframe = ed.Canvas.getFrameEl();
     const doc = iframe?.contentDocument;
     if (!doc) return;
@@ -425,7 +438,7 @@ export default function Page() {
     try {
       doc.documentElement.style.background = color;
       doc.body.style.background = color;
-    } catch {}
+    } catch { }
   };
 
   const applyZoomToCanvas = (z: number) => {
@@ -572,6 +585,18 @@ export default function Page() {
     const ed = editorRef.current;
     if (!ed) return;
 
+    // Check if Canvas module exists
+    if (!ed.Canvas) {
+      console.warn('Canvas module not available');
+      return;
+    }
+
+    // Check if getFrameEl method exists
+    if (typeof ed.Canvas.getFrameEl !== 'function') {
+      console.warn('Canvas.getFrameEl is not a function');
+      return;
+    }
+
     const iframe = ed.Canvas.getFrameEl();
     const doc = iframe?.contentDocument;
     if (!doc) return;
@@ -692,7 +717,7 @@ export default function Page() {
       mounted = false;
       try {
         editorRef.current?.destroy?.();
-      } catch {}
+      } catch { }
       editorRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
