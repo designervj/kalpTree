@@ -26,7 +26,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useMemo } from "react";
 import { createPortal } from "react-dom";
-import { setPageEdit } from "@/hooks/slices/pageEditSlice";
+import { setPageLoading, setPageEdit } from "@/hooks/slices/pageEditSlice";
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 import PageMenu from "./PageMenu";
 import SeoPill from "./SeoPill";
@@ -260,6 +260,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
     console.log("I ran")
     const currentPage = websitePages.find((p) => p._id === page.id);
     if (currentPage) {
+      dispatch(setPageLoading(true));
       dispatch(
         setPageEdit({
           page: currentPage,
@@ -397,7 +398,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
             {/* Other pages */}
             <div className="mt-6">
               <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
-               <h6 className="text-sm font-semibold"> Other pages</h6>
+                <h6 className="text-sm font-semibold"> Other pages</h6>
               </div>
 
               <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -440,7 +441,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
                     </div>
                     <ChevronRight className="w-4 h-4 text-slate-400" />
                   </div>
-                  
+
                 </div>
               </div>
             </div>
@@ -448,7 +449,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
             {/* Hidden from navigation */}
             <div className="mt-6">
               <div className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-2">
-               <h6 className="text-sm font-semibold"> Hidden from navigation</h6>
+                <h6 className="text-sm font-semibold"> Hidden from navigation</h6>
               </div>
 
               <p className="text-sm text-slate-500 dark:text-slate-400 mb-3">

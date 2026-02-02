@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import CurrentForm from "../sectionEdit/CurrentForm";
 
+
 /** 🎨 Keep the same purple look/feel */
 const ACCENT = "#6D5EF5";
 
@@ -370,6 +371,7 @@ export function FormsPage({
         "general" | "fields" | "button" | "style" | "animation"
     >("general");
 
+
     const [settings, setSettings] = React.useState<FormSettings>(DEFAULT_SETTINGS);
 
     const set = <K extends keyof FormSettings>(key: K, val: FormSettings[K]) =>
@@ -380,6 +382,8 @@ export function FormsPage({
         // ✅ send `settings` to API / store
         // console.log(settings)
     };
+
+
     const tabsWrapRef = React.useRef<HTMLDivElement | null>(null);
     return (
         <div>
@@ -450,7 +454,7 @@ export function FormsPage({
                                             checked={settings.mode === "connected"}
                                             title="Connected form"
                                             desc="Collects submissions into one list with the connected form"
-                                        />  
+                                        />
                                     </div>
                                 </label>
                             </RadioGroup>

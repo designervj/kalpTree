@@ -120,7 +120,7 @@ type FormSettings = {
 const uid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? // @ts-ignore
-      crypto.randomUUID()
+    crypto.randomUUID()
     : Math.random().toString(36).slice(2, 10);
 
 const INPUT_TYPE_PRESETS: Record<
@@ -378,6 +378,11 @@ export function EditSection({
     e.preventDefault();
     // ✅ send `settings` to API / store
     // console.log(settings)
+
+    // Close the modal after saving
+    if (setOpen) {
+      setOpen(false);
+    }
   };
 
   return (
@@ -390,7 +395,10 @@ export function EditSection({
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="p-0 sm:max-w-[520px] overflow-hidden bg-white">
+        <DialogContent
+          className="p-0 sm:max-w-[520px] overflow-hidden bg-white"
+          onInteractOutside={(e) => e.preventDefault()}
+        >
           {/* Top header */}
           <DialogHeader className="px-6 pt-4 pb-0">
             <DialogTitle className="sr-only">Contact form settings</DialogTitle>
@@ -527,8 +535,8 @@ export function EditSection({
 
               {/* FIELDS (✅ replaced with accordion UI like screenshot) */}
               {tab === "fields" ? (
-                <CurrentForm 
-                componentHtml={componentHtml}
+                <CurrentForm
+                  componentHtml={componentHtml}
                 />
                 // <div className="space-y-4">
                 //   <FieldsEditor

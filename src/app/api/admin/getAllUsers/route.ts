@@ -13,22 +13,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userRole = session.user.role;
-    const current_selected_business_id = await request.cookies.get(
-      "current_selected_business_id"
-    )?.value;
-    const current_selected_agency_id = await request.cookies.get(
-      "current_selected_agency_id"
-    )?.value;
-    const current_website_id = await request.cookies.get("current_website_id")
-      ?.value;
-
-    const db = await getCollection("users");
-
-    let users = await db
-      .find({ tenantId: new ObjectId(current_selected_business_id) })
-      .toArray();
-
-    return NextResponse.json({ users: users });
+     const db = await getCollection("users");
+      if(userRole=== "superadmin"){
+          let users = await db.find({}).toArray();
+          return NextResponse.json({ users: users });
+      }
+      else if(userRole=== "agency"){
+        
+        let users = await db.find({agencyId: session.user.id}).toArray();
+        return NextResponse.json({ users: users });
+      }
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(

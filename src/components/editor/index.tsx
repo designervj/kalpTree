@@ -12,12 +12,13 @@ import BottomToolbar from "./GrapesJSEditor/toolbars/BottomToolbar";
 
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { clearPageEdit } from "@/hooks/slices/pageEditSlice";
+import { clearPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
 import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
 import GetAllTemplate from "../admin/templates/GetAllTemplate";
 import EditForm from "./editForm/EditForm";
+import { EditorProvider } from "./EditorContext";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -30,6 +31,8 @@ type PropertiesSidebarProps = {
 
 export default function GrapesJSEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Capture all props from useEditor to pass to Context
+  const editorProps = useEditor("gjs-editor");
   const {
     state,
     actions,
@@ -37,7 +40,7 @@ export default function GrapesJSEditor() {
     setIsAiChatOpen,
     selectedComponentForAi,
     editForm
-  } = useEditor("gjs-editor");
+  } = editorProps;
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
   const [customDevices, setCustomDevices] = useState<DeviceConfig[]>([]);
@@ -50,7 +53,7 @@ export default function GrapesJSEditor() {
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
 
   const dispatch = require("react-redux").useDispatch();
-  const { page } = useSelector((state: RootState) => state.pageEdit);
+  const { page, isLoading: isPageLoading } = useSelector((state: RootState) => state.pageEdit);
 
   function extractScriptsFromHtml(html: string): string {
     const matches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
@@ -60,7 +63,7 @@ export default function GrapesJSEditor() {
         // Skip external scripts (those with src attribute)
         if (scriptTag.includes("src=")) return "";
         const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-        return inner ? inner[1] : "";
+        return inner ? `(function(){ ${inner[1]} })();` : "";
       })
       .filter((script) => script.trim())
       .join("\n");
@@ -102,6 +105,7 @@ export default function GrapesJSEditor() {
         if (data) {
           // Safely set components with error handling
           state?.editor?.setComponents(data);
+
           const { body } = extractHtmlParts(data);
           setEditorHtml(body);
 
@@ -117,9 +121,42 @@ export default function GrapesJSEditor() {
             state.editor.setJs(js);
             setEditorJs(js);
           }
+
+          // Refresh layers after content is loaded
+          // Use longer delay and retry mechanism to ensure components are parsed
+          console.log('🔄 Content loaded, refreshing layers...');
+
+          let retryCount = 0;
+          const maxRetries = 3;
+
+          const tryRefreshLayers = () => {
+            console.log(`🔄 Attempt ${retryCount + 1}/${maxRetries} - Calling refreshLayers...`);
+
+            // Check if wrapper has components before refreshing
+            const wrapper = state.editor?.Components?.getWrapper();
+            const hasComponents = wrapper?.components?.()?.length > 0;
+
+            console.log(`🔍 Wrapper has components? ${hasComponents}`);
+
+            if (hasComponents || retryCount >= maxRetries - 1) {
+              actions.refreshLayers();
+              if (!hasComponents) {
+                console.warn('⚠️ No components found after max retries');
+              }
+            } else {
+              retryCount++;
+              console.log(`⏳ No components yet, retrying in 300ms...`);
+              setTimeout(tryRefreshLayers, 300);
+            }
+          };
+
+          setTimeout(tryRefreshLayers, 500);
         }
 
         contentLoadedRef.current = true;
+        setTimeout(() => {
+          dispatch(setPageLoading(false));
+        }, 500);
       } catch (error) {
         console.error("Error setting editor content:", error);
         // Don't crash the app, just log the error
@@ -478,89 +515,89 @@ export default function GrapesJSEditor() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
-      <TooltipProvider delayDuration={300}>
-        <TopToolbar
-          blocks={state.blocks}
-          actions={actions}
-          editor={state.editor}
-          editorHtml={editorHtml}
-          editorCss={editorCss}
-          editorJs={editorJs}
-          isPreviewMode={isPreviewMode}
-          showSidebar={showSidebar}
-          recentBlocks={recentBlocks}
-          favoriteBlocks={favoriteBlocks}
-          onImportCode={handleImportCode}
-          onClearCanvas={handleClearCanvas}
-          onTogglePreview={togglePreviewMode}
-          onToggleSidebar={toggleSidebar}
-          onRecentBlocksChange={handleRecentBlocksChange}
-          onFavoriteBlocksChange={handleFavoriteBlocksChange}
-          onUpdateHtml={handleUpdateHtml}
-          onUpdateCss={handleUpdateCss}
-          onUpdateJs={handleUpdateJs}
-          onSelectTemplate={handleSelectTemplate}
-          onSaveTemplate={handleSaveTemplate}
-          onSave={handleSaveData}
-          setOpen={setOpen}
-          open={open}
-        />
+    <EditorProvider editorState={editorProps}>
+      <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
+        <TooltipProvider delayDuration={300}>
+          <TopToolbar
+            blocks={state.blocks}
+            actions={actions}
+            editor={state.editor}
+            editorHtml={editorHtml}
+            editorCss={editorCss}
+            editorJs={editorJs}
+            isPreviewMode={isPreviewMode}
+            showSidebar={showSidebar}
+            recentBlocks={recentBlocks}
+            favoriteBlocks={favoriteBlocks}
+            onImportCode={handleImportCode}
+            onClearCanvas={handleClearCanvas}
+            onTogglePreview={togglePreviewMode}
+            onToggleSidebar={toggleSidebar}
+            onRecentBlocksChange={handleRecentBlocksChange}
+            onFavoriteBlocksChange={handleFavoriteBlocksChange}
+            onUpdateHtml={handleUpdateHtml}
+            onUpdateCss={handleUpdateCss}
+            onUpdateJs={handleUpdateJs}
+            onSelectTemplate={handleSelectTemplate}
+            onSaveTemplate={handleSaveTemplate}
+            onSave={handleSaveData}
+            setOpen={setOpen}
+            open={open}
+          />
 
-        <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
-          {/* Canvas */}
-          <div
-            className={`${
-              showSidebar ? "w-[90%]" : "w-full"
-            } transition-all duration-300 ease-in-out relative`}
-          >
-            {state.isLoading && (
-              <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
-                <div className="w-10 h-10 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin" />
-              </div>
-            )}
-            <div id="gjs-editor" className="w-full h-full" ref={containerRef} />
+          <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
+            {/* Canvas */}
+            <div
+              className="flex-1 min-w-0 transition-all duration-300 ease-in-out relative"
+            >
+              {(state.isLoading || isPageLoading) && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
+                  <div className="w-10 h-10 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin" />
+                </div>
+              )}
+              <div id="gjs-editor" className="w-full h-full" ref={containerRef} />
+            </div>
+
+            {/* Sidebar */}
+            <PropertiesSidebar
+              showSidebar={showSidebar}
+              selectedElement={state.selectedElement}
+              styles={state.styles}
+              onStyleChange={handleStyleChange}
+              onAttributeChange={actions.updateAttribute}
+              onInteractivityChange={handleUpdateInteractivity}
+              open={open}
+              setOpen={setOpen}
+            />
           </div>
 
-          {/* Sidebar */}
-          <PropertiesSidebar
-            showSidebar={showSidebar}
-            selectedElement={state.selectedElement}
-            styles={state.styles}
-            onStyleChange={handleStyleChange}
-            onAttributeChange={actions.updateAttribute}
-            onInteractivityChange={handleUpdateInteractivity}
-            open={open}
-            setOpen={setOpen}
+          <BottomToolbar
+            currentDevice={state.currentDevice}
+            showResponsivePanel={showResponsivePanel}
+            devices={allDevices}
+            onDeviceChange={actions.setDevice}
+            onToggleResponsivePanel={() =>
+              setShowResponsivePanel((prev) => !prev)
+            }
+            onAddDevice={handleAddDevice}
+            onRemoveDevice={handleRemoveDevice}
+            onUpdateDevice={handleUpdateDevice}
           />
-        </div>
+        </TooltipProvider>
 
-        <BottomToolbar
-          currentDevice={state.currentDevice}
-          showResponsivePanel={showResponsivePanel}
-          devices={allDevices}
-          onDeviceChange={actions.setDevice}
-          onToggleResponsivePanel={() =>
-            setShowResponsivePanel((prev) => !prev)
-          }
-          onAddDevice={handleAddDevice}
-          onRemoveDevice={handleRemoveDevice}
-          onUpdateDevice={handleUpdateDevice}
+        {/* AI Chat Modal */}
+        <AiChatModal
+          isOpen={isAiChatOpen}
+          onClose={() => setIsAiChatOpen(false)}
+          component={selectedComponentForAi}
         />
-      </TooltipProvider>
 
-      {/* AI Chat Modal */}
-      <AiChatModal
-        isOpen={isAiChatOpen}
-        onClose={() => setIsAiChatOpen(false)}
-        component={selectedComponentForAi}
-      />
+        {/* edit form */}
+        <EditForm componentHtml={editForm} />
 
-      {/* edit form */}
-      <EditForm componentHtml={editForm} />
 
-      
-      <GetAllTemplate />
-    </div>
+        <GetAllTemplate />
+      </div>
+    </EditorProvider>
   );
 }
