@@ -1,25 +1,31 @@
-"use client"
-import { AppDispatch, RootState } from '@/store/store';
-import { ChevronDown, RefreshCcw, Search, SlidersHorizontal, X } from 'lucide-react';
-import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import { componentCategories } from './Templatecategory';
-import { Button } from '@/components/ui/button';
+"use client";
+import { AppDispatch, RootState } from "@/store/store";
+import {
+  ChevronDown,
+  RefreshCcw,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { componentCategories } from "./Templatecategory";
+import { Button } from "@/components/ui/button";
 
- type DemoKey = "All" | "Shop" | "Home" | "Products" | "Categories";
+type DemoKey = "All" | "Shop" | "Home" | "Products" | "Categories";
 const TemplateTopBar = () => {
-        const dispatch= useDispatch<AppDispatch>();
-    const {allTemplate, currentTemplate, hasFetched, isLoading, error}= useSelector((state: RootState) => state.template);
- 
+  const dispatch = useDispatch<AppDispatch>();
+  const { allTemplate, currentTemplate, hasFetched, isLoading, error } =
+    useSelector((state: RootState) => state.template);
+
   const [search, setSearch] = useState("");
   const [demo, setDemo] = useState<DemoKey>("All");
 
   // category dropdown (header list)
   const [category, setCategory] = useState<string>("hero");
-    const [catOpen, setCatOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   return (
-   <>
-
+    <>
       {/* TOP BAR */}
       <div className="border-b bg-white">
         <div className="flex items-center gap-3 px-4 py-2">
@@ -36,7 +42,9 @@ const TemplateTopBar = () => {
 
           {/* Filter by Demos */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 font-medium">Filter by Demos</span>
+            <span className="text-sm text-gray-600 font-medium">
+              Filter by Demos
+            </span>
             <select
               value={demo}
               onChange={(e) => {
@@ -51,7 +59,7 @@ const TemplateTopBar = () => {
                 </option>
               ))}
             </select>
-          </div>  
+          </div>
 
           {/* CATEGORY DROPDOWN */}
           <div className="relative">
@@ -61,7 +69,9 @@ const TemplateTopBar = () => {
             >
               <span className="flex items-center gap-2">
                 <span className="font-semibold tracking-wide">{category}</span>
-                <span className="text-gray-500">{componentCategories.filter((c) => c.id === category).length}</span>
+                <span className="text-gray-500">
+                  {componentCategories.filter((c) => c.id === category).length}
+                </span>
               </span>
               <ChevronDown className="h-4 w-4 text-gray-500" />
             </button>
@@ -91,8 +101,8 @@ const TemplateTopBar = () => {
 
           {/* Submit */}
           <Button
-            //onClick={onSubmit}
-            // className="h-9 rounded bg-[#b18457] px-5 text-sm font-semibold text-white hover:opacity-90"
+          //onClick={onSubmit}
+          // className="h-9 rounded bg-[#b18457] px-5 text-sm font-semibold text-white hover:opacity-90"
           >
             SUBMIT
           </Button>
@@ -101,7 +111,7 @@ const TemplateTopBar = () => {
           <Button
             //onClick={onRefreshStudio}
             // variant="secondary"
-             className="h-9 rounded bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-950 inline-flex items-center gap-2"
+            className="h-9 rounded bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-950 inline-flex items-center gap-2"
           >
             <RefreshCcw className="h-4 w-4" />
             REFRESH STUDIO
@@ -109,8 +119,8 @@ const TemplateTopBar = () => {
 
           <div className="ml-auto flex items-center gap-2">
             <Button
-            variant="outline"
-            // className="hidden md:inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+              variant="outline"
+              // className="hidden md:inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
             >
               <SlidersHorizontal className="h-4 w-4" />
               FILTERS
@@ -121,8 +131,8 @@ const TemplateTopBar = () => {
           </div>
         </div>
       </div>
-   </>
-  )
-}
+    </>
+  );
+};
 
-export default TemplateTopBar
+export default TemplateTopBar;

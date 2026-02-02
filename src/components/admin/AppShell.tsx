@@ -88,7 +88,6 @@ import {
 } from "@/components/ui/sheet";
 
 import { Sidebar } from "./Sidebar/sidebar";
-import { Topbar } from "./Sidebar/topbar";
 import { MobileSidebar } from "./Sidebar/mobileSidebar";
 import { HighLevelSidebar } from "./Sidebar/highlevelsidebar";
 import {

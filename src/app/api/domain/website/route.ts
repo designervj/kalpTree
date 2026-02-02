@@ -14,10 +14,10 @@ function serializeDocument(doc: any) {
     } else if (value instanceof Date) {
       serialized[key] = value.toISOString();
     } else if (Array.isArray(value)) {
-      serialized[key] = value.map(item =>
-        typeof item === 'object' ? serializeDocument(item) : item
+      serialized[key] = value.map((item) =>
+        typeof item === "object" ? serializeDocument(item) : item,
       );
-    } else if (value && typeof value === 'object') {
+    } else if (value && typeof value === "object") {
       serialized[key] = serializeDocument(value);
     } else {
       serialized[key] = value;
@@ -43,19 +43,16 @@ export async function GET(req: NextRequest) {
   } else if (websiteIdParam !== "" && websiteIdParam !== null) {
     const websiteId = new ObjectId(websiteIdParam);
     websites = await collection.find({ _id: websiteId }).toArray();
-  }
-  else if (idParam !== "" && idParam !== null) {
+  } else if (idParam !== "" && idParam !== null) {
     const id = new ObjectId(idParam);
     websites = await collection.find({ _id: id }).toArray();
-  }
-  else {
+  } else {
     websites = await collection.find({}).toArray();
   }
 
   // Serialize the documents before returning
   const serializedWebsites = websites.map(serializeDocument);
   return NextResponse.json({ item: serializedWebsites });
-
 }
 
 // POST: Create a new website
@@ -70,7 +67,10 @@ export async function POST(req: Request) {
     updatedAt: new Date(),
   });
   const website = await collection.findOne({ _id: result.insertedId });
-  return NextResponse.json({ item: serializeDocument(website) }, { status: 201 });
+  return NextResponse.json(
+    { item: serializeDocument(website) },
+    { status: 201 },
+  );
 }
 
 // PUT: Update website by id
@@ -109,6 +109,9 @@ export async function DELETE(req: Request) {
   if (result.deletedCount === 1) {
     return NextResponse.json({ ok: true });
   } else {
-    return NextResponse.json({ error: "Not found or already deleted" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Not found or already deleted" },
+      { status: 404 },
+    );
   }
 }
