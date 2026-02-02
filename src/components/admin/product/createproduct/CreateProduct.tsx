@@ -80,8 +80,6 @@ export function CreateProduct({ productId }: { productId?: string }) {
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
-
-
   const { listProduct, isProductLoading } = useSelector(
     (state: RootState) => state.product,
   );
@@ -158,7 +156,6 @@ export function CreateProduct({ productId }: { productId?: string }) {
       setVariantConfigs(variants);
     }
   }, [listProduct, productId]);
-
 
   useEffect(() => {
     if (!productId && producttypecategory) {
@@ -317,7 +314,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
 
   const addValue = (optionId: number, value: string) => {
     if (!value.trim()) return;
-    const option = productOptions.find((opt) => opt.id === optionId);
+    // const option = productOptions.find((opt) => opt.id === optionId);
 
     const clonedOption = structuredClone(productOptions);
 
@@ -451,6 +448,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
       setVariantConfigs(cloned);
     }
   };
+
 
   return (
     <div className="min-h-screen">

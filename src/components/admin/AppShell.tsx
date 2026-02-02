@@ -91,7 +91,12 @@ import { Sidebar } from "./Sidebar/sidebar";
 import { Topbar } from "./Sidebar/topbar";
 import { MobileSidebar } from "./Sidebar/mobileSidebar";
 import { HighLevelSidebar } from "./Sidebar/highlevelsidebar";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import {
+  useParams,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import { Button } from "../ui/button";
 import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
@@ -180,9 +185,12 @@ export const currentWebsiteSections: NavSection[] = [
     id: "dashboard-overview",
     label: "Overview",
     items: [
-      { label: "Dashboard", href: "/admin", icon: LayoutDashboard,
+      {
+        label: "Dashboard",
+        href: "/admin",
+        icon: LayoutDashboard,
         permission: "dashboard:update",
-       },
+      },
       {
         label: "Analytics",
         href: "/admin/overview/analytics",
@@ -823,16 +831,16 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  onWebsiteChange = () => { },
-  onTenantChange = () => { },
-  onAgencyChage = () => { },
+  onWebsiteChange = () => {},
+  onTenantChange = () => {},
+  onAgencyChage = () => {},
 }: AppShellProps) {
   // const { user, websites, currentWebsite } = useSelector(
   //   (state: RootState) => state.dashboardDetails
   // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
+  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
@@ -855,53 +863,111 @@ export function AppShell({
   }, [currentBusiness]);
   // const isHighLevelCollapsed = !params.website ? false : true;
   // const isHighLevelCollapsed = true
-  const handleSignOut = async () => {
-    try {
-      // Step 1: Call server-side API to delete cookies
-      await fetch("/api/appshell-data", {
-        method: "POST",
-      });
+  // const handleSignOut = async () => {
+  //   const { protocol, port, hostname } = window.location;
 
-      // Step 2: Clear Redux state
+  //   const baseHost = hostname.endsWith(".localhost") ? "localhost" : hostname;
+
+  //   const redirect = `${window.location.origin}/auth/signin`;
+
+  //   try {
+  //     // Step 1: Call server-side API to delete cookies
+  //     await fetch("/api/appshell-data", {
+  //       method: "POST",
+  //     });
+
+  //     // Step 2: Clear Redux state
+  //     resetRedux();
+
+  //     // Step 3: Clear client-side storage
+  //     localStorage.clear();
+  //     sessionStorage.clear();
+
+  //     // Step 4: Clear client-side cookies (as backup)
+  //     const cookiesToClear = [
+  //       "admin-cart-token",
+  //       "current_website_data",
+  //       "current_website",
+  //       "current_website_id",
+  //       "authjs.session-token",
+  //       "authjs.csrf-token",
+  //       "authjs.callback-url",
+  //       "__Secure-authjs.session-token",
+  //       "__Host-authjs.csrf-token",
+  //     ];
+
+  //     cookiesToClear.forEach((cookieName) => {
+  //       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  //       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+  //       const domain = window.location.hostname.split(".").slice(-2).join(".");
+  //       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+  //     });
+
+  //     // Step 5: Sign out with NextAuth
+  //     await signOut({ callbackUrl: redirect });
+  //   } catch (error) {
+  //     console.error("Error during sign out:", error);
+  //     // Even if there's an error, try to sign out
+  //     await signOut({ callbackUrl: redirect });
+  //   }
+  // };
+
+  const handleSignOut = async () => {
+    const redirect = `${window.location.origin}/auth/signin`;
+
+    try {
+      // 1️⃣ Server-side cleanup (optional but good)
+      await fetch("/api/appshell-data", { method: "POST" });
+
+      // 2️⃣ Clear redux
       resetRedux();
 
-      // Step 3: Clear client-side storage
+      // 3️⃣ Clear storages
       localStorage.clear();
       sessionStorage.clear();
 
-      // Step 4: Clear client-side cookies (as backup)
+      // 4️⃣ Best-effort cookie cleanup
       const cookiesToClear = [
-        'admin-cart-token',
-        'current_website_data',
-        'current_website',
-        'current_website_id',
-        'authjs.session-token',
-        'authjs.csrf-token',
-        'authjs.callback-url',
-        '__Secure-authjs.session-token',
-        '__Host-authjs.csrf-token'
+        "admin-cart-token",
+        "current_website_data",
+        "current_website",
+        "current_website_id",
+        "authjs.session-token",
+        "authjs.csrf-token",
+        "authjs.callback-url",
+        "__Secure-authjs.session-token",
+        "__Host-authjs.csrf-token",
       ];
 
       cookiesToClear.forEach((cookieName) => {
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-        const domain = window.location.hostname.split('.').slice(-2).join('.');
-        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
+
+        const rootDomain = window.location.hostname
+          .split(".")
+          .slice(-2)
+          .join(".");
+
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${rootDomain};`;
       });
 
-      // Step 5: Sign out with NextAuth
-      await signOut({ callbackUrl: "/auth/signin" });
-    } catch (error) {
-      console.error("Error during sign out:", error);
-      // Even if there's an error, try to sign out
-      await signOut({ callbackUrl: "/auth/signin" });
+      // 5️⃣ Tell NextAuth to logout BUT DO NOT REDIRECT
+      await signOut({ redirect: false });
+
+      // 6️⃣ YOU decide where to go
+      window.location.href = redirect;
+    } catch (err) {
+      console.error("Logout error:", err);
+
+      // fallback hard redirect
+      window.location.href = redirect;
     }
   };
 
   const resetRedux = () => {
     dispatch(clearAttributes());
     dispatch(clearBrands());
-    dispatch(clearUser())
+    dispatch(clearUser());
     dispatch(clearCategories());
   };
   const dispatch = useDispatch();
@@ -913,7 +979,8 @@ export function AppShell({
   const handleAdmin = () => {
     resetRedux();
     router.push(`/admin`);
-  }
+  };
+
   return (
     <>
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">

@@ -16,8 +16,6 @@ export const authConfig: NextAuthConfig = {
         domain: { label: "Domain", type: "text" },
       },
       async authorize(credentials) {
-
-   
         // Validate credentials exist
         if (
           !credentials?.email ||
@@ -34,7 +32,7 @@ export const authConfig: NextAuthConfig = {
           const getWebsite = await websiteService.getByHost(
             credentials.domain as string,
           );
-       
+
           if (!getWebsite) {
             throw new Error("Invalid domain");
           }
@@ -147,6 +145,25 @@ export const authConfig: NextAuthConfig = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  // cookies: {
+  //   sessionToken: {
+  //     name:
+  //       process.env.NODE_ENV === "production"
+  //         ? "__Secure-authjs.session-token"
+  //         : "authjs.session-token",
+  //     options: {
+  //       httpOnly: true,
+  //       sameSite: "lax",
+  //       path: "/",
+  //       secure: process.env.NODE_ENV === "production",
+  //       domain:
+  //         process.env.NODE_ENV === "production"
+  //           ? ".kalptree.xyz" // 👈 FIXES www vs non-www
+  //           : undefined,
+  //     },
+  //   },
+  // },
+  secret: process.env.NEXTAUTH_SECRET,
   cookies: {
     sessionToken: {
       name:
@@ -159,11 +176,8 @@ export const authConfig: NextAuthConfig = {
         path: "/",
         secure: process.env.NODE_ENV === "production",
         domain:
-          process.env.NODE_ENV === "production"
-            ? ".kalptree.xyz" // 👈 FIXES www vs non-www
-            : undefined,
+          process.env.NODE_ENV === "production" ? ".kalptree.xyz" : undefined,
       },
     },
   },
-  secret: process.env.NEXTAUTH_SECRET,
 };

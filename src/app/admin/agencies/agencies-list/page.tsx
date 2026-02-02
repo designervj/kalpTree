@@ -166,7 +166,6 @@ export default async function BusinessList({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalCount);
 
-  console.log(totalPages);
 
   if (businesses.length === 0) {
     return (
