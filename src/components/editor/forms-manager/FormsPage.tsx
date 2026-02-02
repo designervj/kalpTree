@@ -243,7 +243,7 @@ function PillTabs({
 }) {
     return (
         <Tabs value={value} onValueChange={onValueChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-transparent p-0">
+            <TabsList className="grid w-full grid-cols-4 bg-transparent p-0">
                 {[
                     ["general", "General"],
                     ["fields", "Fields"],
@@ -311,23 +311,31 @@ function IconRadio({
     desc: string;
 }) {
     return (
-        <div className="flex items-start gap-3">
-            <div
-                className={cn(
-                    "mt-0.5 h-5 w-5 rounded-full border-2",
-                    checked ? "border-transparent" : "border-slate-300"
-                )}
-                style={checked ? { backgroundColor: ACCENT } : undefined}
-            >
-                {checked ? (
-                    <div className="mx-auto mt-1 h-2 w-2 rounded-full bg-white" />
-                ) : null}
-            </div>
-            <div className="min-w-0">
-                <div className="text-sm font-semibold text-slate-900">{title}</div>
-                <div><p className="text-[12px] text-slate-500">{desc}</p></div>
-            </div>
-        </div>
+       <div className="flex items-start gap-3">
+  {/* Radio Icon */}
+  <div
+    className={cn(
+      "relative mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 flex items-center justify-center",
+      checked ? "border-transparent" : "border-slate-400"
+    )}
+    style={checked ? { backgroundColor: ACCENT } : undefined}
+  >
+    {checked && (
+      <span className="h-2.5 w-2.5 rounded-full bg-white" />
+    )}
+  </div>
+
+  {/* Text */}
+  <div className="min-w-0">
+    <div className="text-sm font-semibold text-slate-900 leading-tight">
+      {title}
+    </div>
+    <p className="text-[12px] text-slate-500 leading-snug">
+      {desc}
+    </p>
+  </div>
+</div>
+
     );
 }
 
@@ -350,7 +358,7 @@ function AnimationCard({
             )}
             style={active ? { outline: `2px solid ${ACCENT}` } : undefined}
         >
-            <div className="flex h-16 items-center justify-center rounded-xl bg-slate-100">
+            <div className="flex h-16 items-center justify-center rounded-md bg-slate-100">
                 <div className="h-6 w-16 rounded-md bg-slate-400" />
             </div>
             <div className="mt-3 text-sm font-medium text-slate-900">{title}</div>
@@ -389,7 +397,7 @@ export function FormsPage({
         <div>
             <div
                 ref={tabsWrapRef}
-                className="px-0 border-b border-slate-200 pb-2  whitespace-nowrap"
+                className="px-0 border-b border-slate-200 pb-2  whitespace-nowrap "
             >
                 <PillTabs value={tab} onValueChange={(v) => setTab(v as typeof tab)} />
             </div>
@@ -414,7 +422,7 @@ export function FormsPage({
                                 <div className="mt-4 space-y-2">
                                     <Button
                                         type="button"
-                                        className="w-full rounded-xl bg-white font-semibold"
+                                        className="w-full rounded-md bg-white font-semibold"
                                         style={{ color: ACCENT }}
                                     >
                                         Start sending emails
@@ -423,7 +431,7 @@ export function FormsPage({
                                     <Button
                                         type="button"
                                         variant="outline"
-                                        className="w-full rounded-xl border-white/40 bg-transparent text-white hover:bg-white/10"
+                                        className="w-full rounded-md border-white/40 bg-transparent text-white hover:bg-white/10"
                                     >
                                         Learn more
                                     </Button>
@@ -434,7 +442,7 @@ export function FormsPage({
                             <RadioGroup
                                 value={settings.mode}
                                 onValueChange={(v) => set("mode", v as FormMode)}
-                                className="space-y-4"
+                                className="space-y-2"
                             >
                                 <label className="cursor-pointer">
                                     <div className="flex items-start gap-3">
@@ -473,7 +481,7 @@ export function FormsPage({
                                 <Input
                                     value={settings.formName}
                                     onChange={(e) => set("formName", e.target.value)}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-md"
                                 />
                             </div>
 
@@ -489,7 +497,7 @@ export function FormsPage({
                                 <Input
                                     value={settings.notifyEmail}
                                     onChange={(e) => set("notifyEmail", e.target.value)}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-md"
                                 />
                             </div>
 
@@ -502,10 +510,11 @@ export function FormsPage({
                                 <div className="text-sm text-slate-500">
                                     Manage all form submissions
                                 </div>
+
                                 <Button
                                     type="button"
                                     variant="outline"
-                                    className="w-full rounded-xl"
+                                    className="w-full rounded-md mt-2"
                                     style={{ color: ACCENT, borderColor: "#E5E7EB" }}
                                 >
                                     View Submissions Lists
@@ -535,7 +544,7 @@ export function FormsPage({
                                 <Input
                                     value={settings.buttonText}
                                     onChange={(e) => set("buttonText", e.target.value)}
-                                    className="h-11 rounded-xl"
+                                    className="h-11 rounded-md"
                                 />
                             </div>
 
@@ -577,7 +586,7 @@ export function FormsPage({
                                                 type="button"
                                                 variant="outline"
                                                 className={cn(
-                                                    "h-11 w-12 rounded-xl",
+                                                    "h-8 w-10 rounded-md",
                                                     active && "border-transparent"
                                                 )}
                                                 style={
@@ -604,12 +613,12 @@ export function FormsPage({
                                     When visitors submit a form:
                                 </div>
 
-                                <div className="grid grid-cols-2 rounded-2xl bg-slate-100 p-1">
+                                <div className="grid grid-cols-2 rounded-md bg-slate-100 p-1">
                                     <button
                                         type="button"
                                         onClick={() => set("submitAction", "message")}
                                         className={cn(
-                                            "h-10 rounded-xl text-sm font-medium transition",
+                                            "h-8 rounded-md text-sm font-medium transition",
                                             settings.submitAction === "message"
                                                 ? "bg-white text-slate-900 shadow-sm"
                                                 : "text-slate-500"
@@ -621,7 +630,7 @@ export function FormsPage({
                                         type="button"
                                         onClick={() => set("submitAction", "link")}
                                         className={cn(
-                                            "h-10 rounded-xl text-sm font-medium transition",
+                                            "h-8 rounded-md text-sm font-medium transition",
                                             settings.submitAction === "link"
                                                 ? "bg-white text-slate-900 shadow-sm"
                                                 : "text-slate-500"
@@ -635,14 +644,14 @@ export function FormsPage({
                                     <Textarea
                                         value={settings.thankYouMessage}
                                         onChange={(e) => set("thankYouMessage", e.target.value)}
-                                        className="min-h-[120px] rounded-2xl"
+                                        className="min-h-[120px] rounded-md"
                                         placeholder="Thank You!"
                                     />
                                 ) : (
                                     <Input
                                         value={settings.redirectUrl}
                                         onChange={(e) => set("redirectUrl", e.target.value)}
-                                        className="h-11 rounded-xl"
+                                        className="h-10 rounded-md"
                                         placeholder="https://your-site.com/thank-you"
                                     />
                                 )}
@@ -653,7 +662,7 @@ export function FormsPage({
 
                                 <Button
                                     type="button"
-                                    className="w-full rounded-xl text-white"
+                                    className="w-full rounded-md text-white"
                                     style={{ backgroundColor: ACCENT }}
                                 >
                                     <FiEdit className="mr-2 h-4 w-4" />
@@ -675,7 +684,7 @@ export function FormsPage({
                                     onValueChange={(v) => set("styleElement", v as StyleElement)}
 
                                 >
-                                    <SelectTrigger className="h-11 rounded-xl w-full">
+                                    <SelectTrigger className="h-11 rounded-md w-full">
                                         <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="w-full">
@@ -693,7 +702,7 @@ export function FormsPage({
                                         type="button"
                                         onClick={() => set("styleState", v)}
                                         className={cn(
-                                            "h-10 rounded-xl text-sm font-medium transition",
+                                            "h-10 rounded-md text-sm font-medium transition",
                                             settings.styleState === v
                                                 ? "bg-white text-slate-900 shadow-sm"
                                                 : "text-slate-500"
@@ -714,7 +723,7 @@ export function FormsPage({
                                     type="color"
                                     value={settings.fillColor}
                                     onChange={(e) => set("fillColor", e.target.value)}
-                                    className="h-10 w-14 cursor-pointer rounded-xl p-1"
+                                    className="h-10 w-14 cursor-pointer rounded-md p-1"
                                 />
                             </div>
 
@@ -723,13 +732,13 @@ export function FormsPage({
                                     Text font
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="rounded-xl bg-slate-100 px-3 py-2 text-sm">
+                                    <div className="rounded-md bg-slate-100 px-3 py-2 text-sm">
                                         {settings.fontFamily}
                                     </div>
                                     <Button
                                         type="button"
                                         variant="ghost"
-                                        className="h-10 rounded-xl"
+                                        className="h-10 rounded-md"
                                         style={{ color: ACCENT }}
                                         onClick={() =>
                                             set(
@@ -754,7 +763,7 @@ export function FormsPage({
                                         type="color"
                                         value={settings.labelTextColor}
                                         onChange={(e) => set("labelTextColor", e.target.value)}
-                                        className="h-10 w-14 cursor-pointer rounded-xl p-1"
+                                        className="h-10 w-14 cursor-pointer rounded-md p-1"
                                     />
                                 </div>
 
@@ -762,13 +771,14 @@ export function FormsPage({
                                     <div className="text-sm font-medium text-slate-900">
                                         Label text size
                                     </div>
-                                    <div className="flex w-[260px] items-center gap-3">
+                                    <div className="flex  items-center gap-3">
                                         <Slider
                                             value={[settings.labelTextSize]}
                                             onValueChange={(v) => set("labelTextSize", v[0] ?? 14)}
                                             min={10}
                                             max={22}
                                             step={1}
+                                            className="w-20"
                                         />
                                         <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                             {settings.labelTextSize}
@@ -786,7 +796,7 @@ export function FormsPage({
                                         type="color"
                                         value={settings.fieldTextColor}
                                         onChange={(e) => set("fieldTextColor", e.target.value)}
-                                        className="h-10 w-14 cursor-pointer rounded-xl p-1"
+                                        className="h-10 w-14 cursor-pointer rounded-md p-1"
                                     />
                                 </div>
 
@@ -794,13 +804,14 @@ export function FormsPage({
                                     <div className="text-sm font-medium text-slate-900">
                                         Field text size
                                     </div>
-                                    <div className="flex w-[260px] items-center gap-3">
+                                    <div className="flex  items-center gap-3">
                                         <Slider
                                             value={[settings.fieldTextSize]}
                                             onValueChange={(v) => set("fieldTextSize", v[0] ?? 16)}
                                             min={10}
                                             max={24}
                                             step={1}
+                                            className="w-20"
                                         />
                                         <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                             {settings.fieldTextSize}
@@ -819,7 +830,7 @@ export function FormsPage({
                                     type="color"
                                     value={settings.borderColor}
                                     onChange={(e) => set("borderColor", e.target.value)}
-                                    className="h-10 w-14 cursor-pointer rounded-xl p-1"
+                                    className="h-10 w-14 cursor-pointer rounded-md p-1"
                                 />
                             </div>
 
@@ -827,13 +838,14 @@ export function FormsPage({
                                 <div className="text-sm font-medium text-slate-900">
                                     Border width
                                 </div>
-                                <div className="flex w-[260px] items-center gap-3">
+                                <div className="flex  items-center gap-3">
                                     <Slider
                                         value={[settings.borderWidth]}
                                         onValueChange={(v) => set("borderWidth", v[0] ?? 1)}
                                         min={0}
                                         max={6}
                                         step={1}
+                                        className="w-20"
                                     />
                                     <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                         {settings.borderWidth}
@@ -845,13 +857,15 @@ export function FormsPage({
                                 <div className="text-sm font-medium text-slate-900">
                                     Corner radius
                                 </div>
-                                <div className="flex w-[260px] items-center gap-3">
+                                <div className="flex items-center gap-3">
                                     <Slider
                                         value={[settings.cornerRadius]}
                                         onValueChange={(v) => set("cornerRadius", v[0] ?? 10)}
                                         min={0}
                                         max={24}
                                         step={1}
+                                            className="w-20"
+                                        
                                     />
                                     <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                         {settings.cornerRadius}
@@ -863,13 +877,14 @@ export function FormsPage({
                                 <div className="text-sm font-medium text-slate-900">
                                     Spacing between elements
                                 </div>
-                                <div className="flex w-[260px] items-center gap-3">
+                                <div className="flex  items-center gap-3">
                                     <Slider
                                         value={[settings.spacing]}
                                         onValueChange={(v) => set("spacing", v[0] ?? 15)}
                                         min={6}
                                         max={30}
                                         step={1}
+                                        className="w-20"
                                     />
                                     <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                         {settings.spacing}
@@ -880,7 +895,7 @@ export function FormsPage({
                             {/* ANIMATION */}
 
                             <div className="space-y-4">
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-4 p-1">
                                     <AnimationCard
                                         title="No animation"
                                         active={settings.animation === "none"}

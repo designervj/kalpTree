@@ -1061,8 +1061,8 @@ export function AppShell({
               className="w-56 rounded-xl border bg-background shadow-lg p-1"
             >
               <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-                <div className="flex flex-col leading-tight px-2">
-                  <span className="text-sm font-medium capitalize">
+                <div className="flex flex-col leading-tight px-2 ">
+                  <span className="text-sm font-medium capitalize ">
                     {user?.role}
                   </span>
                   <span className="text-xs text-muted-foreground truncate">
