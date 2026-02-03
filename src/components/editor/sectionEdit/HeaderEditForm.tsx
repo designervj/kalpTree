@@ -327,7 +327,7 @@ export default function HeaderEditForm() {
                 <Separator className="bg-slate-200" />
 
                 {/* Body */}
-                <ScrollArea className="h-[520px]">
+                <ScrollArea className="h-[400px]">
                   <div className="px-4 py-2">
                     {/* ============ LAYOUT TAB ============ */}
                     <TabsContent value="layout" className="mt-0">
@@ -566,7 +566,7 @@ export default function HeaderEditForm() {
                     </TabsContent>
 
                           <TabsContent value="navigation" className="mt-0">
-                              <Navigation/>
+                              {/* <Navigation/> */}
                           </TabsContent>
 
                     {/* ============ SHOPPING BAG TAB ============ */}

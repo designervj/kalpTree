@@ -251,7 +251,7 @@ function SortableFieldRow({
               value={field.label}
               onChange={(e) => onUpdate(field.id, { label: e.target.value })}
               className="h-10 rounded-md bg-slate-50"
-            />
+            /> 
           </div>
 
           {(field.kind === "short_answer" || field.kind === "paragraph") && (
