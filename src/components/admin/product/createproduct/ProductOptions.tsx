@@ -226,7 +226,7 @@ export interface ProductOption {
   attributeId?: string;
 }
 
-interface ProductOptionsProps {
+interface ProductOptionsPropsNew {
   productOptions: ProductOption[];
   setProductOptions: React.Dispatch<React.SetStateAction<ProductOption[]>>;
   attributes: MaterialAttributes[];
@@ -457,7 +457,7 @@ export function ProductOptionsSection({
   productOptions,
   setProductOptions,
   attributes,
-}: ProductOptionsProps) {
+}: ProductOptionsPropsNew) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingOption, setEditingOption] = useState<ProductOption | null>(
     null,
