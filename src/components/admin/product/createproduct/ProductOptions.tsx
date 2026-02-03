@@ -218,12 +218,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export interface ProductOption {
-  id: number;
+  id: string;
   title: string;
   values: string[];
   useForVariants: boolean;
   unit?: string;
-  attributeId?: string;
 }
 
 interface ProductOptionsPropsNew {
@@ -257,7 +256,7 @@ function AddOptionModal({
     if (editingOption) {
       setOptionName(editingOption.title);
       setSelections(editingOption.values);
-      const attr = attributes.find((a) => a._id === editingOption.attributeId);
+      const attr = attributes.find((a) => a._id === editingOption.id);
       if (attr) setSelectedAttribute(attr);
     } else {
       setOptionName("");
@@ -317,12 +316,11 @@ function AddOptionModal({
     }
 
     const option: ProductOption = {
-      id: editingOption?.id || Date.now(),
+      id: String(selectedAttribute?._id),
       title: optionName,
       values: selections,
       useForVariants: editingOption?.useForVariants || false,
       unit: selectedAttribute?.unit,
-      attributeId: selectedAttribute?._id,
     };
 
     onSave(option);
@@ -349,11 +347,11 @@ function AddOptionModal({
                   const attr = attributes.find((a) => a._id === e.target.value);
                   if (attr) handleAttributeSelect(attr);
                 }}
-                value={selectedAttribute?._id || ""}
+                value={String(selectedAttribute?._id) || ""}
               >
                 <option value="">Choose an attribute...</option>
                 {attributes.map((attr) => (
-                  <option key={attr._id} value={attr._id}>
+                  <option key={String(attr._id)} value={String(attr._id)}>
                     {attr.name}
                     {attr.unit ? ` (${attr.unit})` : ""}
                   </option>
@@ -386,8 +384,8 @@ function AddOptionModal({
                   >
                     <input
                       type="checkbox"
-                      checked={selections.includes(value)}
-                      onChange={() => toggleSelection(value)}
+                      checked={selections.includes(String(value))}
+                      onChange={() => toggleSelection(String(value))}
                       className="w-4 h-4"
                     />
                     <span className="text-sm">{value}</span>
@@ -458,7 +456,9 @@ export function ProductOptionsSection({
   setProductOptions,
   attributes,
 }: ProductOptionsPropsNew) {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [editingOption, setEditingOption] = useState<ProductOption | null>(
     null,
   );
@@ -474,6 +474,7 @@ export function ProductOptionsSection({
   };
 
   const handleSaveOption = (option: ProductOption) => {
+    
     if (editingOption) {
       // Edit existing
       setProductOptions((prev) =>
@@ -485,7 +486,7 @@ export function ProductOptionsSection({
     }
   };
 
-  const handleDeleteOption = (optionId: number) => {
+  const handleDeleteOption = (optionId: string) => {
     if (confirm("Are you sure you want to delete this option?")) {
       setProductOptions((prev) => prev.filter((opt) => opt.id !== optionId));
     }

@@ -1,34 +1,11 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { type ElementType } from "react";
-import {
-  ExternalLink,
-  Globe,
-  Mail,
-  ShieldCheck,
-  Zap,
-  Users,
-  ArrowRight,
-  Sparkles,
-  Activity,
-  ShoppingCart,
-  FileText,
-  Image as ImageIcon,
-  Palette,
-  Settings,
-  Plus,
-} from "lucide-react";
 import GetAllAgency from "@/components/admin/agency/GetAllAgency";
 import GetAllBusiness from "@/components/admin/business/GetAllBusiness";
-import ShowListOfBusiness from "@/components/adminDashBoard/ShowListOfBusiness";
-import QuickTool from "@/components/adminDashBoard/QuickTool";
-import GlanceCount from "@/components/adminDashBoard/GlanceCount";
 import GetAllWebsites from "@/components/admin/website/GetAllWebsites";
-import AdminHeader from "@/components/adminDashBoard/AdminHeader";
 import { auth } from "@/auth";
-import Promo from "@/components/adminDashBoard/Promo";
 import { redirect } from "next/navigation";
 import MinorComp from "./minorcomp";
 

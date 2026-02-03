@@ -449,7 +449,6 @@ export function CreateProduct({ productId }: { productId?: string }) {
     }
   };
 
-
   return (
     <div className="min-h-screen">
       <div className="w-full mb-4 flex justify-between items-center">
