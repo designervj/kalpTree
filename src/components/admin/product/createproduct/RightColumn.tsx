@@ -33,6 +33,9 @@ export const RightColumn = ({
   handleInputChange,
   producttypecategory,
   setProductTypeCategory,
+  attributesetid,
+  setAttributeSetId,
+  listAttributeSets,
 }: any) => {
   const {
     listCategory,
@@ -44,6 +47,11 @@ export const RightColumn = ({
   const handleProductTypeCategory = (e: string) => {
     setProductTypeCategory(e);
   };
+
+  const handleSetChange = (e: string) => {
+    setAttributeSetId(e);
+  };
+
   // helper: make Select work like your handleInputChange
   const handleSelectChange = (name: string, value: string) => {
     handleInputChange({ target: { name, value } });
@@ -97,6 +105,7 @@ export const RightColumn = ({
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+
   const handleSaveAdd = async () => {
     if (!newCategory) return;
     setFieldErrors({});
@@ -150,7 +159,6 @@ export const RightColumn = ({
     setIsAddDialogOpen(true);
   };
 
-
   return (
     <>
       <div className="relative lg:col-span-1">
@@ -162,7 +170,7 @@ export const RightColumn = ({
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {/* Segment Type */}
+            {/* Product Type */}
             <div className="space-y-2">
               <Label htmlFor="Product Type">
                 Product Type <span className="text-red-500">*</span>
@@ -173,6 +181,7 @@ export const RightColumn = ({
                 onValueChange={(v) => {
                   handleSelectChange("productType", v);
                   handleProductTypeCategory("");
+                  handleSetChange("");
                 }}
               >
                 <SelectTrigger className="w-full">
@@ -198,7 +207,10 @@ export const RightColumn = ({
 
               <Select
                 value={producttypecategory}
-                onValueChange={(v) => handleProductTypeCategory(v)}
+                onValueChange={(v) => {
+                  handleProductTypeCategory(v);
+                  handleSetChange("");
+                }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Product Category" />
@@ -213,6 +225,35 @@ export const RightColumn = ({
                         <SelectItem value={String(d._id)}>{d.name}</SelectItem>
                       );
                     })}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="Product Category Type">
+                Product Sets<span className="text-red-500">*</span>
+              </Label>
+
+              <Select
+                value={attributesetid}
+                onValueChange={(v) => handleSetChange(v)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Product Set" />
+                </SelectTrigger>
+                <SelectContent>
+                  {producttypecategory &&
+                    listAttributeSets
+                      .filter((d: any) => {
+                        return d.categoryId === producttypecategory;
+                      })
+                      .map((d: any) => {
+                        return (
+                          <SelectItem value={String(d._id)}>
+                            {d.name}
+                          </SelectItem>
+                        );
+                      })}
                 </SelectContent>
               </Select>
             </div>

@@ -86,6 +86,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
 
   const [producttypecategory, setProductTypeCategory] = useState("");
 
+  const [attributesetid, setAttributeSetId] = useState("");
+
   // const singleSelectedProduct = useMemo(() => {
   //   return listProduct.find((d) => d._id == productId);
   // }, [productId, listProduct]);
@@ -158,10 +160,13 @@ export function CreateProduct({ productId }: { productId?: string }) {
   }, [listProduct, productId]);
 
   useEffect(() => {
-    if (!productId && producttypecategory) {
+    if (!productId && attributesetid) {
+      console.log(attributesetid, listAttributeSets)
       const attr = listAttributeSets.find((d) => {
-        return d.categoryId == producttypecategory;
+        return d._id == attributesetid;
       })?.attributes;
+
+      console.log(attr)
 
       const relevantAttrs =
         attr && attr.length > 0
@@ -185,9 +190,11 @@ export function CreateProduct({ productId }: { productId?: string }) {
             );
           });
         });
+      } else {
+        setProductOptions([]);
       }
     }
-  }, [producttypecategory]);
+  }, [attributesetid]);
 
   const generateVariants = () => {
     const variantOptions = productOptions.filter(
@@ -741,6 +748,9 @@ export function CreateProduct({ productId }: { productId?: string }) {
             handleInputChange={handleInputChange}
             producttypecategory={producttypecategory}
             setProductTypeCategory={setProductTypeCategory}
+            attributesetid={attributesetid}
+            setAttributeSetId={setAttributeSetId}
+            listAttributeSets={listAttributeSets}
           />
         </div>
         {formData.productType === "hotel" && (

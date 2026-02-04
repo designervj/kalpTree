@@ -40,7 +40,7 @@ export default async function PageTemplate({
     : null;
 
   const session = await auth();
- 
+
   // if(!session){
   //   redirect("/auth/signin");
   // }
@@ -50,10 +50,7 @@ export default async function PageTemplate({
   if (lang && lang.length > 2 && !slug) {
     slug = lang;
     lang = null;
-  } else if (!slug) {
-    slug = "home";
   }
-
   // Get header/footer collection (needed regardless of website source)
   try {
     const allheader_coll = await db.collection("templates_header");
@@ -69,10 +66,19 @@ export default async function PageTemplate({
         },
       });
 
-      let page = await pagecoll.findOne({
-        websiteId: websitedata._id,
-        slug: slug,
-      });
+      let page;
+
+      if (!slug) {
+        page = await pagecoll.findOne({
+          websiteId: websitedata._id,
+          isHomePage: true,
+        });
+      } else {
+        page = await pagecoll.findOne({
+          websiteId: websitedata._id,
+          slug: slug,
+        });
+      }
 
       // console.log("page--->", page);
       if (!lang && websitedata.lang) {
@@ -165,7 +171,6 @@ export default async function PageTemplate({
           html={processedHtml}
           headerData={serializedHeaderData}
           footerData={serializedFooterData}
-          
         />
 
         {/* <EditButton

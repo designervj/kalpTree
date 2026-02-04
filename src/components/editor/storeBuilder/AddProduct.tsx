@@ -259,6 +259,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
 
   // State from CreateProduct
   const [producttypecategory, setProductTypeCategory] = React.useState("");
+  const [attributesetid, setAttributeSetId] = React.useState("");
 
   const [formData, setFormData] = React.useState<FormData>({
     title: "",
@@ -273,7 +274,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
     bagbutton: false,
     baseQuantity: "",
     ribbon: "",
-    subtitle: ""
+    subtitle: "",
   });
 
   const [images, setImages] = React.useState<ImageFile[]>([]);
@@ -292,9 +293,9 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
   const [drag, setDrag] = React.useState<null | number>(null);
 
   React.useEffect(() => {
-    if (producttypecategory) {
+    if (attributesetid) {
       const attr = listAttributeSets.find((d) => {
-        return d.categoryId == producttypecategory;
+        return d._id == attributesetid;
       })?.attributes;
 
       const relevantAttrs =
@@ -321,7 +322,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
         });
       }
     }
-  }, [producttypecategory, listAttributeSets, attributes]);
+  }, [attributesetid, listAttributeSets, attributes]);
 
   // Generate variants based on product options
   const generateVariants = () => {
@@ -376,7 +377,6 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
   }, [productOptions]);
 
   const handleInputChange = (e: any) => {
-    console.log(e);
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -622,6 +622,68 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
             <SelectItem value="archived">Archived</SelectItem>
           </SelectContent>
         </Select>
+
+        <Select
+          value={formData.productType}
+          onValueChange={(e) => {
+            handleInputChange({ target: { name: "productType", value: e } });
+            setProductTypeCategory("");
+            setAttributeSetId("");
+          }}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Product type" />
+          </SelectTrigger>
+          <SelectContent>
+            {listProductType.map((d) => {
+              return <SelectItem value={String(d._id)}>{d.name}</SelectItem>;
+            })}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={producttypecategory}
+          onValueChange={(v) => {
+            setProductTypeCategory(v);
+            setAttributeSetId("");
+          }}
+          disabled={!formData.productType}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Product Category" />
+          </SelectTrigger>
+          <SelectContent>
+            {listProductTypeCategory
+              .filter((d) => {
+                return d.product_type === formData.productType;
+              })
+              .map((d) => {
+                return <SelectItem value={String(d._id)}>{d.name}</SelectItem>;
+              })}
+          </SelectContent>
+        </Select>
+
+        <Select
+          value={attributesetid}
+          onValueChange={(v) => setAttributeSetId(v)}
+          disabled={!producttypecategory}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Product Set" />
+          </SelectTrigger>
+          <SelectContent>
+            {producttypecategory &&
+              listAttributeSets
+                .filter((d: any) => {
+                  return d.categoryId === producttypecategory;
+                })
+                .map((d: any) => {
+                  return (
+                    <SelectItem value={String(d._id)}>{d.name}</SelectItem>
+                  );
+                })}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Content */}
@@ -740,7 +802,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
                 <div className="md:col-span-8">
                   <Label className="text-xs text-slate-700">Subtitle</Label>
                   <Input
-                   name="subtitle"
+                    name="subtitle"
                     value={formData.subtitle}
                     onChange={handleInputChange}
                     placeholder="Your product subtitle"
