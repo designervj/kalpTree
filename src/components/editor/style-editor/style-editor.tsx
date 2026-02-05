@@ -99,25 +99,33 @@ interface StyleEditorProps {
   onStyleChange: (property: string, value: string) => void;
   selectedElement?: any;
 }
-interface SectionProps extends StyleEditorProps { }
+interface SectionProps extends StyleEditorProps {
+  elementStyles?: any;
+  rootStyles?: any;
+}
 
 interface TypographySectionProps {
   styles: StyleState;
   onStyleChange: (property: string, value: string) => void;
   elementStyles: any;
+  rootStyles?: any;
 }
 /* --------------------------
    Sections
 --------------------------- */
-function TypographySection({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
+function TypographySection({ styles, onStyleChange, elementStyles, rootStyles }: TypographySectionProps) {
   return (
     <div className="space-y-4">
       <FontFamilyControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <FontSizeControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <FontWeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <LineHeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
-      <LetterSpacingControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
-      <TextColorControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <LetterSpacingControl
+
+        styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <TextColorControl
+        rootStyles={rootStyles}
+        styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <TextAlignmentControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <TextStyleControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <TextShadowControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
@@ -135,13 +143,13 @@ function SpacingSection({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function ColorsSection({ styles, onStyleChange }: SectionProps) {
+function ColorsSection({ styles, onStyleChange, elementStyles, rootStyles }: SectionProps) {
   return (
     <div className="space-y-3">
-      <BackgroundColorControl styles={styles} onStyleChange={onStyleChange} />
-      <BorderColorControl styles={styles} onStyleChange={onStyleChange} />
-      <BorderWidthControl styles={styles} onStyleChange={onStyleChange} />
-      <BorderStyleControl styles={styles} onStyleChange={onStyleChange} />
+      <BackgroundColorControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <BorderColorControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <BorderWidthControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
+      <BorderStyleControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
     </div>
   );
 }
@@ -154,8 +162,6 @@ function FontFamilyControl({ styles, onStyleChange, elementStyles }: TypographyS
     elementStyles["font-family"]
   );
 
-  console.log("elementStyles", elementStyles);
-  console.log("fontFamilyValue", elementStyles["font-family"]);
   useEffect(() => {
     setFontFamilyValue(elementStyles["font-family"]);
   }, [elementStyles]);
@@ -398,18 +404,29 @@ function LetterSpacingControl({ styles, onStyleChange, elementStyles }: Typograp
   );
 }
 
-function TextColorControl({ styles, onStyleChange, elementStyles }: TypographySectionProps) {
+function TextColorControl({ styles, onStyleChange, elementStyles, rootStyles }: TypographySectionProps) {
+  const colorClasss = elementStyles["color"];
+  const extracted = colorClasss?.match(/var\((--[^)]+)\)/)?.[1];
+
+  const color = rootStyles?.[extracted];
+  const [textColor, setTextColor] = useState<string>(color)
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Text Color</Label>
       <div className="flex items-center gap-2">
         <ColorPicker
-          color={styles.typography.color}
-          onChange={(color) => onStyleChange("color", color)}
+          color={textColor}
+          onChange={(color) => {
+            setTextColor(color)
+            onStyleChange("color", color)
+          }}
         />
         <Input
-          value={styles.typography.color}
-          onChange={(e) => onStyleChange("color", e.target.value)}
+          value={textColor}
+          onChange={(e) => {
+            setTextColor(e.target.value)
+            onStyleChange("color", e.target.value)
+          }}
           className={UI.input}
         />
       </div>
@@ -756,7 +773,7 @@ function MarginControl({ styles, onStyleChange }: SectionProps) {
 /* --------------------------
    Colors Controls
 --------------------------- */
-function BackgroundColorControl({ styles, onStyleChange }: SectionProps) {
+function BackgroundColorControl({ styles, onStyleChange, elementStyles, rootStyles }: SectionProps) {
   const colorPresets = [
     { color: "#FFFFFF", name: "White" },
     { color: "#F8FAFC", name: "Slate 50" },
@@ -765,18 +782,29 @@ function BackgroundColorControl({ styles, onStyleChange }: SectionProps) {
     { color: "#0B1220", name: "Deep Dark" },
   ];
 
+  const colorClasss = elementStyles?.["background-color"];
+  const extracted = colorClasss?.match(/var\((--[^)]+)\)/)?.[1];
+
+  const color = rootStyles?.[extracted];
+  const [backgroundColor, setBackground] = useState<string>(color || styles.colors.backgroundColor)
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Background Color</Label>
 
       <div className="flex items-center gap-2">
         <ColorPicker
-          color={styles.colors.backgroundColor || "#FFFFFF"}
-          onChange={(color) => onStyleChange("background-color", color)}
+          color={backgroundColor}
+          onChange={(color) => {
+            setBackground(color)
+            onStyleChange("background-color", color)
+          }}
         />
         <Input
-          value={styles.colors.backgroundColor || "#FFFFFF"}
-          onChange={(e) => onStyleChange("background-color", e.target.value)}
+          value={backgroundColor}
+          onChange={(e) => {
+            setBackground(e.target.value)
+            onStyleChange("background-color", e.target.value)
+          }}
           className={UI.input}
         />
       </div>
@@ -970,6 +998,9 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
           <SelectItem value="flex" className={UI.selectItem}>
             Flex
           </SelectItem>
+          <SelectItem value="none" className={UI.selectItem}>
+            None
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>
@@ -982,6 +1013,8 @@ function DisplayStyleControl({ styles, onStyleChange }: SectionProps) {
 export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEditorProps) {
   const { state } = useEditorContext();
   const editor = state.editor as Editor | null;
+  const getRootCSS = editor?.Css.getRule(":root");
+  const rootStyles = getRootCSS?.getStyle();
 
   const classes = selectedElement.getClasses() || [];
   const [elementStyles, setElementStyles] = useState({});
@@ -1024,6 +1057,7 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
             <AccordionContent>
               <TypographySection
                 elementStyles={elementStyles}
+                rootStyles={rootStyles}
                 styles={styles} onStyleChange={onStyleChange} />
             </AccordionContent>
           </AccordionItem>
@@ -1056,7 +1090,9 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
             Global Styles
           </AccordionTrigger>
           <AccordionContent>
-            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} />
+            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} 
+            rootStyles={rootStyles}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

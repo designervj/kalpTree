@@ -6,9 +6,12 @@ import { Input } from '@/components/ui/input';
 
 type SectionProps = {
   styles: StyleState;
+  rootStyles: any;
   onStyleChange: (property: string, value: string) => void;
 }
-const    GlobalStylesSection = ({ styles, onStyleChange }: SectionProps) => {
+const    GlobalStylesSection = ({ styles, rootStyles, onStyleChange }: SectionProps) => {
+ console.log("rootStyles---", rootStyles);
+ 
   return (
     <div className="space-y-3">
       <div className="text-xs text-slate-400 mb-2">

@@ -46,13 +46,13 @@ const MinorComp = ({ sessionUser }: any) => {
   }, [user, currentWebsite]);
 
   // ⛔ block UI until decision is made
-  if (!ready) {
-    return (
-      <div className="h-[60vh] grid place-items-center text-muted-foreground">
-        Loading...
-      </div>
-    );
-  }
+  // if (!ready) {
+  //   return (
+  //     <div className="h-[60vh] grid place-items-center text-muted-foreground">
+  //       Loading...
+  //     </div>
+  //   );
+  // }
 
   const actions: ActionCard[] = [
     {
