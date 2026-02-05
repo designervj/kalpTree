@@ -18,6 +18,7 @@ import ProductForm from "./product/forms/ProductForm";
 type Props = { entity: string };
 
 export default function EntityCreateModal({ entity }: Props) {
+
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);

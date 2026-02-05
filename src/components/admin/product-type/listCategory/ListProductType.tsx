@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ProductTypeModal } from "../../product/createproduct/ProductTypeModal";
 
 const ListProductType = () => {
   const { listProductType, isProductTypeLoading } = useSelector(
@@ -29,11 +30,14 @@ const ListProductType = () => {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
-  
+
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingProductType, setEditingProductType] = useState<ProductType | null>(null);
+  const [editingProductType, setEditingProductType] =
+    useState<ProductType | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newProductType, setNewProductType] = useState<ProductType | null>(null);
+  const [newProductType, setNewProductType] = useState<ProductType | null>(
+    null,
+  );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -50,14 +54,14 @@ const ListProductType = () => {
     if (!newProductType) return;
     setFieldErrors({});
     const errors: Record<string, string> = {};
-    
+
     if (!newProductType.name?.trim()) {
       errors.name = "Name is required";
     }
     if (!newProductType.slug?.trim()) {
       errors.slug = "Slug is required";
     }
-    
+
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
@@ -86,7 +90,7 @@ const ListProductType = () => {
       });
       setIsAddDialogOpen(false);
       setNewProductType(null);
-      
+
       // Dispatch the imported action
       dispatch(addProductType(created));
     } catch (err: any) {
@@ -104,7 +108,11 @@ const ListProductType = () => {
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) {
-      toast({ title: "Delete failed", description: "Missing id", variant: "destructive" });
+      toast({
+        title: "Delete failed",
+        description: "Missing id",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -119,10 +127,10 @@ const ListProductType = () => {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
-      
+
       // Dispatch the imported action
       dispatch(removeProductType(id));
-      
+
       toast({
         title: "Deleted",
         description: `Product Type "${row?.name ?? id}" removed`,
@@ -186,10 +194,10 @@ const ListProductType = () => {
         title: "Updated",
         description: `Product Type "${editingProductType.name}" updated successfully`,
       });
-      
+
       setIsEditDialogOpen(false);
       setEditingProductType(null);
-      
+
       // Dispatch the imported action
       dispatch(updateProductType(updated));
     } catch (err: any) {
@@ -224,69 +232,16 @@ const ListProductType = () => {
         opentab={() => {}}
       />
 
-      {/* Add Product Type Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Product Type</DialogTitle>
-          </DialogHeader>
-          {newProductType && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Name *</Label>
-                <Input
-                  id="name"
-                  value={newProductType.name}
-                  onChange={(e) =>
-                    setNewProductType({ ...newProductType, name: e.target.value })
-                  }
-                  placeholder="Enter product type name"
-                  className={fieldErrors.name ? "border-red-500" : ""}
-                />
-                {fieldErrors.name && (
-                  <p className="text-sm text-red-500">{fieldErrors.name}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="slug">Slug *</Label>
-                <Input
-                  id="slug"
-                  value={newProductType.slug}
-                  onChange={(e) =>
-                    setNewProductType({ ...newProductType, slug: e.target.value })
-                  }
-                  placeholder="Enter slug (e.g., product-type-name)"
-                  className={fieldErrors.slug ? "border-red-500" : ""}
-                />
-                {fieldErrors.slug && (
-                  <p className="text-sm text-red-500">{fieldErrors.slug}</p>
-                )}
-                <p className="text-xs text-gray-500">
-                  URL-friendly version of the name (lowercase, hyphens instead of spaces)
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddDialogOpen(false);
-                    setNewProductType(null);
-                    setFieldErrors({});
-                  }}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveAdd} disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Add Product Type"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ProductTypeModal
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newProductType={newProductType}
+        setNewProductType={setNewProductType}
+        fieldErrors={fieldErrors}
+        isSaving={isSaving}
+        handleSaveAdd={handleSaveAdd}
+        setFieldErrors={setFieldErrors}
+      />
 
       {/* Edit Product Type Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -334,7 +289,8 @@ const ListProductType = () => {
                   <p className="text-sm text-red-500">{fieldErrors.slug}</p>
                 )}
                 <p className="text-xs text-gray-500">
-                  URL-friendly version of the name (lowercase, hyphens instead of spaces)
+                  URL-friendly version of the name (lowercase, hyphens instead
+                  of spaces)
                 </p>
               </div>
 

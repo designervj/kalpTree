@@ -19,6 +19,7 @@ import BookingConfiguration, {
   DEFAULT_CONFIGS,
 } from "./BookingType";
 import { toast } from "sonner";
+import EntityCreateModal from "../../EntityCreateModal";
 
 interface FormData {
   title: string;
@@ -161,12 +162,12 @@ export function CreateProduct({ productId }: { productId?: string }) {
 
   useEffect(() => {
     if (!productId && attributesetid) {
-      console.log(attributesetid, listAttributeSets)
+      console.log(attributesetid, listAttributeSets);
       const attr = listAttributeSets.find((d) => {
         return d._id == attributesetid;
       })?.attributes;
 
-      console.log(attr)
+      console.log(attr);
 
       const relevantAttrs =
         attr && attr.length > 0
@@ -515,62 +516,6 @@ export function CreateProduct({ productId }: { productId?: string }) {
             </div>
 
             {/* Media */}
-            <div className="bg-white rounded-md shadow p-6">
-              <h2 className="text-xl font-medium mb-1">
-                Media{" "}
-                <span className="text-gray-400 text-sm font-normal">
-                  Optional
-                </span>
-              </h2>
-              <div className="mt-4">
-                {images.length > 0 && (
-                  <div className="grid grid-cols-3 gap-3 mb-4">
-                    {images.map((img, idx) => (
-                      <div
-                        draggable={true}
-                        onDragStart={() => handleDrag(idx)}
-                        onDragOver={(e) => e.preventDefault()}
-                        onDrop={() => handleDragEnd(idx)}
-                        key={img.id}
-                        className="relative group"
-                      >
-                        <img
-                          src={img.url}
-                          alt={`Product ${idx + 1}`}
-                          className="w-full h-24 object-cover rounded border-2 border-gray-200"
-                        />
-                        {idx === 0 && (
-                          <div className="absolute bottom-1 left-1 bg-white rounded-full p-1">
-                            <div className="w-4 h-4 border-2 border-green-500 rounded-full flex items-center justify-center">
-                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            </div>
-                          </div>
-                        )}
-                        <button
-                          onClick={() => removeImage(img.id)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <label className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400">
-                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-500">
-                    Drag and drop an image here or click to upload.
-                  </p>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
 
             {/* Product Options */}
             <div className="bg-white rounded-md shadow p-6">
@@ -740,6 +685,63 @@ export function CreateProduct({ productId }: { productId?: string }) {
                 </div>
               </div>
             )}
+
+            <div className="bg-white rounded-md shadow p-6">
+              <h2 className="text-xl font-medium mb-1">
+                Media{" "}
+                <span className="text-gray-400 text-sm font-normal">
+                  Optional
+                </span>
+              </h2>
+              <div className="mt-4">
+                {images.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {images.map((img, idx) => (
+                      <div
+                        draggable={true}
+                        onDragStart={() => handleDrag(idx)}
+                        onDragOver={(e) => e.preventDefault()}
+                        onDrop={() => handleDragEnd(idx)}
+                        key={img.id}
+                        className="relative group"
+                      >
+                        <img
+                          src={img.url}
+                          alt={`Product ${idx + 1}`}
+                          className="w-full h-24 object-cover rounded border-2 border-gray-200"
+                        />
+                        {idx === 0 && (
+                          <div className="absolute bottom-1 left-1 bg-white rounded-full p-1">
+                            <div className="w-4 h-4 border-2 border-green-500 rounded-full flex items-center justify-center">
+                              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            </div>
+                          </div>
+                        )}
+                        <button
+                          onClick={() => removeImage(img.id)}
+                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <label className="border-2 border-dashed border-gray-300 rounded-lg p-12 flex flex-col items-center justify-center cursor-pointer hover:border-gray-400">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-500">
+                    Drag and drop an image here or click to upload.
+                  </p>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Right Column */}

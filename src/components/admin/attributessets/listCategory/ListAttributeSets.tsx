@@ -18,6 +18,7 @@ import {
   removeAttributeSet,
 } from "@/hooks/slices/attributessets/attributeSetsSlice";
 import { toast } from "sonner";
+import { ProductSetModal } from "../../product/createproduct/ProductSetModal";
 
 const ListAttributeSets = () => {
   const { listAttributeSets } = useSelector(
@@ -230,43 +231,15 @@ const ListAttributeSets = () => {
       />
 
       {/* Add Attribute Set Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Attribute Set</DialogTitle>
-          </DialogHeader>
-          {newAttributeSet && (
-            <div className="space-y-4">
-              <AttributeSetForm
-                attributeSet={newAttributeSet}
-                setAttributeSet={(value) => {
-                  if (typeof value === "function") {
-                    setNewAttributeSet((prev) => (prev ? value(prev) : prev));
-                  } else {
-                    setNewAttributeSet(value);
-                  }
-                }}
-                fieldErrors={fieldErrors}
-              />
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddDialogOpen(false);
-                    setNewAttributeSet(null);
-                  }}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveAdd} disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Add Attribute Set"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      <ProductSetModal
+        isAddDialogOpen={isAddDialogOpen}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newAttributeSet={newAttributeSet}
+        setNewAttributeSet={setNewAttributeSet}
+        fieldErrors={fieldErrors}
+        isSaving={isSaving}
+        handleSaveAdd={handleSaveAdd}
+      />
 
       {/* Edit Attribute Set Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>

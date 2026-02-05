@@ -515,7 +515,7 @@ export default function GrapesJSEditor() {
   };
 
   const [open, setOpen] = useState(false);
-   console.log("blocks", state.blocks);
+  
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
