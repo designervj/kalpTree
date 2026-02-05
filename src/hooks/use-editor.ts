@@ -79,8 +79,10 @@ export function useEditor(containerId: string) {
     currentDevice: "desktop",
     isLoading: true,
     blocks: defaultBlocks,
-    layers: [], 
+    layers: [],
     editorJs: "", // Add JavaScript content to state
+    autoExpandedLayers: [], // Track which layers should be auto-expanded
+    selectedLayerId: undefined, // Track the currently selected layer ID
     styles: {
       typography: {
         fontFamily: "Inter",
@@ -104,7 +106,7 @@ export function useEditor(containerId: string) {
         display: "block",
       },
     },
-    
+
   });
 
 
@@ -864,9 +866,15 @@ export function useEditor(containerId: string) {
         return;
       }
 
+      // Get the hierarchy path to auto-expand parent layers
+      const hierarchy = getComponentHierarchy(component);
+      console.log('Component hierarchy for auto-expand:', hierarchy);
+
       setState((prev) => ({
         ...prev,
         selectedElement: component,
+        autoExpandedLayers: hierarchy, // Expand all parents
+        selectedLayerId: typeof component.getId === 'function' ? component.getId() : component.cid, // Highlight the selected layer
       }));
       updateStylesFromComponent(component);
 
@@ -1074,6 +1082,25 @@ export function useEditor(containerId: string) {
     // editor.on("component:update", () => updateLayers(editor));
     editor.on("component:add", () => updateLayers(editor));
     editor.on("component:remove", () => updateLayers(editor));
+  };
+
+  // Helper function to get the full hierarchy path of a component
+  const getComponentHierarchy = (component: any): string[] => {
+    const hierarchy: string[] = [];
+    let current = component;
+
+    while (current) {
+      // Use getId() to match the ID format used in PageLayer.tsx
+      const id = typeof current.getId === 'function' ? current.getId() : current.cid;
+      if (id) {
+        hierarchy.unshift(id); // Add to beginning of array
+      }
+      // Different ways to access parent depending on GrapesJS version
+      current = typeof current.parent === 'function' ? current.parent() : current.parent;
+    }
+
+    console.log('📊 Component hierarchy (IDs):', hierarchy);
+    return hierarchy;
   };
 
   const updateLayers = (editor: GrapesJSEditor) => {
