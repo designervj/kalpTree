@@ -457,6 +457,7 @@ function SidebarNav({
 function ProductsPage() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
   const { user } = useSelector((state: RootState) => state.user);
   const handleImport = async (data: any) => {
     try {

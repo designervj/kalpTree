@@ -79,7 +79,7 @@ export function useEditor(containerId: string) {
     isLoading: true,
     blocks: [],
     layers: [],
-    editorJs: "", // Add JavaScript content to state
+    editorJs: "", 
     styles: {
       typography: {
         fontFamily: "Inter",
@@ -103,6 +103,7 @@ export function useEditor(containerId: string) {
         display: "block",
       },
     },
+    
   });
 
 

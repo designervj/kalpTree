@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import { success } from "zod";
 import { ObjectId } from "mongodb";
 import { getCollection } from "@/app/api/tenants/[id]/route";
 
@@ -29,6 +27,7 @@ export async function POST(req: NextRequest) {
       .find()
       .project({ _id: 1, slug: 1 })
       .toArray();
+
     const allattributes = await attributesColl
       .find()
       .project({ _id: 1, slug: 1, unit: 1, name: 1 })

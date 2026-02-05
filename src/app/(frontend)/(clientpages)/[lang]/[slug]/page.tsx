@@ -2,15 +2,13 @@ import { getCollection } from "@/app/api/tenants/[id]/route";
 import NotFound from "@/app/not-found";
 import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
-import RenderHtml from "./RenderHtml";
 import { getDatabase } from "@/lib/db/mongodb";
-import { extractHtmlParts } from "@/lib/utils";
 import SlugPageHome from "./SlugPageHome";
 import ModernCartPage from "@/components/admin/product/Cart/Cart";
 import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
-import { redirect } from "next/navigation";
+
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -44,6 +42,7 @@ export default async function PageTemplate({
   // if(!session){
   //   redirect("/auth/signin");
   // }
+  
   let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
 
@@ -112,8 +111,8 @@ export default async function PageTemplate({
       ),
     };
 
-    if (slug in obj) {
-      return obj[slug];
+    if (slug! in obj) {
+      return obj[slug!];
     }
 
     if (!website) {
@@ -199,4 +198,3 @@ export default async function PageTemplate({
   }
 }
 
-// }
