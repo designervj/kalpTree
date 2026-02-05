@@ -126,9 +126,8 @@ const LayerItem: React.FC<LayerItemProps> = ({
       onDrop={(e) => onDrop(component, e)}
     >
       <div
-        className={`layer-row ${isSelected ? "selected" : ""} ${
-          isHovered ? "hovered" : ""
-        }`}
+        className={`layer-row ${isSelected ? "selected" : ""} ${isHovered ? "hovered" : ""
+          }`}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
         onClick={() => onSelect(component)}
         onMouseEnter={() => {
@@ -170,9 +169,8 @@ const LayerItem: React.FC<LayerItemProps> = ({
 
         <div className="layer-controls-right">
           <button
-            className={`visibility-btn ${!isVisible ? "is-hidden" : ""} ${
-              isHovered || !isVisible ? "opacity-100" : "opacity-0"
-            }`}
+            className={`visibility-btn ${!isVisible ? "is-hidden" : ""} ${isHovered || !isVisible ? "opacity-100" : "opacity-0"
+              }`}
             onClick={(e) => onToggleVisibility(component, e)}
           >
             {isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
@@ -332,6 +330,32 @@ const PageLayer = () => {
     []
   );
 
+
+
+  // Sync autoExpandedLayers from EditorContext state with local expandedIds
+  useEffect(() => {
+    if (state.autoExpandedLayers && state.autoExpandedLayers.length > 0) {
+      console.log('🔄 PageLayer: Received autoExpandedLayers:', state.autoExpandedLayers);
+      setExpandedIds((prev) => {
+        const next = new Set(prev);
+        state.autoExpandedLayers?.forEach((layerId) => {
+          next.add(layerId);
+          console.log('➕ Expanding layer:', layerId);
+        });
+        console.log('📂 All expanded IDs:', Array.from(next));
+        return next;
+      });
+    }
+  }, [state.autoExpandedLayers]);
+
+  // Sync selectedLayerId from EditorContext state
+  useEffect(() => {
+    if (state.selectedLayerId) {
+      console.log('🎯 PageLayer: Selected layer ID:', state.selectedLayerId);
+      setSelectedId(state.selectedLayerId);
+    }
+  }, [state.selectedLayerId]);
+
   // Close dropdown on outside click
   useEffect(() => {
     if (!searchOpen) return;
@@ -419,7 +443,7 @@ const PageLayer = () => {
   const handleSelect = (component: any) => {
     if (!editor) return;
     editor.select(component);
-
+    console.log("component", component);
     // Scroll canvas to component
     const el = component.getEl();
     if (el) {
@@ -528,62 +552,17 @@ const PageLayer = () => {
 
   console.log("root component", rootComponent);
 
-  const filteredSearchItems = searchItems.filter((x) =>
-    x.toLowerCase().includes((searchValue || "").toLowerCase())
-  );
+
 
   return (
     <div className="page-layer h-full overflow-y-auto overflow-x-hidden select-none">
-      {/* Header: "Search Layout" row (matches screenshot) */}
-      {/* <div className="layer-topbar">
-        <div className="layer-search-wrap">
-          <button
-            type="button"
-            className="layer-search-trigger"
-            onClick={() => setSearchOpen((v) => !v)}
-          >
-            <Search size={16} className="layer-top-icon" />
-            <span className="layer-top-title">Search Layout</span>
-          </button>
-
-          <button
-            type="button"
-            className="layer-filter-btn"
-            onClick={() => setSearchOpen((v) => !v)}
-            aria-label="Filter"
-          >
-            <Filter size={16} />
-          </button>
-
-      
-          {searchOpen && (
-            <div className="layer-search-popover">
-              <input
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="Start Typing"
-                className="layer-search-input"
-                autoFocus
-              />
-
-              <div className="layer-search-list">
-                {filteredSearchItems.map((item) => (
-                  <div key={item} className="layer-search-item">
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div> */}
 
       {/* Close All row */}
       <div className="layer-actions">
         <button type="button" className=" text-[14px] flex items-center justify-end w-full pe-4 text-primary gap-1 cursor-pointer font-medium" onClick={handleCloseAll}>
-         Close All
+          Close All
         </button>
-          {/* <IoIosCloseCircleOutline className="w-4 h-4"/> */}
+        {/* <IoIosCloseCircleOutline className="w-4 h-4"/> */}
       </div>
 
       {/* Tree */}

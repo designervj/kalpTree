@@ -7,14 +7,19 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { TemplateDocument } from '../templates/TemplateType';
 import ShowCurrentHeader from './ShowCurrentHeader';
+import { useRouter } from 'next/navigation';
 
 const ShowHeader = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { hasFetched, allHeader, currentHeader } = useSelector((state: RootState) => state.header);
-    const { currentWebsite } = useSelector((state: RootState) => state.websites);
+   const router = useRouter();
     const [savingId, setSavingId] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedHeader, setSelectedHeader] = useState<TemplateDocument | null>(null);
+
+   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+   const {currentBusiness} = useSelector((state: RootState) => state.business);
+   const {curretAgency} = useSelector((state: RootState) => state.agency);
 
     const handleOpenModal = () => {
 
@@ -45,7 +50,7 @@ const ShowHeader = () => {
             websiteId: currentWebsite._id,
             content: header.content
         }
-      
+
 
         try {
             const result = await dispatch(createHeader(data));
@@ -63,18 +68,22 @@ const ShowHeader = () => {
         }
     };
 
+    const handleAddHeader = () => {
+          router.push(`/admin/websites/${currentWebsite?.primaryDomain?.[0]}/website/header/create?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`);
+    };
     return (
         <div className="space-y-6">
 
             <ShowCurrentHeader />
             <Button onClick={() => handleOpenModal()}>Show all Headers</Button>
+            <Button onClick={handleAddHeader}>Add Header</Button>
 
             {/* Modal */}
             {isModalOpen && allHeader && allHeader.length > 0 && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+                    <div className="backdrop-blur-md bg-white/95 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-gray-200">
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between p-4 border-b">
+                        <div className="flex items-center justify-between p-4 border-b border-gray-200">
                             <h2 className="text-xl font-semibold">Header Templates</h2>
                             <button
                                 onClick={handleCloseModal}
@@ -97,52 +106,52 @@ const ShowHeader = () => {
                         </div>
 
                         {/* Modal Body */}
-                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)] space-y-6">
-                            {allHeader.map((header) =>{ 
-                                 const fixedContent = header?.content?.replace(/\\n/g, '');
-                                return(
-                                <div key={header._id?.toString()} className="border rounded-lg p-4 space-y-4">
-                                    <div
-                                        dangerouslySetInnerHTML={{ __html: fixedContent! }}
-                                    />
-                                    <div className="flex justify-end">
-                                        <Button
-                                            onClick={() => handleSaveHeader(header)}
-                                            disabled={savingId === header._id!.toString()}
-                                            className="bg-blue-600 hover:bg-blue-700 text-white"
-                                        >
-                                            {savingId === header._id!.toString() ? (
-                                                <span className="flex items-center gap-2">
-                                                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                                                        <circle
-                                                            className="opacity-25"
-                                                            cx="12"
-                                                            cy="12"
-                                                            r="10"
-                                                            stroke="currentColor"
-                                                            strokeWidth="4"
-                                                            fill="none"
-                                                        />
-                                                        <path
-                                                            className="opacity-75"
-                                                            fill="currentColor"
-                                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                                        />
-                                                    </svg>
-                                                    Saving...
-                                                </span>
-                                            ) : (
-                                                'Save Header'
-                                            )}
-                                        </Button>
+                        <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)] space-y-6 bg-transparent">
+                            {allHeader.map((header) => {
+                                const fixedContent = header?.content?.replace(/\\n/g, '');
+                                return (
+                                    <div key={header._id?.toString()} className="space-y-4">
+                                        <div className="rounded-lg p-4 bg-transparent border border-gray-200/50"
+                                            dangerouslySetInnerHTML={{ __html: fixedContent! }}
+                                        />
+                                        <div className="flex justify-end">
+                                            <Button
+                                                onClick={() => handleSaveHeader(header)}
+                                                disabled={savingId === header._id!.toString()}
+                                                className="bg-blue-600 hover:bg-blue-700 text-white"
+                                            >
+                                                {savingId === header._id!.toString() ? (
+                                                    <span className="flex items-center gap-2">
+                                                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                                            <circle
+                                                                className="opacity-25"
+                                                                cx="12"
+                                                                cy="12"
+                                                                r="10"
+                                                                stroke="currentColor"
+                                                                strokeWidth="4"
+                                                                fill="none"
+                                                            />
+                                                            <path
+                                                                className="opacity-75"
+                                                                fill="currentColor"
+                                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                            />
+                                                        </svg>
+                                                        Saving...
+                                                    </span>
+                                                ) : (
+                                                    'Save Header'
+                                                )}
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            )
+                                )
                             })}
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+                        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-200 bg-gray-50/80">
                             <Button
                                 onClick={handleCloseModal}
                                 className="bg-gray-500 hover:bg-gray-600 text-white"

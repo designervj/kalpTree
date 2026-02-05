@@ -143,6 +143,8 @@ export interface EditorState {
   blocks: BlockConfig[];
   layers: LayerItem[];
   styles: StyleState;
+  autoExpandedLayers?: string[]; // IDs of layers that should be auto-expanded
+  selectedLayerId?: string; // ID of the currently selected layer
 }
 
 export interface LayerItem {
@@ -186,7 +188,7 @@ export interface StyleState {
     transform: string;
     transition: string;
   };
-  layout?:{
+  layout?: {
     display: string
   }
 }
