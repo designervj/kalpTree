@@ -394,7 +394,7 @@ export function DataTableExt({
 
   const pageName = pathname.split("/")[5];
   console.log("pageName", pageName);
-
+ 
   const handleBuilderEdit = async (row: WebsitePageModel) => {
     const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
       ? currentWebsite?.primaryDomain[0]
@@ -406,7 +406,7 @@ export function DataTableExt({
     const isLocalHost = window.location.hostname.includes("localhost");
 
     if (isLocalHost) {
-      const url = `http://${localsub}.localhost:55803/${row.slug}`;
+      const url = `http://${localsub}.localhost:55803/builder/${currentWebsite?._id}/?slug=${row.slug}`;
 
       window.open(url, "_blank");
     } else {

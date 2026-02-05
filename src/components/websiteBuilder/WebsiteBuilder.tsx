@@ -15,8 +15,9 @@ import { fetchFooters } from '@/hooks/slices/footer/FooterThunk';
 type WebsiteBuilderProps = {
     pages: WebsitePageModel[];
     website: Website;
+    search?: { slug: string };      
 }
-const WebsiteBuilder = ({pages, website}: WebsiteBuilderProps) => {
+const WebsiteBuilder = ({pages, website, search}: WebsiteBuilderProps) => {
 
     const {currentWebsite:currentWebsiteData} = useSelector((state: RootState) => state.websites);
 const {websitePages} = useSelector((state: RootState) => state.websitePage);
@@ -35,10 +36,18 @@ const {currentFooter} = useSelector((state: RootState) => state.footer);
          useEffect(()=>{
             if(websitePages.length==0 && pages.length>0){
                 dispatch(setAllWebsitePages(pages))
-                dispatch(setPageEdit({
-                    page:pages[0],
-                    type:"page"
-                }))
+                const getpage=pages.find((page)=>page.slug==search?.slug)
+                if(getpage){
+                    dispatch(setPageEdit({
+                        page:getpage,
+                        type:"page"
+                    }))
+                }else{
+                    dispatch(setPageEdit({
+                        page:pages[0],
+                        type:"page"
+                    }))
+                }
             }
          },[websitePages,dispatch])
 

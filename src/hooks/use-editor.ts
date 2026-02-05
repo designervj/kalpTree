@@ -111,6 +111,7 @@ export function useEditor(containerId: string) {
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -132,50 +133,102 @@ export function useEditor(containerId: string) {
 
     // Wait for iframe to be fully ready
     const waitForIframe = (editor: any): Promise<void> => {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
+        const maxAttempts = 50; // 5 seconds maximum
+        let attempts = 0;
+
         const check = () => {
+          attempts++;
           const frame = editor.Canvas?.getFrameEl?.();
-          if (frame?.contentDocument) {
+          const doc = frame?.contentDocument;
+
+          // Check if document is fully ready
+          if (doc && doc.readyState !== 'loading' && doc.head && doc.body) {
+            console.log('✅ Iframe fully loaded');
             resolve();
-          } else {
-            requestAnimationFrame(check);
+            return;
           }
+
+          if (attempts >= maxAttempts) {
+            console.error('❌ Iframe failed to load within timeout');
+            reject(new Error('Iframe loading timeout'));
+            return;
+          }
+
+          requestAnimationFrame(check);
         };
         check();
       });
     };
 
     // Inject styles into canvas iframe
-    const injectCanvasStyles = (editor: any, pageContent?: string) => {
+    const injectCanvasStyles = (editor: any, pageContent?: string, retryCount = 0): void => {
+      const MAX_RETRIES = 3;
       const frame = editor.Canvas?.getFrameEl?.();
       const doc = frame?.contentDocument;
 
-      if (!doc?.head) {
-        console.warn('Canvas iframe document not available');
+      if (!doc) {
+        console.warn('Canvas iframe not available');
+        if (retryCount < MAX_RETRIES) {
+          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
+        }
         return;
       }
 
-      // Remove existing custom styles
-      doc.querySelector('[data-root-vars="true"]')?.remove();
-      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+      if (!doc.head || !doc.body) {
+        console.warn('Canvas iframe head/body not ready');
+        if (retryCount < MAX_RETRIES) {
+          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
+        }
+        return;
+      }
 
-      if (pageContent) {
-        // Inject CSS variables
-        const style = doc.createElement("style");
-        style.setAttribute("data-root-vars", "true");
-        style.innerHTML = createCanvasStyleString(pageContent);
-        doc.head.appendChild(style);
+      // Check readyState
+      if (doc.readyState === 'loading') {
+        console.log('Waiting for iframe DOMContentLoaded...');
+        doc.addEventListener('DOMContentLoaded', () => {
+          injectCanvasStyles(editor, pageContent, retryCount);
+        }, { once: true });
+        return;
+      }
 
-        // Inject font links
-        extractFontLinks(pageContent).forEach((url) => {
-          const link = doc.createElement("link");
-          link.rel = "stylesheet";
-          link.href = url;
-          link.setAttribute("data-font", "true");
-          doc.head.appendChild(link);
-        });
+      try {
+        // Remove existing custom styles
+        doc.querySelector('[data-root-vars="true"]')?.remove();
+        doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+        doc.querySelector('[data-tailwind="true"]')?.remove();
 
-        console.log('✅ Canvas styles and fonts injected');
+        // Inject Tailwind CSS CDN for styling Tailwind classes in HTML strings
+        const tailwindScript = doc.createElement("script");
+        tailwindScript.src = "https://cdn.tailwindcss.com";
+        tailwindScript.setAttribute("data-tailwind", "true");
+        doc.head.appendChild(tailwindScript);
+
+        if (pageContent) {
+          // Inject CSS variables
+          const style = doc.createElement("style");
+          style.setAttribute("data-root-vars", "true");
+          style.innerHTML = createCanvasStyleString(pageContent);
+          doc.head.appendChild(style);
+
+          // Inject font links
+          extractFontLinks(pageContent).forEach((url) => {
+            const link = doc.createElement("link");
+            link.rel = "stylesheet";
+            link.href = url;
+            link.setAttribute("data-font", "true");
+            doc.head.appendChild(link);
+          });
+
+          console.log('✅ Canvas styles, fonts, and Tailwind CSS injected');
+        } else {
+          console.log('✅ Tailwind CSS injected');
+        }
+      } catch (error) {
+        console.error('❌ Error injecting canvas styles:', error);
+        if (retryCount < MAX_RETRIES) {
+          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
+        }
       }
     };
 
@@ -280,22 +333,56 @@ export function useEditor(containerId: string) {
         editor.on("load", async () => {
           if (!isMounted) return;
 
-          // Wait for iframe to be ready
-          await waitForIframe(editor);
-          if (!isMounted) return;
+          try {
+            console.log('🔄 Editor load event fired');
 
-          // Inject canvas styles
-          injectCanvasStyles(editor, page?.content);
+            // Get frames using GrapesJS API (if available)
+            try {
+              if (editor.Canvas && typeof editor.Canvas.getFrames === 'function') {
+                const frames = editor.Canvas.getFrames();
+                console.log('📊 Frames available:', frames?.length || 0);
+              } else {
+                console.log('📊 getFrames() not available, using fallback');
+              }
+            } catch (frameError) {
+              console.warn('⚠️ Could not get frames:', frameError);
+            }
 
-          // Setup event listeners
-          setupEventListeners(editor as unknown as GrapesJSEditor);
+            // Wait for iframe to be ready
+            await waitForIframe(editor);
+            if (!isMounted) return;
 
-          // Update state
-          setState((prev) => ({
-            ...prev,
-            editor,
-            isLoading: false,
-          }));
+            // Load page content if available
+            if (page?.content) {
+              console.log('📄 Loading page content into editor');
+              try {
+                editor.setComponents(page.content);
+              } catch (error) {
+                console.error('❌ Error setting components:', error);
+              }
+            }
+
+            // Small delay to let components render
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // Inject canvas styles
+            injectCanvasStyles(editor, page?.content);
+
+            // Setup event listeners
+            setupEventListeners(editor as unknown as GrapesJSEditor);
+
+            // Update state
+            setState((prev) => ({
+              ...prev,
+              editor,
+              isLoading: false,
+            }));
+
+            console.log('✅ Editor fully initialized');
+          } catch (error) {
+            console.error('❌ Error in load event:', error);
+            setState((prev) => ({ ...prev, isLoading: false }));
+          }
         });
 
 
@@ -759,47 +846,6 @@ export function useEditor(containerId: string) {
     };
   }, [containerId]); // Only re-initialize when container changes
 
-  // Separate effect to inject styles when page content changes
-  useEffect(() => {
-    if (!editorRef.current || !page?.content) return;
-
-    const editor = editorRef.current;
-    const pageContent = page.content; // Capture content to avoid TypeScript issues in setTimeout
-
-    // Wait a bit to ensure Canvas is ready
-    const timer = setTimeout(() => {
-      const frame = editor.Canvas?.getFrameEl?.();
-      const doc = frame?.contentDocument;
-
-      if (!doc?.head) {
-        console.warn('Canvas iframe not ready for style injection');
-        return;
-      }
-
-      // Remove existing styles
-      doc.querySelector('[data-root-vars="true"]')?.remove();
-      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
-
-      // Inject new styles
-      const style = doc.createElement("style");
-      style.setAttribute("data-root-vars", "true");
-      style.innerHTML = createCanvasStyleString(pageContent);
-      doc.head.appendChild(style);
-
-      // Inject fonts
-      extractFontLinks(pageContent).forEach((url) => {
-        const link = doc.createElement("link");
-        link.rel = "stylesheet";
-        link.href = url;
-        link.setAttribute("data-font", "true");
-        doc.head.appendChild(link);
-      });
-
-      console.log('✅ Canvas styles updated');
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [page?.content]);
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
@@ -1348,6 +1394,55 @@ export function useEditor(containerId: string) {
         }
       } catch (error) {
         console.error("Error updating JavaScript:", error);
+      }
+    },
+
+    // Manually refresh canvas styles
+    refreshCanvasStyles: () => {
+      if (!editorRef.current || !page?.content) {
+        console.warn('Cannot refresh styles: editor or page content not available');
+        return;
+      }
+
+      console.log('🔄 Manually refreshing canvas styles');
+      const frame = editorRef.current.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+
+      if (!doc || !doc.head || !doc.body) {
+        console.warn('Canvas iframe not ready for style refresh');
+        return;
+      }
+
+      try {
+        // Remove existing custom styles
+        doc.querySelector('[data-root-vars="true"]')?.remove();
+        doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+        doc.querySelector('[data-tailwind="true"]')?.remove();
+
+        // Inject Tailwind CSS CDN
+        const tailwindScript = doc.createElement("script");
+        tailwindScript.src = "https://cdn.tailwindcss.com";
+        tailwindScript.setAttribute("data-tailwind", "true");
+        doc.head.appendChild(tailwindScript);
+
+        // Inject CSS variables
+        const style = doc.createElement("style");
+        style.setAttribute("data-root-vars", "true");
+        style.innerHTML = createCanvasStyleString(page.content);
+        doc.head.appendChild(style);
+
+        // Inject font links
+        extractFontLinks(page.content).forEach((url) => {
+          const link = doc.createElement("link");
+          link.rel = "stylesheet";
+          link.href = url;
+          link.setAttribute("data-font", "true");
+          doc.head.appendChild(link);
+        });
+
+        console.log('✅ Canvas styles manually refreshed');
+      } catch (error) {
+        console.error('❌ Error refreshing canvas styles:', error);
       }
     },
 

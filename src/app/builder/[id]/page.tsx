@@ -7,11 +7,15 @@ import { Website } from '@/components/admin/AppShell';
 import { WebsitePageModel } from '@/components/admin/website/websitePage/WebsitePageType';
 
 const page = async ({
-    params
+    params,
+    searchParams 
 }: {
     params?: Promise<{ id: string }>;
+    searchParams?: Promise<{ slug: string }>;
 }) => {
     const param = await params;
+    const search = await searchParams; 
+    console.log("search", search);
 
     if (!param?.id || !ObjectId.isValid(param.id)) {
         return <div>Invalid Website ID</div>
@@ -64,7 +68,9 @@ const page = async ({
         <>
             <WebsiteBuilder
                 pages={serializedPages}
-                website={serializedWebsite} />
+                website={serializedWebsite} 
+                search={search}
+                />
         </>
     )
 }
