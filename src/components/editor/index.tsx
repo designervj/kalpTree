@@ -81,6 +81,8 @@ export default function GrapesJSEditor() {
       contentLoadedRef.current = false;
     }
 
+    
+
     const loadContent = () => {
       // Prevent loading content multiple times
       if (contentLoadedRef.current) return;

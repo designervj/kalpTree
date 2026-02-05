@@ -1,5 +1,26 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Eye, EyeOff, ChevronRight, ChevronDown, Plus, MoreHorizontal, Copy, Trash, Folder, Layout, Columns, Type, Heading, MousePointer2, BoxSelect, Rows, Image as ImageIcon, Square } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  ChevronRight,
+  ChevronDown,
+  Plus,
+  MoreHorizontal,
+  Copy,
+  Trash,
+  Folder,
+  Layout,
+  Columns,
+  Type,
+  Heading,
+  MousePointer2,
+  BoxSelect,
+  Rows,
+  Image as ImageIcon,
+  Square,
+  Search,
+  Filter,
+} from "lucide-react";
 import { type Editor } from "grapesjs";
 
 interface LayerItemProps {
@@ -46,35 +67,48 @@ const LayerItem: React.FC<LayerItemProps> = ({
   // Check if available in layer manager
   const layerable = component.get("layerable");
   const style = component.getStyle();
-  const isVisible = style.display !== 'none';
+  const isVisible = style.display !== "none";
 
   if (!layerable) return null;
 
   const TAG_STYLES: Record<string, { icon: any; color: string }> = {
-    section: { icon: BoxSelect, color: "#3b82f6" }, // Blue
-    container: { icon: BoxSelect, color: "#3b82f6" }, // Blue
-    row: { icon: Rows, color: "#10b981" }, // Green
-    column: { icon: Columns, color: "#9ca3af" }, // Gray
-    col: { icon: Columns, color: "#6b0952ff" }, // Gray
-    text: { icon: Type, color: "#2fe447ff" },
-    "text-node": { icon: Type, color: "#17d51bff" },
-    header: { icon: Heading, color: "#aa1044ff" },
-    footer: { icon: Heading, color: "#aa1044ff" },
-    h1: { icon: Heading, color: "#d1d5db" },
-    h2: { icon: Heading, color: "#d1d5db" },
-    h3: { icon: Heading, color: "#d1d5db" },
-    h4: { icon: Heading, color: "#d1d5db" },
-    h5: { icon: Heading, color: "#d1d5db" },
-    h6: { icon: Heading, color: "#d1d5db" },
-    button: { icon: MousePointer2, color: "#d1d5db" },
-    image: { icon: ImageIcon, color: "#d1d5db" },
-    img: { icon: ImageIcon, color: "#d1d5db" },
-    div: { icon: Square, color: "#ef6610ff" },
-    nav: { icon: Square, color: "#6212e3ff" },
-    default: { icon: Layout, color: "#d1d5db" },
+    // Layout
+    section: { icon: BoxSelect, color: "#326bff" },
+    container: { icon: BoxSelect, color: "#326bff" },
+
+    row: { icon: Rows, color: "#16a34a" },
+    column: { icon: Columns, color: "#9ca3af" },
+    col: { icon: Columns, color: "#9ca3af" },
+
+    // Text
+    text: { icon: Type, color: "#22c55e" },
+    "text-node": { icon: Type, color: "#22c55e" },
+
+    // Headings
+    header: { icon: Heading, color: "#1f2937" },
+    footer: { icon: Heading, color: "#1f2937" },
+
+    h1: { icon: Heading, color: "#374151" },
+    h2: { icon: Heading, color: "#374151" },
+    h3: { icon: Heading, color: "#374151" },
+    h4: { icon: Heading, color: "#4b5563" },
+    h5: { icon: Heading, color: "#4b5563" },
+    h6: { icon: Heading, color: "#4b5563" },
+
+    // Elements
+    button: { icon: MousePointer2, color: "#0ea5e9" },
+    image: { icon: ImageIcon, color: "#6366f1" },
+    img: { icon: ImageIcon, color: "#6366f1" },
+
+    // Structural
+    div: { icon: Square, color: "#f97316" },
+    nav: { icon: Square, color: "#8b5cf6" },
+
+    // Fallback
+    default: { icon: Layout, color: "#000" },
   };
 
-  const HIDDEN_TAGS = ['head', 'meta', 'title', 'link', 'style', 'script'];
+  const HIDDEN_TAGS = ["head", "meta", "title", "link", "style", "script"];
   if (HIDDEN_TAGS.includes(tagName)) return null;
 
   if (HIDDEN_TAGS.includes(tagName)) return null;
@@ -92,7 +126,9 @@ const LayerItem: React.FC<LayerItemProps> = ({
       onDrop={(e) => onDrop(component, e)}
     >
       <div
-        className={`layer-row ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
+        className={`layer-row ${isSelected ? "selected" : ""} ${
+          isHovered ? "hovered" : ""
+        }`}
         style={{ paddingLeft: `${level * 16 + 8}px` }}
         onClick={() => onSelect(component)}
         onMouseEnter={() => {
@@ -106,29 +142,37 @@ const LayerItem: React.FC<LayerItemProps> = ({
       >
         <div className="layer-controls-left">
           <button
-            className={`expand-btn ${!hasChildren ? 'invisible' : ''}`}
+            className={`expand-btn ${!hasChildren ? "invisible" : ""}`}
             onClick={(e) => {
               e.stopPropagation();
               onExpand(component);
             }}
           >
-            {hasChildren && (isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />)}
+            {hasChildren &&
+              (isExpanded ? (
+                <ChevronDown size={14} />
+              ) : (
+                <ChevronRight size={14} />
+              ))}
           </button>
         </div>
 
         <div className="layer-label">
           <span className="element-icon" style={{ color: config.color }}>
-            <Icon size={12} className="mr-2" />
+            <Icon size={14} className="mr-2" />
           </span>
           <span className="element-name truncate" style={{ color: config.color }}>
-            {/* If component has a tailored name, show it, else Capitalized Tag */}
-            {name === tagName ? tagName.charAt(0).toUpperCase() + tagName.slice(1) : name}
+            {name === tagName
+              ? tagName.charAt(0).toUpperCase() + tagName.slice(1)
+              : name}
           </span>
         </div>
 
         <div className="layer-controls-right">
           <button
-            className={`visibility-btn ${!isVisible ? 'is-hidden' : ''} ${isHovered || !isVisible ? 'opacity-100' : 'opacity-0'}`}
+            className={`visibility-btn ${!isVisible ? "is-hidden" : ""} ${
+              isHovered || !isVisible ? "opacity-100" : "opacity-0"
+            }`}
             onClick={(e) => onToggleVisibility(component, e)}
           >
             {isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
@@ -163,46 +207,57 @@ const LayerItem: React.FC<LayerItemProps> = ({
           display: flex;
           flex-direction: column;
         }
+
+        /* --- MATCH IMAGE (LIGHT LIST + BLUE SELECT) --- */
         .layer-row {
           display: flex;
           align-items: center;
-          height: 32px;
+          height: 40px;
           cursor: pointer;
-          color: #bebebe;
-          font-size: 13px;
-          border-left: 2px solid transparent;
-          transition: all 0.1s ease;
+          font-size: 15px;
+          border-left: 3px solid transparent;
+          transition: background 0.12s ease;
           padding-right: 8px;
+          user-select: none;
+          background: transparent;
+          border:1px solid #f2f2f2;
         }
+
         .layer-row:hover {
-          background-color: rgba(255, 255, 255, 0.04);
-          color: white;
+          background-color: #f4f7ff;
         }
+
         .layer-row.selected {
-          background-color: rgba(60, 130, 246, 0.15);
-          border-left-color: #3b82f6; // blue-500
-          color: white;
+          background-color: #eaf0ff; /* rgb(234,240,255) */
+          border-left-color: #326bff; /* rgb(50,107,255) */
         }
-        .expand-btn, .visibility-btn {
+
+        .expand-btn,
+        .visibility-btn {
           display: flex;
           align-items: center;
           justify-content: center;
           background: none;
           border: none;
-          color: inherit;
           padding: 2px;
           cursor: pointer;
-          opacity: 0.7;
+          color: #9aa6bf;
+          opacity: 0.9;
         }
-        .expand-btn:hover, .visibility-btn:hover {
+
+        .expand-btn:hover,
+        .visibility-btn:hover {
+          color: #222c39;
           opacity: 1;
         }
+
         .layer-controls-left {
           width: 20px;
           display: flex;
           justify-content: center;
           flex-shrink: 0;
         }
+
         .layer-label {
           display: flex;
           align-items: center;
@@ -210,24 +265,40 @@ const LayerItem: React.FC<LayerItemProps> = ({
           overflow: hidden;
           margin-left: 2px;
         }
+
         .element-name {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-weight: 600;
+          letter-spacing: 0.1px;
         }
+
+        /* tighten icon spacing to match screenshot */
+        .element-icon :global(svg) {
+          margin-right: 8px !important;
+        }
+
         .layer-controls-right {
           display: flex;
           align-items: center;
           margin-left: auto;
         }
-        .invisible { visibility: hidden; }
-        .is-hidden { color: #888; }
+
+        .invisible {
+          visibility: hidden;
+        }
+
+        .is-hidden {
+          color: #9aa6bf;
+        }
       `}</style>
     </div>
   );
 };
 
 import { useEditorContext } from "../../EditorContext";
+import { IoIosCloseCircleOutline } from "react-icons/io";
 
 const PageLayer = () => {
   const { state } = useEditorContext();
@@ -238,9 +309,44 @@ const PageLayer = () => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [updateTrigger, setUpdateTrigger] = useState(0); // Force re-render on events
 
+  // UI-only (matches image: Search Layout bar + dropdown)
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
+
+  const searchItems = useMemo(
+    () => [
+      "Sections",
+      "Rows",
+      "Groups",
+      "Columns",
+      "Modules",
+      "Global Layouts",
+      "Accordions",
+      "Audios",
+      "Bar Counters",
+      "Blogs",
+      "Blurbs",
+      "Buttons",
+      "Codes",
+    ],
+    []
+  );
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!searchOpen) return;
+    const onDown = (e: MouseEvent) => {
+      const t = e.target as HTMLElement | null;
+      if (!t) return;
+      if (!t.closest(".layer-search-wrap")) setSearchOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [searchOpen]);
+
   // Force update wrapper
   const forceUpdate = useCallback(() => {
-    setUpdateTrigger(prev => prev + 1);
+    setUpdateTrigger((prev) => prev + 1);
   }, []);
 
   useEffect(() => {
@@ -264,7 +370,7 @@ const PageLayer = () => {
         // Auto-expand parents
         let parent = component.parent();
         if (parent) {
-          setExpandedIds(prev => {
+          setExpandedIds((prev) => {
             const next = new Set(prev);
             if (wrapper) {
               while (parent && parent !== wrapper) {
@@ -278,29 +384,25 @@ const PageLayer = () => {
         }
 
         // Scroll sidebar layer item into view
-        // We use a small timeout to let the expansion render first
         setTimeout(() => {
           const el = document.getElementById(`layer-item-${component.getId()}`);
           if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
           }
         }, 100);
-
       } else {
         setSelectedId(null);
       }
     };
 
     const updateLayers = () => {
-      // Just triggering a re-render can be enough if we read from the component tree directly in render
-      // But storing a reference to root/wrapper is usually stable
       forceUpdate();
     };
 
     editor.on("component:selected", onComponentSelected);
     editor.on("component:add", updateLayers);
     editor.on("component:remove", updateLayers);
-    editor.on("component:update", updateLayers); // Catches style changes too (visibility)
+    editor.on("component:update", updateLayers);
     editor.on("layer:root", updateLayers);
     editor.on("layer:component", updateLayers);
 
@@ -321,7 +423,7 @@ const PageLayer = () => {
     // Scroll canvas to component
     const el = component.getEl();
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+      el.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
     }
   };
 
@@ -331,29 +433,25 @@ const PageLayer = () => {
 
     // Toggle GrapesJS style display
     const style = component.getStyle();
-    const isHidden = style.display === 'none';
+    const isHidden = style.display === "none";
 
     if (isHidden) {
-      // We might want to remove the check if we stored the previous display value
-      // For now, removing 'none' usually reverts to default
       const newStyle = { ...style };
       delete newStyle.display;
       if (Object.keys(newStyle).length < Object.keys(style).length) {
-        // If we actually removed it
         component.setStyle(newStyle);
       } else {
-        // If it wasn't there or didn't delete, explicit set block or whatever
-        component.addStyle({ display: 'block' });
+        component.addStyle({ display: "block" });
       }
     } else {
-      component.addStyle({ display: 'none' });
+      component.addStyle({ display: "none" });
     }
     forceUpdate();
   };
 
   const handleExpand = (component: any) => {
     const id = component.getId();
-    setExpandedIds(prev => {
+    setExpandedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
@@ -368,7 +466,7 @@ const PageLayer = () => {
     if (!component) return;
     const el = component.getEl();
     if (el) {
-      el.style.outline = "2px solid #3b82f6";
+      el.style.outline = "2px solid #326bff";
       el.style.outlineOffset = "-2px";
     }
   };
@@ -419,23 +517,76 @@ const PageLayer = () => {
     }
   };
 
+  const handleCloseAll = () => {
+    if (!rootComponent) return;
+    setExpandedIds(new Set([rootComponent.getId()])); // keep root open, close everything else
+  };
+
   if (!editor || !rootComponent) {
-    // If waiting for editor, show loading or empty
     return <div className="p-4 text-center text-gray-500 text-xs">Loading layers...</div>;
   }
 
-  // We render the children of wrapper, because usually we don't want to show 'Body' as a single root item
-  // or we might want to check layerManager config for root. 
-  // Standard GrapesJS often shows Body or Wrapper as root. Let's show Wrapper as root for now or its children.
-  // Actually, standard behavior is showing the children of the wrapper usually.
+  console.log("root component", rootComponent);
 
-  // Let's render the wrapper itself if it has stuff, or just its children.
-  // The wrapper is basically the <body>.
+  const filteredSearchItems = searchItems.filter((x) =>
+    x.toLowerCase().includes((searchValue || "").toLowerCase())
+  );
 
-  console.log("root component", rootComponent)
   return (
-    <div className="page-layer h-full overflow-y-auto overflow-x-hidden select-none" style={{ background: '#1e1e1e', color: '#ddd' }}>
-      {/* If we want to show the wrapper itself: */}
+    <div className="page-layer h-full overflow-y-auto overflow-x-hidden select-none">
+      {/* Header: "Search Layout" row (matches screenshot) */}
+      {/* <div className="layer-topbar">
+        <div className="layer-search-wrap">
+          <button
+            type="button"
+            className="layer-search-trigger"
+            onClick={() => setSearchOpen((v) => !v)}
+          >
+            <Search size={16} className="layer-top-icon" />
+            <span className="layer-top-title">Search Layout</span>
+          </button>
+
+          <button
+            type="button"
+            className="layer-filter-btn"
+            onClick={() => setSearchOpen((v) => !v)}
+            aria-label="Filter"
+          >
+            <Filter size={16} />
+          </button>
+
+      
+          {searchOpen && (
+            <div className="layer-search-popover">
+              <input
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                placeholder="Start Typing"
+                className="layer-search-input"
+                autoFocus
+              />
+
+              <div className="layer-search-list">
+                {filteredSearchItems.map((item) => (
+                  <div key={item} className="layer-search-item">
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div> */}
+
+      {/* Close All row */}
+      <div className="layer-actions">
+        <button type="button" className=" text-[14px] flex items-center justify-end w-full pe-4 text-primary gap-1 cursor-pointer font-medium" onClick={handleCloseAll}>
+         Close All
+        </button>
+          {/* <IoIosCloseCircleOutline className="w-4 h-4"/> */}
+      </div>
+
+      {/* Tree */}
       <LayerItem
         component={rootComponent}
         level={0}
@@ -452,20 +603,145 @@ const PageLayer = () => {
       />
 
       <style jsx>{`
+        .page-layer {
+          background: #ffffff;
+          color: #222c39;
+        }
+
+        /* --- Top header row (Search Layout) --- */
+        .layer-topbar {
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: #ffffff;
+          border-bottom: 1px solid #d2d7e4; /* screenshot divider */
+        }
+
+        .layer-search-wrap {
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          height: 54px;
+          padding: 0 12px;
+        }
+
+        .layer-search-trigger {
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+          background: transparent;
+          border: 0;
+          padding: 0;
+          cursor: pointer;
+        }
+
+        .layer-top-icon {
+          color: #5f6f97; /* screenshot text/icon tone */
+        }
+
+        .layer-top-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #5f6f97;
+          letter-spacing: 0.1px;
+        }
+
+        .layer-filter-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: transparent;
+          border: 0;
+          padding: 6px;
+          cursor: pointer;
+          color: #222c39;
+          border-radius: 6px;
+        }
+        .layer-filter-btn:hover {
+          background: #f4f7ff;
+        }
+
+        /* --- Dark dropdown panel (Start Typing + list) --- */
+        .layer-search-popover {
+          position: absolute;
+          left: 10px;
+          right: 10px;
+          top: 58px;
+          background: #222c39; /* rgb(34,44,57) */
+          border-radius: 4px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .layer-search-input {
+          width: calc(100% - 24px);
+          margin: 12px;
+          height: 44px;
+          border-radius: 4px;
+          background: transparent;
+          color: #eaf0ff;
+          border: 1px solid #326bff; /* blue outline like screenshot */
+          padding: 0 12px;
+          font-size: 16px;
+          outline: none;
+        }
+        .layer-search-input::placeholder {
+          color: rgba(234, 240, 255, 0.55);
+        }
+
+        .layer-search-list {
+          max-height: 520px;
+          overflow: auto;
+          padding: 4px 0 10px 0;
+        }
+
+        .layer-search-item {
+          padding: 14px 16px;
+          font-size: 18px;
+          font-weight: 700;
+          color: #ffffff;
+          line-height: 1.1;
+        }
+        .layer-search-item:hover {
+          background: rgba(255, 255, 255, 0.06);
+        }
+
+        /* --- Close All row --- */
+        .layer-actions {
+          padding: 2px 5px 7px 12px;
+          border-bottom: 1px solid #d2d7e4;
+          background: #ffffff;
+        }
+        .close-all {
+          background: transparent;
+          border: 0;
+          padding: 0;
+          font-size: 18px;
+          font-weight: 500;
+          color: #222c39;
+          cursor: pointer;
+        }
+        .close-all:hover {
+          text-decoration: underline;
+        }
+
+        /* Scrollbar (light) */
         .page-layer::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
         .page-layer::-webkit-scrollbar-track {
-          background: #1e1e1e;
+          background: #f1f5f9;
         }
         .page-layer::-webkit-scrollbar-thumb {
-          background: #444;
-          border-radius: 3px;
+          background: #cbd5e1;
+          border-radius: 8px;
         }
         .page-layer::-webkit-scrollbar-thumb:hover {
-          background: #555;
+          background: #94a3b8;
         }
-       `}</style>
+      `}</style>
     </div>
   );
 };

@@ -419,7 +419,7 @@ export function EditSection({
               {tab === "general" ? (
                 <div className="space-y-5">
                   {/* Purple promo card */}
-                  <div
+                  {/* <div
                     className="rounded-2xl p-4 text-white"
                     style={{ backgroundColor: ACCENT }}
                   >
@@ -447,7 +447,7 @@ export function EditSection({
                         Learn more
                       </Button>
                     </div>
-                  </div>
+                  </div> */}
 
                   {/* Form mode radios */}
                   <RadioGroup

@@ -87,6 +87,8 @@ export const CSVImportModal = ({ isOpen, onClose, onImport }: any) => {
     try {
       const t = await onImport(previewData);
       if (t) {
+        setFile(null);
+        setPreviewData([]);
         setErrors([]);
       } else {
         setErrors(["Error"]);

@@ -980,6 +980,7 @@ export function AppShell({
     router.push(`/admin`);
   };
 
+
   return (
     <>
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
@@ -1060,8 +1061,8 @@ export function AppShell({
               className="w-56 rounded-xl border bg-background shadow-lg p-1"
             >
               <DropdownMenuLabel className="flex items-center gap-3 px-2 py-2">
-                <div className="flex flex-col leading-tight px-2">
-                  <span className="text-sm font-medium capitalize">
+                <div className="flex flex-col leading-tight px-2 ">
+                  <span className="text-sm font-medium capitalize ">
                     {user?.role}
                   </span>
                   <span className="text-xs text-muted-foreground truncate">

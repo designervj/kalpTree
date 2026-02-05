@@ -1,7 +1,7 @@
 import GetAllAttribute from "@/components/admin/attribute/attributeList/GetAllAttribute";
 import GetAllAttributesSets from "@/components/admin/attributessets/listCategory/GetAllAttributesSets";
 import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
-import ListCategory from "@/components/admin/category/listCategory/ListCategory";
+
 import GetAllProductTypeCategory from "@/components/admin/product-type-category/listCategory/GetAllProductTypeCategory";
 import { CreateProduct } from "@/components/admin/product/createproduct/CreateProduct";
 

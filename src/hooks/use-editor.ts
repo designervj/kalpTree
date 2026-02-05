@@ -104,6 +104,7 @@ export function useEditor(containerId: string) {
         display: "block",
       },
     },
+    
   });
 
 

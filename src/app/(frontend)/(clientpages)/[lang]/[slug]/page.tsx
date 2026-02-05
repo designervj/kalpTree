@@ -2,15 +2,13 @@ import { getCollection } from "@/app/api/tenants/[id]/route";
 import NotFound from "@/app/not-found";
 import { auth } from "@/auth";
 import { cookies, headers } from "next/headers";
-import RenderHtml from "./RenderHtml";
 import { getDatabase } from "@/lib/db/mongodb";
-import { extractHtmlParts } from "@/lib/utils";
 import SlugPageHome from "./SlugPageHome";
 import ModernCartPage from "@/components/admin/product/Cart/Cart";
 import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
-import { redirect } from "next/navigation";
+
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -40,20 +38,18 @@ export default async function PageTemplate({
     : null;
 
   const session = await auth();
- 
+
   // if(!session){
   //   redirect("/auth/signin");
   // }
+  
   let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
 
   if (lang && lang.length > 2 && !slug) {
     slug = lang;
     lang = null;
-  } else if (!slug) {
-    slug = "home";
   }
-
   // Get header/footer collection (needed regardless of website source)
   try {
     const allheader_coll = await db.collection("templates_header");
@@ -69,10 +65,19 @@ export default async function PageTemplate({
         },
       });
 
-      let page = await pagecoll.findOne({
-        websiteId: websitedata._id,
-        slug: slug,
-      });
+      let page;
+
+      if (!slug) {
+        page = await pagecoll.findOne({
+          websiteId: websitedata._id,
+          isHomePage: true,
+        });
+      } else {
+        page = await pagecoll.findOne({
+          websiteId: websitedata._id,
+          slug: slug,
+        });
+      }
 
       // console.log("page--->", page);
       if (!lang && websitedata.lang) {
@@ -106,8 +111,8 @@ export default async function PageTemplate({
       ),
     };
 
-    if (slug in obj) {
-      return obj[slug];
+    if (slug! in obj) {
+      return obj[slug!];
     }
 
     if (!website) {
@@ -165,7 +170,6 @@ export default async function PageTemplate({
           html={processedHtml}
           headerData={serializedHeaderData}
           footerData={serializedFooterData}
-          
         />
 
         {/* <EditButton
@@ -194,4 +198,3 @@ export default async function PageTemplate({
   }
 }
 
-// }

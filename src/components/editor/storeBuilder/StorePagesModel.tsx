@@ -73,6 +73,13 @@ import ProductReviews from "./ProductReviews";
 import { AddProduct } from "./AddProduct";
 import { IoClose } from "react-icons/io5";
 import Analytics from "./Analytics";
+import GetAllAttribute from "@/components/admin/attribute/attributeList/GetAllAttribute";
+import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
+import GetAllBrand from "@/components/admin/brand/brandList/GetAllBrand";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { toast } from "sonner";
+import { CSVImportModal } from "@/components/admin/product/ImportCSV";
 
 type SetupItem = { id: string; label: string; done?: boolean };
 type NavChild = { id: string; label: string };
@@ -100,7 +107,11 @@ const SETUP: SetupItem[] = [
   { id: "company", label: "Update company details", done: false },
 ];
 
-const PRODUCTS_GROUP_CHILD_IDS = ["products", "categories", "product-reviews"] as const;
+const PRODUCTS_GROUP_CHILD_IDS = [
+  "products",
+  "categories",
+  "product-reviews",
+] as const;
 const SETTINGS_GROUP_CHILD_IDS = [
   "store-details",
   "company-information",
@@ -125,10 +136,22 @@ const NAV: NavItem[] = [
       { id: "product-reviews", label: "Product reviews" },
     ],
   },
-  { id: "appointments", label: "Appointments", icon: <Calendar className="h-4 w-4" /> },
-  { id: "discounts", label: "Discounts", icon: <Percent className="h-4 w-4" /> },
+  {
+    id: "appointments",
+    label: "Appointments",
+    icon: <Calendar className="h-4 w-4" />,
+  },
+  {
+    id: "discounts",
+    label: "Discounts",
+    icon: <Percent className="h-4 w-4" />,
+  },
   { id: "customers", label: "Customers", icon: <Users className="h-4 w-4" /> },
-  { id: "analytics", label: "Analytics", icon: <BarChart3 className="h-4 w-4" /> },
+  {
+    id: "analytics",
+    label: "Analytics",
+    icon: <BarChart3 className="h-4 w-4" />,
+  },
   {
     id: "settings-group",
     label: "Settings",
@@ -144,7 +167,11 @@ const NAV: NavItem[] = [
       { id: "invoices", label: "Invoices" },
     ],
   },
-  { id: "integrations", label: "Integrations", icon: <Boxes className="h-4 w-4" /> },
+  {
+    id: "integrations",
+    label: "Integrations",
+    icon: <Boxes className="h-4 w-4" />,
+  },
 ];
 
 const PRODUCTS: ProductRow[] = [
@@ -184,7 +211,7 @@ function DoneDot({ done }: { done?: boolean }) {
         "inline-flex h-5 w-5 items-center justify-center rounded-full border",
         done
           ? "border-emerald-500 bg-emerald-500 text-white"
-          : "border-slate-300 bg-white text-transparent dark:border-slate-700 dark:bg-transparent"
+          : "border-slate-300 bg-white text-transparent dark:border-slate-700 dark:bg-transparent",
       )}
     >
       <svg
@@ -218,8 +245,10 @@ function SidebarNav({
 
   // ✅ AUTO OPEN GROUPS WHEN ACTIVE IS INSIDE THEM (so "jump" always shows left menu expanded)
   React.useEffect(() => {
-    if ((PRODUCTS_GROUP_CHILD_IDS as readonly string[]).includes(active)) setProductsOpen(true);
-    if ((SETTINGS_GROUP_CHILD_IDS as readonly string[]).includes(active)) setSettingsOpen(true);
+    if ((PRODUCTS_GROUP_CHILD_IDS as readonly string[]).includes(active))
+      setProductsOpen(true);
+    if ((SETTINGS_GROUP_CHILD_IDS as readonly string[]).includes(active))
+      setSettingsOpen(true);
   }, [active]);
 
   const isGroupActive = (groupId: string, children?: NavChild[]) => {
@@ -241,7 +270,9 @@ function SidebarNav({
 
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Store setup{" "}
-              <span className="font-medium text-slate-500 dark:text-slate-300">(2/4)</span>
+              <span className="font-medium text-slate-500 dark:text-slate-300">
+                (2/4)
+              </span>
             </div>
           </div>
 
@@ -255,7 +286,7 @@ function SidebarNav({
           className={cn(
             "mt-3 h-10 w-full justify-start rounded-sm",
             "border-violet-200 bg-white text-violet-700 hover:bg-slate-50",
-            "dark:border-violet-500/25 dark:bg-transparent dark:text-violet-200 dark:hover:bg-white/5"
+            "dark:border-violet-500/25 dark:bg-transparent dark:text-violet-200 dark:hover:bg-white/5",
           )}
           onClick={() => setActive("store-setup")}
         >
@@ -304,14 +335,14 @@ function SidebarNav({
                   "flex w-full items-center justify-between rounded-sm px-3 py-2.5 text-left transition-colors",
                   activeGroup
                     ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
-                    : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/5"
+                    : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-white/5",
                 )}
               >
                 <div className="flex items-center gap-3">
                   <span
                     className={cn(
                       "text-slate-500 dark:text-slate-300",
-                      activeGroup && "text-violet-700 dark:text-violet-200"
+                      activeGroup && "text-violet-700 dark:text-violet-200",
                     )}
                   >
                     {item.icon}
@@ -323,7 +354,7 @@ function SidebarNav({
                   React.createElement(chevron, {
                     className: cn(
                       "h-4 w-4 text-slate-400 dark:text-slate-500",
-                      activeGroup && "text-violet-600 dark:text-violet-200"
+                      activeGroup && "text-violet-600 dark:text-violet-200",
                     ),
                   })
                 ) : (
@@ -332,7 +363,9 @@ function SidebarNav({
               </button>
 
               {/* children */}
-              {item.id === "products-group" && productsOpen && item.children?.length ? (
+              {item.id === "products-group" &&
+              productsOpen &&
+              item.children?.length ? (
                 <div className="mt-1 space-y-1 pl-9">
                   {item.children.map((c) => {
                     const isActive = active === c.id;
@@ -345,7 +378,7 @@ function SidebarNav({
                           "flex w-full items-center rounded-sm px-3 py-2 text-left text-sm transition-colors",
                           isActive
                             ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
-                            : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
+                            : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5",
                         )}
                       >
                         {c.label}
@@ -355,7 +388,9 @@ function SidebarNav({
                 </div>
               ) : null}
 
-              {item.id === "settings-group" && settingsOpen && item.children?.length ? (
+              {item.id === "settings-group" &&
+              settingsOpen &&
+              item.children?.length ? (
                 <div className="mt-1 space-y-1 pl-9">
                   {item.children.map((c) => {
                     const isActive = active === c.id;
@@ -368,7 +403,7 @@ function SidebarNav({
                           "flex w-full items-center rounded-sm px-3 py-2 text-left text-sm transition-colors",
                           isActive
                             ? "bg-violet-100/70 text-violet-700 dark:bg-violet-500/15 dark:text-violet-200"
-                            : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
+                            : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5",
                         )}
                       >
                         {c.label}
@@ -388,7 +423,7 @@ function SidebarNav({
           type="button"
           className={cn(
             "mt-3 flex w-full items-center gap-3 rounded-sm px-3 py-2.5 text-left ",
-            "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5"
+            "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/5",
           )}
         >
           <span className="text-slate-400 dark:text-slate-500">
@@ -420,8 +455,41 @@ function SidebarNav({
 /* -------------------- Pages (Right side) -------------------- */
 
 function ProductsPage() {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+  const { user } = useSelector((state: RootState) => state.user);
+  const handleImport = async (data: any) => {
+    try {
+      const res = await fetch(
+        `/api/admin/product/bulk?websiteId=${currentWebsite?._id}&tenantId=${currentWebsite?.tenantId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        },
+      );
+      const result = await res.json();
+      if (result.success) {
+        toast.success("Product has been Created");
+        return true;
+      } else {
+        toast.error("Error in Product Creation");
+        return false;
+      }
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <CSVImportModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onImport={handleImport}
+      />
       <div className="flex items-end justify-between gap-4">
         <div>
           <div className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
@@ -434,6 +502,7 @@ function ProductsPage() {
 
         <div className="flex gap-3">
           <Button
+            onClick={() => setIsModalOpen(true)}
             variant="outline"
             className="rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
           >
@@ -525,7 +594,10 @@ function ProductsPage() {
 
         <TableBody className="w-[100%]">
           {PRODUCTS.map((p) => (
-            <TableRow key={p.id} className="w-[100%] hover:bg-slate-50 dark:hover:bg-white/5">
+            <TableRow
+              key={p.id}
+              className="w-[100%] hover:bg-slate-50 dark:hover:bg-white/5"
+            >
               <TableCell className="w-[48px]">
                 <div className="flex justify-center">
                   <Checkbox />
@@ -541,17 +613,25 @@ function ProductsPage() {
                 </div>
               </TableCell>
 
-              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.price}</TableCell>
-              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.variants}</TableCell>
-              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.inventory}</TableCell>
-              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">{p.sku}</TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">
+                {p.price}
+              </TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">
+                {p.variants}
+              </TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">
+                {p.inventory}
+              </TableCell>
+              <TableCell className="w-[100px] text-sm text-slate-700 dark:text-slate-200">
+                {p.sku}
+              </TableCell>
               <TableCell>
                 <Badge
                   className={cn(
                     "rounded-full px-3 py-1 text-xs",
                     p.status === "Active"
                       ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-200"
-                      : "bg-slate-100 text-slate-700 dark:bg-white/5 dark:text-slate-200"
+                      : "bg-slate-100 text-slate-700 dark:bg-white/5 dark:text-slate-200",
                   )}
                 >
                   {p.status}
@@ -561,7 +641,10 @@ function ProductsPage() {
               <TableCell className="text-right text-slate-400 dark:text-slate-500">
                 <button
                   type="button"
-                  className={cn("rounded-lg px-2 py-1 hover:bg-slate-100", "dark:hover:bg-white/5")}
+                  className={cn(
+                    "rounded-lg px-2 py-1 hover:bg-slate-100",
+                    "dark:hover:bg-white/5",
+                  )}
                 >
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
@@ -592,10 +675,13 @@ function CustomersPage() {
               Email marketing with Hostinger Reach
             </div>
             <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-              Connect with your subscribers and grow your brand by sending newsletters.
+              Connect with your subscribers and grow your brand by sending
+              newsletters.
             </div>
             <div className="mt-5 flex items-center gap-4">
-              <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">Get started</Button>
+              <Button className="rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
+                Get started
+              </Button>
               <Button
                 variant="ghost"
                 className="rounded-sm text-violet-700 hover:bg-white/60 dark:text-violet-200 dark:hover:bg-white/5"
@@ -611,7 +697,9 @@ function CustomersPage() {
 
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Customers</div>
+          <div className="text-4xl font-semibold text-slate-900 dark:text-slate-100">
+            Customers
+          </div>
           <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
             A list of all customers who have made purchases from your store.
           </div>
@@ -631,7 +719,8 @@ function CustomersPage() {
           <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white text-violet-700 ring-1 ring-violet-200 dark:bg-white/5 dark:text-violet-200 dark:ring-violet-500/25">
             <Info className="h-4 w-4" />
           </span>
-          Start growing your email list by collecting marketing consent at checkout.
+          Start growing your email list by collecting marketing consent at
+          checkout.
         </div>
 
         <div className="flex items-center gap-3">
@@ -648,7 +737,8 @@ function CustomersPage() {
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-400">
-        No customers yet — your first ones will appear here after you make a sale.
+        No customers yet — your first ones will appear here after you make a
+        sale.
       </div>
     </div>
   );
@@ -659,15 +749,22 @@ function DiscountsPage() {
 
   return (
     <div className="space-y-6 pb-24">
-      <button type="button" className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+      <button
+        type="button"
+        className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300"
+      >
         <ArrowLeft className="h-4 w-4" />
         Back to discounts
       </button>
 
-      <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">Add discount</div>
+      <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">
+        Add discount
+      </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#0b1220]">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Discount type</div>
+        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          Discount type
+        </div>
 
         <div className="mt-3 flex gap-3">
           <button
@@ -677,7 +774,7 @@ function DiscountsPage() {
               "flex items-center gap-2 rounded-sm border px-4 py-3 text-sm",
               type === "percentage"
                 ? "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/25 dark:bg-violet-500/10 dark:text-violet-200"
-                : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200"
+                : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200",
             )}
           >
             <Sparkles className="h-4 w-4" /> Percentage
@@ -690,7 +787,7 @@ function DiscountsPage() {
               "flex items-center gap-2 rounded-sm border px-4 py-3 text-sm",
               type === "fixed"
                 ? "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-500/25 dark:bg-violet-500/10 dark:text-violet-200"
-                : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200"
+                : "border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-[#0b1220] dark:text-slate-200",
             )}
           >
             <Tag className="h-4 w-4" /> Fixed amount
@@ -699,7 +796,9 @@ function DiscountsPage() {
 
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">* Discount code</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              * Discount code
+            </div>
             <Input
               className="mt-2 h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
               placeholder="e.g., BLACKFRIDAY50"
@@ -707,7 +806,9 @@ function DiscountsPage() {
           </div>
 
           <div>
-            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">Discount name</div>
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              Discount name
+            </div>
             <Input
               className="mt-2 h-11 rounded-sm border-slate-200 bg-white dark:border-slate-800 dark:bg-[#0b1220]"
               placeholder="e.g., Black Friday Campaign"
@@ -738,7 +839,7 @@ function JumpRow({
       onClick={onClick}
       className={cn(
         "w-full rounded-sm px-2 text-left",
-        "hover:bg-slate-50 dark:hover:bg-white/5"
+        "hover:bg-slate-50 dark:hover:bg-white/5",
       )}
     >
       <div className="flex items-center gap-3 py-3">
@@ -788,7 +889,8 @@ function StoreSetupPage({ onNavigate }: { onNavigate: (id: string) => void }) {
                 Connect a payment provider to receive orders
               </div>
               <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                To accept and let your customers pay, add at least one payment method.
+                To accept and let your customers pay, add at least one payment
+                method.
               </div>
             </div>
             <Button className="mt-6 h-11 rounded-sm bg-violet-600 text-white hover:bg-violet-600/90">
@@ -839,7 +941,9 @@ function StoreSetupPage({ onNavigate }: { onNavigate: (id: string) => void }) {
 function SimplePage({ title }: { title: string }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-[#0b1220]">
-      <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">{title}</div>
+      <div className="text-3xl font-semibold text-slate-900 dark:text-slate-100">
+        {title}
+      </div>
       <div className="mt-2 text-sm text-slate-600 dark:text-slate-300">
         Page UI placeholder (wireframe) — replace with your real content.
       </div>
@@ -862,7 +966,8 @@ function RightContent({
   if (active === "discounts") return <DiscountsPage />;
   if (active === "appointments") return <AppointmentsPage />;
   if (active === "categories") return <CategoriesPage />;
-  if (active === "store-setup") return <StoreSetupPage onNavigate={onNavigate} />; // ✅ pass down
+  if (active === "store-setup")
+    return <StoreSetupPage onNavigate={onNavigate} />; // ✅ pass down
 
   if (active === "product-reviews") return <ProductReviews />;
   if (active === "overview") return <OverviewPage />;
@@ -907,7 +1012,7 @@ export default function StorePage() {
         <DialogContent
           className={cn(
             "h-[calc(100vh-40px)] max-w-[1200px] min-w-[1200px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-0 dark:border-slate-800 dark:bg-[#0b1220]",
-            "sm:h-[calc(100vh-64px)] sm:w-[calc(100vw-64px)]"
+            "sm:h-[calc(100vh-64px)] sm:w-[calc(100vw-64px)]",
           )}
         >
           {/* Header */}
@@ -918,7 +1023,10 @@ export default function StorePage() {
               </DialogTitle>
 
               <DialogClose asChild>
-                <Button variant="outline" className="h-8 w-8 cursor-pointer rounded-full">
+                <Button
+                  variant="outline"
+                  className="h-8 w-8 cursor-pointer rounded-full"
+                >
                   <IoClose />
                 </Button>
               </DialogClose>
@@ -934,6 +1042,9 @@ export default function StorePage() {
 
               {/* Right */}
               <main className="max-h-[90vh] flex-1 overflow-y-auto bg-[#f6f7fb] px-8 py-8 dark:bg-[#0a1020]">
+                <GetAllAttribute />
+                <GetAllcategory />
+                <GetAllBrand />
                 <RightContent active={activeNav} onNavigate={onNavigate} />
               </main>
             </div>

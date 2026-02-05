@@ -1,12 +1,15 @@
 "use client";
-import { AppDispatch, RootState } from "@/store/store";
+
+import React, { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useTransition, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/store/store";
 import { toast } from "sonner";
+
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import BreadCrumbPage from "../breadCrumb/BreadCrumbPage";
 
 import {
   Select,
@@ -15,13 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import BreadCrumbPage from "../breadCrumb/BreadCrumbPage";
-import {
-  createWebsitePage,
-  updateWebsitePages,
-} from "@/hooks/slices/website/websitePageSlice";
 
-// Field configuration type
+import { createWebsitePage } from "@/hooks/slices/website/websitePageSlice";
+
+/* -----------------------------
+  Types
+------------------------------ */
 export type FieldConfig = {
   name: string;
   label: string;
@@ -30,6 +32,7 @@ export type FieldConfig = {
   side: "left" | "right";
   placeholder?: string;
   rows?: number;
+  readOnly?: boolean;
 };
 
 export type PageCreatorProps = {
@@ -39,226 +42,433 @@ export type PageCreatorProps = {
   onCreateRedirect?: string;
 };
 
-export default function PageCreator({
-  item,
-  fields,
-  apiEndpoint = "/api/pages",
-  onCreateRedirect = "/admin/pages",
-}: PageCreatorProps) {
+const cn = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(" ");
+
+const slugify = (value: string) => {
+  return (value || "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
+/** If user pasted escaped HTML (&lt;div&gt;), convert back */
+const unescapeHtmlIfNeeded = (s: string) => {
+  const str = s || "";
+  const looksEscaped = /&lt;[a-zA-Z!/]/.test(str) || /&gt;/.test(str);
+  if (!looksEscaped) return str;
+
+  return str
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&amp;", "&");
+};
+
+/** If user already provided full HTML doc, keep it. Else wrap as body fragment */
+const looksLikeFullDoc = (html: string) =>
+  /<html[\s>]/i.test(html) || /<!doctype/i.test(html) || /<body[\s>]/i.test(html);
+
+/** Clean iframe document wrapper (NO extra padding that breaks layout) */
+const buildIframeDoc = (userHtml: string) => {
+  const html = (userHtml || "").trim();
+
+  if (!html) {
+    return `<!doctype html><html><head><meta charset="utf-8"/>
+      <style>
+        body{margin:0;font-family:ui-sans-serif,system-ui;background:#fff;color:#64748b}
+        .empty{padding:16px}
+      </style>
+    </head><body><div class="empty">No content yet</div></body></html>`;
+  }
+
+  // If full doc already
+  if (looksLikeFullDoc(html)) return html;
+
+  // Wrap fragment
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    html,body{margin:0;padding:0;background:#fff;color:#0f172a}
+    *{box-sizing:border-box}
+    img{max-width:100%;height:auto}
+  </style>
+</head>
+<body>
+  ${html}
+</body>
+</html>`;
+};
+
+/* -----------------------------
+  Basic Rich Editor
+------------------------------ */
+function RichContentEditor({
+  value,
+  onChange,
+  placeholder = "Write your page content...",
+}: {
+  value: string;
+  onChange: (html: string) => void;
+  placeholder?: string;
+}) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    if ((ref.current.innerHTML || "") !== (value || "")) {
+      ref.current.innerHTML = value || "";
+    }
+  }, [value]);
+
+  const exec = (cmd: string, arg?: string) => {
+    ref.current?.focus();
+    // @ts-ignore
+    document.execCommand(cmd, false, arg);
+    onChange(ref.current?.innerHTML || "");
+  };
+
+  return (
+    <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-3">
+        <Button type="button" variant="outline" className="h-9 rounded-xl px-3" onClick={() => exec("bold")}>
+          <span className="font-semibold">B</span>
+        </Button>
+        <Button type="button" variant="outline" className="h-9 rounded-xl px-3 italic" onClick={() => exec("italic")}>
+          I
+        </Button>
+        <Button type="button" variant="outline" className="h-9 rounded-xl px-3 underline" onClick={() => exec("underline")}>
+          U
+        </Button>
+
+        <div className="h-7 w-px bg-slate-200 mx-1" />
+
+        <Button type="button" variant="outline" className="h-9 rounded-xl px-3" onClick={() => exec("insertUnorderedList")}>
+          • List
+        </Button>
+        <Button type="button" variant="outline" className="h-9 rounded-xl px-3" onClick={() => exec("insertOrderedList")}>
+          1. List
+        </Button>
+
+        <div className="ml-auto text-xs text-slate-500">Rich editor</div>
+      </div>
+
+      <div className="p-4">
+        <div
+          ref={ref}
+          contentEditable
+          onInput={() => onChange(ref.current?.innerHTML || "")}
+          className={cn(
+            "min-h-[360px] w-full rounded-md border border-slate-200 bg-white px-5 py-4",
+            "text-[14px] leading-6 text-slate-900 outline-none",
+            "focus:ring-2 focus:ring-violet-200 focus:border-violet-300"
+          )}
+          data-placeholder={placeholder}
+          suppressContentEditableWarning
+        />
+        <style jsx>{`
+          [contenteditable][data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #94a3b8;
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
+/* -----------------------------
+  Main Component
+------------------------------ */
+export default function PageCreator({ item, fields }: PageCreatorProps) {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const {currentBusiness} = useSelector((state: RootState) => state.business);
-  const {curretAgency} = useSelector((state: RootState) => state.agency);
-  // const {currentbusiness,currentWebsite} = useSelector((state: RootState) => state.dashboardDetails);
-const searchParams = useSearchParams()
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+  const { curretAgency } = useSelector((state: RootState) => state.agency);
+
   const router = useRouter();
+  const searchParams = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
-  // Single state object for all form data
-  const [formData, setFormData] = useState(() => {
-    const initialData: Record<string, any> = {};
-    fields.forEach((field) => {
-      const { name, type } = field;
-      if (name === "websiteId") {
-        initialData[name] = currentWebsite?._id;
-      }
-      if (type === "array") {
-        initialData[name] = Array.isArray(item[name]) ? item[name] : [];
-      } else {
-        initialData[name] = item[name] || "";
-      }
+  const [saving, startTransition] = useTransition();
+
+  const [msg, setMsg] = useState<string | null>(null);
+  const [mode, setMode] = useState<"rich" | "html" | "preview">("rich");
+  const [slugTouched, setSlugTouched] = useState(false);
+
+  const [formData, setFormData] = useState<Record<string, any>>(() => {
+    const initial: Record<string, any> = {};
+    fields.forEach((f) => {
+      if (f.type === "array") initial[f.name] = Array.isArray(item?.[f.name]) ? item[f.name] : [];
+      else initial[f.name] = item?.[f.name] ?? "";
     });
-    return initialData;
+    if (currentWebsite?._id) initial.websiteId = currentWebsite._id;
+    if (currentWebsite?.tenantId) initial.tenantId = currentWebsite.tenantId;
+    return initial;
   });
 
-  // Update websiteId when currentWebsite changes
   useEffect(() => {
     if (currentWebsite?._id && currentWebsite?.tenantId) {
-      setFormData((prev) => ({
-        ...prev,
+      setFormData((p) => ({
+        ...p,
         websiteId: currentWebsite._id,
         tenantId: currentWebsite.tenantId,
       }));
     }
   }, [currentWebsite]);
 
-  const [saving, start] = useTransition();
-  const [msg, setMsg] = useState<string | null>(null);
-
-  // Generic change handler
   const handleChange = (name: string, value: any) => {
-    // If changing the title, also auto-update the slug
     if (name === "title") {
-      const slug = value.toLowerCase().replace(/\s+/g, "-");
-      setFormData((prev) => ({ ...prev, [name]: value, slug }));
-    } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  // Array handlers
-  const handleArrayAdd = (name: string) => {
-    const currentArray = formData[name] || [];
-    setFormData((prev) => ({ ...prev, [name]: [...currentArray, ""] }));
-  };
-
-  const handleArrayChange = (name: string, index: number, value: string) => {
-    const currentArray = [...(formData[name] || [])];
-    currentArray[index] = value;
-    setFormData((prev) => ({ ...prev, [name]: currentArray }));
-  };
-
-  const handleArrayRemove = (name: string, index: number) => {
-    const currentArray = [...(formData[name] || [])];
-    currentArray.splice(index, 1);
-    setFormData((prev) => ({ ...prev, [name]: currentArray }));
-  };
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMsg(null);
-    if (
-      !formData?.content ||
-      !formData?.title ||
-      !formData?.slug ||
-      !formData?.websiteId
-    ) {
-      toast.error("Please fill all the fields");
+      const nextSlug = slugify(value);
+      setFormData((p) => ({ ...p, title: value, ...(slugTouched ? {} : { slug: nextSlug }) }));
       return;
     }
-    const result = await dispatch(createWebsitePage(formData));
+    if (name === "slug") setSlugTouched(true);
+    setFormData((p) => ({ ...p, [name]: value }));
+  };
 
-    if (createWebsitePage.fulfilled.match(result)) {
-      setMsg("Created successfully!");
-    const params = new URLSearchParams(searchParams.toString())
-      params.set('agencyid', curretAgency?._id?.toString()??"")
-      params.set('businessid', currentBusiness?._id?.toString()??"")
-    const primaryBusiness = currentWebsite?.primaryDomain?.[0]??null
-      router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`)  
-      // router.push("/admin/website/pages");
-      toast.success("Created successfully!");
-    } else {
-      setMsg("Create failed");
-      toast.error("Create failed");
+  const handleArrayAdd = (name: string) => {
+    const arr = [...(formData[name] || [])];
+    arr.push("");
+    setFormData((p) => ({ ...p, [name]: arr }));
+  };
+  const handleArrayChange = (name: string, idx: number, value: string) => {
+    const arr = [...(formData[name] || [])];
+    arr[idx] = value;
+    setFormData((p) => ({ ...p, [name]: arr }));
+  };
+  const handleArrayRemove = (name: string, idx: number) => {
+    const arr = [...(formData[name] || [])];
+    arr.splice(idx, 1);
+    setFormData((p) => ({ ...p, [name]: arr }));
+  };
+
+  const goBack = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("agencyid", curretAgency?._id?.toString() ?? "");
+    params.set("businessid", currentBusiness?._id?.toString() ?? "");
+    const primaryBusiness = currentWebsite?.primaryDomain?.[0] ?? null;
+    router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`);
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setMsg(null);
+
+    if (!formData?.title || !formData?.slug || !formData?.websiteId) {
+      toast.error("Please fill all required fields");
+      return;
     }
-  };
+    if (!formData?.content) {
+      toast.error("Content is required");
+      return;
+    }
 
-  const handleCancel = () => {
-    // clear form data
-    setFormData(() => {
-      const initialData: Record<string, any> = {};
-      fields.forEach((field) => {
-        const { name, type } = field;
-        if (type === "array") {
-          initialData[name] = Array.isArray(item[name]) ? item[name] : [];
-        } else {
-          initialData[name] = item[name] || "";
-        }
-      });
-      return initialData;
+    startTransition(async () => {
+      const res = await dispatch(createWebsitePage(formData));
+      if (createWebsitePage.fulfilled.match(res)) {
+        setMsg("Created successfully!");
+        toast.success("Created successfully!");
+        goBack();
+      } else {
+        setMsg("Create failed");
+        toast.error("Create failed");
+      }
     });
- const params = new URLSearchParams(searchParams.toString())
-      params.set('agencyid', curretAgency?._id?.toString()??"")
-      params.set('businessid', currentBusiness?._id?.toString()??"")
-    const primaryBusiness = currentWebsite?.primaryDomain?.[0]??null
-      router.push(`/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`)  
-
   };
 
-  // Render fields
+  const leftFields = fields.filter((f) => f.side === "left");
+  const rightFields = fields.filter((f) => f.side === "right");
+
+  // ✅ Renderable preview html
+  const renderableHtml = useMemo(
+    () => unescapeHtmlIfNeeded(formData?.content || ""),
+    [formData?.content]
+  );
+
+  const iframeDoc = useMemo(() => buildIframeDoc(renderableHtml), [renderableHtml]);
+
+  // ✅ Thumbnail scaling (shows more of page in small box)
+  const THUMB_SCALE = 0.32; // smaller => more content visible
+  const thumbW = `${100 / THUMB_SCALE}%`;
+  const thumbH = `${100 / THUMB_SCALE}%`;
+
   const renderField = (field: FieldConfig) => {
-    const { name, label, type, options, placeholder, rows } = field;
+    const { name, label, type, options, placeholder, readOnly, rows } = field;
 
     if (type === "array") {
-      const arrayValue = formData[name] || [];
-
+      const arr = formData[name] || [];
       return (
-        <div key={name} className="space-y-3">
-          <label className="text-sm block font-semibold text-gray-700">
-            {label}
-          </label>
+        <div key={name} className="space-y-2">
+          <div className="flex items-center justify-between">
+            <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
+            <Button type="button" variant="outline" className="h-9 rounded-xl" onClick={() => handleArrayAdd(name)}>
+              + Add
+            </Button>
+          </div>
 
-          <div className="space-y-3">
-            {arrayValue.map((item: string, index: number) => (
-              <div
-                key={index}
-                className="flex gap-2 animate-in fade-in slide-in-from-left-2 duration-200"
-              >
-                <input
-                  className="border border-gray-300 p-3 flex-1 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-gray-400"
-                  value={item}
-                  onChange={(e) =>
-                    handleArrayChange(name, index, e.target.value)
-                  }
+          <div className="space-y-2">
+            {arr.map((v: string, i: number) => (
+              <div key={i} className="flex gap-2">
+                <Input
+                  value={v}
+                  onChange={(e) => handleArrayChange(name, i, e.target.value)}
+                  className="h-11 rounded-md border-slate-200"
                   placeholder={placeholder}
                 />
-                <button
+                <Button
                   type="button"
-                  className="px-4 py-2 rounded-lg bg-gradient-to-br from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:scale-105 active:scale-95 font-medium shadow-sm hover:shadow"
-                  onClick={() => handleArrayRemove(name, index)}
+                  variant="outline"
+                  className="h-11 rounded-md border-red-200 text-red-600 hover:bg-red-50"
+                  onClick={() => handleArrayRemove(name, i)}
                 >
-                  ×
-                </button>
+                  Remove
+                </Button>
               </div>
             ))}
-
-            <button
-              type="button"
-              className="px-4 py-2.5 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200 text-sm font-medium shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 flex items-center gap-2"
-              onClick={() => handleArrayAdd(name)}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              Add {label}
-            </button>
           </div>
         </div>
       );
     }
 
-    return (
-      <div key={name} className="space-y-2">
-        <Label className="text-sm block font-semibold text-gray-700">
-          {label}
-        </Label>
+    // Content editor
+    if (name === "content") {
+      return (
+        <div key={name} className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <Label className="text-[14px] font-semibold text-slate-900">{label}</Label>
+              <div className="text-xs text-slate-500 mt-0.5">
+                Choose editor type. Preview updates instantly.
+              </div>
+            </div>
 
-        {type === "text" && (
+            <div className="flex items-center rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+              {/* <Button
+                type="button"
+                variant={mode === "rich" ? "default" : "ghost"}
+                className={cn("h-9 rounded-xl px-4", mode === "rich" && "bg-violet-600 hover:bg-violet-700 text-white")}
+                onClick={() => setMode("rich")}
+              >
+                Rich
+              </Button> */}
+              <Button
+                type="button"
+                variant={mode === "html" ? "default" : "ghost"}
+                className={cn("h-9 rounded-xl px-4", mode === "html" && "bg-violet-600 hover:bg-violet-700 text-white")}
+                onClick={() => setMode("html")}
+              >
+                HTML
+              </Button>
+              <Button
+                type="button"
+                variant={mode === "preview" ? "default" : "ghost"}
+                className={cn("h-9 rounded-xl px-4", mode === "preview" && "bg-violet-600 hover:bg-violet-700 text-white")}
+                onClick={() => setMode("preview")}
+              >
+                Preview
+              </Button>
+            </div>
+          </div>
+
+          {mode === "rich" && (
+            <RichContentEditor
+              value={formData.content || ""}
+              onChange={(html) => handleChange("content", html)}
+            />
+          )}
+
+          {mode === "html" && (
+            <div className="rounded-md border border-slate-200 bg-white shadow-sm p-4">
+              <textarea
+                value={formData.content || ""}
+                onChange={(e) => handleChange("content", e.target.value)}
+                placeholder="<h1>Title</h1><p>Content...</p>"
+                rows={rows || 16}
+                className={cn(
+                  "w-full rounded-md border border-slate-200 bg-white px-5 py-4",
+                  "font-mono text-[13px] leading-6 text-slate-900 outline-none",
+                  "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
+                  "resize-none"
+                )}
+              />
+              <div className="mt-2 text-xs text-slate-500">
+                Escaped HTML like <span className="font-mono">&amp;lt;div&amp;gt;</span> will auto-render in preview/thumbnail.
+              </div>
+            </div>
+          )}
+
+          {mode === "preview" && (
+            <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                <div className="text-sm font-semibold text-slate-900">Live Preview</div>
+                <div className="text-xs text-slate-500">Sandbox iframe</div>
+              </div>
+
+              <div className="p-4">
+                <div className="rounded-md border border-slate-200 overflow-hidden bg-white">
+                  <iframe
+                    title="preview"
+                    className="w-full h-[520px] bg-white"
+                    srcDoc={iframeDoc}
+                    sandbox="allow-same-origin" // blocks scripts by default, keeps layout safe
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    if (type === "text") {
+      return (
+        <div key={name} className="space-y-2">
+          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
           <Input
-            // className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white hover:border-gray-400"
             value={formData[name] || ""}
             onChange={(e) => handleChange(name, e.target.value)}
             placeholder={placeholder}
+            readOnly={readOnly}
+            className={cn("h-11 rounded-md bg-white border-slate-200", readOnly && "bg-slate-50 text-slate-700")}
           />
-        )}
+        </div>
+      );
+    }
 
-        {type === "textarea" && (
+    if (type === "textarea") {
+      return (
+        <div key={name} className="space-y-2">
+          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
           <textarea
-            className="border border-gray-300 p-3 w-full rounded-lg focus:ring-2  focus:border-transparent transition-all duration-200 bg-white hover:border-gray-400 resize-none"
             value={formData[name] || ""}
             onChange={(e) => handleChange(name, e.target.value)}
             placeholder={placeholder}
             rows={rows || 6}
+            className={cn(
+              "w-full rounded-md border border-slate-200 bg-white px-5 py-4",
+              "text-[14px] leading-6 text-slate-900 outline-none",
+              "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
+              "resize-none"
+            )}
           />
-        )}
+        </div>
+      );
+    }
 
-        {type === "select" && options && (
-          <Select
-            value={formData[name] || ""}
-            onValueChange={(value) => handleChange(name, value)}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select an option" />
+    if (type === "select" && options) {
+      return (
+        <div key={name} className="space-y-2">
+          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
+          <Select value={formData[name] || ""} onValueChange={(v) => handleChange(name, v)}>
+            <SelectTrigger className="h-11 w-full rounded-md bg-white border-slate-200">
+              <SelectValue placeholder={placeholder || "Select"} />
             </SelectTrigger>
-
             <SelectContent>
               {options.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>
@@ -267,128 +477,113 @@ const searchParams = useSearchParams()
               ))}
             </SelectContent>
           </Select>
-        )}
-      </div>
-    );
+        </div>
+      );
+    }
+
+    return null;
   };
 
-  // Split fields
-  const leftFields = fields.filter((f) => f.side === "left");
-  const rightFields = fields.filter((f) => f.side === "right");
-
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Header with action buttons */}
-      <div className="flex items-center justify-between mb-6 p-0 rounded-xl">
-        {/* <h2 className="text-xl font-bold text-gray-800">Create New Page </h2> */}
-        <BreadCrumbPage />
-        <div className="flex gap-3">
-          <Button
-            type="button"
-            variant="secondary"
-            className="text-white"
-            // className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-gray-200 to-gray-300 text-gray-700 font-medium hover:from-gray-300 hover:to-gray-400 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95"
-            onClick={handleCancel}
-          >
-            Cancel
-          </Button>
+    <form onSubmit={onSubmit} className="min-h-screen w-full ">
+      <div className="max-w-[1320px] mx-auto px-7 py-7">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            {/* <div className="text-[30px] font-semibold text-slate-900">Create</div>
+            <div className="text-sm text-slate-500 mt-1">
+              Create a page with content and metadata.
+            </div> */}
+            <div className="mt-3">
+              <BreadCrumbPage />
+            </div>
+          </div>
 
-          <Button
-            type="button"
-            // className="px-5 py-2.5 rounded-lg bg-gradient-to-br from-green-600 to-green-700 text-white font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105 active:scale-95 disabled:transform-none"
-            disabled={saving}
-            onClick={onSubmit}
-          >
-            {saving ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                Creating...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-                Create
-              </span>
-            )}
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              // className="h-10 rounded-md bg-white border-slate-200"
+              onClick={goBack}
+            >
+              Cancel
+            </Button>
+
+            <Button
+              type="submit"
+              disabled={saving}
+              // className="h-10 rounded-md bg-violet-700 hover:bg-violet-800"
+            >
+              {saving ? "Creating..." : "Save"}
+            </Button>
+          </div>
+        </div>
+
+        {msg && (
+          <div className={cn(
+            "mt-5 rounded-md border px-4 py-3 shadow-sm",
+            msg.toLowerCase().includes("success")
+              ? "bg-emerald-50 border-emerald-200 text-emerald-800"
+              : "bg-rose-50 border-rose-200 text-rose-800"
+          )}>
+            <div className="text-sm font-medium">{msg}</div>
+          </div>
+        )}
+
+        <div className="mt-7 grid grid-cols-1 lg:grid-cols-12 gap-7">
+          {/* Left */}
+          <div className="lg:col-span-8">
+            <div className="rounded-md border border-slate-200 bg-white shadow-sm p-7">
+              <div className="space-y-7">
+                {leftFields.map((f) => renderField(f))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right */}
+          <div className="lg:col-span-4 space-y-7">
+            <div className="rounded-md border border-slate-200 bg-white shadow-sm p-7">
+              <div className="space-y-7">
+                {rightFields.map((f) => renderField(f))}
+
+                {/* ✅ Thumbnail that shows more of the page (scaled iframe) */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-[13px] font-semibold text-slate-900">
+                      Thumbnail Preview
+                    </Label>
+                    <div className="text-xs text-slate-500">Auto from HTML</div>
+                  </div>
+
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-3">
+                    <div className="rounded-md border border-slate-200 bg-white overflow-hidden">
+                      <div className="relative aspect-[16/10] w-full bg-white overflow-hidden">
+                        <iframe
+                          title="thumbnail"
+                          srcDoc={iframeDoc}
+                          sandbox="allow-same-origin"
+                          className="absolute left-0 top-0 origin-top-left"
+                          style={{
+                            transform: `scale(${THUMB_SCALE})`,
+                            width: thumbW,
+                            height: thumbH,
+                            pointerEvents: "none", // behaves like image
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="mt-2 text-xs text-slate-500">
+                      Mini preview shows more of the page now (scaled).
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-white shadow-sm h-[80px]" />
+          </div>
         </div>
       </div>
-
-      {/* Success/Error message with animation */}
-      {msg && (
-        <div
-          className={`mb-6 p-4 rounded-xl shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 ${
-            msg.includes("success")
-              ? "bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
-              : "bg-gradient-to-r from-red-50 to-rose-50 border border-red-200"
-          }`}
-        >
-          <p
-            className={`font-medium flex items-center gap-2 ${
-              msg.includes("success") ? "text-green-700" : "text-red-700"
-            }`}
-          >
-            {msg.includes("success") ? (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )}
-            {msg}
-          </p>
-        </div>
-      )}
-
-      {/* Two-column layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Left side - Main content */}
-        <div className="lg:w-8/12 p-6 space-y-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300">
-          {leftFields.map((field) => renderField(field))}
-        </div>
-
-        {/* Right side - Metadata */}
-        <div className="lg:w-4/12 p-6 space-y-6 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300">
-          {rightFields.map((field) => renderField(field))}
-        </div>
-      </div>
-    </div>
+    </form>
   );
 }

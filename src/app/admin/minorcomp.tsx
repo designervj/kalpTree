@@ -33,17 +33,20 @@ const MinorComp = ({ sessionUser }: any) => {
 
   useEffect(() => {
     // wait until redux is hydrated
-    if (!user || !currentWebsite) return;
+    if (!user) return;
 
     if (user && user.role !== "business") {
       setReady(true);
+      return
     }
 
-    if (user.role === "business" && currentWebsite.primaryDomain) {
+    if (user.role === "business" && currentWebsite &&  currentWebsite.primaryDomain) {
       const encodedName = decodeURIComponent(currentWebsite.primaryDomain[0]);
       router.replace(`/admin/websites/${encodedName}`);
     }
-  }, [user, currentWebsite]);
+  }, [user, currentWebsite, router]);
+
+
 
   // ⛔ block UI until decision is made
   // if (!ready) {

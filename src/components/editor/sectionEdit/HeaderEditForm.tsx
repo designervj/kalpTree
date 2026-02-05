@@ -33,6 +33,7 @@ import {
   LayoutGrid,
   Sparkles,
 } from "lucide-react";
+import Navigation from "../navigation/Navigation";
 
 type HeaderLayoutId = "logo-left" | "logo-center" | "logo-right" | "minimal" | "stacked";
 type IconSize = "small" | "medium" | "large";
@@ -111,7 +112,7 @@ function ToggleRow({
   onAction?: () => void;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex items-start justify-between gap-0 mb-4  ">
       <div className="space-y-1">
         <div className="text-[16px] font-semibold text-slate-900">{title}</div>
         {subtitle ? (
@@ -281,49 +282,56 @@ export default function HeaderEditForm() {
                 <div className="relative">
                   <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent" />
                   <div className="overflow-x-auto no-scrollbar">
-                    <TabsList className="inline-flex h-12 w-max items-end gap-6 rounded-none bg-transparent p-0">
-                      <TabsTrigger
-                        value="layout"
-                        className="h-12 border-none bg-transparent   rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-b data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
-                      >
-                        Layout
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="elements"
-                        className="h-12 rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
-                      >
-                        Elements
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="logo"
-                        className="h-12 rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
-                      >
-                        Logo
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="bag"
-                        className="h-12 rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
-                      >
-                        Shopping bag
-                      </TabsTrigger>
-                      <TabsTrigger
-                        value="style"
-                        className="h-12 rounded-none border-b-2 border-transparent px-0 pb-3 text-[20px] font-semibold text-slate-500 data-[state=active]:border-violet-600 data-[state=active]:text-violet-700"
-                      >
-                        Style
-                      </TabsTrigger>
+                    <TabsList className="
+  inline-flex w-max items-end gap-6
+  rounded-none bg-transparent p-0
+  overflow-x-auto overflow-y-hidden
+  whitespace-nowrap
+  no-scrollbar
+">
+                      {[
+                        { value: "layout", label: "Layout" },
+                        { value: "elements", label: "Elements" },
+                        { value: "logo", label: "Logo" },
+                        { value: "navigation", label: "Navigation" },
+                        { value: "bag", label: "Shopping bag" },
+                        { value: "style", label: "Style" },
+                      ].map((tab) => (
+                        <TabsTrigger
+                          key={tab.value}
+                          value={tab.value}
+                          className="
+                             relative h-10 px-0 pb-3
+                             text-[16px] font-medium text-slate-500
+                              bg-transparent rounded-none border-none shadow-none
+                              focus:bg-transparent focus-visible:bg-transparent
+                                data-[state=active]:bg-transparent
+                              data-[state=active]:shadow-none
+
+        after:absolute after:left-0 after:bottom-0
+        after:h-[2px] after:w-0 after:bg-violet-600
+        after:transition-all after:duration-300
+
+        data-[state=active]:text-black
+        data-[state=active]:after:w-full
+      "
+                        >
+                          {tab.label}
+                        </TabsTrigger>
+                      ))}
                     </TabsList>
+
                   </div>
                 </div>
 
                 <Separator className="bg-slate-200" />
 
                 {/* Body */}
-                <ScrollArea className="h-[520px]">
-                  <div className="px-6 py-6">
+                <ScrollArea className="h-[400px]">
+                  <div className="px-4 py-2">
                     {/* ============ LAYOUT TAB ============ */}
                     <TabsContent value="layout" className="mt-0">
-                      <div className="space-y-6">
+                      <div className="space-y-4">
                         <ToggleRow
                           title="Make header sticky"
                           checked={sticky}
@@ -402,28 +410,37 @@ export default function HeaderEditForm() {
                           checked={showLogo}
                           onCheckedChange={setShowLogo}
                           actionText="Edit logo"
-                          onAction={() => {}}
+                          onAction={() => { }}
                         />
+
+                        <ToggleRow
+                          title="Show navigation"
+                          checked={showLogo}
+                          onCheckedChange={setShowLogo}
+                          actionText="Edit navigation"
+                          onAction={() => { }}
+                        />
+
                         <ToggleRow
                           title="Show social icons"
                           checked={showSocial}
                           onCheckedChange={setShowSocial}
                           actionText="Edit social icons"
-                          onAction={() => {}}
+                          onAction={() => { }}
                         />
                         <ToggleRow
                           title="Show button"
                           checked={showButton}
                           onCheckedChange={setShowButton}
                           actionText="Edit button"
-                          onAction={() => {}}
+                          onAction={() => { }}
                         />
                         <ToggleRow
                           title="Show shopping cart"
                           checked={showCart}
                           onCheckedChange={setShowCart}
                           actionText="Edit shopping cart"
-                          onAction={() => {}}
+                          onAction={() => { }}
                         />
                       </div>
                     </TabsContent>
@@ -548,6 +565,10 @@ export default function HeaderEditForm() {
                       </div>
                     </TabsContent>
 
+                          <TabsContent value="navigation" className="mt-0">
+                              {/* <Navigation/> */}
+                          </TabsContent>
+
                     {/* ============ SHOPPING BAG TAB ============ */}
                     <TabsContent value="bag" className="mt-0">
                       <div className="space-y-6">
@@ -609,7 +630,7 @@ export default function HeaderEditForm() {
                     {/* ============ STYLE TAB ============ */}
                     <TabsContent value="style" className="mt-0">
                       <div className="space-y-6">
-                        <div className="flex items-center gap-2 text-slate-500">
+                        {/* <div className="flex items-center gap-2 text-slate-500">
                           <button
                             type="button"
                             className="inline-flex items-center gap-1 text-sm font-medium hover:text-slate-900"
@@ -624,11 +645,11 @@ export default function HeaderEditForm() {
                             Style
                           </div>
                           <ChevronRight className="h-4 w-4" />
-                        </div>
+                        </div> */}
 
                         <div className="space-y-3">
                           <Select value={styleTarget} onValueChange={setStyleTarget}>
-                            <SelectTrigger className="h-12 rounded-xl bg-white">
+                            <SelectTrigger className="h-12 rounded-xl bg-white w-full">
                               <SelectValue placeholder="Header" />
                             </SelectTrigger>
                             <SelectContent>
@@ -735,12 +756,12 @@ export default function HeaderEditForm() {
                 {/* Footer */}
                 <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-6 py-4">
                   <DialogClose asChild>
-                    <Button variant="outline" className="h-11 rounded-2xl">
+                    <Button variant="outline" className="h-11 rounded-md">
                       Cancel
                     </Button>
                   </DialogClose>
 
-                  <Button className="h-11 rounded-2xl bg-violet-700 text-white hover:bg-violet-800">
+                  <Button className="h-11 rounded-md ">
                     Save changes
                   </Button>
                 </div>
@@ -752,14 +773,3 @@ export default function HeaderEditForm() {
     </Dialog>
   );
 }
-
-/**
- * NOTE:
- * Make sure these shadcn components exist in your project:
- * - dialog, tabs, switch, slider, scroll-area, separator, button, input, select
- *
- * (Tailwind "no-scrollbar" helper optional)
- * You can add this class to globals.css if you want to hide the horizontal scrollbar:
- * .no-scrollbar::-webkit-scrollbar { display: none; }
- * .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
- */
