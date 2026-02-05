@@ -1,9 +1,12 @@
 "use client";
-import { useParams, usePathname, useRouter } from "next/navigation";
-import { useMemo, useState, useEffect } from "react";
+
+import React, { useMemo, useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +14,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
+
 import {
   Select,
   SelectContent,
@@ -19,6 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
   Table,
   TableBody,
@@ -27,6 +33,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 import {
   ChevronUp,
   ChevronDown,
@@ -36,17 +43,32 @@ import {
   Trash2,
   Edit2,
   Layout,
+  MoreVertical,
+  Home,
+  Info,
+  Briefcase,
+  PhoneCall,
+  FileText,
+  Globe,
+  Link2,
+  Star,
+  BadgeCheck,
+  Copy,
 } from "lucide-react";
-import BreadCrumbPage from "../breadCrumb/BreadCrumbPage";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/store/store";
-import { setPageEdit } from "@/hooks/slices/pageEditSlice";
+
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
 import { WebsitePageModel } from "./website/websitePage/WebsitePageType";
 
+/* -----------------------------
+  Types
+------------------------------ */
 export type ColumnConfig = {
   key: string;
   label?: string;
   hidden?: boolean;
+  type?: "text" | "link";
+  href?: string;
   render?: (value: any, row: any) => React.ReactNode;
 };
 
@@ -63,13 +85,18 @@ export type DataTableExtProps = {
 
 type SortDir = "asc" | "desc";
 
+/* -----------------------------
+  Utils
+------------------------------ */
+const cn = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(" ");
+
 function inferType(values: any[]): "string" | "number" | "date" | "boolean" {
   for (const v of values) {
     if (v == null) continue;
     if (typeof v === "number") return "number";
     if (typeof v === "boolean") return "boolean";
     if (typeof v === "string") {
-      // date heuristic
       const d = new Date(v);
       if (!Number.isNaN(d.getTime()) && /\d{4}-\d{2}-\d{2}/.test(v))
         return "date";
@@ -79,40 +106,82 @@ function inferType(values: any[]): "string" | "number" | "date" | "boolean" {
   return "string";
 }
 
-function formatValue(v: any, key?: string, list?: any) {
+function formatValue(v: any) {
   if (v == null) return "-";
+  if (typeof v === "boolean") return v ? "Yes" : "No";
+  return String(v);
+}
 
-  // Custom date formatting for createdAt/updatedAt
-  if (
-    key &&
-    (key.toLowerCase().includes("created") ||
-      key.toLowerCase().includes("updated"))
-  ) {
-    const date = new Date(v);
-    if (!isNaN(date.getTime())) {
-      const now = new Date();
-      const isToday = date.toDateString() === now.toDateString();
-      const yesterday = new Date(now);
-      yesterday.setDate(now.getDate() - 1);
-      const isYesterday = date.toDateString() === yesterday.toDateString();
-      if (isToday) return "Today";
-      if (isYesterday) return "Yesterday";
-      return date.toLocaleDateString("en-GB", {
+/** ✅ Always show 2 lines: Line1 = Day label / date, Line2 = time */
+function formatPrettyDate2Line(v: any) {
+  if (!v) return { top: "-", bottom: "" };
+
+  const d = new Date(v);
+  if (Number.isNaN(d.getTime())) {
+    const s = String(v);
+    return { top: s, bottom: "" };
+  }
+
+  const now = new Date();
+  const isToday = d.toDateString() === now.toDateString();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = d.toDateString() === yesterday.toDateString();
+
+  const top = isToday
+    ? "Today"
+    : isYesterday
+    ? "Yesterday"
+    : d.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
       });
-    }
-  }
-  if (v instanceof Date) return v.toISOString();
-  if (typeof v === "boolean") return v ? "Yes" : "No";
-  if (list && list.length > 0) {
-    const value = list.find((d: any) => d._id == v)?.name;
-    return value;
-  }
-  return String(v);
+
+  const bottom = d.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return { top, bottom };
 }
 
+function getSlugIcon(slug?: string, title?: string) {
+  
+  const s = (slug || "").toLowerCase();
+  const t = (title || "").toLowerCase();
+
+  if (s === "home" || t.includes("home")) return Home;
+  if (s.includes("about") || t.includes("about")) return Info;
+  if (s.includes("service") || t.includes("service")) return Briefcase;
+  if (s.includes("contact") || t.includes("contact")) return PhoneCall;
+  if (s.includes("blog") || t.includes("blog")) return FileText;
+  if (s.includes("pricing") || t.includes("pricing")) return Star;
+  if (s.includes("terms") || s.includes("privacy")) return Link2;
+  return Globe;
+}
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {}
+}
+
+/* -----------------------------
+  ✅ Hide these columns by default (removes your red-mark area)
+------------------------------ */
+const HIDE_BY_DEFAULT = new Set([
+  "seotitle",
+  "metadescription",
+  "focuskeyword",
+  "seo_title",
+  "meta_description",
+  "focus_keyword",
+]);
+
+/* -----------------------------
+  Component
+------------------------------ */
 export function DataTableExt({
   title,
   data,
@@ -128,14 +197,24 @@ export function DataTableExt({
   const [pageSize, setPageSize] = useState(10);
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<SortDir>("asc");
-  const dispatch = useDispatch<AppDispatch>();
-  const [columnVisibility, setColumnVisibility] = useState<
-    Record<string, boolean>
-  >({ content: false, _id: false });
+
+  const pathname = usePathname();
+  const pageName = pathname.split("/")[5];
+
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
+    content: false,
+    _id: false,
+    // ✅ force hidden
+    seoTitle: false,
+    metaDescription: false,
+    focusKeyword: false,
+  });
+
   const [enumFilters, setEnumFilters] = useState<Record<string, string | null>>(
-    {},
+    {}
   );
-  const { listCategory } = useSelector((state: RootState) => state.category);
   const [textFilters, setTextFilters] = useState<Record<string, string>>({});
   const [numFilters, setNumFilters] = useState<
     Record<string, { min?: number; max?: number }>
@@ -144,70 +223,89 @@ export function DataTableExt({
     Record<string, { from?: string; to?: string }>
   >({});
 
-  const router = useRouter();
-
-  const path = usePathname();
-  const lastSegment = path.split("/").filter(Boolean).pop();
-
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
-  // derive columns
+  /* -----------------------------
+    Columns
+  ------------------------------ */
   const columns = useMemo(() => {
     const first = data[0] || {};
     const keys = new Set<string>(Object.keys(first));
-    // include keys seen in others too
-    for (const row of data.slice(1))
-      for (const k of Object.keys(row)) keys.add(k);
+    for (const row of data.slice(1)) for (const k of Object.keys(row)) keys.add(k);
 
     const base: ColumnConfig[] = Array.from(keys)
-      .filter(
-        (k) =>
-          !["tenantId", "websiteId"].includes(k) &&
-          typeof first[k] !== "object",
-      )
+      .filter((k) => !["tenantId", "websiteId"].includes(k) && typeof first[k] !== "object")
       .map((k) => ({
         key: k,
-        label: k
-          .replace(/([A-Z])/g, " $1")
-          .replace(/^./, (ch) => ch.toUpperCase()),
+        label: k.replace(/([A-Z])/g, " $1").replace(/^./, (ch) => ch.toUpperCase()),
       }));
 
-    if (initialColumns && initialColumns.length) {
-      // Merge: respect provided order first, then append the rest
+    if (initialColumns?.length) {
       const known = new Set(initialColumns.map((c) => c.key));
-      const merged = [
-        ...initialColumns,
-        ...base.filter((b) => !known.has(b.key)),
-      ];
-      return merged;
+      return [...initialColumns, ...base.filter((b) => !known.has(b.key))];
     }
+
     return base;
   }, [data, initialColumns]);
 
-  // initialize visibility based on config
-  useEffect(() => {
-    setColumnVisibility((prev) => {
-      const next = { ...prev };
-      for (const c of columns) {
-        if (next[c.key] == null) next[c.key] = !c.hidden;
-      }
-      return next;
+  /** ✅ Clean labels + hide SEO columns by default */
+  const normalizedColumns = useMemo(() => {
+    return columns.map((c) => {
+      const k = c.key;
+      const kl = String(k).toLowerCase();
+
+      const hidden = c.hidden || HIDE_BY_DEFAULT.has(kl);
+
+      if (kl === "updatedar") return { ...c, label: "Updated By", hidden };
+      if (kl === "updatedatar") return { ...c, label: "Updated At", hidden };
+
+      if (kl === "createdat") return { ...c, label: "Created At", hidden };
+      if (kl === "updatedat") return { ...c, label: "Updated At", hidden };
+
+      if (kl === "seotitle") return { ...c, label: "SEO Title", hidden };
+      if (kl === "metadescription") return { ...c, label: "Meta Description", hidden };
+      if (kl === "focuskeyword") return { ...c, label: "Focus Keyword", hidden };
+      if (kl === "ishomepage") return { ...c, label: "Home", hidden };
+
+      return { ...c, hidden };
     });
   }, [columns]);
 
-  // Build metadata for filter UI
+  /** ✅ Initialize visibility (and FORCE SEO columns hidden) */
+  useEffect(() => {
+    setColumnVisibility((prev) => {
+      const next = { ...prev };
+
+      for (const c of normalizedColumns) {
+        if (next[c.key] == null) next[c.key] = !c.hidden;
+      }
+
+      // ✅ hard-force hide these columns even if something sets them true
+      for (const k of Object.keys(next)) {
+        const kl = k.toLowerCase();
+        if (HIDE_BY_DEFAULT.has(kl)) next[k] = false;
+      }
+
+      // also handle exact camelCase keys
+      next.seoTitle = false;
+      next.metaDescription = false;
+      next.focusKeyword = false;
+
+      return next;
+    });
+  }, [normalizedColumns]);
+
+  /* -----------------------------
+    Filter metadata
+  ------------------------------ */
   const meta = useMemo(() => {
     const byKey: Record<
       string,
-      {
-        type: "string" | "number" | "date" | "boolean";
-        values: any[];
-        uniques: any[];
-      }
+      { type: "string" | "number" | "date" | "boolean"; values: any[]; uniques: any[] }
     > = {};
-    for (const c of columns) {
+
+    for (const c of normalizedColumns) {
       const values = data.map((r) => r[c.key]).filter((v) => v !== undefined);
       const type = inferType(values);
+
       const uniques: any[] = [];
       const set = new Set<string>();
       for (const v of values) {
@@ -217,64 +315,59 @@ export function DataTableExt({
           uniques.push(v);
         }
       }
+
       byKey[c.key] = { type, values, uniques };
     }
     return byKey;
-  }, [columns, data]);
+  }, [normalizedColumns, data]);
 
-  // Filtering
+  /* -----------------------------
+    Filtering
+  ------------------------------ */
   const filtered = useMemo(() => {
     let rows = [...data];
 
-    // global search on stringified visible columns
     const q = query.trim().toLowerCase();
     if (q) {
-      rows = rows.filter((r) => {
-        return columns.some(
+      rows = rows.filter((r) =>
+        normalizedColumns.some(
           (c) =>
             columnVisibility[c.key] !== false &&
-            String(r[c.key] ?? "")
-              .toLowerCase()
-              .includes(q),
-        );
-      });
+            String(r[c.key] ?? "").toLowerCase().includes(q)
+        )
+      );
     }
 
-    // per-column filters
     rows = rows.filter((r) => {
-      for (const c of columns) {
+      for (const c of normalizedColumns) {
         const val = r[c.key];
         const m = meta[c.key];
         if (!m) continue;
+
         const type = m.type;
 
-        // enum filter
         const enumVal = enumFilters[c.key];
         if (enumVal && enumVal !== "__any__") {
           if (String(val) !== enumVal) return false;
         }
-        // text filter
+
         const tf = textFilters[c.key];
-        if (tf && m.type === "string") {
-          if (
-            !String(val ?? "")
-              .toLowerCase()
-              .includes(tf.toLowerCase())
-          )
+        if (tf && type === "string") {
+          if (!String(val ?? "").toLowerCase().includes(tf.toLowerCase()))
             return false;
         }
-        // number range
+
         const nf = numFilters[c.key];
-        if (nf && m.type === "number") {
+        if (nf && type === "number") {
           const v = Number(val);
           if (!Number.isNaN(v)) {
             if (nf.min != null && v < nf.min) return false;
             if (nf.max != null && v > nf.max) return false;
           }
         }
-        // date range
+
         const df = dateFilters[c.key];
-        if (df && m.type === "date") {
+        if (df && type === "date") {
           const d = new Date(val);
           if (!Number.isNaN(d.getTime())) {
             if (df.from && d < new Date(df.from)) return false;
@@ -289,7 +382,7 @@ export function DataTableExt({
   }, [
     data,
     query,
-    columns,
+    normalizedColumns,
     columnVisibility,
     enumFilters,
     textFilters,
@@ -298,24 +391,36 @@ export function DataTableExt({
     meta,
   ]);
 
-  // Sorting
+  /* -----------------------------
+    Sorting
+  ------------------------------ */
   const sorted = useMemo(() => {
     if (!sortKey) return filtered;
     const dir = sortDir === "asc" ? 1 : -1;
-    const rows = [...filtered].sort((a, b) => {
+
+    return [...filtered].sort((a, b) => {
       const va = a[sortKey];
       const vb = b[sortKey];
+
       if (va == null && vb == null) return 0;
       if (va == null) return -1 * dir;
       if (vb == null) return 1 * dir;
-      if (typeof va === "number" && typeof vb === "number")
-        return (va - vb) * dir;
+
+      const mt = meta[sortKey]?.type;
+      if (mt === "date") {
+        const da = new Date(va).getTime();
+        const db = new Date(vb).getTime();
+        return (da - db) * dir;
+      }
+
+      if (typeof va === "number" && typeof vb === "number") return (va - vb) * dir;
       return String(va).localeCompare(String(vb)) * dir;
     });
-    return rows;
-  }, [filtered, sortKey, sortDir]);
+  }, [filtered, sortKey, sortDir, meta]);
 
-  // Pagination
+  /* -----------------------------
+    Pagination
+  ------------------------------ */
   const total = sorted.length;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -389,97 +494,93 @@ export function DataTableExt({
     //   }
   }
 
-  const pathname = usePathname();
+  // const pathname = usePathname();
   ///admin/websites extract website
 
-  const pageName = pathname.split("/")[5];
+  // const pageName = pathname.split("/")[5];
   console.log("pageName", pageName);
- 
+
   const handleBuilderEdit = async (row: WebsitePageModel) => {
     const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
       ? currentWebsite?.primaryDomain[0]
       : currentWebsite?.primaryDomain;
+
     const localsub =
-      typeof currentSubdomain === "string"
-        ? currentSubdomain.split(".")[0]
-        : "";
+      typeof currentSubdomain === "string" ? currentSubdomain.split(".")[0] : "";
     const isLocalHost = window.location.hostname.includes("localhost");
 
     if (isLocalHost) {
-      const url = `http://${localsub}.localhost:55803/builder/${currentWebsite?._id}/?slug=${row.slug}`;
+      const url = `http://${localsub}.localhost:55803/${row.slug}`;
 
       window.open(url, "_blank");
     } else {
       const url = `https://${currentSubdomain}/${row.slug}`;
       window.open(url, "_blank");
     }
-    // const copied = structuredClone(row);
-    // delete copied.website;
-    // dispatch(setPageEdit(copied));
-    // try {
-    //   const res = await fetch(`/api/session/website`, {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ website: copied, currentWebsite }),
-    //   });
-    //   const data = await res.json();
-    //   console.log("data--", data);
-    // } catch (e) {
-    //   console.log("e--", e);
-    // }
-    // //  router.push(`/${copied.slug}`);
-    // window.open(`/${copied.slug}`, "_blank", "noopener,noreferrer");
   };
+
+  const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 justify-end w-full">
-        {onCreate ? (
-          <Button
-            size="sm"
-            className="py-2 rounded-sm px-4 py-2"
-            onClick={onCreate}
-          >
-            Create New
-          </Button>
-        ) : createHref ? (
-          <Link href={createHref} className="text-sm">
-            <Button size="sm" className="py-2 rounded-sm px-4 py-2">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <div className="text-lg font-semibold text-slate-900">
+            {title || "Table"}
+          </div>
+          <div className="text-xs text-slate-500">
+            {total ? `${total} items` : "No items"} • Pages
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {onCreate ? (
+            <Button size="sm" className="rounded-md px-4" onClick={onCreate}>
               Create New
             </Button>
-          </Link>
-        ) : null}
+          ) : createHref ? (
+            <Link href={createHref} className="text-sm">
+              <Button size="sm" className="rounded-md px-4">
+                Create New
+              </Button>
+            </Link>
+          ) : null}
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
+      {/* Search + menus */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex-1 min-w-[220px]">
           <Input
-            placeholder="Search"
+            placeholder="Search pages..."
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
               setPage(1);
             }}
-            className="bg-white h-10 text-xl"
+            className="bg-white h-10"
           />
         </div>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="lg" className="gap-2">
+            <Button variant="outline" className="gap-2 h-10">
               <Columns className="h-4 w-4" /> Columns
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {columns.map((c) => (
+            {normalizedColumns.map((c) => (
               <DropdownMenuCheckboxItem
                 key={c.key}
                 checked={columnVisibility[c.key] !== false}
                 onCheckedChange={(v) =>
-                  setColumnVisibility((s) => ({ ...s, [c.key]: Boolean(v) }))
+                  setColumnVisibility((s) => ({
+                    ...s,
+                    [c.key]: Boolean(v),
+                  }))
                 }
               >
                 {c.label || c.key}
@@ -487,29 +588,33 @@ export function DataTableExt({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="lg" className="gap-2">
+            <Button variant="outline" className="gap-2 h-10">
               <ListFilter className="h-4 w-4" /> Filters
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-[320px] p-2">
+          <DropdownMenuContent align="end" className="w-[340px] p-2">
             <div className="text-xs text-muted-foreground px-2 pb-1">
               Dynamic filters
             </div>
-            {columns.map((c) => {
-              if (columnVisibility[c.key] === false) return null;
 
+            {normalizedColumns.map((c) => {
+              if (columnVisibility[c.key] === false) return null;
               const m = meta[c.key];
               if (!m) return null;
+
               const type = m.type;
               const uniques = m.uniques;
               const lowCardinality = uniques.length > 0 && uniques.length <= 10;
+
               return (
                 <div key={c.key} className="px-2 py-2 border-b last:border-0">
                   <div className="text-xs font-medium mb-1">
                     {c.label || c.key}
                   </div>
+
                   {type === "string" && lowCardinality ? (
                     <Select
                       value={enumFilters[c.key] ?? "__any__"}
@@ -520,7 +625,7 @@ export function DataTableExt({
                         }))
                       }
                     >
-                      <SelectTrigger className="h-8 w-full">
+                      <SelectTrigger className="h-9 w-full bg-white">
                         <SelectValue placeholder="Any" />
                       </SelectTrigger>
                       <SelectContent className="w-full">
@@ -534,7 +639,7 @@ export function DataTableExt({
                     </Select>
                   ) : type === "string" ? (
                     <Input
-                      className="h-8 bg-white"
+                      className="h-9 bg-white"
                       placeholder="contains..."
                       value={textFilters[c.key] ?? ""}
                       onChange={(e) =>
@@ -547,7 +652,7 @@ export function DataTableExt({
                   ) : type === "number" ? (
                     <div className="flex gap-2">
                       <Input
-                        className="h-8"
+                        className="h-9 bg-white"
                         placeholder="min"
                         type="number"
                         value={numFilters[c.key]?.min ?? ""}
@@ -565,7 +670,7 @@ export function DataTableExt({
                         }
                       />
                       <Input
-                        className="h-8"
+                        className="h-9 bg-white"
                         placeholder="max"
                         type="number"
                         value={numFilters[c.key]?.max ?? ""}
@@ -586,7 +691,7 @@ export function DataTableExt({
                   ) : type === "date" ? (
                     <div className="flex gap-2">
                       <Input
-                        className="h-8"
+                        className="h-9 bg-white"
                         type="date"
                         value={dateFilters[c.key]?.from ?? ""}
                         onChange={(e) =>
@@ -600,7 +705,7 @@ export function DataTableExt({
                         }
                       />
                       <Input
-                        className="h-8"
+                        className="h-9 bg-white"
                         type="date"
                         value={dateFilters[c.key]?.to ?? ""}
                         onChange={(e) =>
@@ -624,23 +729,21 @@ export function DataTableExt({
                         }))
                       }
                     >
-                      <SelectTrigger className="h-8">
+                      <SelectTrigger className="h-9 bg-white">
                         <SelectValue placeholder="Any" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="__any__">Any</SelectItem>
-                        {["true", "false"].map((u) => (
-                          <SelectItem key={u} value={u}>
-                            {u}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="true">true</SelectItem>
+                        <SelectItem value="false">false</SelectItem>
                       </SelectContent>
                     </Select>
                   )}
                 </div>
               );
             })}
-            <div className="px-2 pt-2">
+
+            <div className="px-2 pt-2 flex items-center justify-between">
               <Button variant="ghost" size="sm" onClick={resetFilters}>
                 Reset
               </Button>
@@ -649,16 +752,20 @@ export function DataTableExt({
         </DropdownMenu>
       </div>
 
-      <div className="border rounded-md bg-white p-4 border-gray-300">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {columns
-                .filter((c) => columnVisibility[c.key] !== false)
-                .map((c) => (
-                  <TableHead key={c.key} className="whitespace-nowrap">
+      {/* Table */}
+      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
+        <div className="overflow-auto">
+          <Table>
+            <TableHeader className="bg-slate-50">
+              <TableRow className="hover:bg-slate-50">
+                {visibleColumns.map((c) => (
+                  <TableHead
+                    key={c.key}
+                    className="whitespace-nowrap text-[12.5px] font-semibold text-slate-700"
+                  >
                     <button
-                      className="inline-flex items-center gap-1 select-none"
+                      type="button"
+                      className="inline-flex items-center gap-1 select-none hover:text-slate-900"
                       onClick={() => toggleSort(c.key)}
                     >
                       <span>{c.label || c.key}</span>
@@ -672,159 +779,298 @@ export function DataTableExt({
                     </button>
                   </TableHead>
                 ))}
-              <TableHead className="whitespace-nowrap text-right">
-                Actions
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {pageRows.map((row, i) => {
-              //  for changing rows
-              return (
-                <TableRow
-                  key={row._id ?? i}
-                  className="cursor-pointer hover:bg-muted/50"
-                >
-                  {columns
-                    .filter((c: any) => columnVisibility[c.key] !== false)
-                    .map((c: any) => {
+
+                <TableHead className="whitespace-nowrap text-right text-[12.5px] font-semibold text-slate-700">
+                  Actions
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {pageRows.map((row: any, i: number) => {
+                const Icon = getSlugIcon(row.slug, row.title);
+
+                const createdRaw = row.createdAt || row.created || row.created_at;
+                const updatedRaw = row.updatedAt || row.updated || row.updated_at;
+
+                return (
+                  <TableRow key={row._id ?? i} className="hover:bg-slate-50/70">
+                    {visibleColumns.map((c) => {
+                      const key = c.key;
+                      const value = row[key];
+
+                      // SLUG column with icon
+                      if (String(key).toLowerCase() === "slug") {
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <div className="flex items-center gap-2 min-w-[210px]">
+                              <div className="h-9 w-9 rounded-xl border border-slate-200 bg-white flex items-center justify-center shrink-0">
+                                <Icon className="h-4 w-4 text-slate-700" />
+                              </div>
+
+                              <div className="min-w-0">
+                                <div className="font-semibold text-slate-900 truncate">
+                                  {String(value || "-")}
+                                </div>
+                                <div className="text-xs text-slate-500 truncate">
+                                  {row.title ? String(row.title) : "—"}
+                                </div>
+                              </div>
+
+                              {row.isHomePage === true ||
+                              String(row.isHomePage).toLowerCase() === "yes" ? (
+                                <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shrink-0">
+                                  <BadgeCheck className="h-3.5 w-3.5" />
+                                  Home
+                                </span>
+                              ) : null}
+                            </div>
+                          </TableCell>
+                        );
+                      }
+
+                      // Created At two-line
+                      if (String(key).toLowerCase() === "createdat") {
+                        const d = formatPrettyDate2Line(value ?? createdRaw);
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <div className="font-semibold text-slate-900 leading-5">
+                              {d.top}
+                            </div>
+                            <div className="text-xs text-slate-500 leading-5">
+                              {d.bottom}
+                            </div>
+                          </TableCell>
+                        );
+                      }
+
+                      // Updated At two-line
+                      if (String(key).toLowerCase() === "updatedat") {
+                        const d = formatPrettyDate2Line(value ?? updatedRaw);
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <div className="font-semibold text-slate-900 leading-5">
+                              {d.top}
+                            </div>
+                            <div className="text-xs text-slate-500 leading-5">
+                              {d.bottom}
+                            </div>
+                          </TableCell>
+                        );
+                      }
+
+                      // Status chip
+                      if (String(key).toLowerCase() === "status") {
+                        const val = String(value ?? "-").toLowerCase();
+                        const ok =
+                          val.includes("publish") ||
+                          val === "active" ||
+                          val === "true" ||
+                          val === "yes";
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <span
+                              className={cn(
+                                "inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                                ok
+                                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  : "border-amber-200 bg-amber-50 text-amber-800"
+                              )}
+                            >
+                              {formatValue(value)}
+                            </span>
+                          </TableCell>
+                        );
+                      }
+
+                      // Home chip
+                      if (String(key).toLowerCase() === "ishomepage") {
+                        const yes =
+                          value === true || String(value).toLowerCase() === "yes";
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <span
+                              className={cn(
+                                "inline-flex rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                                yes
+                                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                                  : "border-slate-200 bg-slate-50 text-slate-600"
+                              )}
+                            >
+                              {yes ? "Yes" : "No"}
+                            </span>
+                          </TableCell>
+                        );
+                      }
+
+                      // Default
+                      if (c.type === "link" && c.href) {
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            <Link
+                              href={`${c.href}/${row._id}`}
+                              className="underline text-blue-600 hover:text-blue-800"
+                            >
+                              {formatValue(value)}
+                            </Link>
+                          </TableCell>
+                        );
+                      }
+
+                      if (c.render) {
+                        return (
+                          <TableCell key={key} className="py-3 text-sm">
+                            {c.render(value, row)}
+                          </TableCell>
+                        );
+                      }
+
                       return (
-                        <TableCell key={c.key} className="py-2 text-sm">
-                          {(() => {
-                            // 1) If the column is a link type
-                            if (c.type === "link") {
-                              return (
-                                <Link
-                                  href={`${c.href}/${row._id}`}
-                                  className="underline text-blue-600 hover:text-blue-800"
-                                >
-                                  {row[c.key]}
-                                </Link>
-                              );
-                            }
-
-                            // 2) Fallback to custom render if defined
-                            if (c.render) return c.render(row[c.key], row);
-
-                            // 3) Default formatter with key for date columns
-                            if (c.key == "categories") {
-                              return formatValue(
-                                row[c.key],
-                                c.key,
-                                listCategory,
-                              );
-                            }
-                            return formatValue(row[c.key], c.key);
-                          })()}
+                        <TableCell key={key} className="py-3 text-sm text-slate-700">
+                          {formatValue(value)}
                         </TableCell>
                       );
                     })}
-                  <TableCell className="py-2 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {pageName === "pages" && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
-                          onClick={() => handleBuilderEdit(row)}
-                          title="Builder"
-                        >
-                          <Layout className="h-4 w-4" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-green-500 hover:text-destructive"
-                        onClick={(e) => handleViewPage(e, row)}
-                        title="View"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0"
-                        onClick={(e) => handleView(e, row)}
-                        title="Edit"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        onClick={(e) => handleDelete(e, row)}
-                        title="Delete"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
+
+                    {/* Actions dropdown */}
+                    <TableCell className="py-3 text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 w-9 p-0 rounded-xl border border-slate-200 bg-white hover:bg-slate-50"
+                            title="Actions"
+                          >
+                            <MoreVertical className="h-4 w-4 text-slate-700" />
+                          </Button>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" className="w-44">
+                          {pageName === "pages" ? (
+                            <DropdownMenuItem onClick={() => handleBuilderEdit(row)}>
+                              <Layout className="h-4 w-4 mr-2" />
+                              Builder
+                            </DropdownMenuItem>
+                          ) : null}
+
+                          <DropdownMenuItem onClick={() => opentab?.(row)}>
+                            <Eye className="h-4 w-4 mr-2 text-emerald-600" />
+                            View
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem onClick={() => onView?.(row)}>
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit
+                          </DropdownMenuItem>
+
+                          <DropdownMenuItem
+                            onClick={async () => {
+                              const slug = row?.slug ? String(row.slug) : "";
+                              const domain = Array.isArray(currentWebsite?.primaryDomain)
+                                ? currentWebsite?.primaryDomain[0]
+                                : currentWebsite?.primaryDomain;
+
+                              const url =
+                                domain && slug ? `https://${domain}/${slug}` : slug ? `/${slug}` : "";
+                              if (url) await copyToClipboard(url);
+                            }}
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copy URL
+                          </DropdownMenuItem>
+
+                          <DropdownMenuSeparator />
+
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => onDelete?.(row)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+
+              {pageRows.length === 0 && (
+                <TableRow>
+                  <TableCell
+                    colSpan={visibleColumns.length + 1}
+                    className="text-center text-sm text-muted-foreground py-10"
+                  >
+                    No results
                   </TableCell>
                 </TableRow>
-              );
-            })}
-            {pageRows.length === 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length + 1}
-                  className="text-center text-sm text-muted-foreground"
-                >
-                  No results
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-4 py-3 text-sm">
+          <div className="text-slate-600">
+            {total === 0 ? "0" : `${start + 1}-${Math.min(end, total)}`} of{" "}
+            <span className="font-semibold text-slate-900">{total}</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-slate-600">Per page</span>
+              <Select
+                value={String(pageSize)}
+                onValueChange={(v) => {
+                  setPageSize(Number(v));
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="h-9 w-[110px] bg-white rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {[10, 20, 50, 100].map((n) => (
+                    <SelectItem key={n} value={String(n)}>
+                      {n}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-xl"
+                disabled={currentPage <= 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+              >
+                Prev
+              </Button>
+
+              <div className="text-slate-700">
+                <span className="font-semibold">{currentPage}</span>/{totalPages}
+              </div>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 rounded-xl"
+                disabled={currentPage >= totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="flex items-center justify-end gap-6 text-sm">
-        <div>
-          {total === 0 ? "0" : `${start + 1}-${Math.min(end, total)}`} of{" "}
-          {total}
-        </div>
-        <div className="flex items-center gap-2">
-          <span>Per Page:</span>
-          <Select
-            value={String(pageSize)}
-            onValueChange={(v) => {
-              setPageSize(Number(v));
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="h-8 w-[90px] bg-white">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {[10, 20, 50, 100].map((n) => (
-                <SelectItem key={n} value={String(n)}>
-                  {n}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage <= 1}
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-          >
-            Prev
-          </Button>
-          <div>
-            {currentPage}/{totalPages}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={currentPage >= totalPages}
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-          >
-            Next
-          </Button>
-        </div>
+      <div className="text-xs text-slate-500">
+        ✅ SEO Title / Meta Description / Focus Keyword columns are hidden by default (removed from main table).
       </div>
     </div>
   );
