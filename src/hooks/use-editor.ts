@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
 import { updateHeader } from "./slices/header/HeaderThunk";
 import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
+import { defaultBlocks } from "../../utils/block-library";
 
 
 
@@ -77,8 +78,8 @@ export function useEditor(containerId: string) {
     selectedElement: null,
     currentDevice: "desktop",
     isLoading: true,
-    blocks: [],
-    layers: [],
+    blocks: defaultBlocks,
+    layers: [], 
     editorJs: "", // Add JavaScript content to state
     styles: {
       typography: {
@@ -269,20 +270,15 @@ export function useEditor(containerId: string) {
           plugins: [
             gjsPresetWebpage.default,
             gjsBlocksBasic.default,
-            gjsScriptEditor.default,
-          ],
+            gjsScriptEditor.default,],
           pluginsOpts: {
             [String(gjsPresetWebpage.default)]: {
-              blocksBasicOpts: {
-                blocks: [],
-                flexGrid: true,
-              },
               exportOpts: {},
               aviaryOpts: false,
               filestackOpts: false,
             },
             [String(gjsBlocksBasic.default)]: {
-              blocks: [],
+              // Don't override blocks - let editor-config.ts handle block registration
             },
             [String(gjsScriptEditor.default)]: {},
           },
@@ -334,7 +330,7 @@ export function useEditor(containerId: string) {
           if (!isMounted) return;
 
           try {
-            console.log('🔄 Editor load event fired');
+
 
             // Get frames using GrapesJS API (if available)
             try {
@@ -1016,6 +1012,8 @@ export function useEditor(containerId: string) {
         }
 
         const allBlocks = blockManager.getAll();
+        console.log('📦 Block Manager - Total blocks found:', allBlocks?.models?.length || 0);
+
         if (!allBlocks || !allBlocks.models) {
           console.warn('Block models not available');
           return;
