@@ -18,7 +18,11 @@ import { AppDispatch, RootState } from "@/store/store";
 import { buildCategoryTree } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { MaterialCategory } from "../../category/types/CategoryModel";
-import { addCategory } from "@/hooks/slices/category/CategorySlice";
+import {
+  addCategory,
+  addProductType,
+  addProductTypeCategory,
+} from "@/hooks/slices/category/CategorySlice";
 import {
   Dialog,
   DialogContent,
@@ -27,6 +31,16 @@ import {
 } from "@/components/ui/dialog";
 import CategoryForm from "../../category/forms/CategoryForm";
 import { CategoryItem } from "./CategoryItem";
+import EntityCreateModal from "../../EntityCreateModal";
+import { ProductTypeModal } from "./ProductTypeModal";
+import { ProductType } from "@/lib/material/product_type";
+import { toast } from "sonner";
+import { CategoryModal } from "./CategoryModal";
+import { ProductTypeCategory } from "@/lib/material/product_type_category";
+import { ProductCategoryTypeModal } from "./ProductCategoryType";
+import { AttributeSet } from "../../attributessets/forms/AttributeSetsForm";
+import { addAttributeSet } from "@/hooks/slices/attributessets/attributeSetsSlice";
+import { ProductSetModal } from "./ProductSetModal";
 
 export const RightColumn = ({
   formData,
@@ -101,7 +115,7 @@ export const RightColumn = ({
   const { user } = useSelector((state: RootState) => state.user);
 
   const [newCategory, setNewCategory] = useState<MaterialCategory | null>(null);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState<string>("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
@@ -135,7 +149,7 @@ export const RightColumn = ({
       }
       const created = data?.item ?? data;
 
-      setIsAddDialogOpen(false);
+      setIsAddDialogOpen("");
       setNewCategory(null);
       dispatch(addCategory(created));
       // window.location.reload();
@@ -156,11 +170,256 @@ export const RightColumn = ({
       parentCategoryId: "",
     });
     setFieldErrors({});
-    setIsAddDialogOpen(true);
+    setIsAddDialogOpen("category");
+  };
+
+  const handleAddProductType = () => {
+    setNewProductType({
+      name: "",
+      slug: "",
+    });
+    setFieldErrors({});
+    setIsAddDialogOpen("producttype");
+  };
+
+  const handleSaveProductTypeAdd = async () => {
+    if (!newProductType) return;
+    setFieldErrors({});
+    const errors: Record<string, string> = {};
+
+    if (!newProductType.name?.trim()) {
+      errors.name = "Name is required";
+    }
+    if (!newProductType.slug?.trim()) {
+      errors.slug = "Slug is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/producttype`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newProductType),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        const msg =
+          data?.error ??
+          data?.message ??
+          (typeof data === "string" ? data : undefined) ??
+          "Failed to create";
+        throw new Error(msg);
+      }
+      const created = data?.item ?? data;
+      setIsAddDialogOpen("");
+      setNewProductType(null);
+
+      // Dispatch the imported action
+      dispatch(addProductType(created));
+    } catch (err: any) {
+      console.error("Failed to create product type", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const [newProductType, setNewProductType] = useState<ProductType | null>(
+    null,
+  );
+
+  const [newCategoryType, setNewCategoryType] =
+    useState<ProductTypeCategory | null>(null);
+
+  const handleProductTypeCategoryAdd = () => {
+    setNewCategoryType({
+      name: "",
+      slug: "",
+      product_type: "",
+      icon: "",
+      sort_order: 0,
+      description: "",
+    });
+    setFieldErrors({});
+    setIsAddDialogOpen("producttypecategory");
+  };
+
+  const handleProductTypeCategorySaveAdd = async () => {
+    if (!newCategoryType) return;
+    setFieldErrors({});
+    const errors: Record<string, string> = {};
+
+    if (!newCategoryType.name?.trim()) {
+      errors.name = "Name is required";
+    }
+    if (!newCategoryType.slug?.trim()) {
+      errors.slug = "Slug is required";
+    }
+    if (!newCategoryType.product_type?.trim()) {
+      errors.product_type = "Product type is required";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/producttypecategory`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCategory),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        const msg =
+          data?.error ??
+          data?.message ??
+          (typeof data === "string" ? data : undefined) ??
+          "Failed to create";
+        throw new Error(msg);
+      }
+      const created = data?.item ?? data;
+
+      setIsAddDialogOpen("");
+      setNewCategory(null);
+      dispatch(addProductTypeCategory(created));
+    } catch (err: any) {
+      console.error("Failed to create category", err);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const [newAttributeSet, setNewAttributeSet] = useState<AttributeSet | null>(
+    null,
+  );
+
+  const handleAttributeAdd = () => {
+    setNewAttributeSet({
+      name: "",
+      categoryId: "",
+      attributes: [],
+      sort_order: 0,
+      websiteId: String(currentWebsite?._id),
+      tenantId: user?.tenantId,
+    });
+    setFieldErrors({});
+    setIsAddDialogOpen("attribute");
+  };
+
+  const validateAttributeSet = (attributeSet: AttributeSet) => {
+    const errors: Record<string, string> = {};
+
+    if (!attributeSet.name?.trim()) {
+      errors.name = "Name is required";
+    }
+
+    if (!attributeSet.categoryId) {
+      errors.categoryId = "Category is required";
+    }
+
+    if (!attributeSet.attributes || attributeSet.attributes.length === 0) {
+      errors.attributes = "At least one attribute is required";
+    }
+
+    return errors;
+  };
+
+  const handleSaveAttributeAdd = async () => {
+    if (!newAttributeSet) return;
+
+    setFieldErrors({});
+    const errors = validateAttributeSet(newAttributeSet);
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/admin/attributessets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newAttributeSet),
+      });
+
+      const data = await res.json().catch(() => null);
+
+      if (!res.ok) {
+        const msg =
+          data?.error ??
+          data?.message ??
+          (typeof data === "string" ? data : undefined) ??
+          "Failed to create";
+        throw new Error(msg);
+      }
+
+      const created = data?.item ?? data;
+
+      toast.success(
+        `Attribute Sets has been created with Name: ${newAttributeSet.name}`,
+      );
+      setIsAddDialogOpen("");
+      setNewAttributeSet(null);
+
+      dispatch(addAttributeSet(created));
+    } catch (err: any) {
+      console.error("Failed to create attribute set", err);
+      toast.success(`${err}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <>
+      <ProductTypeModal
+        isAddDialogOpen={isAddDialogOpen == "producttype"}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newProductType={newProductType}
+        setNewProductType={setNewProductType}
+        fieldErrors={fieldErrors}
+        isSaving={isSaving}
+        handleSaveAdd={handleSaveProductTypeAdd}
+        setFieldErrors={setFieldErrors}
+      />
+      <CategoryModal
+        isAddDialogOpen={isAddDialogOpen == "category"}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newCategory={newCategory}
+        setNewCategory={setNewCategory}
+        isSaving={isSaving}
+        handleSaveAdd={handleSaveAdd}
+        fieldErrors={fieldErrors}
+      />
+      <ProductCategoryTypeModal
+        isAddDialogOpen={isAddDialogOpen == "producttypecategory"}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newCategory={newCategoryType}
+        setNewCategory={setNewCategoryType}
+        fieldErrors={fieldErrors}
+        isSaving={isSaving}
+        handleSaveAdd={handleProductTypeCategorySaveAdd}
+        listProductType={listProductType}
+        setFieldErrors={setFieldErrors}
+      />
+
+      <ProductSetModal
+        isAddDialogOpen={isAddDialogOpen == "attribute"}
+        setIsAddDialogOpen={setIsAddDialogOpen}
+        newAttributeSet={newAttributeSet}
+        setNewAttributeSet={setNewAttributeSet}
+        fieldErrors={fieldErrors}
+        isSaving={isSaving}
+        handleSaveAdd={handleSaveAttributeAdd}
+      />
       <div className="relative lg:col-span-1">
         <Card className="  mb-2 ">
           <CardHeader className="pb-0 mb-0">
@@ -170,9 +429,8 @@ export const RightColumn = ({
           </CardHeader>
 
           <CardContent className="space-y-4">
-            {/* Product Type */}
             <div className="space-y-2">
-              <Label htmlFor="Product Type">
+              <Label>
                 Product Type <span className="text-red-500">*</span>
               </Label>
 
@@ -187,17 +445,18 @@ export const RightColumn = ({
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select segment type" />
                 </SelectTrigger>
+
                 <SelectContent>
-                  {listProductType.map((d) => {
-                    return (
-                      <SelectItem value={String(d._id)}>{d.name}</SelectItem>
-                    );
-                  })}
-                  {/* <SelectItem value="hotel">Hotel</SelectItem>
-                  <SelectItem value="packages">Packages</SelectItem>
-                  <SelectItem value="clothing">Clothing</SelectItem> */}
+                  {listProductType.map((d) => (
+                    <SelectItem key={d._id} value={String(d._id)}>
+                      {d.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
+
+              {/* Add Button */}
+              <Button onClick={handleAddProductType}>+ Add Product Type</Button>
             </div>
 
             <div className="space-y-2">
@@ -227,6 +486,9 @@ export const RightColumn = ({
                     })}
                 </SelectContent>
               </Select>
+              <Button onClick={handleProductTypeCategoryAdd}>
+                + Add Product Category
+              </Button>
             </div>
 
             <div className="space-y-2">
@@ -256,6 +518,8 @@ export const RightColumn = ({
                       })}
                 </SelectContent>
               </Select>
+
+              <Button onClick={handleAttributeAdd}>+ Add Product Sets</Button>
             </div>
 
             {/* Categories */}
@@ -349,44 +613,6 @@ export const RightColumn = ({
             </CardContent>
           </Card>
         )}
-
-        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Add Category</DialogTitle>
-            </DialogHeader>
-            {newCategory && (
-              <div className="space-y-4">
-                <CategoryForm
-                  category={newCategory}
-                  setCategory={(value) => {
-                    if (typeof value === "function") {
-                      setNewCategory((prev) => (prev ? value(prev) : prev));
-                    } else {
-                      setNewCategory(value);
-                    }
-                  }}
-                  fieldErrors={fieldErrors}
-                />
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setIsAddDialogOpen(false);
-                      setNewCategory(null);
-                    }}
-                    disabled={isSaving}
-                  >
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSaveAdd} disabled={isSaving}>
-                    {isSaving ? "Saving..." : "Add Category"}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </>
   );

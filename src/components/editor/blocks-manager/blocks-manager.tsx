@@ -88,7 +88,6 @@ export function BlocksManager({
   const [blockView, setBlockView] = useState<"grid" | "list">("grid");
   const [selectedBlocks, setSelectedBlocks] = useState<string[]>([]);
 
-console.log("selected block array",selectedBlocks)
   // Process blocks data
   const blocksByCategory = groupBlocksByCategory(blocks);
   const categories = getCategories(blocksByCategory as BlocksByCategory);

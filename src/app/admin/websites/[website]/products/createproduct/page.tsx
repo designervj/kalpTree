@@ -3,6 +3,7 @@ import GetAllAttributesSets from "@/components/admin/attributessets/listCategory
 import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
 
 import GetAllProductTypeCategory from "@/components/admin/product-type-category/listCategory/GetAllProductTypeCategory";
+import GetAllProductType from "@/components/admin/product-type/listCategory/GetAllProductType";
 import { CreateProduct } from "@/components/admin/product/createproduct/CreateProduct";
 
 export default async function CreateProductPage(props: any) {
@@ -13,6 +14,7 @@ export default async function CreateProductPage(props: any) {
       <CreateProduct />
       <GetAllProductTypeCategory />
       <GetAllAttributesSets />
+      <GetAllProductType />
     </div>
   );
 }

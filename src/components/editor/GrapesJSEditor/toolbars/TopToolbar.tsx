@@ -115,6 +115,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
     applyTheme(next);
   };
 
+
   return (
     <TooltipProvider delayDuration={150}>
       <div className="flex items-center justify-between h-12 px-3 border-b bg-white text-slate-900 border-slate-200 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800">
