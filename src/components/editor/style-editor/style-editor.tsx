@@ -109,13 +109,154 @@ interface TypographySectionProps {
   onStyleChange: (property: string, value: string) => void;
   elementStyles: any;
   rootStyles?: any;
+  className?: string[];
 }
+/* --------------------------
+   Tailwind Class Parser
+--------------------------- */
+interface TailwindClassInfo {
+  category: 'typography' | 'color' | 'spacing' | 'layout' | 'other';
+  property: string;
+  value: string;
+  displayName: string;
+}
+
+function parseTailwindClasses(classes: string[]): TailwindClassInfo[] {
+  const classInfo: TailwindClassInfo[] = [];
+
+  classes.forEach((className) => {
+    // Text color: text-{color}-{shade}
+    if (className.startsWith('text-') && !className.includes('align') && !className.includes('decoration')) {
+      const colorMatch = className.match(/^text-(\w+)-(\d+)$/);
+      if (colorMatch) {
+        classInfo.push({
+          category: 'color',
+          property: 'color',
+          value: className,
+          displayName: `Color: ${colorMatch[1].charAt(0).toUpperCase() + colorMatch[1].slice(1)} ${colorMatch[2]}`
+        });
+      }
+    }
+
+    // Font weight: font-{weight}
+    if (className.startsWith('font-')) {
+      const weightMatch = className.match(/^font-(thin|extralight|light|normal|medium|semibold|bold|extrabold|black)$/);
+      if (weightMatch) {
+        const weights: { [key: string]: string } = {
+          'thin': '100',
+          'extralight': '200',
+          'light': '300',
+          'normal': '400',
+          'medium': '500',
+          'semibold': '600',
+          'bold': '700',
+          'extrabold': '800',
+          'black': '900'
+        };
+        classInfo.push({
+          category: 'typography',
+          property: 'font-weight',
+          value: weights[weightMatch[1]],
+          displayName: `Weight: ${weightMatch[1].charAt(0).toUpperCase() + weightMatch[1].slice(1)} (${weights[weightMatch[1]]})`
+        });
+      }
+    }
+
+    // Line height: leading-{size}
+    if (className.startsWith('leading-')) {
+      const leadingMatch = className.match(/^leading-(none|tight|snug|normal|relaxed|loose|\d+)$/);
+      if (leadingMatch) {
+        const leadingValues: { [key: string]: string } = {
+          'none': '1',
+          'tight': '1.25',
+          'snug': '1.375',
+          'normal': '1.5',
+          'relaxed': '1.625',
+          'loose': '2'
+        };
+        const value = leadingValues[leadingMatch[1]] || leadingMatch[1];
+        classInfo.push({
+          category: 'typography',
+          property: 'line-height',
+          value: value,
+          displayName: `Line Height: ${leadingMatch[1].charAt(0).toUpperCase() + leadingMatch[1].slice(1)} (${value})`
+        });
+      }
+    }
+
+    // Text alignment: text-{align}
+    if (className.match(/^text-(left|center|right|justify)$/)) {
+      const align = className.replace('text-', '');
+      classInfo.push({
+        category: 'typography',
+        property: 'text-align',
+        value: align,
+        displayName: `Align: ${align.charAt(0).toUpperCase() + align.slice(1)}`
+      });
+    }
+
+    // Font size: text-{size}
+    if (className.match(/^text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl|8xl|9xl)$/)) {
+      const size = className.replace('text-', '');
+      classInfo.push({
+        category: 'typography',
+        property: 'font-size',
+        value: className,
+        displayName: `Size: ${size.toUpperCase()}`
+      });
+    }
+  });
+
+  return classInfo;
+}
+
+/* --------------------------
+   Applied Classes Display
+--------------------------- */
+interface AppliedClassesProps {
+  classes: string[];
+  category?: 'typography' | 'color' | 'spacing' | 'layout';
+}
+
+function AppliedClassesDisplay({ classes, category = 'typography' }: AppliedClassesProps) {
+  const parsedClasses = parseTailwindClasses(classes);
+  const filteredClasses = category
+    ? parsedClasses.filter(c => c.category === category || (category === 'typography' && c.category === 'color'))
+    : parsedClasses;
+
+  if (filteredClasses.length === 0) return null;
+
+  return (
+    <div className="space-y-2 p-3 rounded-md bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+      <Label className={UI.label + " flex items-center gap-2"}>
+        <span className="text-violet-600 dark:text-violet-400">✦</span>
+        Applied Tailwind Classes
+      </Label>
+      <div className="flex flex-wrap gap-1.5">
+        {filteredClasses.map((classInfo, index) => (
+          <div
+            key={index}
+            className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-medium bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+          >
+            <span className="text-violet-600 dark:text-violet-400 font-mono">
+              {classInfo.displayName}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* --------------------------
    Sections
 --------------------------- */
-function TypographySection({ styles, onStyleChange, elementStyles, rootStyles }: TypographySectionProps) {
+function TypographySection({ styles, onStyleChange, elementStyles, rootStyles, className }: TypographySectionProps) {
   return (
     <div className="space-y-4">
+      {/* {className && className.length > 0 && (
+        <AppliedClassesDisplay classes={className} category="typography" />
+      )} */}
       <FontFamilyControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <FontSizeControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <FontWeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
@@ -162,6 +303,8 @@ function FontFamilyControl({ styles, onStyleChange, elementStyles }: TypographyS
     elementStyles["font-family"]
   );
 
+  console.log("fontFamilyValue", fontFamilyValue);
+  console.log("elementStyles", elementStyles);
   useEffect(() => {
     setFontFamilyValue(elementStyles["font-family"]);
   }, [elementStyles]);
@@ -1015,10 +1158,13 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
   const editor = state.editor as Editor | null;
   const getRootCSS = editor?.Css.getRule(":root");
   const rootStyles = getRootCSS?.getStyle();
+  const tagType = selectedElement?.attributes?.type;
+  const getAttributes = selectedElement.getAttributes();
+  const className = selectedElement.getClasses();
+  console.log("className", className);
 
-  const classes = selectedElement.getClasses() || [];
   const [elementStyles, setElementStyles] = useState({});
-
+  console.log("selectedElement", selectedElement);
   useEffect(() => {
     if (editor && selectedElement) {
       const currentClasses = selectedElement.getClasses() || [];
@@ -1051,13 +1197,14 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
     <div>
 
       <Accordion type="single" collapsible defaultValue="typography" className="w-full">
-        {showTypography && (
+        {(showTypography || tagType === "text" || tagType === "p" || tagType === "span" || tagType === "h1" || tagType === "h2" || tagType === "h3" || tagType === "h4" || tagType === "h5" || tagType === "h6") && (
           <AccordionItem value="typography" className={UI.accordionItem}>
             <AccordionTrigger className={UI.sectionTitle}>Typography</AccordionTrigger>
             <AccordionContent>
               <TypographySection
                 elementStyles={elementStyles}
                 rootStyles={rootStyles}
+                className={className}
                 styles={styles} onStyleChange={onStyleChange} />
             </AccordionContent>
           </AccordionItem>
@@ -1090,8 +1237,8 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
             Global Styles
           </AccordionTrigger>
           <AccordionContent>
-            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange} 
-            rootStyles={rootStyles}
+            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange}
+              rootStyles={rootStyles}
             />
           </AccordionContent>
         </AccordionItem>
