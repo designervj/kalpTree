@@ -30,13 +30,13 @@ import { useEffect, useState } from "react";
 // Types
 interface InteractivityEditorProps {
   selectedElement: any;
-  onInteractivityChange: (
-    type: string,
-    event: string,
-    action: string,
-    target?: string,
-    options?: any
-  ) => void;
+  onInteractivityChange: (data: {
+    type: string;
+    event: string;
+    action: string;
+    target?: string;
+    options?: any;
+  }) => void;
 }
 
 interface Interaction {
@@ -124,13 +124,13 @@ export function InteractivityEditor({
       updateElementInteractions(updatedInteractions);
 
       if (interactionToRemove) {
-        onInteractivityChange(
-          "remove",
-          interactionToRemove.event,
-          interactionToRemove.action,
-          interactionToRemove.target,
-          interactionToRemove.options
-        );
+        onInteractivityChange({
+          type: "remove",
+          event: interactionToRemove.event,
+          action: interactionToRemove.action,
+          target: interactionToRemove.target,
+          options: interactionToRemove.options
+        });
       }
     }
   };
@@ -160,25 +160,25 @@ export function InteractivityEditor({
 
       if (updatedInteractions.length > interactions.length) {
         const newInteraction = updatedInteractions[updatedInteractions.length - 1];
-        onInteractivityChange(
-          "add",
-          newInteraction.event,
-          newInteraction.action,
-          newInteraction.target,
-          newInteraction.options
-        );
+        onInteractivityChange({
+          type: "add",
+          event: newInteraction.event,
+          action: newInteraction.action,
+          target: newInteraction.target,
+          options: newInteraction.options
+        });
       } else if (updatedInteractions.length === interactions.length) {
         const updatedInteraction = updatedInteractions.find(
           (i, idx) => JSON.stringify(i) !== JSON.stringify(interactions[idx])
         );
         if (updatedInteraction) {
-          onInteractivityChange(
-            "update",
-            updatedInteraction.event,
-            updatedInteraction.action,
-            updatedInteraction.target,
-            updatedInteraction.options
-          );
+          onInteractivityChange({
+            type: "update",
+            event: updatedInteraction.event,
+            action: updatedInteraction.action,
+            target: updatedInteraction.target,
+            options: updatedInteraction.options
+          });
         }
       }
     }
