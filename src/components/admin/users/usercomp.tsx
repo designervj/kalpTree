@@ -271,6 +271,7 @@ export default function BusinessCreatePage({
     })();
   }, []);
 
+
   return (
     <div className="min-h-screen bg-transparent p-8">
       <div className=" mx-auto">

@@ -49,7 +49,7 @@ export interface GalleryConfig {
   hoverEffect: "lift" | "scale" | "none";
 }
 
-const ProductGalleryPage: React.FC = () => {
+const ProductGalleryPage: React.FC = ({ actions }: any) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -153,37 +153,342 @@ const ProductGalleryPage: React.FC = () => {
     console.log("Generated HTML:", galleryHTML);
 
     // You can dispatch an action or call a function to add this to the editor
-    // actions.addComponent(galleryHTML);
+    actions.addComponent(galleryHTML);
   };
 
   // Generate HTML for the gallery
+  // Generate HTML for the gallery with navigation
   const generateGalleryHTML = (
     products: Product[],
     config: GalleryConfig,
   ): string => {
     const productCards = products
       .map(
-        (product) => `
-      <div class="product-card" data-product-id="${product.id}">
-        ${config.showBadge && product.badge ? `<span class="product-badge">${product.badge}</span>` : ""}
-        <img src="${product.image}" alt="${product.name}" class="product-image">
-        <div class="product-content">
-          <h3 class="product-title">${product.name}</h3>
-          ${config.showDescription && product.description ? `<p class="product-description">${product.description}</p>` : ""}
-          ${config.showPrice ? `<p class="product-price">$${product.price}</p>` : ""}
-        </div>
-      </div>
-    `,
+        (product, index) => `
+<div class="gallery-item" data-index="${index}" style="display: ${index === 0 ? "block" : "none"}">
+  <div class="product-card" style="
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin: 0 auto;
+  ">
+    <div style="position: relative;">
+      <img 
+        src="${product.image}" 
+        alt="${product.name}"
+        style="width: 100%; height: 400px; object-fit: cover;"
+      />
+      ${
+        config.showBadge && product.badge
+          ? `
+        <span style="
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          background: #ef4444;
+          color: white;
+          padding: 6px 12px;
+          border-radius: 6px;
+          font-size: 14px;
+          font-weight: 600;
+        ">${product.badge}</span>
+      `
+          : ""
+      }
+    </div>
+    <div style="padding: 24px;">
+      <h3 style="
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #1f2937;
+      ">${product.name}</h3>
+      ${
+        product.category
+          ? `
+        <p style="
+          color: #6b7280;
+          font-size: 14px;
+          margin: 0 0 12px 0;
+        ">${product.category}</p>
+      `
+          : ""
+      }
+      ${
+        config.showDescription && product.description
+          ? `
+        <p style="
+          color: #4b5563;
+          font-size: 16px;
+          line-height: 1.6;
+          margin: 0 0 16px 0;
+        ">${product.description}</p>
+      `
+          : ""
+      }
+      ${
+        config.showPrice
+          ? `
+        <p style="
+          font-size: 28px;
+          font-weight: 700;
+          color: #059669;
+          margin: 0;
+        ">$${product.price}</p>
+      `
+          : ""
+      }
+      ${
+        product.stock !== undefined
+          ? `
+        <p style="
+          color: ${product.stock > 0 ? "#059669" : "#ef4444"};
+          font-size: 14px;
+          margin-top: 8px;
+        ">${product.stock > 0 ? `${product.stock} in stock` : "Out of stock"}</p>
+      `
+          : ""
+      }
+    </div>
+  </div>
+</div>
+      `,
       )
       .join("");
 
     return `
-      <div class="product-gallery-container" data-layout="${config.layout}" data-columns="${config.columns}">
-        <div class="product-gallery">
-          ${productCards}
-        </div>
-      </div>
-    `;
+<div class="product-gallery-container" style="
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+">
+  <!-- Gallery Items -->
+  <div class="gallery-items" style="position: relative; min-height: 500px;">
+    ${productCards}
+  </div>
+
+  <!-- Navigation Controls -->
+  <div style="
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 30px;
+  ">
+    <!-- Previous Button -->
+    <button 
+      id="prevBtn" 
+      class="gallery-nav-btn"
+      style="
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      "
+      onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)';"
+      onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+    >
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      Previous
+    </button>
+
+    <!-- Counter -->
+    <div style="
+      font-size: 16px;
+      font-weight: 600;
+      color: #1f2937;
+      min-width: 80px;
+      text-align: center;
+    ">
+      <span id="currentIndex">1</span> / <span id="totalItems">${products.length}</span>
+    </div>
+
+    <!-- Next Button -->
+    <button 
+      id="nextBtn" 
+      class="gallery-nav-btn"
+      style="
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      "
+      onmouseover="this.style.background='#2563eb'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)';"
+      onmouseout="this.style.background='#3b82f6'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';"
+    >
+      Next
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Progress Dots -->
+  <div style="
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+  ">
+    ${products
+      .map(
+        (_, index) => `
+      <button 
+        class="dot-indicator" 
+        data-index="${index}"
+        style="
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: none;
+          background: ${index === 0 ? "#3b82f6" : "#d1d5db"};
+          cursor: pointer;
+          transition: all 0.3s ease;
+          padding: 0;
+        "
+        onmouseover="if(this.style.background !== 'rgb(59, 130, 246)') this.style.background='#9ca3af';"
+        onmouseout="if(this.style.background !== 'rgb(59, 130, 246)') this.style.background='#d1d5db';"
+      ></button>
+    `,
+      )
+      .join("")}
+  </div>
+
+  <script>
+    (function() {
+      let currentIndex = 0;
+      const totalItems = ${products.length};
+      const galleryItems = document.querySelectorAll('.gallery-item');
+      const dots = document.querySelectorAll('.dot-indicator');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const currentIndexEl = document.getElementById('currentIndex');
+
+      function updateGallery(newIndex) {
+        // Hide all items
+        galleryItems.forEach(item => {
+          item.style.display = 'none';
+          item.style.opacity = '0';
+        });
+
+        // Show current item with fade effect
+        galleryItems[newIndex].style.display = 'block';
+        setTimeout(() => {
+          galleryItems[newIndex].style.transition = 'opacity 0.3s ease';
+          galleryItems[newIndex].style.opacity = '1';
+        }, 10);
+
+        // Update dots
+        dots.forEach((dot, index) => {
+          dot.style.background = index === newIndex ? '#3b82f6' : '#d1d5db';
+          dot.style.transform = index === newIndex ? 'scale(1.2)' : 'scale(1)';
+        });
+
+        // Update counter
+        currentIndexEl.textContent = newIndex + 1;
+
+        // Update button states
+        prevBtn.disabled = newIndex === 0;
+        nextBtn.disabled = newIndex === totalItems - 1;
+        
+        prevBtn.style.opacity = newIndex === 0 ? '0.5' : '1';
+        nextBtn.style.opacity = newIndex === totalItems - 1 ? '0.5' : '1';
+        prevBtn.style.cursor = newIndex === 0 ? 'not-allowed' : 'pointer';
+        nextBtn.style.cursor = newIndex === totalItems - 1 ? 'not-allowed' : 'pointer';
+
+        currentIndex = newIndex;
+      }
+
+      // Previous button
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+          updateGallery(currentIndex - 1);
+        }
+      });
+
+      // Next button
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < totalItems - 1) {
+          updateGallery(currentIndex + 1);
+        }
+      });
+
+      // Dot indicators
+      dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+          updateGallery(index);
+        });
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft' && currentIndex > 0) {
+          updateGallery(currentIndex - 1);
+        } else if (e.key === 'ArrowRight' && currentIndex < totalItems - 1) {
+          updateGallery(currentIndex + 1);
+        }
+      });
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+      
+      const galleryContainer = document.querySelector('.product-gallery-container');
+      
+      galleryContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      });
+      
+      galleryContainer.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+      });
+      
+      function handleSwipe() {
+        if (touchEndX < touchStartX - 50 && currentIndex < totalItems - 1) {
+          updateGallery(currentIndex + 1);
+        }
+        if (touchEndX > touchStartX + 50 && currentIndex > 0) {
+          updateGallery(currentIndex - 1);
+        }
+      }
+
+      // Auto-play (optional - uncomment to enable)
+      // setInterval(() => {
+      //   if (currentIndex < totalItems - 1) {
+      //     updateGallery(currentIndex + 1);
+      //   } else {
+      //     updateGallery(0);
+      //   }
+      // }, 5000);
+    })();
+  </script>
+</div>
+  `;
   };
 
   return (

@@ -577,6 +577,7 @@ export default function GrapesJSEditor() {
               onInteractivityChange={handleUpdateInteractivity}
               open={open}
               setOpen={setOpen}
+              actions={actions}
             />
           </div>
 

@@ -35,7 +35,7 @@ export default function BusinessTypeRadioList({
           ? `${type.attributes?.length || 0} attributes`
           : undefined,
       }));
-  }, [businessType]);
+  }, [formData.businessdetails.industry]);
 
   // ✅ Get selected business type ID from formData
   const selectedId = formData?.businessdetails?.businessType ?? "";

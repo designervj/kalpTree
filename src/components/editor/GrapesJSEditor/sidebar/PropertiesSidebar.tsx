@@ -52,6 +52,7 @@ type PropertiesSidebarProps = {
   onInteractivityChange: (config: any) => void;
   setOpen: (open: boolean) => void;
   open: boolean;
+  actions: any;
 };
 
 type TabKey =
@@ -96,6 +97,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   onInteractivityChange,
   setOpen,
   open,
+  actions,
 }) => {
   const [tab, setTab] = React.useState<TabKey>("style");
 
@@ -291,7 +293,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         return renderPlaceholder(<AllBuilderPage />);
 
       case "productgallery":
-        return <ProductGalleryPage />;
+        return <ProductGalleryPage actions={actions} />;
 
       // case "more":
       //   return renderPlaceholder(
