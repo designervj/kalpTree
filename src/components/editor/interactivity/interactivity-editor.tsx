@@ -107,6 +107,8 @@ export function InteractivityEditor({
       options: newOptions,
     };
 
+    console.log("newInteraction", newInteraction);
+
     const updatedInteractions = [...interactions, newInteraction];
     updateElementInteractions(updatedInteractions);
 

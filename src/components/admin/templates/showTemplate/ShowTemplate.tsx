@@ -2,7 +2,7 @@
 "use client"
 import BreadCrumbPage from '@/components/breadCrumb/BreadCrumbPage';
 import { AppDispatch, RootState } from '@/store/store';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { TemplateDocument } from '../TemplateType';
 import {
@@ -32,6 +32,11 @@ const ShowTemplate = () => {
     const dispatch= useDispatch<AppDispatch>();
     const {allTemplate, currentTemplate, hasFetched, isLoading, error}= useSelector((state: RootState) => state.template);
  
+    const [template,setTemplate]= useState<TemplateDocument[]>([])
+
+    useEffect(()=>{
+      setTemplate(allTemplate)
+    },[allTemplate])
   const [search, setSearch] = useState("");
   const [demo, setDemo] = useState<DemoKey>("All");
 
@@ -40,49 +45,6 @@ const ShowTemplate = () => {
   const [catOpen, setCatOpen] = useState(false);
 
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [selected, setSelected] = useState<TemplateDocument | null>(null);
-
-  // const categoryCounts = useMemo(() => {
-  //   const counts: Record<CategoryKey, number> = CATEGORY_ORDER.reduce(
-  //     (acc, k) => {
-  //       acc[k] = 0;
-  //       return acc;
-  //     },
-  //     {} as Record<CategoryKey, number>
-  //   );
-
-  //   const demoFiltered =
-  //     demo === "All" ? TEMPLATES : TEMPLATES.filter((t) => t.demo === demo);
-
-  //   counts["ALL"] = demoFiltered.length;
-  //   for (const t of demoFiltered) counts[t.category] = (counts[t.category] ?? 0) + 1;
-
-  //   return counts;
-  // }, [demo]);
-
-  // const filtered = useMemo(() => {
-  //   let list = [...TEMPLATES];
-
-  //   if (demo !== "All") list = list.filter((t) => t.demo === demo);
-  //   if (category !== "ALL") list = list.filter((t) => t.category === category);
-
-  //   const q = search.trim().toLowerCase();
-  //   if (!q) return list;
-
-  //   return list.filter(
-  //     (t) => t.title.toLowerCase().includes(q) || t.caption.toLowerCase().includes(q)
-  //   );
-  // }, [search, demo, category]);
-
-  // const onPreview = (t: TemplateItem) => {
-  //   setSelected(t);
-  //   setPreviewOpen(true);
-  // };
-
-  // const onImport = (t: TemplateItem) => miniToast(`Imported: ${t.title}`);
-  // const onSubmit = () => miniToast("Filters Applied");
-  // const onRefreshStudio = () => miniToast("Studio Refreshed");
-
 
   const handlePreview=(data:TemplateDocument)=>{
   dispatch(setCurrentTemplate(data));
@@ -92,6 +54,11 @@ const ShowTemplate = () => {
   const handleClosePreview=()=>{
     setPreviewOpen(false);
     dispatch(setCurrentTemplate(null));
+  }
+
+  const handleShowSelectedTemplate=(data:TemplateDocument[])=>{
+    setTemplate(data)
+  
   }
   return (
     <div className="min-h-screen">
@@ -108,12 +75,14 @@ const ShowTemplate = () => {
 
     </div>
        
-       <TemplateTopBar/>
+       <TemplateTopBar
+       selectedTemplate={handleShowSelectedTemplate}
+       />
 
       {/* ✅ WHITE GRID AREA */}
       <div className="bg-white p-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {allTemplate.map((t) => (
+          {template.map((t) => (
             <div key={t.id} className="space-y-2">
               <div className="group relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
                 <div className="relative h-[190px]">

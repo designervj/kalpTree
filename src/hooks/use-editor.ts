@@ -12,7 +12,12 @@ import { updateHeader } from "./slices/header/HeaderThunk";
 import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
 import { defaultBlocks } from "../../utils/block-library";
 
-
+// Extend HTMLElement to include event handlers storage
+declare global {
+  interface HTMLElement {
+    __eventHandlers?: Record<string, EventListener>;
+  }
+}
 
 // Improved type definition for GrapesJS editor
 interface GrapesJSEditor {
@@ -849,7 +854,9 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // Component selection
     editor.on("component:selected", (component: any) => {
-
+      console.log("component. --->", component)
+      const scriptString = component.getScriptString();
+      console.log("Script string:", scriptString);
       if (component?.attributes?.tagName === 'form') {
         // how to know the child of form
         const componentHtml = component.toHTML();
@@ -1589,28 +1596,34 @@ export function useEditor(containerId: string) {
               el.style.opacity = '0';
             });
 
-            // Setup scroll event listeners
+            // Setup Intersection Observer for scroll-triggered elements
             const scrollElements = document.querySelectorAll('[data-scroll-action]');
-            if (scrollElements.length > 0) {
-              window.addEventListener('scroll', function() {
-                scrollElements.forEach(function(el) {
-                  const rect = el.getBoundingClientRect();
-                  const offset = parseFloat(el.getAttribute('data-scroll-offset') || '0');
-                  const isVisible = rect.top + offset <= window.innerHeight && rect.bottom >= 0;
-
-                  if (isVisible && !el.classList.contains('scroll-triggered')) {
-                    el.classList.add('scroll-triggered');
-                    const action = el.getAttribute('data-scroll-action');
-                    if (action === 'show') {
-                      el.style.display = 'block';
-                      setTimeout(function() { el.style.opacity = '1'; }, 10);
-                    } else if (action === 'add-class') {
-                      const className = el.getAttribute('data-scroll-class');
-                      if (className) el.classList.add(className);
+            if (scrollElements.length > 0 && 'IntersectionObserver' in window) {
+              scrollElements.forEach(function(el) {
+                const offset = parseFloat(el.getAttribute('data-scroll-offset') || '0') / 100;
+                
+                const observer = new IntersectionObserver(function(entries) {
+                  entries.forEach(function(entry) {
+                    if (entry.isIntersecting && !el.classList.contains('scroll-triggered')) {
+                      el.classList.add('scroll-triggered');
+                      const action = el.getAttribute('data-scroll-action');
+                      
+                      if (action === 'show') {
+                        el.style.display = 'block';
+                        setTimeout(function() { el.style.opacity = '1'; }, 10);
+                      } else if (action === 'add-class') {
+                        const className = el.getAttribute('data-scroll-class');
+                        if (className) el.classList.add(className);
+                      }
                     }
-                  }
+                  });
+                }, {
+                  threshold: offset || 0.1,
+                  rootMargin: '0px'
                 });
-              }, { passive: true });
+                
+                observer.observe(el);
+              });
             }
           });
         `;
@@ -2153,157 +2166,263 @@ body {
       options?: any
     ) => {
       if (state.selectedElement) {
-        // Get current interactions or initialize empty array
-        const interactions = state.selectedElement.get("interactions") || [];
+        // Get the element's view to access the actual DOM element
+        const elementView = state.selectedElement.view;
+        const domEl = elementView?.el;
 
-        // Generate JavaScript code for the interaction
-        let jsCode = "";
-
-        // Target element (this element if no target specified)
-        const targetSelector = target || "this";
-
-        // Generate different code based on action type
-        switch (action) {
-          case "toggle-class":
-            jsCode = `document.querySelector('${targetSelector}').classList.toggle('${options?.class || "active"
-              }');`;
-            break;
-          case "add-class":
-            jsCode = `document.querySelector('${targetSelector}').classList.add('${options?.class || "active"
-              }');`;
-            break;
-          case "remove-class":
-            jsCode = `document.querySelector('${targetSelector}').classList.remove('${options?.class || "active"
-              }');`;
-            break;
-          case "show":
-            if (options?.animation === "none") {
-              jsCode = `document.querySelector('${targetSelector}').style.display = 'block';`;
-            } else {
-              jsCode = `
-            const el = document.querySelector('${targetSelector}');
-            el.style.transition = 'all ${options?.duration || 300}ms ${options?.easing || "ease"
-                }';
-            el.style.display = 'block';
-            setTimeout(() => {
-              el.style.opacity = '1';
-              ${options?.animation === "scale"
-                  ? "el.style.transform = 'scale(1)';"
-                  : ""
-                }
-            }, 10);
-          `;
-            }
-            break;
-          case "hide":
-            if (options?.animation === "none") {
-              jsCode = `document.querySelector('${targetSelector}').style.display = 'none';`;
-            } else {
-              jsCode = `
-            const el = document.querySelector('${targetSelector}');
-            el.style.transition = 'all ${options?.duration || 300}ms ${options?.easing || "ease"
-                }';
-            el.style.opacity = '0';
-            ${options?.animation === "scale"
-                  ? "el.style.transform = 'scale(0.8)';"
-                  : ""
-                }
-            setTimeout(() => { el.style.display = 'none'; }, ${options?.duration || 300
-                });
-          `;
-            }
-            break;
-          case "toggle":
-            jsCode = `
-          const el = document.querySelector('${targetSelector}');
-          if (el.style.display === 'none' || getComputedStyle(el).display === 'none') {
-            ${options?.animation === "none"
-                ? "el.style.display = 'block';"
-                : `
-              el.style.transition = 'all ${options?.duration || 300}ms ${options?.easing || "ease"
-                }';
-              el.style.display = 'block';
-              setTimeout(() => {
-                el.style.opacity = '1';
-                ${options?.animation === "scale"
-                  ? "el.style.transform = 'scale(1)';"
-                  : ""
-                }
-              }, 10);
-              `
-              }
-          } else {
-            ${options?.animation === "none"
-                ? "el.style.display = 'none';"
-                : `
-              el.style.transition = 'all ${options?.duration || 300}ms ${options?.easing || "ease"
-                }';
-              el.style.opacity = '0';
-              ${options?.animation === "scale"
-                  ? "el.style.transform = 'scale(0.8)';"
-                  : ""
-                }
-              setTimeout(() => { el.style.display = 'none'; }, ${options?.duration || 300
-                });
-              `
-              }
-          }
-        `;
-            break;
-          case "scroll-to":
-            jsCode = `
-          const targetEl = document.querySelector('${targetSelector}');
-          if (targetEl) {
-            const yOffset = ${options?.offset || 0};
-            const y = targetEl.getBoundingClientRect().top + window.pageYOffset + yOffset;
-            window.scrollTo({top: y, behavior: 'smooth'});
-          }
-        `;
-            break;
-          case "redirect":
-            jsCode = options?.newTab
-              ? `window.open('${options?.url || "#"}', '_blank');`
-              : `window.location.href = '${options?.url || "#"}';`;
-            break;
+        if (!domEl) {
+          console.error("Cannot add interactivity: DOM element not found");
+          return;
         }
 
-        // Add event listener based on the event type
-        if (type === "add") {
-          // Add the event listener to the element
-          const eventHandler = `function(event) { ${jsCode} }`;
+        // Target element (this element if no target specified)
+        const targetSelector = target || null;
 
-          // Store the event handler in the element's attributes
-          const eventAttr = `on${event}`;
-          state.selectedElement.addAttributes({ [eventAttr]: eventHandler });
+        // Create the event handler function
+        const createEventHandler = () => {
+          return (e: Event) => {
+            try {
+              // Get the target element
+              let targetEl: Element | null = null;
 
-          // For hover, we need to handle mouseenter/mouseleave
-          if (event === "hover") {
-            const mouseEnterHandler = `function(event) { ${jsCode} }`;
-            const mouseLeaveHandler = `function(event) {
-              // Reverse the action for mouseleave if needed
-              ${action === "add-class"
-                ? `document.querySelector('${targetSelector}').classList.remove('${options?.class || "active"
-                }');`
-                : action === "show"
-                  ? `document.querySelector('${targetSelector}').style.display = 'none';`
-                  : ""
+              if (!targetSelector) {
+                // If no target specified, use the element itself
+                targetEl = domEl;
+              } else {
+                // Try to find the target in the canvas
+                const canvas = editorRef.current?.Canvas;
+                const canvasDoc = canvas?.getDocument();
+                targetEl = canvasDoc?.querySelector(targetSelector) ?? null;
+
+                // Fallback to regular document if not found
+                if (!targetEl) {
+                  targetEl = document.querySelector(targetSelector);
+                }
               }
-            }`;
 
-            state.selectedElement.addAttributes({
-              onmouseenter: mouseEnterHandler,
-              onmouseleave: mouseLeaveHandler,
-            });
+              if (!targetEl) {
+                console.warn(`Target element not found: ${targetSelector}`);
+                return;
+              }
+
+              // Execute action based on type
+              switch (action) {
+                case "toggle-class":
+                  targetEl.classList.toggle(options?.class || "active");
+                  break;
+
+                case "add-class":
+                  targetEl.classList.add(options?.class || "active");
+                  break;
+
+                case "remove-class":
+                  targetEl.classList.remove(options?.class || "active");
+                  break;
+
+                case "show":
+                  if (options?.animation === "none") {
+                    (targetEl as HTMLElement).style.display = "block";
+                  } else {
+                    (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
+                    (targetEl as HTMLElement).style.display = "block";
+                    setTimeout(() => {
+                      (targetEl as HTMLElement).style.opacity = "1";
+                      if (options?.animation === "scale") {
+                        (targetEl as HTMLElement).style.transform = "scale(1)";
+                      }
+                    }, 10);
+                  }
+                  break;
+
+                case "hide":
+                  if (options?.animation === "none") {
+                    (targetEl as HTMLElement).style.display = "none";
+                  } else {
+                    (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
+                    (targetEl as HTMLElement).style.opacity = "0";
+                    if (options?.animation === "scale") {
+                      (targetEl as HTMLElement).style.transform = "scale(0.8)";
+                    }
+                    setTimeout(() => {
+                      (targetEl as HTMLElement).style.display = "none";
+                    }, options?.duration || 300);
+                  }
+                  break;
+
+                case "toggle":
+                  const isHidden = (targetEl as HTMLElement).style.display === "none" ||
+                    getComputedStyle(targetEl as HTMLElement).display === "none";
+
+                  if (isHidden) {
+                    if (options?.animation === "none") {
+                      (targetEl as HTMLElement).style.display = "block";
+                    } else {
+                      (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
+                      (targetEl as HTMLElement).style.display = "block";
+                      setTimeout(() => {
+                        (targetEl as HTMLElement).style.opacity = "1";
+                        if (options?.animation === "scale") {
+                          (targetEl as HTMLElement).style.transform = "scale(1)";
+                        }
+                      }, 10);
+                    }
+                  } else {
+                    if (options?.animation === "none") {
+                      (targetEl as HTMLElement).style.display = "none";
+                    } else {
+                      (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
+                      (targetEl as HTMLElement).style.opacity = "0";
+                      if (options?.animation === "scale") {
+                        (targetEl as HTMLElement).style.transform = "scale(0.8)";
+                      }
+                      setTimeout(() => {
+                        (targetEl as HTMLElement).style.display = "none";
+                      }, options?.duration || 300);
+                    }
+                  }
+                  break;
+
+                case "scroll-to":
+                  if (targetEl) {
+                    const yOffset = parseFloat(options?.offset || "0");
+                    const rect = targetEl.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const y = rect.top + scrollTop + yOffset;
+
+                    window.scrollTo({
+                      top: y,
+                      behavior: "smooth"
+                    });
+                  }
+                  break;
+
+                case "redirect":
+                  if (options?.newTab) {
+                    window.open(options?.url || "#", "_blank");
+                  } else {
+                    window.location.href = options?.url || "#";
+                  }
+                  break;
+              }
+            } catch (error) {
+              console.error("Error executing interaction:", error);
+            }
+          };
+        };
+
+        // Store event handler reference on the element
+        const handlerId = `${event}_${action}_${Date.now()}`;
+
+        if (type === "add") {
+          // Create and store the handler
+          const handler = createEventHandler();
+
+          // Store handler reference on the DOM element
+          if (!domEl.__eventHandlers) {
+            domEl.__eventHandlers = {};
           }
-        } else if (type === "remove") {
-          // Remove the event listener from the element
-          const eventAttr = `on${event}`;
-          state.selectedElement.removeAttributes(eventAttr);
+          domEl.__eventHandlers[handlerId] = handler;
 
-          // For hover, remove both mouseenter and mouseleave
+          // Attach event listener based on event type
           if (event === "hover") {
-            state.selectedElement.removeAttributes("onmouseenter");
-            state.selectedElement.removeAttributes("onmouseleave");
+            domEl.addEventListener("mouseenter", handler);
+
+            // For hover, create a leave handler if needed
+            if (action === "add-class" || action === "show") {
+              const leaveHandler = () => {
+                try {
+                  let targetEl: Element | null = null;
+
+                  if (!targetSelector) {
+                    targetEl = domEl;
+                  } else {
+                    const canvas = editorRef.current?.Canvas;
+                    const canvasDoc = canvas?.getDocument();
+                    targetEl = canvasDoc?.querySelector(targetSelector) ?? null;
+                    if (!targetEl) {
+                      targetEl = document.querySelector(targetSelector);
+                    }
+                  }
+
+                  if (targetEl) {
+                    if (action === "add-class") {
+                      targetEl.classList.remove(options?.class || "active");
+                    } else if (action === "show") {
+                      (targetEl as HTMLElement).style.display = "none";
+                    }
+                  }
+                } catch (error) {
+                  console.error("Error in hover leave handler:", error);
+                }
+              };
+
+              domEl.__eventHandlers[`${handlerId}_leave`] = leaveHandler;
+              domEl.addEventListener("mouseleave", leaveHandler);
+            }
+          } else if (event === "scroll") {
+            // Use Intersection Observer for scroll-based triggers
+            const offset = parseFloat(options?.offset || "0") / 100; // Convert percentage to decimal
+
+            const observer = new IntersectionObserver(
+              (entries) => {
+                entries.forEach((entry) => {
+                  if (entry.isIntersecting) {
+                    // Trigger the action when element comes into view
+                    handler(new Event('scroll'));
+                  }
+                });
+              },
+              {
+                threshold: offset || 0.1, // Use offset as threshold, default 10%
+                rootMargin: '0px'
+              }
+            );
+
+            // Observe the element
+            observer.observe(domEl);
+
+            // Store the observer to clean it up later
+            if (!domEl.__intersectionObservers) {
+              domEl.__intersectionObservers = {};
+            }
+            domEl.__intersectionObservers[handlerId] = observer;
+
+            console.log(`✅ Added Intersection Observer for scroll event on ${domEl.tagName}`);
+          } else {
+            // For other events (click, dblclick)
+            domEl.addEventListener(event, handler);
+          }
+
+          console.log(`✅ Added ${event} listener for ${action} action`);
+        } else if (type === "remove") {
+          // Remove event listeners
+          if (domEl.__eventHandlers) {
+            const handler = domEl.__eventHandlers[handlerId];
+
+            if (handler) {
+              if (event === "hover") {
+                domEl.removeEventListener("mouseenter", handler);
+                const leaveHandler = domEl.__eventHandlers[`${handlerId}_leave`];
+                if (leaveHandler) {
+                  domEl.removeEventListener("mouseleave", leaveHandler);
+                  delete domEl.__eventHandlers[`${handlerId}_leave`];
+                }
+              } else if (event === "scroll") {
+                // Clean up Intersection Observer
+                if (domEl.__intersectionObservers) {
+                  const observer = domEl.__intersectionObservers[handlerId];
+                  if (observer) {
+                    observer.disconnect();
+                    delete domEl.__intersectionObservers[handlerId];
+                  }
+                }
+              } else {
+                domEl.removeEventListener(event, handler);
+              }
+
+              delete domEl.__eventHandlers[handlerId];
+              console.log(`✅ Removed ${event} listener for ${action} action`);
+            }
           }
         }
 
