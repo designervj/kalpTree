@@ -375,12 +375,86 @@ export function useEditor(containerId: string) {
             // Setup event listeners
             setupEventListeners(editor as unknown as GrapesJSEditor);
 
-            // Update state
-            setState((prev) => ({
-              ...prev,
-              editor,
-              isLoading: false,
-            }));
+            // Get blocks
+            try {
+              const blockManager = editor.BlockManager;
+              if (blockManager && blockManager.getAll && typeof blockManager.getAll === 'function') {
+                const allBlocks = blockManager.getAll();
+                console.log('📦 Block Manager - Total blocks found:', allBlocks?.models?.length || 0);
+
+                if (allBlocks && allBlocks.models) {
+                  const blockList = allBlocks.models.map((block: any) => {
+                    // Extract category properly
+                    let category = "Basic";
+                    try {
+                      const blockCategory = block.attributes.category;
+                      if (typeof blockCategory === "string") {
+                        category = blockCategory;
+                      } else if (blockCategory && typeof blockCategory === "object") {
+                        // Try to get the label or name property
+                        category =
+                          blockCategory.label ||
+                          blockCategory.name ||
+                          blockCategory.id ||
+                          "Basic";
+                      }
+                    } catch (error) {
+                      console.error("Error processing block category:", error);
+                    }
+
+                    return {
+                      id: block.id,
+                      label: block.attributes.label,
+                      category: category,
+                      content: block.attributes.content,
+                    };
+                  });
+
+                  // Get initial JavaScript content if available
+                  let initialJs = "";
+                  if (editor.getJs) {
+                    try {
+                      initialJs = editor.getJs();
+                    } catch (e) {
+                      console.warn("Error getting initial JavaScript:", e);
+                    }
+                  }
+
+                  // Update state with blocks and initial JS
+                  setState((prev) => ({
+                    ...prev,
+                    editor,
+                    blocks: blockList,
+                    editorJs: initialJs,
+                    isLoading: false,
+                  }));
+
+                  // Update layers
+                  updateLayers(editor as unknown as GrapesJSEditor);
+                } else {
+                  console.warn('Block models not available');
+                  setState((prev) => ({
+                    ...prev,
+                    editor,
+                    isLoading: false,
+                  }));
+                }
+              } else {
+                console.warn('BlockManager or getAll method not available');
+                setState((prev) => ({
+                  ...prev,
+                  editor,
+                  isLoading: false,
+                }));
+              }
+            } catch (blockError) {
+              console.error('Error loading blocks:', blockError);
+              setState((prev) => ({
+                ...prev,
+                editor,
+                isLoading: false,
+              }));
+            }
 
             console.log('✅ Editor fully initialized');
           } catch (error) {
@@ -855,8 +929,8 @@ export function useEditor(containerId: string) {
     // Component selection
     editor.on("component:selected", (component: any) => {
       console.log("component. --->", component)
-      const scriptString = component.getScriptString();
-      console.log("Script string:", scriptString);
+      // const scriptString = component?.getScript();
+      // console.log("Script string:", scriptString);
       if (component?.attributes?.tagName === 'form') {
         // how to know the child of form
         const componentHtml = component.toHTML();
@@ -1009,80 +1083,6 @@ export function useEditor(containerId: string) {
         ...prev,
         editorJs: "",
       }));
-    });
-
-    // Load event
-    editor.on("load", () => {
-      try {
-        // Validate editor state
-        if (!editor || !editor.BlockManager) {
-          console.warn('Editor or BlockManager not available on load event');
-          return;
-        }
-
-        // Get blocks
-        const blockManager = editor.BlockManager;
-        if (!blockManager.getAll || typeof blockManager.getAll !== 'function') {
-          console.warn('getAll method not available on BlockManager');
-          return;
-        }
-
-        const allBlocks = blockManager.getAll();
-        console.log('📦 Block Manager - Total blocks found:', allBlocks?.models?.length || 0);
-
-        if (!allBlocks || !allBlocks.models) {
-          console.warn('Block models not available');
-          return;
-        }
-
-        const blockList = allBlocks.models.map((block: any) => {
-          // Extract category properly
-          let category = "Basic";
-          try {
-            const blockCategory = block.attributes.category;
-            if (typeof blockCategory === "string") {
-              category = blockCategory;
-            } else if (blockCategory && typeof blockCategory === "object") {
-              // Try to get the label or name property
-              category =
-                blockCategory.label ||
-                blockCategory.name ||
-                blockCategory.id ||
-                "Basic";
-            }
-          } catch (error) {
-            console.error("Error processing block category:", error);
-          }
-
-          return {
-            id: block.id,
-            label: block.attributes.label,
-            category: category,
-            content: block.attributes.content,
-          };
-        });
-
-        // Get initial JavaScript content if available
-        let initialJs = "";
-        if (editor.getJs) {
-          try {
-            initialJs = editor.getJs();
-          } catch (e) {
-            console.warn("Error getting initial JavaScript:", e);
-          }
-        }
-
-        setState((prev) => ({
-          ...prev,
-          blocks: blockList,
-          editorJs: initialJs,
-          isLoading: false,
-        }));
-
-        updateLayers(editor);
-      } catch (error) {
-        console.error("Error in load event:", error);
-      }
     });
 
     // Component changes - commented out component:update to prevent excessive updates
@@ -1802,7 +1802,7 @@ body {
           // Get existing styles and merge with the new property
           const currentStyles = state.selectedElement.getStyle() || {};
           const updatedStyles = { ...currentStyles, [property]: value };
-
+          console.log("updatedStyles", updatedStyles);
           // Apply the merged styles to the element
           state.selectedElement.setStyle(updatedStyles);
 
@@ -1971,25 +1971,25 @@ body {
               }
             }
             // Handle spacing properties
-            else if (property === "padding") {
+            else if (property.startsWith("padding")) {
               return {
                 ...prev,
                 styles: {
                   ...prev.styles,
                   spacing: {
                     ...prev.styles.spacing,
-                    padding: value,
+                    [property]: value,
                   },
                 },
               };
-            } else if (property === "margin") {
+            } else if (property.startsWith("margin")) {
               return {
                 ...prev,
                 styles: {
                   ...prev.styles,
                   spacing: {
                     ...prev.styles.spacing,
-                    margin: value,
+                    [property]: value,
                   },
                 },
               };
@@ -2166,264 +2166,389 @@ body {
       options?: any
     ) => {
       if (state.selectedElement) {
-        // Get the element's view to access the actual DOM element
-        const elementView = state.selectedElement.view;
-        const domEl = elementView?.el;
+        const component = state.selectedElement;
+        console.log('component', component)
+        console.log('type', type)
+        console.log('event', event)
+        console.log('action', action)
+        console.log('target', target)
+        console.log('options', options)
+        if (type === "add") {
+          // Step 1: Store interaction config in component attributes (NOT in DOM)
+          // component.addAttributes({
+          //   'data-interaction': JSON.stringify({
+          //     event: event,
+          //     action: action,
+          //     target: target,
+          //     options: options,
+          //   }),
+          // });
 
-        if (!domEl) {
-          console.error("Cannot add interactivity: DOM element not found");
-          return;
-        }
+          // Step 2: Inject script function on the component
+          component.set({
+            script: function () {
+              console.log('🚀 Interaction script executing...');
+              const el = this;
+              console.log('Element:', el);
+              const configRaw = el.getAttribute('data-interaction');
+              console.log('Config raw:', configRaw);
 
-        // Target element (this element if no target specified)
-        const targetSelector = target || null;
-
-        // Create the event handler function
-        const createEventHandler = () => {
-          return (e: Event) => {
-            try {
-              // Get the target element
-              let targetEl: Element | null = null;
-
-              if (!targetSelector) {
-                // If no target specified, use the element itself
-                targetEl = domEl;
-              } else {
-                // Try to find the target in the canvas
-                const canvas = editorRef.current?.Canvas;
-                const canvasDoc = canvas?.getDocument();
-                targetEl = canvasDoc?.querySelector(targetSelector) ?? null;
-
-                // Fallback to regular document if not found
-                if (!targetEl) {
-                  targetEl = document.querySelector(targetSelector);
-                }
-              }
-
-              if (!targetEl) {
-                console.warn(`Target element not found: ${targetSelector}`);
+              if (!configRaw) {
+                console.warn('⚠️ No data-interaction attribute found');
                 return;
               }
 
-              // Execute action based on type
-              switch (action) {
-                case "toggle-class":
-                  targetEl.classList.toggle(options?.class || "active");
-                  break;
+              let config;
+              try {
+                config = JSON.parse(configRaw);
+                console.log('📋 Parsed config:', config);
+              } catch (e) {
+                console.error('❌ Invalid interaction config', e);
+                return;
+              }
 
-                case "add-class":
-                  targetEl.classList.add(options?.class || "active");
-                  break;
+              const { event, action, target, options } = config;
+                 console.log('config', config)
+              
+              const handler = () => {
+                let targetEl = null;
 
-                case "remove-class":
-                  targetEl.classList.remove(options?.class || "active");
-                  break;
+                if (!target) {
+                  targetEl = el;
+                } else {
+                  console.log('🔍 Looking for target:', target);
+                  try {
+                    targetEl = document.querySelector(target);
+                    console.log('🎯 Found target:', targetEl);
+                  } catch (e) {
+                    console.error('❌ Invalid selector:', target, e);
 
-                case "show":
-                  if (options?.animation === "none") {
-                    (targetEl as HTMLElement).style.display = "block";
-                  } else {
-                    (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
-                    (targetEl as HTMLElement).style.display = "block";
-                    setTimeout(() => {
-                      (targetEl as HTMLElement).style.opacity = "1";
-                      if (options?.animation === "scale") {
-                        (targetEl as HTMLElement).style.transform = "scale(1)";
+                    // Try to fix common selector issues
+                    if (!target.startsWith('#') && !target.startsWith('.') && !target.startsWith('[')) {
+                      const fixedTarget = `.${target}`;
+                      console.log('🔧 Trying fixed selector:', fixedTarget);
+                      try {
+                        targetEl = document.querySelector(fixedTarget);
+                      } catch (e2) {
+                        console.error('❌ Fixed selector also failed:', e2);
                       }
-                    }, 10);
-                  }
-                  break;
-
-                case "hide":
-                  if (options?.animation === "none") {
-                    (targetEl as HTMLElement).style.display = "none";
-                  } else {
-                    (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
-                    (targetEl as HTMLElement).style.opacity = "0";
-                    if (options?.animation === "scale") {
-                      (targetEl as HTMLElement).style.transform = "scale(0.8)";
                     }
-                    setTimeout(() => {
-                      (targetEl as HTMLElement).style.display = "none";
-                    }, options?.duration || 300);
                   }
-                  break;
+                }
 
-                case "toggle":
-                  const isHidden = (targetEl as HTMLElement).style.display === "none" ||
-                    getComputedStyle(targetEl as HTMLElement).display === "none";
+                if (!targetEl) {
+                  console.error('❌ Target element not found for selector:', target);
+                  return;
+                }
 
-                  if (isHidden) {
-                    if (options?.animation === "none") {
-                      (targetEl as HTMLElement).style.display = "block";
+                switch (action) {
+                  case 'toggle-class':
+                    targetEl.classList.toggle(options?.class || 'active');
+                    break;
+
+                  case 'add-class':
+                    targetEl.classList.add(options?.class || 'active');
+                    break;
+
+                  case 'remove-class':
+                    targetEl.classList.remove(options?.class || 'active');
+                    break;
+
+                  case 'show':
+                    if (options?.animation === 'none') {
+                      targetEl.style.display = 'block';
                     } else {
-                      (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
-                      (targetEl as HTMLElement).style.display = "block";
+                      targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
+                      targetEl.style.display = 'block';
                       setTimeout(() => {
-                        (targetEl as HTMLElement).style.opacity = "1";
-                        if (options?.animation === "scale") {
-                          (targetEl as HTMLElement).style.transform = "scale(1)";
+                        targetEl.style.opacity = '1';
+                        if (options?.animation === 'scale') {
+                          targetEl.style.transform = 'scale(1)';
                         }
                       }, 10);
                     }
-                  } else {
-                    if (options?.animation === "none") {
-                      (targetEl as HTMLElement).style.display = "none";
+                    break;
+
+                  case 'hide':
+                    if (options?.animation === 'none') {
+                      targetEl.style.display = 'none';
                     } else {
-                      (targetEl as HTMLElement).style.transition = `all ${options?.duration || 300}ms ${options?.easing || "ease"}`;
-                      (targetEl as HTMLElement).style.opacity = "0";
-                      if (options?.animation === "scale") {
-                        (targetEl as HTMLElement).style.transform = "scale(0.8)";
+                      targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
+                      targetEl.style.opacity = '0';
+                      if (options?.animation === 'scale') {
+                        targetEl.style.transform = 'scale(0.8)';
                       }
                       setTimeout(() => {
-                        (targetEl as HTMLElement).style.display = "none";
+                        targetEl.style.display = 'none';
                       }, options?.duration || 300);
                     }
-                  }
-                  break;
+                    break;
 
-                case "scroll-to":
-                  if (targetEl) {
-                    const yOffset = parseFloat(options?.offset || "0");
+                  case 'toggle':
+                    const isHidden = targetEl.style.display === 'none' ||
+                      getComputedStyle(targetEl).display === 'none';
+
+                    if (isHidden) {
+                      if (options?.animation === 'none') {
+                        targetEl.style.display = 'block';
+                      } else {
+                        targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
+                        targetEl.style.display = 'block';
+                        setTimeout(() => {
+                          targetEl.style.opacity = '1';
+                          if (options?.animation === 'scale') {
+                            targetEl.style.transform = 'scale(1)';
+                          }
+                        }, 10);
+                      }
+                    } else {
+                      if (options?.animation === 'none') {
+                        targetEl.style.display = 'none';
+                      } else {
+                        targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
+                        targetEl.style.opacity = '0';
+                        if (options?.animation === 'scale') {
+                          targetEl.style.transform = 'scale(0.8)';
+                        }
+                        setTimeout(() => {
+                          targetEl.style.display = 'none';
+                        }, options?.duration || 300);
+                      }
+                    }
+                    break;
+
+                  case 'scroll-to':
+                    console.log('🎯 Scroll-to action triggered');
+                    console.log('Target selector:', target);
+                    console.log('Target element:', targetEl);
+
+                    if (!targetEl) {
+                      console.error('❌ Target element not found');
+                      return;
+                    }
+
+                    const offset = parseFloat(options?.offset || '0');
                     const rect = targetEl.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    const y = rect.top + scrollTop + yOffset;
+                    const scrollTop =
+                      window.pageYOffset || document.documentElement.scrollTop;
+                    const targetPosition = rect.top + scrollTop + offset;
+
+                    console.log('📍 Scrolling to:', {
+                      rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
+                      currentScroll: scrollTop,
+                      offset: offset,
+                      targetPosition: targetPosition
+                    });
 
                     window.scrollTo({
-                      top: y,
-                      behavior: "smooth"
+                      top: targetPosition,
+                      behavior: 'smooth',
                     });
-                  }
-                  break;
 
-                case "redirect":
-                  if (options?.newTab) {
-                    window.open(options?.url || "#", "_blank");
-                  } else {
-                    window.location.href = options?.url || "#";
-                  }
-                  break;
-              }
-            } catch (error) {
-              console.error("Error executing interaction:", error);
-            }
-          };
-        };
+                    console.log('✅ Scroll command sent');
+                    break;
 
-        // Store event handler reference on the element
-        const handlerId = `${event}_${action}_${Date.now()}`;
-
-        if (type === "add") {
-          // Create and store the handler
-          const handler = createEventHandler();
-
-          // Store handler reference on the DOM element
-          if (!domEl.__eventHandlers) {
-            domEl.__eventHandlers = {};
-          }
-          domEl.__eventHandlers[handlerId] = handler;
-
-          // Attach event listener based on event type
-          if (event === "hover") {
-            domEl.addEventListener("mouseenter", handler);
-
-            // For hover, create a leave handler if needed
-            if (action === "add-class" || action === "show") {
-              const leaveHandler = () => {
-                try {
-                  let targetEl: Element | null = null;
-
-                  if (!targetSelector) {
-                    targetEl = domEl;
-                  } else {
-                    const canvas = editorRef.current?.Canvas;
-                    const canvasDoc = canvas?.getDocument();
-                    targetEl = canvasDoc?.querySelector(targetSelector) ?? null;
-                    if (!targetEl) {
-                      targetEl = document.querySelector(targetSelector);
+                  case 'redirect':
+                    if (options?.newTab) {
+                      window.open(options?.url || '#', '_blank');
+                    } else {
+                      window.location.href = options?.url || '#';
                     }
-                  }
-
-                  if (targetEl) {
-                    if (action === "add-class") {
-                      targetEl.classList.remove(options?.class || "active");
-                    } else if (action === "show") {
-                      (targetEl as HTMLElement).style.display = "none";
-                    }
-                  }
-                } catch (error) {
-                  console.error("Error in hover leave handler:", error);
+                    break;
                 }
               };
 
-              domEl.__eventHandlers[`${handlerId}_leave`] = leaveHandler;
-              domEl.addEventListener("mouseleave", leaveHandler);
-            }
-          } else if (event === "scroll") {
-            // Use Intersection Observer for scroll-based triggers
-            const offset = parseFloat(options?.offset || "0") / 100; // Convert percentage to decimal
+              // Attach event listener based on event type
+              console.log('🔗 Attaching event listener for:', event);
 
-            const observer = new IntersectionObserver(
-              (entries) => {
-                entries.forEach((entry) => {
-                  if (entry.isIntersecting) {
-                    // Trigger the action when element comes into view
-                    handler(new Event('scroll'));
-                  }
-                });
-              },
-              {
-                threshold: offset || 0.1, // Use offset as threshold, default 10%
-                rootMargin: '0px'
-              }
-            );
+              if (event === 'hover') {
+                console.log('Setting up hover (mouseenter) listener');
+                el.addEventListener('mouseenter', handler);
 
-            // Observe the element
-            observer.observe(domEl);
+                // For hover, add leave handler if needed
+                if (action === 'add-class' || action === 'show') {
+                  const leaveHandler = () => {
+                    let targetEl = null;
+                    if (!target) {
+                      targetEl = el;
+                    } else {
+                      targetEl = document.querySelector(target);
+                    }
 
-            // Store the observer to clean it up later
-            if (!domEl.__intersectionObservers) {
-              domEl.__intersectionObservers = {};
-            }
-            domEl.__intersectionObservers[handlerId] = observer;
-
-            console.log(`✅ Added Intersection Observer for scroll event on ${domEl.tagName}`);
-          } else {
-            // For other events (click, dblclick)
-            domEl.addEventListener(event, handler);
-          }
-
-          console.log(`✅ Added ${event} listener for ${action} action`);
-        } else if (type === "remove") {
-          // Remove event listeners
-          if (domEl.__eventHandlers) {
-            const handler = domEl.__eventHandlers[handlerId];
-
-            if (handler) {
-              if (event === "hover") {
-                domEl.removeEventListener("mouseenter", handler);
-                const leaveHandler = domEl.__eventHandlers[`${handlerId}_leave`];
-                if (leaveHandler) {
-                  domEl.removeEventListener("mouseleave", leaveHandler);
-                  delete domEl.__eventHandlers[`${handlerId}_leave`];
+                    if (targetEl) {
+                      if (action === 'add-class') {
+                        targetEl.classList.remove(options?.class || 'active');
+                      } else if (action === 'show') {
+                        targetEl.style.display = 'none';
+                      }
+                    }
+                  };
+                  el.addEventListener('mouseleave', leaveHandler);
                 }
-              } else if (event === "scroll") {
-                // Clean up Intersection Observer
-                if (domEl.__intersectionObservers) {
-                  const observer = domEl.__intersectionObservers[handlerId];
-                  if (observer) {
-                    observer.disconnect();
-                    delete domEl.__intersectionObservers[handlerId];
+              } else if (event === 'scroll') {
+                console.log('Setting up scroll (IntersectionObserver) listener');
+                // Use Intersection Observer for scroll-based triggers
+                const offset = parseFloat(options?.offset || '0') / 100;
+
+                const observer = new IntersectionObserver(
+                  (entries) => {
+                    entries.forEach((entry) => {
+                      if (entry.isIntersecting) {
+                        handler();
+                      }
+                    });
+                  },
+                  {
+                    threshold: offset || 0.1,
+                    rootMargin: '0px'
                   }
-                }
+                );
+
+                observer.observe(el);
               } else {
-                domEl.removeEventListener(event, handler);
+                // For other events (click, dblclick)
+                console.log(`Setting up ${event || 'click'} listener on element:`, el);
+                el.addEventListener(event || 'click', handler);
+                console.log('✅ Event listener attached successfully');
               }
+            },
+          });
 
-              delete domEl.__eventHandlers[handlerId];
-              console.log(`✅ Removed ${event} listener for ${action} action`);
+          console.log(`✅ Added interaction: ${event} → ${action}`);
+
+          // Trigger the script execution immediately
+          try {
+            const view = component.view;
+            if (view && view.el) {
+              // Get the script function and call it with the element as context
+              const scriptFn = component.get('script');
+              if (typeof scriptFn === 'function') {
+                console.log('🔄 Executing script immediately on element...');
+                scriptFn.call(view.el);
+              }
             }
+          } catch (error) {
+            console.error('Error executing script:', error);
           }
+
+          // ALSO attach event listener directly to the canvas element
+          // This makes interactions work while editing, not just in preview
+          try {
+            const view = component.view;
+            console.log('component', component)
+            console.log('view', view)
+            if (view && view.el) {
+              const el = view.el;
+              console.log('🔗 [Canvas] Attaching interaction to element:', el);
+
+              const handler = (e: Event) => {
+                console.log(`👆 [Canvas] ${event} triggered!`);
+                e.stopPropagation();
+
+                let targetEl: HTMLElement | null = null;
+                if (!target || target === '') {
+                  targetEl = el;
+                } else {
+                  const canvasFrame = editorRef?.current?.Canvas?.getFrameEl?.();
+                  const canvasDoc = canvasFrame?.contentDocument || canvasFrame?.contentWindow?.document;
+
+                  console.log(`🔍 [Canvas] Looking for target: "${target}"`);
+                  console.log(`📄 [Canvas] Canvas document:`, canvasDoc ? 'Available' : 'Not available');
+
+                  // Try to find the element in canvas document first
+                  if (canvasDoc) {
+                    try {
+                      targetEl = canvasDoc.querySelector(target) as HTMLElement;
+                      console.log(`🎯 [Canvas] Found in canvas doc:`, targetEl);
+                    } catch (e) {
+                      console.error(`❌ [Canvas] Invalid selector "${target}":`, e);
+
+                      // If selector is invalid, try to fix it (e.g., add # for IDs)
+                      if (!target.startsWith('#') && !target.startsWith('.') && !target.startsWith('[')) {
+                        const fixedTarget = `#${target}`;
+                        console.log(`🔧 [Canvas] Trying fixed selector: "${fixedTarget}"`);
+                        try {
+                          targetEl = canvasDoc.querySelector(fixedTarget) as HTMLElement;
+                        } catch (e2) {
+                          console.error(`❌ [Canvas] Fixed selector also failed:`, e2);
+                        }
+                      }
+                    }
+                  }
+
+                  // Fallback to main document if not found in canvas
+                  if (!targetEl) {
+                    console.log(`🔄 [Canvas] Trying main document...`);
+                    try {
+                      targetEl = document.querySelector(target) as HTMLElement;
+                    } catch (e) {
+                      console.error(`❌ [Canvas] Main document selector failed:`, e);
+                    }
+                  }
+
+                  console.log(`🎯 [Canvas] Final target element:`, targetEl);
+                }
+
+                if (!targetEl) {
+                  console.error(`❌ [Canvas] Target not found: ${target}`);
+                  return;
+                }
+
+                switch (action) {
+                  case 'scroll-to':
+                    const offset = parseFloat(options?.offset || '0');
+                    const rect = targetEl.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    window.scrollTo({ top: rect.top + scrollTop + offset, behavior: 'smooth' });
+                    console.log('✅ [Canvas] Scrolled to target');
+                    break;
+                  case 'toggle-class':
+                    targetEl.classList.toggle(options?.class || 'active');
+                    break;
+                  case 'add-class':
+                    targetEl.classList.add(options?.class || 'active');
+                    break;
+                  case 'remove-class':
+                    targetEl.classList.remove(options?.class || 'active');
+                    break;
+                  case 'show':
+                    targetEl.style.display = 'block';
+                    break;
+                  case 'hide':
+                    targetEl.style.display = 'none';
+                    break;
+                  case 'toggle':
+                    const isHidden = getComputedStyle(targetEl).display === 'none';
+                    targetEl.style.display = isHidden ? 'block' : 'none';
+                    break;
+                  case 'redirect':
+                    if (options?.newTab) {
+                      window.open(options?.url || '#', '_blank');
+                    } else {
+                      window.location.href = options?.url || '#';
+                    }
+                    break;
+                }
+              };
+
+              const eventType = event === 'hover' ? 'mouseenter' : (event || 'click');
+              if ((el as any)._interactionHandler) {
+                el.removeEventListener(eventType, (el as any)._interactionHandler);
+              }
+              (el as any)._interactionHandler = handler;
+              el.addEventListener(eventType, handler);
+              console.log(`✅ [Canvas] ${eventType} listener attached!`);
+            }
+          } catch (error) {
+            console.error('❌ [Canvas] Error:', error);
+          }
+
+        } else if (type === "remove") {
+          // Remove the interaction by clearing the attribute and script
+          component.removeAttributes('data-interaction');
+          component.set({ script: '' });
+
+          console.log(`✅ Removed interaction`);
         }
 
         // Update the editor to reflect changes

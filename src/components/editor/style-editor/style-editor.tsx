@@ -28,7 +28,7 @@ import {
   Underline,
 } from "lucide-react";
 import { StyleState } from "../../../../types/editor";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import GlobalStylesSection from "./GlobalStyle";
 
 import { useEditorContext } from "../EditorContext";
@@ -110,7 +110,7 @@ function TypographySection({ styles, onStyleChange, elementStyles, rootStyles }:
       <FontSizeControl styles={styles}
         onStyleChange={onStyleChange}
         elementStyles={elementStyles}
-     
+
       />
       <FontWeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
       <LineHeightControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} />
@@ -127,12 +127,15 @@ function TypographySection({ styles, onStyleChange, elementStyles, rootStyles }:
   );
 }
 
-function SpacingSection({ styles, onStyleChange }: SectionProps) {
+function SpacingSection({ styles, onStyleChange, elementStyles, rootStyles }: SectionProps) {
+
+  console.log("elementStyles", elementStyles);
+  console.log("rootStyles", rootStyles);
   return (
     <div className="space-y-3">
-      <BorderRadiusControl styles={styles} onStyleChange={onStyleChange} />
-      <PaddingControl styles={styles} onStyleChange={onStyleChange} />
-      <MarginControl styles={styles} onStyleChange={onStyleChange} />
+      <BorderRadiusControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} rootStyles={rootStyles} />
+      <PaddingControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} rootStyles={rootStyles} />
+      <MarginControl styles={styles} onStyleChange={onStyleChange} elementStyles={elementStyles} rootStyles={rootStyles} />
     </div>
   );
 }
@@ -696,77 +699,161 @@ function BorderRadiusControl({ styles, onStyleChange }: SectionProps) {
   );
 }
 
-function PaddingControl({ styles, onStyleChange }: SectionProps) {
+function PaddingControl({ styles, onStyleChange, elementStyles, rootStyles }: SectionProps) {
+  const [padding, setPadding] = useState({
+    top: "",
+    right: "",
+    bottom: "",
+    left: ""
+  });
+
+  // Sync local state with elementStyles in a single update
+  useEffect(() => {
+    setPadding({
+      top: elementStyles["padding-top"]?.replace(/px$/, '') || "",
+      right: elementStyles["padding-right"]?.replace(/px$/, '') || "",
+      bottom: elementStyles["padding-bottom"]?.replace(/px$/, '') || "",
+      left: elementStyles["padding-left"]?.replace(/px$/, '') || ""
+    });
+  }, [elementStyles]);
+
+  const handlePaddingChange = (side: string, value: string) => {
+    // Update local state immediately for responsive UI
+    setPadding(prev => ({ ...prev, [side]: value }));
+    // Apply style change to the element
+    onStyleChange(`padding-${side}`, value ? `${value}px` : "0px");
+  };
+
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Padding</Label>
 
-      <div className="flex items-center gap-2">
-        <Input
-          value={styles.spacing.padding || "0px"}
-          onChange={(e) => onStyleChange("padding", e.target.value)}
-          className={UI.input}
-        />
-        <div className={"w-16 text-xs text-right " + UI.subtleText}>
-          {styles.spacing.padding || "0px"}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Top */}
+        <div>
+          <Label className={UI.microLabel}>Top</Label>
+          <Input
+            value={padding.top}
+            onChange={(e) => handlePaddingChange("top", e.target.value)}
+            className={UI.input}
+            type="number"
+            min="0"
+          />
         </div>
-      </div>
 
-      <div className="grid grid-cols-4 gap-1 mt-2">
-        {[
-          ["None", "0px"],
-          ["XS", "4px"],
-          ["SM", "8px"],
-          ["MD", "16px"],
-        ].map(([label, value]) => (
-          <Button
-            key={label}
-            variant="outline"
-            size="sm"
-            className="h-7 text-xs bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800"
-            onClick={() => onStyleChange("padding", value)}
-          >
-            {label}
-          </Button>
-        ))}
+        {/* Right */}
+        <div>
+          <Label className={UI.microLabel}>Right</Label>
+          <Input
+            value={padding.right}
+            onChange={(e) => handlePaddingChange("right", e.target.value)}
+            className={UI.input}
+            type="number"
+            min="0"
+          />
+        </div>
+
+        {/* Bottom */}
+        <div>
+          <Label className={UI.microLabel}>Bottom</Label>
+          <Input
+            value={padding.bottom}
+            onChange={(e) => handlePaddingChange("bottom", e.target.value)}
+            className={UI.input}
+            type="number"
+            min="0"
+          />
+        </div>
+
+        {/* Left */}
+        <div>
+          <Label className={UI.microLabel}>Left</Label>
+          <Input
+            value={padding.left}
+            onChange={(e) => handlePaddingChange("left", e.target.value)}
+            className={UI.input}
+            type="number"
+            min="0"
+          />
+        </div>
       </div>
     </div>
   );
 }
 
-function MarginControl({ styles, onStyleChange }: SectionProps) {
+function MarginControl({ styles, onStyleChange, elementStyles, rootStyles }: SectionProps) {
+  const [margin, setMargin] = useState({
+    top: "",
+    right: "",
+    bottom: "",
+    left: ""
+  });
+
+  // Sync local state with elementStyles in a single update
+  useEffect(() => {
+    setMargin({
+      top: elementStyles["margin-top"]?.replace(/px$/, '') || "",
+      right: elementStyles["margin-right"]?.replace(/px$/, '') || "",
+      bottom: elementStyles["margin-bottom"]?.replace(/px$/, '') || "",
+      left: elementStyles["margin-left"]?.replace(/px$/, '') || ""
+    });
+  }, [elementStyles]);
+
+  const handleMarginChange = (side: string, value: string) => {
+    // Update local state immediately for responsive UI
+    setMargin(prev => ({ ...prev, [side]: value }));
+    // Apply style change to the element
+    onStyleChange(`margin-${side}`, value ? `${value}px` : "0px");
+  };
+
   return (
     <div className="space-y-1.5">
       <Label className={UI.label}>Margin</Label>
 
-      <div className="flex items-center gap-2">
-        <Input
-          value={styles.spacing.margin || "0px"}
-          onChange={(e) => onStyleChange("margin", e.target.value)}
-          className={UI.input}
-        />
-        <div className={"w-16 text-xs text-right " + UI.subtleText}>
-          {styles.spacing.margin || "0px"}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Top */}
+        <div>
+          <Label className={UI.microLabel}>Top</Label>
+          <Input
+            value={margin.top}
+            onChange={(e) => handleMarginChange("top", e.target.value)}
+            className={UI.input}
+            type="number"
+          />
         </div>
-      </div>
 
-      <div className="grid grid-cols-4 gap-1 mt-2">
-        {[
-          ["None", "0px"],
-          ["XS", "4px"],
-          ["SM", "8px"],
-          ["MD", "16px"],
-        ].map(([label, value]) => (
-          <Button
-            key={label}
-            variant="outline"
-            size="sm"
-            className="h-7 text-xs bg-white border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800"
-            onClick={() => onStyleChange("margin", value)}
-          >
-            {label}
-          </Button>
-        ))}
+        {/* Right */}
+        <div>
+          <Label className={UI.microLabel}>Right</Label>
+          <Input
+            value={margin.right}
+            onChange={(e) => handleMarginChange("right", e.target.value)}
+            className={UI.input}
+            type="number"
+          />
+        </div>
+
+        {/* Bottom */}
+        <div>
+          <Label className={UI.microLabel}>Bottom</Label>
+          <Input
+            value={margin.bottom}
+            onChange={(e) => handleMarginChange("bottom", e.target.value)}
+            className={UI.input}
+            type="number"
+          />
+        </div>
+
+        {/* Left */}
+        <div>
+          <Label className={UI.microLabel}>Left</Label>
+          <Input
+            value={margin.left}
+            onChange={(e) => handleMarginChange("left", e.target.value)}
+            className={UI.input}
+            type="number"
+          />
+        </div>
       </div>
     </div>
   );
@@ -1063,8 +1150,9 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
               <TypographySection
                 elementStyles={elementStyles}
                 rootStyles={rootStyles}
-    
-                styles={styles} onStyleChange={onStyleChange} />
+
+                styles={styles}
+                onStyleChange={onStyleChange} />
             </AccordionContent>
           </AccordionItem>
         )}
@@ -1072,7 +1160,11 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
         <AccordionItem value="spacing" className={UI.accordionItem}>
           <AccordionTrigger className={UI.sectionTitle}>Spacing</AccordionTrigger>
           <AccordionContent>
-            <SpacingSection styles={styles} onStyleChange={onStyleChange} />
+            <SpacingSection
+              elementStyles={elementStyles}
+              rootStyles={rootStyles}
+              styles={styles}
+              onStyleChange={onStyleChange} />
           </AccordionContent>
         </AccordionItem>
 
