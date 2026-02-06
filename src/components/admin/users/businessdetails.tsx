@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { LanguageSelector } from "./languageSupport";
 import { IUser } from "@/models/user";
 import { IBusiness } from "@/models/business";
+import BusinessTypeRadioList from "./BusinessType";
 
 const SERVICE_OPTIONS = [
   {
@@ -49,12 +50,17 @@ const SERVICE_OPTIONS = [
 ];
 
 interface Props {
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleInputChange: (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
   formData: any;
   showPassword: boolean;
   setShowPassword: (value: boolean) => void;
   user?: IUser;
   agencies?: IBusiness[];
+  businessType?: any[];
 }
 
 export const Businessdetails = ({
@@ -63,11 +69,11 @@ export const Businessdetails = ({
   showPassword,
   setShowPassword,
   user,
-  agencies
+  agencies,
+  businessType,
 }: Props) => {
   const path = usePathname();
 
-  console.log(agencies);
   useEffect(() => {
     (async () => {
       const req = await fetch("/api/websites");
@@ -204,11 +210,11 @@ export const Businessdetails = ({
                       <CircleDotDashed className="text-orange-500" size={16} />
                     ),
                   }[
-                  checked === true
-                    ? "true"
-                    : checked === false
-                      ? "false"
-                      : "pending"
+                    checked === true
+                      ? "true"
+                      : checked === false
+                        ? "false"
+                        : "pending"
                   ]
                 }
               </label>
@@ -229,7 +235,7 @@ export const Businessdetails = ({
                     type="button"
                     onClick={() =>
                       handleCheck(
-                        formatBrandSlug(formData?.businessdetails?.brand_name)
+                        formatBrandSlug(formData?.businessdetails?.brand_name),
                       )
                     }
                     className="px-4 py-3.5 bg-primary text-white text-sm font-semibold hover:bg-primary transition-all"
@@ -271,9 +277,19 @@ export const Businessdetails = ({
             <IndustryRadioList
               formData={formData}
               handleInputChange={handleInputChange}
-            // industries={yourDynamicIndustryArray} // optional (if you have API data)
+              // industries={yourDynamicIndustryArray} // optional (if you have API data)
             />
           </div>
+
+          {formData.businessdetails.industry && (
+            <div className="md:col-span-2">
+              <BusinessTypeRadioList
+                formData={formData}
+                handleInputChange={handleInputChange}
+                businessType={businessType!}
+              />
+            </div>
+          )}
         </div>
 
         <hr className="col-span-2 mt-8" />
@@ -460,11 +476,12 @@ export const Businessdetails = ({
               Select an agency
             </option>
 
-            {agencies && agencies.map((agency: any) => (
-              <option key={agency?._id} value={agency?._id}>
-                {agency?.name}
-              </option>
-            ))}
+            {agencies &&
+              agencies.map((agency: any) => (
+                <option key={agency?._id} value={agency?._id}>
+                  {agency?.name}
+                </option>
+              ))}
           </select>
         </div>
       )}

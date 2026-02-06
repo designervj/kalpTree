@@ -1,7 +1,7 @@
 import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 
-const COLLECTION = "product_type_categories";
+const COLLECTION = "industry_type";
 
 export type ProductTypeCategory = {
   _id?: ObjectId;

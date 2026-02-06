@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Hotel",
+    "slug": "hotel",
+    "createdAt": { "$date": "2026-01-27T11:45:13.582Z" },
+    "updatedAt": { "$date": "2026-01-27T11:45:13.582Z" }
+  },
+  {
+    "name": "Residential",
+    "slug": "residential",
+    "createdAt": { "$date": "2026-01-27T11:50:00.000Z" },
+    "updatedAt": { "$date": "2026-01-27T11:50:00.000Z" }
+  },
+  {
+    "name": "Office",
+    "slug": "office",
+    "createdAt": { "$date": "2026-01-27T11:55:00.000Z" },
+    "updatedAt": { "$date": "2026-01-27T11:55:00.000Z" }
+  },
+  {
+    "name": "Commercial",
+    "slug": "commercial",
+    "createdAt": { "$date": "2026-01-27T12:00:00.000Z" },
+    "updatedAt": { "$date": "2026-01-27T12:00:00.000Z" }
+  }
+]

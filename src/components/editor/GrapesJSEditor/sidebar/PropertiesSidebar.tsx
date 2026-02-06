@@ -22,29 +22,13 @@ import {
   Sparkles,
 } from "lucide-react";
 
-
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs"
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { InteractivityEditor } from "../../interactivity/interactivity-editor";
 import { StyleEditor } from "../../style-editor/style-editor";
 import { AttributesEditor } from "../../attributes-editor/attributes-editor";
 import Pages from "../../pages-builder/pages";
 import SeobuilderPage from "../../Seobuilder/SeobuilderPage";
-
 
 import StorePage from "../../storeBuilder/StorePage";
 import AiToolsPage from "../../aitools/AiToolsPage";
@@ -81,6 +65,7 @@ type TabKey =
   | "seo"
   | "more"
   | "layer"
+  | "productgallery";
 
 const TAB_TITLES: Record<TabKey, string> = {
   style: "Styles & Attributes ",
@@ -95,10 +80,12 @@ const TAB_TITLES: Record<TabKey, string> = {
   ai: "AI Tools",
   store: "Store",
   seo: "SEO",
+  productgallery: "Products",
   more: "More",
 };
 
 import { useEditorContext } from "../../EditorContext";
+import ProductGalleryPage from "../../productgallery/ProductGalleryPage";
 
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
@@ -113,9 +100,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   const [tab, setTab] = React.useState<TabKey>("style");
 
   // ✅ Hooks must be called BEFORE any early returns
-  const {
-    editForm
-  } = useEditorContext();
+  const { editForm } = useEditorContext();
 
   // open forms page
   useEffect(() => {
@@ -129,7 +114,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   if (!showSidebar) return null;
   const renderEmptySelectionMessage = (
     icon: "Box" | "MousePointer",
-    type: string
+    type: string,
   ) => {
     const Icon = icon === "MousePointer" ? MousePointer : Box;
 
@@ -190,16 +175,16 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             <TabsContent value="overview">
               <StyleEditor
                 selectedElement={selectedElement}
-               styles={styles} onStyleChange={onStyleChange} />
+                styles={styles}
+                onStyleChange={onStyleChange}
+              />
             </TabsContent>
 
             <TabsContent value="analytics">
-
               <AttributesEditor
                 selectedElement={selectedElement}
                 onAttributeChange={onAttributeChange}
               />
-
             </TabsContent>
             <TabsContent value="reports">
               {/* <Card>
@@ -228,7 +213,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           />
       </TabsContent> */}
           </Tabs>
-
         );
 
       // case "setup":
@@ -251,28 +235,21 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //   );
 
       case "layer":
-
-        return (
-          <PageLayer
-          />
-        );
+        return <PageLayer />;
 
       case "forms":
         return <FormsPage />;
 
-
-
       case "pages":
-        return <Pages
-          setOpen={setOpen}
-          open={open}
-          openSeoModal={handleOpenSeoModal}
-        />
-
+        return (
+          <Pages
+            setOpen={setOpen}
+            open={open}
+            openSeoModal={handleOpenSeoModal}
+          />
+        );
 
       // ✅ HERE: show the Pages component when Pages tab is selected
-
-
 
       // case "ai":
       //   return renderPlaceholder(
@@ -281,7 +258,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     </span>,
       //     "Add AI-powered actions (rewrite, generate sections, optimize layout, etc.)."
       //   );
-
 
       case "ai":
         return <AiToolsPage />;
@@ -306,19 +282,16 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //   );
 
       case "seo":
-        return renderPlaceholder(
-          <SeobuilderPage />
-        );
+        return renderPlaceholder(<SeobuilderPage />);
 
       case "seo":
-        return renderPlaceholder(
-          <SeobuilderPage />
-        );
+        return renderPlaceholder(<SeobuilderPage />);
 
       case "more":
-        return renderPlaceholder(
-          <AllBuilderPage />
-        );
+        return renderPlaceholder(<AllBuilderPage />);
+
+      case "productgallery":
+        return <ProductGalleryPage />;
 
       // case "more":
       //   return renderPlaceholder(
@@ -373,7 +346,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
           <div className="my-1 w-8 h-px bg-slate-200 dark:bg-slate-800/70" />
 
-
           <IconTab
             active={tab === "pages"}
             label="Pages"
@@ -387,7 +359,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             onClick={() => setTab("forms")}
             icon={<GoNote className="w-5 h-5" />}
           />
-
 
           {/* <IconTab
             active={tab === "styles"}
@@ -413,6 +384,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             label="SEO"
             onClick={() => setTab("seo")}
             icon={<Search className="w-5 h-5" />}
+          />
+          <IconTab
+            active={tab === "productgallery"}
+            label="Product Gallery"
+            onClick={() => setTab("productgallery")}
+            icon={<LayoutGrid className="w-5 h-5" />}
           />
           <IconTab
             active={tab === "more"}

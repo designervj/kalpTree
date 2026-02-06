@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GoArrowDown, GoArrowUp } from "react-icons/go";
 import {
@@ -14,10 +14,12 @@ import {
   Briefcase,
   LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 
 type IndustryOption = {
+  _id: string;
   value: string;
-  title: string;
+  name: string;
   desc?: string;
   icon?: LucideIcon; // ✅ icon support
 };
@@ -25,11 +27,9 @@ type IndustryOption = {
 export default function IndustryRadioList({
   formData,
   handleInputChange,
-  industries: industriesProp,
 }: {
   formData: any;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  industries?: IndustryOption[];
 }) {
   // ✅ default icons mapping (if icon not provided)
   const ICON_MAP: Record<string, LucideIcon> = useMemo(
@@ -45,78 +45,104 @@ export default function IndustryRadioList({
       Marketing: Megaphone,
       Consulting: Briefcase,
     }),
-    []
+    [],
   );
 
-  const DEFAULT_INDUSTRIES: IndustryOption[] = useMemo(
-    () => [
-      {
-        value: "Architecture",
-        title: "Architecture",
-        desc: "Design and construction services",
-        icon: Landmark,
-      },
-      {
-        value: "Interior Design",
-        title: "Interior Design",
-        desc: "Interior space planning and decoration",
-        icon: Sofa,
-      },
-      {
-        value: "Real Estate",
-        title: "Real Estate",
-        desc: "Property sales and management",
-        icon: Home,
-      },
-      {
-        value: "Technology",
-        title: "Technology",
-        desc: "Software and tech solutions",
-        icon: Cpu,
-      },
-      {
-        value: "Construction",
-        title: "Construction",
-        desc: "Builders and contractors",
-        icon: HardHat,
-      },
-      {
-        value: "Home Improvement",
-        title: "Home Improvement",
-        desc: "Renovation and remodeling services",
-        icon: Hammer,
-      },
-      {
-        value: "Manufacturing",
-        title: "Manufacturing",
-        desc: "Production and industrial services",
-        icon: Factory,
-      },
-      { value: "Retail", title: "Retail", desc: "Stores and online commerce", icon: ShoppingBag },
-      {
-        value: "Marketing",
-        title: "Marketing",
-        desc: "Branding and growth services",
-        icon: Megaphone,
-      },
-      {
-        value: "Consulting",
-        title: "Consulting",
-        desc: "Strategy and advisory services",
-        icon: Briefcase,
-      },
-    ],
-    []
+  const [defaultIndustries, setDefaultIndustries] = useState<IndustryOption[]>(
+    [],
   );
 
-  const industries = industriesProp?.length ? industriesProp : DEFAULT_INDUSTRIES;
+  useEffect(() => {
+    (async () => {
+      try {
+        const req = await fetch("/api/admin/producttypecategory");
+        const res = await req.json();
+
+        if (res) {
+          setDefaultIndustries(res.items);
+        } else {
+          setDefaultIndustries([]);
+        }
+      } catch (error) {
+        toast.error(String(error));
+      }
+    })();
+  }, []);
+
+  // const DEFAULT_INDUSTRIES: IndustryOption[] = useMemo(
+  //   () => [
+  //     {
+  //       value: "Architecture",
+  //       title: "Architecture",
+  //       desc: "Design and construction services",
+  //       icon: Landmark,
+  //     },
+  //     {
+  //       value: "Interior Design",
+  //       title: "Interior Design",
+  //       desc: "Interior space planning and decoration",
+  //       icon: Sofa,
+  //     },
+  //     {
+  //       value: "Real Estate",
+  //       title: "Real Estate",
+  //       desc: "Property sales and management",
+  //       icon: Home,
+  //     },
+  //     {
+  //       value: "Technology",
+  //       title: "Technology",
+  //       desc: "Software and tech solutions",
+  //       icon: Cpu,
+  //     },
+  //     {
+  //       value: "Construction",
+  //       title: "Construction",
+  //       desc: "Builders and contractors",
+  //       icon: HardHat,
+  //     },
+  //     {
+  //       value: "Home Improvement",
+  //       title: "Home Improvement",
+  //       desc: "Renovation and remodeling services",
+  //       icon: Hammer,
+  //     },
+  //     {
+  //       value: "Manufacturing",
+  //       title: "Manufacturing",
+  //       desc: "Production and industrial services",
+  //       icon: Factory,
+  //     },
+  //     {
+  //       value: "Retail",
+  //       title: "Retail",
+  //       desc: "Stores and online commerce",
+  //       icon: ShoppingBag,
+  //     },
+  //     {
+  //       value: "Marketing",
+  //       title: "Marketing",
+  //       desc: "Branding and growth services",
+  //       icon: Megaphone,
+  //     },
+  //     {
+  //       value: "Consulting",
+  //       title: "Consulting",
+  //       desc: "Strategy and advisory services",
+  //       icon: Briefcase,
+  //     },
+  //   ],
+  //   [],
+  // );
 
   const MAX_VISIBLE = 6;
   const [showAll, setShowAll] = useState(false);
 
   const selected = formData?.businessdetails?.industry ?? "";
-  const visibleIndustries = showAll ? industries : industries.slice(0, MAX_VISIBLE);
-  const canToggle = industries.length > MAX_VISIBLE;
+  const visibleIndustries = showAll
+    ? defaultIndustries
+    : defaultIndustries.slice(0, MAX_VISIBLE);
+  const canToggle = defaultIndustries.length > MAX_VISIBLE;
 
   return (
     <div className="space-y-3">
@@ -129,7 +155,9 @@ export default function IndustryRadioList({
             onClick={() => setShowAll((v) => !v)}
             className="text-sm font-semibold text-blue-600 hover:text-blue-800"
           >
-            {showAll ? "VIEW LESS" : `VIEW MORE (${industries.length - MAX_VISIBLE})`}
+            {showAll
+              ? "VIEW LESS"
+              : `VIEW MORE (${defaultIndustries.length - MAX_VISIBLE})`}
           </button>
         )}
       </div>
@@ -137,10 +165,10 @@ export default function IndustryRadioList({
       {/* ✅ Bubble grid: 3 per row */}
       <div className="grid grid-cols-3 gap-3">
         {visibleIndustries.map((opt, idx) => {
-          const checked = selected === opt.value;
+          const checked = selected === opt._id;
           const id = `industry_${idx}_${opt.value.replace(/\s+/g, "_")}`;
 
-          const Icon = opt.icon || ICON_MAP[opt.title] || Briefcase;
+          const Icon = ICON_MAP[opt.name] || Briefcase;
 
           return (
             <label
@@ -159,7 +187,7 @@ export default function IndustryRadioList({
                 id={id}
                 type="radio"
                 name="businessdetails.industry"
-                value={opt.value}
+                value={opt._id}
                 checked={checked}
                 onChange={handleInputChange}
                 className="sr-only"
@@ -173,13 +201,27 @@ export default function IndustryRadioList({
                     checked ? "bg-white/15" : "bg-blue-50",
                   ].join(" ")}
                 >
-                  <Icon className={checked ? "h-5 w-5 text-blue-600" : "h-5 w-5 text-blue-600"} />
+                  <Icon
+                    className={
+                      checked
+                        ? "h-5 w-5 text-blue-600"
+                        : "h-5 w-5 text-blue-600"
+                    }
+                  />
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold truncate">{opt.title}</div>
+                  <div className="text-sm font-semibold truncate">
+                    {opt.name}
+                  </div>
                   {opt.desc ? (
-                    <div className={checked ? "text-[11px] text-gray-500" : "text-[11px] text-gray-500"}>
+                    <div
+                      className={
+                        checked
+                          ? "text-[11px] text-gray-500"
+                          : "text-[11px] text-gray-500"
+                      }
+                    >
                       {opt.desc}
                     </div>
                   ) : null}
@@ -200,7 +242,11 @@ export default function IndustryRadioList({
       {/* Bottom View more / less button */}
       <div className="flex justify-center pt-2">
         {canToggle && (
-          <Button type="button" variant="outline" onClick={() => setShowAll((v) => !v)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowAll((v) => !v)}
+          >
             {showAll ? (
               <span className="inline-flex items-center gap-2">
                 <GoArrowUp className="h-4 w-4" />
@@ -209,7 +255,7 @@ export default function IndustryRadioList({
             ) : (
               <span className="inline-flex items-center gap-2">
                 <GoArrowDown className="h-4 w-4" />
-                {`View more (${industries.length - MAX_VISIBLE})`}
+                {`View more (${defaultIndustries.length - MAX_VISIBLE})`}
               </span>
             )}
           </Button>

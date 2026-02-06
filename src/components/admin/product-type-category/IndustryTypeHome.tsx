@@ -3,7 +3,7 @@
 import GetAllProductTypeCategory from "./listCategory/GetAllProductTypeCategory";
 import ListProductTypeCategory from "./listCategory/ListProductTypeCategory";
 
-const ProductTypeCategoryHome = () => {
+const IndustryTypeHome = () => {
   return (
     <>
       <GetAllProductTypeCategory />
@@ -12,4 +12,4 @@ const ProductTypeCategoryHome = () => {
   );
 };
 
-export default ProductTypeCategoryHome;
+export default IndustryTypeHome;

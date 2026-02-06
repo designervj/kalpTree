@@ -31,7 +31,7 @@ export const ProductCategoryTypeModal = ({
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Product Type Category</DialogTitle>
+          <DialogTitle>Add Industry Type</DialogTitle>
         </DialogHeader>
         {newCategory && (
           <div className="space-y-4">
@@ -49,7 +49,7 @@ export const ProductCategoryTypeModal = ({
                   <SelectValue placeholder="Select product type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {listProductType.map((pt:any) => (
+                  {listProductType.map((pt: any) => (
                     <SelectItem key={pt._id} value={pt._id!}>
                       {pt.name}
                     </SelectItem>
@@ -71,7 +71,7 @@ export const ProductCategoryTypeModal = ({
                 onChange={(e) =>
                   setNewCategory({ ...newCategory, name: e.target.value })
                 }
-                placeholder="Enter category name"
+                placeholder="Enter Industry name"
                 className={fieldErrors.name ? "border-red-500" : ""}
               />
               {fieldErrors.name && (
@@ -87,7 +87,7 @@ export const ProductCategoryTypeModal = ({
                 onChange={(e) =>
                   setNewCategory({ ...newCategory, slug: e.target.value })
                 }
-                placeholder="category-slug"
+                placeholder="industry-slug"
                 className={fieldErrors.slug ? "border-red-500" : ""}
               />
               {fieldErrors.slug && (

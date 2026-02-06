@@ -69,7 +69,7 @@ export default function AttributeSetForm({
     <div className="space-y-4">
       {/* Name Field */}
       <div>
-        <label className="block text-sm font-medium">Attribute Set Name</label>
+        <label className="block text-sm font-medium">Business Type Name</label>
         <input
           type="text"
           value={attributeSet.name || ""}
@@ -77,7 +77,7 @@ export default function AttributeSetForm({
             setAttributeSet({ ...attributeSet, name: e.target.value })
           }
           className="mt-1 block w-full rounded-md border p-2"
-          placeholder="Enter attribute set name"
+          placeholder="Enter Business Type Name"
         />
         {fieldErrors.name && (
           <div className="text-sm text-destructive mt-1">
@@ -88,7 +88,7 @@ export default function AttributeSetForm({
 
       {/* Category Field */}
       <div>
-        <label className="block text-sm font-medium">Category</label>
+        <label className="block text-sm font-medium">Industry Type</label>
         <select
           value={attributeSet.categoryId || ""}
           onChange={(e) =>
@@ -96,7 +96,7 @@ export default function AttributeSetForm({
           }
           className="mt-1 block w-full rounded-md border p-2"
         >
-          <option value="">Select a category</option>
+          <option value="">Select a Industry</option>
           {listProductTypeCategory &&
             listProductTypeCategory.map((cat: any) => (
               <option key={cat._id || cat.id} value={cat._id || cat.id}>

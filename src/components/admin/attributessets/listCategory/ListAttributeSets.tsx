@@ -18,7 +18,7 @@ import {
   removeAttributeSet,
 } from "@/hooks/slices/attributessets/attributeSetsSlice";
 import { toast } from "sonner";
-import { ProductSetModal } from "../../product/createproduct/ProductSetModal";
+import { BusinessTypeModal } from "../../product/createproduct/BusinessTypeModal";
 
 const ListAttributeSets = () => {
   const { listAttributeSets } = useSelector(
@@ -221,7 +221,7 @@ const ListAttributeSets = () => {
   return (
     <div>
       <DataTableExt
-        title="Attribute Sets"
+        title="Business Type"
         data={filteredAttributeSets ?? []}
         onCreate={handleAdd}
         initialColumns={initialColumns}
@@ -231,7 +231,7 @@ const ListAttributeSets = () => {
       />
 
       {/* Add Attribute Set Dialog */}
-      <ProductSetModal
+      <BusinessTypeModal
         isAddDialogOpen={isAddDialogOpen}
         setIsAddDialogOpen={setIsAddDialogOpen}
         newAttributeSet={newAttributeSet}

@@ -40,7 +40,7 @@ import { ProductTypeCategory } from "@/lib/material/product_type_category";
 import { ProductCategoryTypeModal } from "./ProductCategoryType";
 import { AttributeSet } from "../../attributessets/forms/AttributeSetsForm";
 import { addAttributeSet } from "@/hooks/slices/attributessets/attributeSetsSlice";
-import { ProductSetModal } from "./ProductSetModal";
+import { BusinessTypeModal } from "./BusinessTypeModal";
 
 export const RightColumn = ({
   formData,
@@ -411,7 +411,7 @@ export const RightColumn = ({
         setFieldErrors={setFieldErrors}
       />
 
-      <ProductSetModal
+      <BusinessTypeModal
         isAddDialogOpen={isAddDialogOpen == "attribute"}
         setIsAddDialogOpen={setIsAddDialogOpen}
         newAttributeSet={newAttributeSet}
@@ -461,7 +461,7 @@ export const RightColumn = ({
 
             <div className="space-y-2">
               <Label htmlFor="Product Category Type">
-                Product Category Type <span className="text-red-500">*</span>
+                Industry Type <span className="text-red-500">*</span>
               </Label>
 
               <Select
@@ -487,13 +487,13 @@ export const RightColumn = ({
                 </SelectContent>
               </Select>
               <Button onClick={handleProductTypeCategoryAdd}>
-                + Add Product Category
+                + Add Industry
               </Button>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="Product Category Type">
-                Product Sets<span className="text-red-500">*</span>
+                Business Type<span className="text-red-500">*</span>
               </Label>
 
               <Select
@@ -519,7 +519,7 @@ export const RightColumn = ({
                 </SelectContent>
               </Select>
 
-              <Button onClick={handleAttributeAdd}>+ Add Product Sets</Button>
+              <Button onClick={handleAttributeAdd}>+ Add Business Type</Button>
             </div>
 
             {/* Categories */}

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Furniture Set",
+    "slug": "furniture-set",
+    "product_type": "697886865a0c4ead4a35f0c6",
+    "icon": "",
+    "sort_order": 0,
+    "description": "Complete furniture sets for home and office",
+    "createdAt": { "$date": "2026-02-02T12:33:04.757Z" },
+    "updatedAt": { "$date": "2026-02-02T12:33:04.757Z" }
+  },
+  {
+    "name": "Sofas",
+    "slug": "sofas",
+    "product_type": "697886865a0c4ead4a35f0c6",
+    "icon": "",
+    "sort_order": 1,
+    "description": "Single, double and sectional sofas",
+    "createdAt": { "$date": "2026-02-02T12:40:00.000Z" },
+    "updatedAt": { "$date": "2026-02-02T12:40:00.000Z" }
+  },
+  {
+    "name": "Dining Sets",
+    "slug": "dining-sets",
+    "product_type": "697886865a0c4ead4a35f0c6",
+    "icon": "",
+    "sort_order": 2,
+    "description": "Dining table and chair combinations",
+    "createdAt": { "$date": "2026-02-02T12:45:00.000Z" },
+    "updatedAt": { "$date": "2026-02-02T12:45:00.000Z" }
+  },
+  {
+    "name": "Bedroom Sets",
+    "slug": "bedroom-sets",
+    "product_type": "697886865a0c4ead4a35f0c6",
+    "icon": "",
+    "sort_order": 3,
+    "description": "Bed, wardrobe and side tables",
+    "createdAt": { "$date": "2026-02-02T12:50:00.000Z" },
+    "updatedAt": { "$date": "2026-02-02T12:50:00.000Z" }
+  }
+]

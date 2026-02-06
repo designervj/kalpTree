@@ -78,6 +78,7 @@ import {
   ScrollText,
   LayoutGridIcon,
   TypeIcon,
+  Factory,
 } from "lucide-react";
 
 import {
@@ -263,12 +264,12 @@ export const currentWebsiteSections: NavSection[] = [
         icon: PanelBottom,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      {
-        label: "Navigation",
-        href: "/admin/website/navigation",
-        icon: Compass,
-        permission: ["websites:update", "websites:read", "websites:delete"],
-      },
+      // {
+      //   label: "Navigation",
+      //   href: "/admin/website/navigation",
+      //   icon: Compass,
+      //   permission: ["websites:update", "websites:read", "websites:delete"],
+      // },
       {
         label: "Forms",
         href: "/admin/website/forms",
@@ -281,12 +282,12 @@ export const currentWebsiteSections: NavSection[] = [
         icon: ArrowLeftRight,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      {
-        label: "Domain Settings",
-        href: "/admin/website/domains",
-        icon: Globe2,
-        permission: ["websites:update", "websites:read", "websites:delete"],
-      },
+      // {
+      //   label: "Domain Settings",
+      //   href: "/admin/website/domains",
+      //   icon: Globe2,
+      //   permission: ["websites:update", "websites:read", "websites:delete"],
+      // },
     ],
   },
 
@@ -338,46 +339,15 @@ export const currentWebsiteSections: NavSection[] = [
     label: "Products",
     items: [
       {
+        label: "Product Type",
+        href: "/admin/product-type",
+        icon: TypeIcon,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
         label: "Products",
         href: "/admin/products",
         icon: Package,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Category",
-        href: "/admin/category",
-        icon: LayoutGrid,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Brand",
-        href: "/admin/brand",
-        icon: Award,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-
-      {
-        label: "Attribute",
-        href: "/admin/attribute",
-        icon: ListTree,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Styles",
-        href: "/admin/styles",
-        icon: Palette,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Tags",
-        href: "/admin/tags",
-        icon: Hash,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Attribute Sets",
-        href: "/admin/attributessets",
-        icon: Component,
         permission: ["product:read", "product:update", "product:delete"],
       },
       {
@@ -387,21 +357,53 @@ export const currentWebsiteSections: NavSection[] = [
         permission: ["product:read", "product:update", "product:delete"],
       },
       {
+        label: "Category",
+        href: "/admin/category",
+        icon: LayoutGrid,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      // {
+      //   label: "Brand",
+      //   href: "/admin/brand",
+      //   icon: Award,
+      //   permission: ["product:read", "product:update", "product:delete"],
+      // },
+      {
+        label: "Attribute",
+        href: "/admin/attribute",
+        icon: ListTree,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Business Type",
+        // href: "/admin/attributessets",
+        href: "/admin/businesstype",
+        icon: Component,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      // {
+      //   label: "Styles",
+      //   href: "/admin/styles",
+      //   icon: Palette,
+      //   permission: ["product:read", "product:update", "product:delete"],
+      // },
+      {
+        label: "Tags",
+        href: "/admin/tags",
+        icon: Hash,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Industry Type",
+        // href: "/admin/product-type-category",
+        href: "/admin/industry-type",
+        icon: Factory,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
         label: "Pricing Rules & Discount",
         href: "/admin/pricing-rules",
         icon: CircleDollarSign,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Product Type Category",
-        href: "/admin/product-type-category",
-        icon: LayoutGridIcon,
-        permission: ["product:read", "product:update", "product:delete"],
-      },
-      {
-        label: "Product Type",
-        href: "/admin/product-type",
-        icon: TypeIcon,
         permission: ["product:read", "product:update", "product:delete"],
       },
     ],
@@ -979,7 +981,6 @@ export function AppShell({
     resetRedux();
     router.push(`/admin`);
   };
-
 
   return (
     <>

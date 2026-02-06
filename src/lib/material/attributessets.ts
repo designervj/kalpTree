@@ -3,7 +3,7 @@ import { MaterialCategory } from "@/components/admin/category/types/CategoryMode
 import { getDatabase } from "@/lib/db/mongodb";
 import { ObjectId } from "mongodb";
 
-const COLLECTION = "product_attribute_sets";
+const COLLECTION = "business_type";
 
 const toObjectId = (id: string | ObjectId) =>
   typeof id === "string" ? new ObjectId(id) : id;

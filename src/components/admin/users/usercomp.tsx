@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   CheckCircle,
   XCircle,
@@ -35,8 +35,6 @@ export default function BusinessCreatePage({
   user?: IUser;
   agencies?: IBusiness[];
 }) {
-
-
   const path = usePathname();
   const router = useRouter();
   const isAgencyPath = path.includes("agencies");
@@ -51,7 +49,7 @@ export default function BusinessCreatePage({
   }, [user]);
 
   const [activeTab, setActiveTab] = useState(
-    isAgencyPath ? "agency" : "business"
+    isAgencyPath ? "agency" : "business",
   );
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,7 +86,6 @@ export default function BusinessCreatePage({
       headquarters: "",
       brand_name: "",
       lang: [],
-
     },
 
     branding: {
@@ -101,7 +98,6 @@ export default function BusinessCreatePage({
 
     createdById: safeUser?.id,
   }));
-
 
   React.useEffect(() => {
     setFormData((prev: any) => ({
@@ -199,7 +195,7 @@ export default function BusinessCreatePage({
           secondary_color: formData.branding.secondary_color,
           tertiary_color: formData.branding.tertiary_color,
           typography: formData.branding.typography,
-        })
+        }),
       );
 
       if (formData.branding.logo) {
@@ -213,10 +209,12 @@ export default function BusinessCreatePage({
 
       const result = await res.json();
 
-      if (result?.tenantId &&
+      if (
+        result?.tenantId &&
         result?.agency &&
         result?.business &&
-        result?.website) {
+        result?.website
+      ) {
         // dispatch add created agency
         dispatch(addCreatedAgency(result.agency));
 
@@ -248,14 +246,30 @@ export default function BusinessCreatePage({
 
   const tabs = isAgencyPath
     ? [
-      { id: "agency", label: "Agency Details", icon: User },
-      { id: "business", label: "Business Details", icon: Briefcase },
-      { id: "branding", label: "Branding", icon: Palette },
-    ]
+        { id: "agency", label: "Agency Details", icon: User },
+        { id: "business", label: "Business Details", icon: Briefcase },
+        { id: "branding", label: "Branding", icon: Palette },
+      ]
     : [
-      { id: "business", label: "Business Details", icon: Briefcase },
-      { id: "branding", label: "Branding", icon: Palette },
-    ];
+        { id: "business", label: "Business Details", icon: Briefcase },
+        { id: "branding", label: "Branding", icon: Palette },
+      ];
+
+  const [businessType, setBusinessType] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const req = await fetch("/api/admin/attributessets");
+        const res = await req.json();
+        if (res) {
+          setBusinessType(res.items);
+        }
+      } catch (error) {
+        toast.error(String(error));
+      }
+    })();
+  }, []);
 
   return (
     <div className="min-h-screen bg-transparent p-8">
@@ -279,10 +293,11 @@ export default function BusinessCreatePage({
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${activeTab === tab.id
-                      ? "text-primary"
-                      : "text-gray-500 hover:text-gray-700"
-                      }`}
+                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
+                      activeTab === tab.id
+                        ? "text-primary"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       <Icon className="w-5 h-5" />
@@ -300,10 +315,11 @@ export default function BusinessCreatePage({
           <div className="p-8">
             {message.text && (
               <div
-                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${message.type === "success"
-                  ? "bg-green-50 text-green-800 border border-green-200"
-                  : "bg-red-50 text-red-800 border border-red-200"
-                  }`}
+                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
+                  message.type === "success"
+                    ? "bg-green-50 text-green-800 border border-green-200"
+                    : "bg-red-50 text-red-800 border border-red-200"
+                }`}
               >
                 {message.type === "success" ? (
                   <CheckCircle className="w-5 h-5" />
@@ -332,6 +348,7 @@ export default function BusinessCreatePage({
                 setShowPassword={setShowPassword}
                 user={user}
                 agencies={agencies}
+                businessType={businessType}
               />
             )}
 

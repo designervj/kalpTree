@@ -5,19 +5,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import AttributeSetForm from "../../attributessets/forms/AttributeSetsForm";
 
-export const ProductSetModal = ({
+export const BusinessTypeModal = ({
   isAddDialogOpen,
   setIsAddDialogOpen,
   newAttributeSet,
@@ -30,7 +20,7 @@ export const ProductSetModal = ({
     <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Attribute Set</DialogTitle>
+          <DialogTitle>Add Business Type</DialogTitle>
         </DialogHeader>
         {newAttributeSet && (
           <div className="space-y-4">

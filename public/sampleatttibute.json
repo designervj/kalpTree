@@ -1,0 +1,56 @@
+[
+  {
+    "name": "Primary Material",
+    "slug": "primary-material",
+    "category_id": [{ "$oid": "64f1a2b3c4d5e6f7890abc14" }],
+    "possible_values": [
+      "Solid Wood",
+      "Engineered Wood",
+      "Metal",
+      "Upholstery",
+      "Glass",
+      "Plastic",
+      "Rattan"
+    ],
+    "createdAt": { "$date": "2026-02-03T12:00:00.000Z" },
+    "updatedAt": { "$date": "2026-02-03T12:00:00.000Z" }
+  },
+  {
+    "name": "Color",
+    "slug": "color",
+    "category_id": [{ "$oid": "64f1a2b3c4d5e6f7890abc14" }],
+    "possible_values": ["Brown", "Black", "White", "Grey", "Blue", "Green"],
+    "createdAt": { "$date": "2026-02-03T12:05:00.000Z" },
+    "updatedAt": { "$date": "2026-02-03T12:05:00.000Z" }
+  },
+  {
+    "name": "Finish",
+    "slug": "finish",
+    "category_id": [{ "$oid": "64f1a2b3c4d5e6f7890abc15" }],
+    "possible_values": ["Matte", "Glossy", "Semi-Gloss", "Natural"],
+    "createdAt": { "$date": "2026-02-03T12:10:00.000Z" },
+    "updatedAt": { "$date": "2026-02-03T12:10:00.000Z" }
+  },
+  {
+    "name": "Room Type",
+    "slug": "room-type",
+    "category_id": [{ "$oid": "64f1a2b3c4d5e6f7890abc16" }],
+    "possible_values": [
+      "Living Room",
+      "Bedroom",
+      "Dining Room",
+      "Office",
+      "Outdoor"
+    ],
+    "createdAt": { "$date": "2026-02-03T12:15:00.000Z" },
+    "updatedAt": { "$date": "2026-02-03T12:15:00.000Z" }
+  },
+  {
+    "name": "Weight Capacity",
+    "slug": "weight-capacity",
+    "category_id": [{ "$oid": "64f1a2b3c4d5e6f7890abc17" }],
+    "possible_values": ["50 kg", "100 kg", "150 kg", "200 kg"],
+    "createdAt": { "$date": "2026-02-03T12:20:00.000Z" },
+    "updatedAt": { "$date": "2026-02-03T12:20:00.000Z" }
+  }
+]
