@@ -11,19 +11,39 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { componentCategories } from "./Templatecategory";
 import { Button } from "@/components/ui/button";
+import { TemplateDocument } from "../TemplateType";
 
-type DemoKey = "All" | "Shop" | "Home" | "Products" | "Categories";
-const TemplateTopBar = () => {
+
+type Props = {
+  selectedTemplate: (value: TemplateDocument[]) => void
+}
+const TemplateTopBar = ({ selectedTemplate }: Props) => {
   const dispatch = useDispatch<AppDispatch>();
   const { allTemplate, currentTemplate, hasFetched, isLoading, error } =
     useSelector((state: RootState) => state.template);
 
   const [search, setSearch] = useState("");
-  const [demo, setDemo] = useState<DemoKey>("All");
+  const [demo, setDemo] = useState<string>("");
 
   // category dropdown (header list)
   const [category, setCategory] = useState<string>("hero");
   const [catOpen, setCatOpen] = useState(false);
+
+  const getUniqueCategories = () => {
+    const uniqueCategories = new Set(allTemplate.map((d) => d.category));
+    return ["all", ...Array.from(uniqueCategories)];
+  };
+
+
+  const onSubmit = (value: string) => {
+    if(value === "all"){
+      selectedTemplate(allTemplate)
+      return
+    }
+    const selected = allTemplate.filter((d) => d.category === value);
+
+    selectedTemplate(selected)
+  }
   return (
     <>
       {/* TOP BAR */}
@@ -48,21 +68,22 @@ const TemplateTopBar = () => {
             <select
               value={demo}
               onChange={(e) => {
-                setDemo(e.target.value as DemoKey);
+                onSubmit(e.target.value)
+                setDemo(e.target.value);
                 setCategory("ALL");
               }}
               className="h-9 w-[180px] rounded border border-gray-300 bg-white px-3 text-sm outline-none"
             >
-              {allTemplate.map((d) => (
-                <option key={d.category + d.id} value={d.category}>
-                  {d.category}
+              {getUniqueCategories().map((d) => (
+                <option key={d} value={d}>
+                  {d}
                 </option>
               ))}
             </select>
           </div>
 
           {/* CATEGORY DROPDOWN */}
-          <div className="relative">
+          {/* <div className="relative">
             <button
               onClick={() => setCatOpen((p) => !p)}
               className="h-9 w-[220px] rounded border border-gray-300 bg-white px-3 text-sm outline-none flex items-center justify-between"
@@ -91,17 +112,17 @@ const TemplateTopBar = () => {
                       {k.label}
                     </span>
                     <span className="text-xs text-gray-500 font-semibold">
-                      {/* {categoryCounts[k.id] ?? 0} */}
+                    
                     </span>
                   </button>
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Submit */}
           <Button
-          //onClick={onSubmit}
+          // onClick={onSubmit}
           // className="h-9 rounded bg-[#b18457] px-5 text-sm font-semibold text-white hover:opacity-90"
           >
             SUBMIT
@@ -120,7 +141,7 @@ const TemplateTopBar = () => {
           <div className="ml-auto flex items-center gap-2">
             <Button
               variant="outline"
-              // className="hidden md:inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+            // className="hidden md:inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
             >
               <SlidersHorizontal className="h-4 w-4" />
               FILTERS
