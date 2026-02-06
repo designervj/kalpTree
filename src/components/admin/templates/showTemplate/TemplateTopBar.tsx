@@ -13,6 +13,14 @@ import { componentCategories } from "./Templatecategory";
 import { Button } from "@/components/ui/button";
 import { TemplateDocument } from "../TemplateType";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 type Props = {
   selectedTemplate: (value: TemplateDocument[]) => void
@@ -36,7 +44,7 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
 
 
   const onSubmit = (value: string) => {
-    if(value === "all"){
+    if (value === "all") {
       selectedTemplate(allTemplate)
       return
     }
@@ -51,35 +59,43 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
         <div className="flex items-center gap-3 px-4 py-2">
           {/* Search */}
           <div className="relative w-[220px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
+           
+            <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search"
-              className="h-9 w-full rounded border border-gray-300 bg-white pl-9 pr-3 text-sm outline-none focus:border-gray-500"
+              // className="h-9 w-full rounded border border-gray-300 bg-white pl-9 pr-3 text-sm outline-none focus:border-gray-500"
             />
           </div>
 
           {/* Filter by Demos */}
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600 font-medium">
+            <span className="text-sm font-medium text-gray-600">
               Filter by Demos
             </span>
-            <select
+
+            <Select
               value={demo}
-              onChange={(e) => {
-                onSubmit(e.target.value)
-                setDemo(e.target.value);
+              onValueChange={(value) => {
+                onSubmit(value);
+                setDemo(value);
                 setCategory("ALL");
               }}
-              className="h-9 w-[180px] rounded border border-gray-300 bg-white px-3 text-sm outline-none"
             >
-              {getUniqueCategories().map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="h-9 w-[180px]">
+                <SelectValue placeholder="Select demo" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {getUniqueCategories()
+                  .filter((d): d is string => Boolean(d))
+                  .map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* CATEGORY DROPDOWN */}
@@ -121,35 +137,33 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
           </div> */}
 
           {/* Submit */}
-          <Button
-          // onClick={onSubmit}
-          // className="h-9 rounded bg-[#b18457] px-5 text-sm font-semibold text-white hover:opacity-90"
-          >
-            SUBMIT
-          </Button>
 
-          {/* Refresh Studio */}
-          <Button
-            //onClick={onRefreshStudio}
-            // variant="secondary"
-            className="h-9 rounded bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-950 inline-flex items-center gap-2"
-          >
-            <RefreshCcw className="h-4 w-4" />
-            REFRESH STUDIO
-          </Button>
 
-          <div className="ml-auto flex items-center gap-2">
-            <Button
+          {/* <div className="ml-auto flex items-center gap-2"> */}
+            {/* <Button
+            >
+              SUBMIT
+            </Button> */}
+
+            {/* Refresh Studio */}
+            {/* <Button
+              className="h-9 rounded bg-zinc-900 px-4 text-sm font-semibold text-white hover:bg-zinc-950 inline-flex items-center gap-2"
+            >
+              <RefreshCcw className="h-4 w-4" />
+              REFRESH STUDIO a
+            </Button> */}
+
+            {/* <Button
               variant="outline"
-            // className="hidden md:inline-flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-sm hover:bg-gray-50"
+          
             >
               <SlidersHorizontal className="h-4 w-4" />
               FILTERS
-            </Button>
-            <button className="h-9 w-9 grid place-items-center rounded border border-gray-300 hover:bg-gray-50">
+            </Button> */}
+            {/* <button className="h-9 w-9 grid place-items-center rounded border border-gray-300 hover:bg-gray-50">
               <X className="h-4 w-4 text-gray-600" />
-            </button>
-          </div>
+            </button> */}
+          {/* </div> */}
         </div>
       </div>
     </>

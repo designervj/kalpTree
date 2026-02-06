@@ -64,6 +64,9 @@ export default function BrandProfilePage() {
           <h1 className="text-2xl font-bold tracking-tight">Brand Profile</h1>
           <p className="text-muted-foreground">Manage your brand's core identity and contact information.</p>
         </div>
+
+        
+
         <Button onClick={handleSave} className="gap-2">
           <Save className="w-4 h-4" /> Save Changes
         </Button>
