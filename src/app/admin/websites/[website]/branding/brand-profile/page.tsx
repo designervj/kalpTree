@@ -32,6 +32,8 @@ import { UseDispatch, useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { updateBusinessBranding } from "@/hooks/slices/business/BusinessThunk";
 import { toast } from "sonner";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { BsBoxArrowUpRight } from "react-icons/bs";
 
 // Scaffold Data
 // const initialProfileData = {
@@ -149,6 +151,8 @@ export default function BrandProfilePage() {
     }
   };
 
+  const [show, setshow] = useState(false);
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-10">
       {/* Header */}
@@ -157,9 +161,26 @@ export default function BrandProfilePage() {
           <h1 className="text-2xl font-bold tracking-tight">Brand Profile</h1>
           <p className="text-muted-foreground">Manage your brand's core identity and contact information.</p>
         </div>
-        <Button onClick={handleSave} className="gap-2" disabled={isLoading}>
-          <Save className="w-4 h-4" /> {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
+
+       <div className="gap-2 flex">
+          <Button 
+          onClick={()=> setshow((prev) => !prev)} 
+            variant="outline"
+             className="gap-2 cursor-pointer py-3">
+
+      
+                  <BsBoxArrowUpRight className="w-3 h-3"/>
+
+     Brand Guidelines
+          
+
+
+          </Button>
+
+          <Button onClick={handleSave} className="gap-2 cursor-pointer" disabled={isLoading}>
+            <Save className="w-4 h-4" /> {isLoading ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
       </div>
 
       {/* Error Message */}
@@ -220,7 +241,7 @@ export default function BrandProfilePage() {
                 <Label htmlFor="founded">Founded Year 1</Label>
                 <Input
                   id="founded"
-              className="py-4"
+                  className="py-4"
                   value={formData.foundedYear}
                   onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
                 />
