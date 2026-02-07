@@ -962,8 +962,7 @@ export function useEditor(containerId: string) {
 
       // Initialize interactions if not already present
 
-      // Custom toolbar for Form component
-      console.log("component", component.get('type'))
+
 
       try {
         if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
@@ -1052,23 +1051,23 @@ export function useEditor(containerId: string) {
 
     // Script-related events
     editor.on("script:update", () => {
-      try {
-        if (editor && editor.getJs && typeof editor.getJs === 'function') {
-          const js = editor.getJs();
-          setState((prev) => ({
-            ...prev,
-            editorJs: js,
-          }));
-        }
-      } catch (error) {
-        console.error('Error handling script update:', error);
-      }
+      // try {
+      //   if (editor && editor.getJs && typeof editor.getJs === 'function') {
+      //     const js = editor.getJs() || "";
+      //     setState((prev) => ({
+      //       ...prev,
+      //       editorJs: js,
+      //     }));
+      //   }
+      // } catch (error) {
+      //   console.error('Error handling script update:', error);
+      // }
     });
 
     editor.on("script:add", () => {
       try {
         if (editor && editor.getJs && typeof editor.getJs === 'function') {
-          const js = editor.getJs();
+          const js = editor.getJs() || "";
           setState((prev) => ({
             ...prev,
             editorJs: js,
@@ -1571,11 +1570,19 @@ export function useEditor(containerId: string) {
               }
             }
 
-            const id = scriptComp.getAttributes()?.id;
-            console.log(`Script content for ${id}: ${content ? content.substring(0, 50) + '...' : 'EMPTY'}`);
+            if (content) {
+              const trimmedContent = content.trim();
+              const id = scriptComp.getAttributes()?.id;
 
-            if (content && !js.includes(content)) {
-              js += `\n/* Interactivity Script: ${id || 'anonymous'} */\n${content}`;
+              // Only add if this specific script content isn't already in our accumulated js
+              // and it's not empty. This helps prevent duplication from components 
+              // that might be rendered twice or already include their scripts.
+              if (trimmedContent && !js.includes(trimmedContent)) {
+                console.log(`Adding script from component ${id || 'anonymous'}`);
+                js += `\n/* Interactivity Script: ${id || 'anonymous'} */\n${content}`;
+              } else {
+                console.log(`Skipping duplicate script from component ${id || 'anonymous'}`);
+              }
             }
           });
         } else {

@@ -68,10 +68,14 @@ export default function GrapesJSEditor() {
       .map((content: string) => {
         const trimmed = content.trim();
         if (!trimmed) return "";
+
+        // Remove comments at the beginning to accurately check for IIFE
+        const codeOnly = trimmed.replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "").trim();
+
         // Check if it already looks like an IIFE to prevent double-wrapping
         if (
-          trimmed.startsWith("(function()") ||
-          trimmed.startsWith("(function ()")
+          codeOnly.startsWith("(function") ||
+          codeOnly.startsWith("(async function")
         ) {
           return trimmed;
         }
@@ -205,7 +209,7 @@ export default function GrapesJSEditor() {
     const updateHandler = () => {
       const html = state.editor.getHtml();
 
-      // console.log("hfjhhfdhhfhfh----",html)
+      console.log("hfjhhfdhhfhfh----", html)
 
       setEditorHtml(html);
       //  dispatch({ type: "pageEdit/setContent", payload: html });
@@ -324,7 +328,7 @@ export default function GrapesJSEditor() {
       } else if (state.editor.StorageManager) {
         state.editor.StorageManager.store({ jsCode: "" });
       }
-
+      console.log("caling clear canvas")
       setEditorHtml("");
       setEditorCss("");
       setEditorJs("");
@@ -360,6 +364,7 @@ export default function GrapesJSEditor() {
   };
 
   const handleUpdateJs = (js: string) => {
+    console.log("update js");
     if (!state.editor?.setJs) return;
     state.editor.setJs(js);
     setEditorJs(js);
@@ -454,12 +459,15 @@ export default function GrapesJSEditor() {
 
     setEditorHtml(state.editor.getHtml());
     setEditorCss(state.editor.getCss());
-    setEditorJs(state.editor.getJs ? state.editor.getJs() : "");
+    const newJs = state.editor!.getJs ? state.editor!.getJs() || "" : "";
+    if (newJs) {
+      setEditorJs(newJs);
+    }
 
     state.editor.on("component:update", () => {
       setEditorHtml(state.editor!.getHtml());
       setEditorCss(state.editor!.getCss());
-      setEditorJs(state.editor!.getJs ? state.editor!.getJs() : "");
+      // setEditorJs(state.editor!.getJs ? state.editor!.getJs() || "" : "");
     });
 
     state.editor.on("component:selected", (component: any) => {
@@ -530,6 +538,9 @@ export default function GrapesJSEditor() {
 
   const [open, setOpen] = useState(false);
 
+
+
+  console.log("editorJs--->", editorJs)
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">

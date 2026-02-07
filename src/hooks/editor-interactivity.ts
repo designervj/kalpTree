@@ -32,11 +32,9 @@ export function handleInteractivityChange(
   ) {
     const SCRIPT_ID = "smooth-scroll-script";
 
-    // Add data-scroll attribute
+    // Add data-scroll-to attribute
     component.addAttributes({
-      "data-scroll": target,
-      "data-scroll-offset": options?.offset || "0",
-      "data-scroll-duration": options?.duration || "500",
+      "data-scroll-to": target,
     });
 
     // Inject script once
@@ -46,27 +44,37 @@ export function handleInteractivityChange(
         attributes: { id: SCRIPT_ID },
         content: `
           (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-scroll]");
-              if (!trigger) return;
+      function initScroll() {
+        var triggers = document.querySelectorAll('[data-scroll-to]');
 
-              e.preventDefault();
+        triggers.forEach(function (el) {
+          el.onclick = function () {
+            var targetId = el.getAttribute('data-scroll-to');
+            var targetEl = document.getElementById(targetId);
 
-              var selector = trigger.getAttribute("data-scroll");
-              var targetEl = document.querySelector(selector);
-              if (!targetEl) return;
+            if (!targetEl) return;
 
-              var offset = parseInt(trigger.getAttribute("data-scroll-offset") || "0");
-              var duration = parseInt(trigger.getAttribute("data-scroll-duration") || "500");
-              
-              var top = targetEl.getBoundingClientRect().top + window.pageYOffset - offset;
+            var offset = 80; // height of fixed navbar
+            var y =
+              targetEl.getBoundingClientRect().top +
+              window.pageYOffset -
+              offset;
 
-              window.scrollTo({
-                top: top,
-                behavior: "smooth"
-              });
+            window.scrollTo({
+              top: y,
+              behavior: 'smooth'
             });
-          })();
+          };
+        });
+      }
+
+      // Run immediately (important for GrapesJS)
+      initScroll();
+
+      // Re-run after GrapesJS renders components
+      setTimeout(initScroll, 500);
+      setTimeout(initScroll, 1500);
+    })();
         `,
         layerable: true,
       });
@@ -83,13 +91,13 @@ export function handleInteractivityChange(
   ) {
     const SCRIPT_ID = "smooth-scroll-script";
 
-    // Remove data-scroll attributes
-    component.removeAttributes("data-scroll");
+    // Remove data-scroll-to attributes
+    component.removeAttributes("data-scroll-to");
     component.removeAttributes("data-scroll-offset");
     component.removeAttributes("data-scroll-duration");
 
-    // Check if any element still uses data-scroll
-    const stillUsed = wrapper.find("[data-scroll]").length > 0;
+    // Check if any element still uses data-scroll-to
+    const stillUsed = wrapper.find("[data-scroll-to]").length > 0;
 
     // Remove script if unused
     if (!stillUsed) {
