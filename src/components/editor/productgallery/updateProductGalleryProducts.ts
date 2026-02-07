@@ -1,7 +1,48 @@
 // productGalleryPlugin.ts
 // This file contains the GrapesJS component definition for the product gallery
 
-import { Product, GalleryConfig } from "./ProductGalleryPage";
+import { Product } from "./ProductGalleryPage";
+
+interface GalleryAttrs {
+  "data-component"?: string;
+  "data-products"?: string;
+  "data-layout"?: string;
+  "data-columns"?: string;
+  "data-gap"?: string;
+  "data-show-badge"?: string;
+  "data-show-price"?: string;
+  "data-show-description"?: string;
+  "data-card-style"?: string;
+  "data-hover-effect"?: string;
+}
+
+interface ComponentModel {
+  getAttributes: () => GalleryAttrs;
+  addAttributes: (attrs: GalleryAttrs) => void;
+  get: (prop: string) => any;
+  on: (event: string, callback: () => void) => void;
+}
+
+interface ComponentView {
+  model: ComponentModel;
+  el: HTMLElement;
+  products: Product[];
+  getConfig: () => GalleryConfig;
+  getCardStyleClasses: () => string;
+  renderProducts: () => string;
+  render: () => ComponentView;
+}
+
+interface GalleryConfig {
+  layout: string;
+  columns: number;
+  gap: number;
+  showBadge: boolean;
+  showPrice: boolean;
+  showDescription: boolean;
+  cardStyle: string;
+  hoverEffect: string;
+}
 
 export const registerProductGalleryComponent = (editor: any) => {
   const domc = editor.DomComponents;
@@ -92,22 +133,23 @@ export const registerProductGalleryComponent = (editor: any) => {
         ],
       },
       init() {
+        const model = this as unknown as ComponentModel;
         const updateFromTraits = () => {
-          this.addAttributes({
-            "data-layout": this.get("layout") || "grid",
-            "data-columns": this.get("columns") || "3",
-            "data-gap": this.get("gap") || "20",
-            "data-show-badge": this.get("showBadge") ? "true" : "false",
-            "data-show-price": this.get("showPrice") ? "true" : "false",
-            "data-show-description": this.get("showDescription")
+          model.addAttributes({
+            "data-layout": model.get("layout") || "grid",
+            "data-columns": model.get("columns") || "3",
+            "data-gap": model.get("gap") || "20",
+            "data-show-badge": model.get("showBadge") ? "true" : "false",
+            "data-show-price": model.get("showPrice") ? "true" : "false",
+            "data-show-description": model.get("showDescription")
               ? "true"
               : "false",
-            "data-card-style": this.get("cardStyle") || "default",
-            "data-hover-effect": this.get("hoverEffect") || "lift",
+            "data-card-style": model.get("cardStyle") || "default",
+            "data-hover-effect": model.get("hoverEffect") || "lift",
           });
         };
 
-        this.on(
+        model.on(
           "change:layout change:columns change:gap change:showBadge change:showPrice change:showDescription change:cardStyle change:hoverEffect",
           updateFromTraits,
         );
@@ -115,24 +157,26 @@ export const registerProductGalleryComponent = (editor: any) => {
     },
     view: {
       init() {
+        const view = this as unknown as ComponentView;
         // Parse products from data attribute
-        this.products = [];
+        view.products = [];
         try {
-          const productsData = this.model.getAttributes()["data-products"];
+          const productsData = view.model.getAttributes()["data-products"];
           if (productsData) {
-            this.products = JSON.parse(productsData);
+            view.products = JSON.parse(productsData);
           }
         } catch (e) {
           console.error("Error parsing products:", e);
         }
       },
 
-      getConfig() {
-        const attrs = this.model.getAttributes();
+      getConfig(): GalleryConfig {
+        const view = this as unknown as ComponentView;
+        const attrs = view.model.getAttributes();
         return {
           layout: attrs["data-layout"] || "grid",
-          columns: parseInt(attrs["data-columns"]) || 3,
-          gap: parseInt(attrs["data-gap"]) || 20,
+          columns: parseInt(attrs["data-columns"] || "3"),
+          gap: parseInt(attrs["data-gap"] || "20"),
           showBadge: attrs["data-show-badge"] === "true",
           showPrice: attrs["data-show-price"] === "true",
           showDescription: attrs["data-show-description"] === "true",
@@ -141,11 +185,12 @@ export const registerProductGalleryComponent = (editor: any) => {
         };
       },
 
-      getCardStyleClasses() {
-        const config = this.getConfig();
+      getCardStyleClasses(): string {
+        const view = this as unknown as ComponentView;
+        const config = view.getConfig();
         const base = "product-card";
 
-        let classes = [base];
+        const classes = [base];
 
         if (config.cardStyle === "minimal") {
           classes.push("card-minimal");
@@ -164,10 +209,11 @@ export const registerProductGalleryComponent = (editor: any) => {
         return classes.join(" ");
       },
 
-      renderProducts() {
-        const config = this.getConfig();
+      renderProducts(): string {
+        const view = this as unknown as ComponentView;
+        const config = view.getConfig();
 
-        if (!this.products || this.products.length === 0) {
+        if (!view.products || view.products.length === 0) {
           return `
             <div style="padding: 40px; text-align: center; color: #94a3b8; border: 2px dashed #cbd5e0; border-radius: 8px;">
               <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin: 0 auto 12px;">
@@ -182,60 +228,55 @@ export const registerProductGalleryComponent = (editor: any) => {
         }
 
         return `
-          <div class="product-gallery" data-layout="${config.layout}" style="display: ${
-            config.layout === "grid"
-              ? "grid"
-              : config.layout === "carousel"
-                ? "flex"
-                : "block"
-          }; grid-template-columns: repeat(${config.columns}, 1fr); gap: ${config.gap}px; ${
-            config.layout === "carousel"
-              ? "overflow-x: auto; scroll-snap-type: x mandatory;"
-              : ""
+          <div class="product-gallery" data-layout="${config.layout}" style="display: ${config.layout === "grid"
+            ? "grid"
+            : config.layout === "carousel"
+              ? "flex"
+              : "block"
+          }; grid-template-columns: repeat(${config.columns}, 1fr); gap: ${config.gap}px; ${config.layout === "carousel"
+            ? "overflow-x: auto; scroll-snap-type: x mandatory;"
+            : ""
           } ${config.layout === "masonry" ? "column-count: " + config.columns + ";" : ""}">
-            ${this.products
-              .map(
-                (product: Product) => `
-              <div class="${this.getCardStyleClasses()}" ${
-                config.layout === "carousel"
+            ${view.products
+            .map(
+              (product: Product) => `
+              <div class="${view.getCardStyleClasses()}" ${config.layout === "carousel"
                   ? 'style="flex: 0 0 calc(33.333% - 14px); scroll-snap-align: start;"'
                   : ""
-              }>
+                }>
                 <div class="product-image-wrapper">
                   <img src="${product.image}" alt="${product.name}" class="product-image">
-                  ${
-                    config.showBadge && product.badge
-                      ? `<span class="product-badge">${product.badge}</span>`
-                      : ""
-                  }
+                  ${config.showBadge && product.badge
+                  ? `<span class="product-badge">${product.badge}</span>`
+                  : ""
+                }
                 </div>
                 <div class="product-content">
                   <h3 class="product-title">${product.name}</h3>
-                  ${
-                    config.showDescription && product.description
-                      ? `<p class="product-description">${product.description}</p>`
-                      : ""
-                  }
-                  ${
-                    config.showPrice
-                      ? `<p class="product-price">$${product.price}</p>`
-                      : ""
-                  }
+                  ${config.showDescription && product.description
+                  ? `<p class="product-description">${product.description}</p>`
+                  : ""
+                }
+                  ${config.showPrice
+                  ? `<p class="product-price">$${product.price}</p>`
+                  : ""
+                }
                 </div>
               </div>
             `,
-              )
-              .join("")}
+            )
+            .join("")}
           </div>
         `;
       },
 
-      render() {
-        const config = this.getConfig();
+      render(): ComponentView {
+        const view = this as unknown as ComponentView;
+        const config = view.getConfig();
 
-        this.el.innerHTML = `
+        view.el.innerHTML = `
           <div class="product-gallery-container" style="padding: 20px; background: #f8fafc;">
-            ${this.renderProducts()}
+            ${view.renderProducts()}
           </div>
           
           <style>
@@ -334,9 +375,8 @@ export const registerProductGalleryComponent = (editor: any) => {
               margin: 8px 0 0 0;
             }
             
-            ${
-              config.layout === "carousel"
-                ? `
+            ${config.layout === "carousel"
+            ? `
               .product-gallery::-webkit-scrollbar {
                 height: 8px;
               }
@@ -355,12 +395,12 @@ export const registerProductGalleryComponent = (editor: any) => {
                 background: #94a3b8;
               }
             `
-                : ""
-            }
+            : ""
+          }
           </style>
         `;
 
-        return this;
+        return view;
       },
     },
   });
@@ -401,7 +441,7 @@ export const updateProductGalleryProducts = (
       "data-products": JSON.stringify(products),
     });
     // Force re-render
-    const view = component.view;
+    const view = component.view as unknown as ComponentView;
     if (view) {
       view.products = products;
       view.render();
