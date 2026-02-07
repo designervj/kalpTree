@@ -45,6 +45,7 @@ interface Interaction {
   action: string;
   target?: string;
   options?: any;
+  componentId?: string;
 }
 
 // Main component
@@ -69,12 +70,12 @@ export function InteractivityEditor({
   }, [selectedElement]);
 
   const loadInteractionsFromElement = () => {
-    if (selectedElement) {
-      const elementInteractions = selectedElement.get("interactions") || [];
-      setInteractions(elementInteractions);
-    } else {
-      setInteractions([]);
-    }
+    // if (selectedElement) {
+    //   const elementInteractions = selectedElement.get("interactions") || [];
+    //   setInteractions(elementInteractions);
+    // } else {
+    //   setInteractions([]);
+    // }
   };
 
   const validateInteraction = () => {
@@ -105,6 +106,7 @@ export function InteractivityEditor({
       action: newAction,
       target: newTarget || undefined,
       options: newOptions,
+      componentId: selectedElement.cid || selectedElement.get("ccid") || selectedElement.get("id") || `component-${Date.now()}`,
     };
 
     console.log("newInteraction", newInteraction);
@@ -186,6 +188,8 @@ export function InteractivityEditor({
 
   if (!selectedElement) return <NoElementSelectedView />;
 
+  console.log("selectedElement", selectedElement.cid)
+  console.log("interactions", interactions)
   return (
     <div className="space-y-4">
       <EditorHeader />

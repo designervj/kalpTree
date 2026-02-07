@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
 import { updateHeader } from "./slices/header/HeaderThunk";
 import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
+import { handleInteractivityChange } from "@/hooks/editor-interactivity";
 import { defaultBlocks } from "../../utils/block-library";
 
 // Extend HTMLElement to include event handlers storage
@@ -1490,9 +1491,10 @@ export function useEditor(containerId: string) {
         return;
       }
 
-      // Safely get HTML and CSS with error handling
+      // Safely get HTML, CSS and JS with error handling
       let html = "";
       let css = "";
+      let js = "";
 
       try {
         html = editorRef.current.getHtml();
@@ -1510,12 +1512,88 @@ export function useEditor(containerId: string) {
         console.warn("Error getting CSS:", error);
       }
 
-      // Option A: store CSS inline with HTML
+      try {
+        // Get JS from internal GrapesJS logic
+        if (typeof editorRef.current.getJs === 'function') {
+          js = editorRef.current.getJs() || "";
+        }
+
+        console.log("Initial JS from getJs():", js);
+
+        const wrapper = editorRef.current.Components?.getWrapper() || (editorRef.current as any).getWrapper?.();
+
+        if (wrapper) {
+          console.log("Wrapper found, searching for scripts...");
+
+          const allFoundScripts: any[] = [];
+
+          const scanRecursive = (comp: any, depth = 0) => {
+            if (!comp) return;
+
+            const tagName = comp.get('tagName')?.toLowerCase();
+            const type = comp.get('type');
+            const attrs = comp.getAttributes();
+            const id = attrs?.id;
+
+            // Log direct children of the wrapper
+            if (depth === 0) {
+              const children = comp.get('components');
+              if (children && children.length) {
+                console.log(`Wrapper has ${children.length} direct children`);
+                children.forEach((c: any, i: number) => {
+                  console.log(`  Child ${i}: <${c.get('tagName')}> (id: ${c.getAttributes()?.id}, type: ${c.get('type')}, layerable: ${c.get('layerable')})`);
+                });
+              }
+            }
+
+            if (tagName === 'script' || type === 'script') {
+              console.log(`Found possible script: <${tagName}>, id: ${id}, type: ${type}`);
+              allFoundScripts.push(comp);
+            }
+
+            const children = comp.get('components');
+            if (children && children.forEach) {
+              children.forEach((child: any) => scanRecursive(child, depth + 1));
+            }
+          };
+
+          scanRecursive(wrapper);
+          console.log(`Deep scan found ${allFoundScripts.length} script candidates`);
+
+          allFoundScripts.forEach((scriptComp: any) => {
+            let content = scriptComp.get('content');
+
+            // If it's a component with children, the actual script text might be in a text component child
+            if (!content) {
+              const innerComps = scriptComp.get('components');
+              if (innerComps && innerComps.length > 0) {
+                content = innerComps.at(0).get('content');
+              }
+            }
+
+            const id = scriptComp.getAttributes()?.id;
+            console.log(`Script content for ${id}: ${content ? content.substring(0, 50) + '...' : 'EMPTY'}`);
+
+            if (content && !js.includes(content)) {
+              js += `\n/* Interactivity Script: ${id || 'anonymous'} */\n${content}`;
+            }
+          });
+        } else {
+          console.warn("Could not find editor wrapper for script extraction");
+        }
+      } catch (error) {
+        console.warn("Error getting JS:", error);
+      }
+
+      console.log("Final Extracted JS:", js);
+      console.log("jssjjs", js)
+      // Option A: store CSS and JS inline with HTML
       const fullHtml = `
     <style>
       ${css}
     </style>
     ${html}
+    ${js ? `<script>${js}</script>` : ""}
   `;
       // console.log("Saving page", page._id, html);
       if (type === "footer") {
@@ -2165,397 +2243,13 @@ body {
       target?: string,
       options?: any
     ) => {
-      if (state.selectedElement) {
-        const component = state.selectedElement;
-        console.log('component', component)
-        console.log('type', type)
-        console.log('event', event)
-        console.log('action', action)
-        console.log('target', target)
-        console.log('options', options)
-        if (type === "add") {
-          // Step 1: Store interaction config in component attributes (NOT in DOM)
-          // component.addAttributes({
-          //   'data-interaction': JSON.stringify({
-          //     event: event,
-          //     action: action,
-          //     target: target,
-          //     options: options,
-          //   }),
-          // });
-
-          // Step 2: Inject script function on the component
-          component.set({
-            script: function () {
-              console.log('🚀 Interaction script executing...');
-              const el = this;
-              console.log('Element:', el);
-              const configRaw = el.getAttribute('data-interaction');
-              console.log('Config raw:', configRaw);
-
-              if (!configRaw) {
-                console.warn('⚠️ No data-interaction attribute found');
-                return;
-              }
-
-              let config;
-              try {
-                config = JSON.parse(configRaw);
-                console.log('📋 Parsed config:', config);
-              } catch (e) {
-                console.error('❌ Invalid interaction config', e);
-                return;
-              }
-
-              const { event, action, target, options } = config;
-                 console.log('config', config)
-              
-              const handler = () => {
-                let targetEl = null;
-
-                if (!target) {
-                  targetEl = el;
-                } else {
-                  console.log('🔍 Looking for target:', target);
-                  try {
-                    targetEl = document.querySelector(target);
-                    console.log('🎯 Found target:', targetEl);
-                  } catch (e) {
-                    console.error('❌ Invalid selector:', target, e);
-
-                    // Try to fix common selector issues
-                    if (!target.startsWith('#') && !target.startsWith('.') && !target.startsWith('[')) {
-                      const fixedTarget = `.${target}`;
-                      console.log('🔧 Trying fixed selector:', fixedTarget);
-                      try {
-                        targetEl = document.querySelector(fixedTarget);
-                      } catch (e2) {
-                        console.error('❌ Fixed selector also failed:', e2);
-                      }
-                    }
-                  }
-                }
-
-                if (!targetEl) {
-                  console.error('❌ Target element not found for selector:', target);
-                  return;
-                }
-
-                switch (action) {
-                  case 'toggle-class':
-                    targetEl.classList.toggle(options?.class || 'active');
-                    break;
-
-                  case 'add-class':
-                    targetEl.classList.add(options?.class || 'active');
-                    break;
-
-                  case 'remove-class':
-                    targetEl.classList.remove(options?.class || 'active');
-                    break;
-
-                  case 'show':
-                    if (options?.animation === 'none') {
-                      targetEl.style.display = 'block';
-                    } else {
-                      targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
-                      targetEl.style.display = 'block';
-                      setTimeout(() => {
-                        targetEl.style.opacity = '1';
-                        if (options?.animation === 'scale') {
-                          targetEl.style.transform = 'scale(1)';
-                        }
-                      }, 10);
-                    }
-                    break;
-
-                  case 'hide':
-                    if (options?.animation === 'none') {
-                      targetEl.style.display = 'none';
-                    } else {
-                      targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
-                      targetEl.style.opacity = '0';
-                      if (options?.animation === 'scale') {
-                        targetEl.style.transform = 'scale(0.8)';
-                      }
-                      setTimeout(() => {
-                        targetEl.style.display = 'none';
-                      }, options?.duration || 300);
-                    }
-                    break;
-
-                  case 'toggle':
-                    const isHidden = targetEl.style.display === 'none' ||
-                      getComputedStyle(targetEl).display === 'none';
-
-                    if (isHidden) {
-                      if (options?.animation === 'none') {
-                        targetEl.style.display = 'block';
-                      } else {
-                        targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
-                        targetEl.style.display = 'block';
-                        setTimeout(() => {
-                          targetEl.style.opacity = '1';
-                          if (options?.animation === 'scale') {
-                            targetEl.style.transform = 'scale(1)';
-                          }
-                        }, 10);
-                      }
-                    } else {
-                      if (options?.animation === 'none') {
-                        targetEl.style.display = 'none';
-                      } else {
-                        targetEl.style.transition = `all ${options?.duration || 300}ms ${options?.easing || 'ease'}`;
-                        targetEl.style.opacity = '0';
-                        if (options?.animation === 'scale') {
-                          targetEl.style.transform = 'scale(0.8)';
-                        }
-                        setTimeout(() => {
-                          targetEl.style.display = 'none';
-                        }, options?.duration || 300);
-                      }
-                    }
-                    break;
-
-                  case 'scroll-to':
-                    console.log('🎯 Scroll-to action triggered');
-                    console.log('Target selector:', target);
-                    console.log('Target element:', targetEl);
-
-                    if (!targetEl) {
-                      console.error('❌ Target element not found');
-                      return;
-                    }
-
-                    const offset = parseFloat(options?.offset || '0');
-                    const rect = targetEl.getBoundingClientRect();
-                    const scrollTop =
-                      window.pageYOffset || document.documentElement.scrollTop;
-                    const targetPosition = rect.top + scrollTop + offset;
-
-                    console.log('📍 Scrolling to:', {
-                      rect: { top: rect.top, left: rect.left, width: rect.width, height: rect.height },
-                      currentScroll: scrollTop,
-                      offset: offset,
-                      targetPosition: targetPosition
-                    });
-
-                    window.scrollTo({
-                      top: targetPosition,
-                      behavior: 'smooth',
-                    });
-
-                    console.log('✅ Scroll command sent');
-                    break;
-
-                  case 'redirect':
-                    if (options?.newTab) {
-                      window.open(options?.url || '#', '_blank');
-                    } else {
-                      window.location.href = options?.url || '#';
-                    }
-                    break;
-                }
-              };
-
-              // Attach event listener based on event type
-              console.log('🔗 Attaching event listener for:', event);
-
-              if (event === 'hover') {
-                console.log('Setting up hover (mouseenter) listener');
-                el.addEventListener('mouseenter', handler);
-
-                // For hover, add leave handler if needed
-                if (action === 'add-class' || action === 'show') {
-                  const leaveHandler = () => {
-                    let targetEl = null;
-                    if (!target) {
-                      targetEl = el;
-                    } else {
-                      targetEl = document.querySelector(target);
-                    }
-
-                    if (targetEl) {
-                      if (action === 'add-class') {
-                        targetEl.classList.remove(options?.class || 'active');
-                      } else if (action === 'show') {
-                        targetEl.style.display = 'none';
-                      }
-                    }
-                  };
-                  el.addEventListener('mouseleave', leaveHandler);
-                }
-              } else if (event === 'scroll') {
-                console.log('Setting up scroll (IntersectionObserver) listener');
-                // Use Intersection Observer for scroll-based triggers
-                const offset = parseFloat(options?.offset || '0') / 100;
-
-                const observer = new IntersectionObserver(
-                  (entries) => {
-                    entries.forEach((entry) => {
-                      if (entry.isIntersecting) {
-                        handler();
-                      }
-                    });
-                  },
-                  {
-                    threshold: offset || 0.1,
-                    rootMargin: '0px'
-                  }
-                );
-
-                observer.observe(el);
-              } else {
-                // For other events (click, dblclick)
-                console.log(`Setting up ${event || 'click'} listener on element:`, el);
-                el.addEventListener(event || 'click', handler);
-                console.log('✅ Event listener attached successfully');
-              }
-            },
-          });
-
-          console.log(`✅ Added interaction: ${event} → ${action}`);
-
-          // Trigger the script execution immediately
-          try {
-            const view = component.view;
-            if (view && view.el) {
-              // Get the script function and call it with the element as context
-              const scriptFn = component.get('script');
-              if (typeof scriptFn === 'function') {
-                console.log('🔄 Executing script immediately on element...');
-                scriptFn.call(view.el);
-              }
-            }
-          } catch (error) {
-            console.error('Error executing script:', error);
-          }
-
-          // ALSO attach event listener directly to the canvas element
-          // This makes interactions work while editing, not just in preview
-          try {
-            const view = component.view;
-            console.log('component', component)
-            console.log('view', view)
-            if (view && view.el) {
-              const el = view.el;
-              console.log('🔗 [Canvas] Attaching interaction to element:', el);
-
-              const handler = (e: Event) => {
-                console.log(`👆 [Canvas] ${event} triggered!`);
-                e.stopPropagation();
-
-                let targetEl: HTMLElement | null = null;
-                if (!target || target === '') {
-                  targetEl = el;
-                } else {
-                  const canvasFrame = editorRef?.current?.Canvas?.getFrameEl?.();
-                  const canvasDoc = canvasFrame?.contentDocument || canvasFrame?.contentWindow?.document;
-
-                  console.log(`🔍 [Canvas] Looking for target: "${target}"`);
-                  console.log(`📄 [Canvas] Canvas document:`, canvasDoc ? 'Available' : 'Not available');
-
-                  // Try to find the element in canvas document first
-                  if (canvasDoc) {
-                    try {
-                      targetEl = canvasDoc.querySelector(target) as HTMLElement;
-                      console.log(`🎯 [Canvas] Found in canvas doc:`, targetEl);
-                    } catch (e) {
-                      console.error(`❌ [Canvas] Invalid selector "${target}":`, e);
-
-                      // If selector is invalid, try to fix it (e.g., add # for IDs)
-                      if (!target.startsWith('#') && !target.startsWith('.') && !target.startsWith('[')) {
-                        const fixedTarget = `#${target}`;
-                        console.log(`🔧 [Canvas] Trying fixed selector: "${fixedTarget}"`);
-                        try {
-                          targetEl = canvasDoc.querySelector(fixedTarget) as HTMLElement;
-                        } catch (e2) {
-                          console.error(`❌ [Canvas] Fixed selector also failed:`, e2);
-                        }
-                      }
-                    }
-                  }
-
-                  // Fallback to main document if not found in canvas
-                  if (!targetEl) {
-                    console.log(`🔄 [Canvas] Trying main document...`);
-                    try {
-                      targetEl = document.querySelector(target) as HTMLElement;
-                    } catch (e) {
-                      console.error(`❌ [Canvas] Main document selector failed:`, e);
-                    }
-                  }
-
-                  console.log(`🎯 [Canvas] Final target element:`, targetEl);
-                }
-
-                if (!targetEl) {
-                  console.error(`❌ [Canvas] Target not found: ${target}`);
-                  return;
-                }
-
-                switch (action) {
-                  case 'scroll-to':
-                    const offset = parseFloat(options?.offset || '0');
-                    const rect = targetEl.getBoundingClientRect();
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                    window.scrollTo({ top: rect.top + scrollTop + offset, behavior: 'smooth' });
-                    console.log('✅ [Canvas] Scrolled to target');
-                    break;
-                  case 'toggle-class':
-                    targetEl.classList.toggle(options?.class || 'active');
-                    break;
-                  case 'add-class':
-                    targetEl.classList.add(options?.class || 'active');
-                    break;
-                  case 'remove-class':
-                    targetEl.classList.remove(options?.class || 'active');
-                    break;
-                  case 'show':
-                    targetEl.style.display = 'block';
-                    break;
-                  case 'hide':
-                    targetEl.style.display = 'none';
-                    break;
-                  case 'toggle':
-                    const isHidden = getComputedStyle(targetEl).display === 'none';
-                    targetEl.style.display = isHidden ? 'block' : 'none';
-                    break;
-                  case 'redirect':
-                    if (options?.newTab) {
-                      window.open(options?.url || '#', '_blank');
-                    } else {
-                      window.location.href = options?.url || '#';
-                    }
-                    break;
-                }
-              };
-
-              const eventType = event === 'hover' ? 'mouseenter' : (event || 'click');
-              if ((el as any)._interactionHandler) {
-                el.removeEventListener(eventType, (el as any)._interactionHandler);
-              }
-              (el as any)._interactionHandler = handler;
-              el.addEventListener(eventType, handler);
-              console.log(`✅ [Canvas] ${eventType} listener attached!`);
-            }
-          } catch (error) {
-            console.error('❌ [Canvas] Error:', error);
-          }
-
-        } else if (type === "remove") {
-          // Remove the interaction by clearing the attribute and script
-          component.removeAttributes('data-interaction');
-          component.set({ script: '' });
-
-          console.log(`✅ Removed interaction`);
-        }
-
-        // Update the editor to reflect changes
-        if (editorRef.current) {
-          editorRef.current.refresh();
-        }
-      }
+      handleInteractivityChange(state.selectedElement, {
+        type,
+        event,
+        action,
+        target,
+        options,
+      });
     },
 
     refreshLayers: () => {

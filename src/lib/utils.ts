@@ -210,6 +210,7 @@ export function buildCategoryTree(categories: any) {
 
 export function extractHtmlParts(html: string) {
   let styles = "";
+  let scripts: string[] = [];
   let body = html;
 
   // 1. Extract all <style> tags
@@ -224,23 +225,45 @@ export function extractHtmlParts(html: string) {
     body = body.replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "");
   }
 
-  // 2. Remove <body> wrapper if present
+  // 2. Extract all <script> tags
+  const scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+
+  if (scriptMatches) {
+    scripts = scriptMatches
+      .map((scriptTag) => {
+        // Skip external scripts (those with src attribute)
+        if (scriptTag.includes("src=")) return "";
+        const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+        return inner ? inner[1].trim() : "";
+      })
+      .filter((script) => script.trim());
+
+    // Remove scripts from HTML
+    body = body.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
+  }
+
+  // 3. Remove <body> wrapper if present
   body = body.replace(/<\/?body[^>]*>/gi, "").trim();
 
-  return { styles, body };
+  return { styles, body, scripts };
 }
+
+export const extractScripts = (html: string): string => {
+  const { scripts } = extractHtmlParts(html);
+  return scripts.join("\n");
+};
 
 
 export const extractStyles = (htmlContent: string): string => {
-    const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
-    const styles: string[] = [];
-    let match;
+  const styleRegex = /<style[^>]*>([\s\S]*?)<\/style>/gi;
+  const styles: string[] = [];
+  let match;
 
-    while ((match = styleRegex.exec(htmlContent)) !== null) {
-        if (match[1]) {
-            styles.push(match[1]);
-        }
+  while ((match = styleRegex.exec(htmlContent)) !== null) {
+    if (match[1]) {
+      styles.push(match[1]);
     }
+  }
 
-    return styles.join('\n');
+  return styles.join('\n');
 };

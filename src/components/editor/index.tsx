@@ -59,16 +59,25 @@ export default function GrapesJSEditor() {
   );
 
   function extractScriptsFromHtml(html: string): string {
-    const matches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
-    if (!matches) return "";
-    return matches
-      .map((scriptTag) => {
-        // Skip external scripts (those with src attribute)
-        if (scriptTag.includes("src=")) return "";
-        const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-        return inner ? `(function(){ ${inner[1]} })();` : "";
+    const scripts = extractHtmlParts(html).scripts;
+    if (!scripts || scripts.length === 0) return "";
+
+    // The scripts from extractHtmlParts are already extracted as an array
+    // We just need to wrap them in IIFE if they aren't already
+    return scripts
+      .map((content: string) => {
+        const trimmed = content.trim();
+        if (!trimmed) return "";
+        // Check if it already looks like an IIFE to prevent double-wrapping
+        if (
+          trimmed.startsWith("(function()") ||
+          trimmed.startsWith("(function ()")
+        ) {
+          return trimmed;
+        }
+        return `(function(){ ${trimmed} })();`;
       })
-      .filter((script) => script.trim())
+      .filter((s: string) => s.trim())
       .join("\n");
   }
 
@@ -108,17 +117,17 @@ export default function GrapesJSEditor() {
       try {
         const data = page.content;
         if (data) {
-          // Safely set components with error handling
-          state?.editor?.setComponents(data);
+          const { body, styles, scripts } = extractHtmlParts(data);
 
-          const { body } = extractHtmlParts(data);
+          // Safely set components with error handling - use only body to avoid duplication
+          state?.editor?.setComponents(body);
+
           setEditorHtml(body);
 
           // Extract and set CSS from the content
-          const css = extractStyles(data);
-          if (css && typeof state.editor.setStyle === "function") {
-            state.editor.setStyle(css);
-            setEditorCss(css);
+          if (styles && typeof state.editor.setStyle === "function") {
+            state.editor.setStyle(styles);
+            setEditorCss(styles);
           }
 
           const js = extractScriptsFromHtml(data);
