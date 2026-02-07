@@ -58,6 +58,12 @@ export default function GrapesJSEditor() {
     (state: RootState) => state.pageEdit,
   );
 
+  // const parser = new DOMParser();
+  // const doc = parser.parseFromString(editorHtml, "text/html");
+  // const final = doc.querySelectorAll(".product-gallery-container");
+
+  // console.log("===>>>>", final);
+
   function extractScriptsFromHtml(html: string): string {
     const scripts = extractHtmlParts(html).scripts;
     if (!scripts || scripts.length === 0) return "";
@@ -70,7 +76,9 @@ export default function GrapesJSEditor() {
         if (!trimmed) return "";
 
         // Remove comments at the beginning to accurately check for IIFE
-        const codeOnly = trimmed.replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "").trim();
+        const codeOnly = trimmed
+          .replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "")
+          .trim();
 
         // Check if it already looks like an IIFE to prevent double-wrapping
         if (
@@ -92,7 +100,11 @@ export default function GrapesJSEditor() {
   useEffect(() => {
     if (!state.editor || !page?.content) return;
 
-    registerProductGalleryComponent(state.editor);
+    const selected = getSelectedGalleryProductFromEditor(state.editor);
+
+    console.log("🎯 Selected Product:", selected);
+
+    // registerProductGalleryComponent(state.editor);
 
     // Reset the content loaded flag when page content changes
     if (contentLoadedRef.current) {
@@ -204,12 +216,60 @@ export default function GrapesJSEditor() {
     };
   }, [state.editor, state.isLoading, page?.content]);
 
+  function getSelectedGalleryProductFromEditor(editor: any) {
+    if (!editor?.Canvas) return null;
+
+    const iframe = editor.Canvas.getFrameEl();
+
+    const doc = iframe?.contentDocument;
+
+    if (!doc) return null;
+
+    const selectedItem = doc.querySelectorAll(".product-gallery-container");
+
+    const selectedItemm = doc.querySelector(".product-gallery-container");
+
+    const finalGallery: any = [];
+
+    selectedItem.forEach((element: any) => {
+      const productItem = element.querySelectorAll(".gallery-item");
+
+      const final: any = [];
+
+      productItem.forEach((inner: any) => {
+        const t = {
+          id: inner.getAttribute("data-index"),
+        };
+        final.push(t);
+        // console.log("====>>>>", element.querySelector("h3")?.textContent?.trim());
+        // console.log("===>>>", element.querySelector("img")?.getAttribute("src"));
+      });
+
+      finalGallery.push(final);
+    });
+
+    console.log("====>>>.", finalGallery);
+
+    // const productItem = doc.querySelectorAll(".gallery-item");
+
+    if (!selectedItemm) return null;
+
+    return {
+      id: selectedItemm.getAttribute("data-index"),
+      name: selectedItemm.querySelector("h3")?.textContent?.trim(),
+      image: selectedItemm.querySelector("img")?.getAttribute("src"),
+      price: selectedItemm
+        .querySelector("p[style*='color: #059669']")
+        ?.textContent?.trim(),
+    };
+  }
+
   useEffect(() => {
     if (!state.editor) return;
     const updateHandler = () => {
       const html = state.editor.getHtml();
 
-      console.log("hfjhhfdhhfhfh----", html)
+      console.log("hfjhhfdhhfhfh----", html);
 
       setEditorHtml(html);
       //  dispatch({ type: "pageEdit/setContent", payload: html });
@@ -328,7 +388,7 @@ export default function GrapesJSEditor() {
       } else if (state.editor.StorageManager) {
         state.editor.StorageManager.store({ jsCode: "" });
       }
-      console.log("caling clear canvas")
+      console.log("caling clear canvas");
       setEditorHtml("");
       setEditorCss("");
       setEditorJs("");
@@ -538,9 +598,7 @@ export default function GrapesJSEditor() {
 
   const [open, setOpen] = useState(false);
 
-
-
-  console.log("editorJs--->", editorJs)
+  console.log("editorJs--->", editorJs);
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
