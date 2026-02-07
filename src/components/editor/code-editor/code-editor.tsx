@@ -38,6 +38,7 @@ export function CodeEditor({
   const [activeTab, setActiveTab] = useState("html");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  console.log("javascript", js)
   useEffect(() => {
     setLocalHtml(html);
     setLocalCss(css);
@@ -80,30 +81,61 @@ export function CodeEditor({
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <!-- Add Tailwind CSS CDN -->
-        <script src="https://cdn.tailwindcss.com"></script>
         <style>${localCss}</style>
       </head>
       <body>
         ${htmlWithoutScripts}
+        <!-- Load Tailwind CSS CDN and wait for it before executing other scripts -->
         <script>
-          // Execute scripts extracted from HTML first
-          ${extractedScripts.map((script, idx) => `
-            // Script ${idx + 1} from HTML
-            try {
-              ${script}
-            } catch (error) {
-              console.error('HTML Script ${idx + 1} error:', error);
-            }
-          `).join('\n')}
+          (function() {
+            // Create and load Tailwind script
+            const tailwindScript = document.createElement('script');
+            tailwindScript.src = 'https://cdn.tailwindcss.com';
+            
+            // Wait for Tailwind to load before executing other scripts
+            tailwindScript.onload = function() {
+              console.log('✅ Tailwind CSS loaded');
+              
+              // Execute scripts extracted from HTML first
+              ${extractedScripts.map((script, idx) => `
+                // Script ${idx + 1} from HTML
+                try {
+                  ${script}
+                } catch (error) {
+                  console.error('HTML Script ${idx + 1} error:', error);
+                }
+              `).join('\n')}
 
-          // Then execute the JavaScript tab content
-          try {
-            ${localJs}
-          } catch (error) {
-            console.error('JavaScript tab error:', error);
-            document.body.innerHTML += '<div style="background: #fee; color: #c00; padding: 10px; margin: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">Script Error: ' + error.message + '</div>';
-          }
+              // Then execute the JavaScript tab content
+              try {
+                ${localJs}
+              } catch (error) {
+                console.error('JavaScript tab error:', error);
+                document.body.innerHTML += '<div style="background: #fee; color: #c00; padding: 10px; margin: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">Script Error: ' + error.message + '</div>';
+              }
+            };
+            
+            tailwindScript.onerror = function() {
+              console.error('❌ Failed to load Tailwind CSS');
+              // Execute scripts anyway even if Tailwind fails to load
+              ${extractedScripts.map((script, idx) => `
+                try {
+                  ${script}
+                } catch (error) {
+                  console.error('HTML Script ${idx + 1} error:', error);
+                }
+              `).join('\n')}
+              
+              try {
+                ${localJs}
+              } catch (error) {
+                console.error('JavaScript tab error:', error);
+              }
+            };
+            
+            // Append the script to start loading
+            document.head.appendChild(tailwindScript);
+          })();
         </script>
       </body>
       </html>
@@ -120,6 +152,8 @@ export function CodeEditor({
     setIsDialogOpen(false);
   };
 
+
+  console.log("localJs", localJs)
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
@@ -181,7 +215,7 @@ export function CodeEditor({
               </TabsContent>
 
               <TabsContent
-                value={localJs}
+                value="js"
                 className={cn(
                   "flex-1 flex flex-col",
                   activeTab !== "js" && "hidden"
