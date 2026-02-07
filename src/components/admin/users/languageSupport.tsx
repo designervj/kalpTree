@@ -156,7 +156,7 @@ export function LanguageSelector({ formData, handleInputChange }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-3">
         {LANGUAGES.map((lang) => {
           const selected = isSelected(lang.code);
           const defaultLang = isDefault(lang.code);

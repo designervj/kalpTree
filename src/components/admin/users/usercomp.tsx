@@ -1,32 +1,53 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  CheckCircle,
-  XCircle,
-  User,
-  Briefcase,
-  Palette,
-  Home,
-} from "lucide-react";
+import { CheckCircle, XCircle, User, Briefcase, Palette, Check } from "lucide-react";
 
 import { Brandingdetails } from "@/components/admin/users/brandingdetails";
 import { Businessdetails } from "@/components/admin/users/businessdetails";
 import { Userdetails } from "@/components/admin/users/userdetails";
-import Link from "next/link";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatBrandSlug } from "@/lib/utils";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+
 import { addCreatedAgency } from "@/hooks/slices/user/agencySlice";
 import { addCreatedBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { addCreatedWebsite } from "@/hooks/slices/websites/WebsiteSlice";
-import { RootState } from "@/store/store";
+
 import { IUser } from "@/models/user";
 import { IBusiness } from "@/models/business";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
+type StepId = "agency" | "general" | "business" | "branding" | "review";
+
+function InfoRow({ label, value }: { label: string; value?: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-12 gap-3 py-2">
+      <div className="col-span-5 text-sm text-gray-600">{label}</div>
+      <div className="col-span-7 text-sm font-semibold text-gray-900 text-right">
+        {value ?? <span className="text-gray-400 font-medium">-</span>}
+      </div>
+    </div>
+  );
+}
+
+function ColorDots({ colors }: { colors: string[] }) {
+  return (
+    <div className="flex items-center justify-end gap-2">
+      {colors.map((c) => (
+        <span
+          key={c}
+          className="h-5 w-5 rounded-md border border-gray-200 shadow-sm"
+          style={{ backgroundColor: c }}
+          title={c}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function BusinessCreatePage({
   user,
@@ -39,6 +60,7 @@ export default function BusinessCreatePage({
   const router = useRouter();
   const isAgencyPath = path.includes("agencies");
   const dispatch = useDispatch();
+
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
@@ -48,23 +70,13 @@ export default function BusinessCreatePage({
     };
   }, [user]);
 
-  const [activeTab, setActiveTab] = useState(
-    isAgencyPath ? "agency" : "business",
-  );
+  const [activeTab, setActiveTab] = useState<StepId>(isAgencyPath ? "agency" : "general");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [logoPreview, setLogoPreview] = useState<any>(null);
 
-  const slugify = (text: string) =>
-    text
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9 ]/g, "")
-      .replace(/\s+/g, "-");
-
-  const [formData, setFormData] = useState(() => ({
-    // Only include agency fields if isAgencyPath is true
+  const [formData, setFormData] = useState<any>(() => ({
     ...(isAgencyPath && {
       agency_name: "",
       agency_email: "",
@@ -86,6 +98,8 @@ export default function BusinessCreatePage({
       headquarters: "",
       brand_name: "",
       lang: [],
+      tenantId: "",
+      business_website_url: "",
     },
 
     branding: {
@@ -99,14 +113,13 @@ export default function BusinessCreatePage({
     createdById: safeUser?.id,
   }));
 
-  React.useEffect(() => {
+  useEffect(() => {
     setFormData((prev: any) => ({
       ...prev,
       createdById: safeUser.id,
-      role:
-        safeUser.role === "superadmin" && isAgencyPath ? "agency" : prev.role,
+      role: safeUser.role === "superadmin" && isAgencyPath ? "agency" : prev.role,
       businessdetails: {
-        ...formData.businessdetails,
+        ...prev.businessdetails,
         tenantId: "",
       },
     }));
@@ -114,14 +127,18 @@ export default function BusinessCreatePage({
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
-    console.log(name, value, type, files);
 
-    if (name == "businessdetails.brand_name") {
-      let newvalu = formatBrandSlug(value);
-      console.log(newvalu);
-      const cloned = structuredClone(formData);
-      cloned.businessdetails.business_url = newvalu;
-      setFormData(cloned);
+    if (name === "businessdetails.brand_name") {
+      const newvalu = formatBrandSlug(value);
+      setFormData((prev: any) => ({
+        ...prev,
+        businessdetails: {
+          ...prev.businessdetails,
+          brand_name: value,
+          business_url: newvalu,
+        },
+      }));
+      return;
     }
 
     if (name.includes(".")) {
@@ -135,17 +152,6 @@ export default function BusinessCreatePage({
       }));
       return;
     }
-
-    // if (name === "agency_name") {
-    //   if (!/^[a-zA-Z0-9 ]*$/.test(value)) return;
-
-    //   setFormData((prev: any) => ({
-    //     ...prev,
-    //     agency_name: value,
-    //     agency_url_suffix: slugify(value),
-    //   }));
-    //   return;
-    // }
 
     if (type === "file") {
       const file = files?.[0];
@@ -178,7 +184,6 @@ export default function BusinessCreatePage({
 
       const fd = new FormData();
 
-      // Only append agency fields if path includes "agency"
       if (isAgencyPath && safeUser.role === "superadmin") {
         fd.append("agency_name", formData.agency_name || "");
         fd.append("agency_email", formData.agency_email || "");
@@ -195,200 +200,209 @@ export default function BusinessCreatePage({
           secondary_color: formData.branding.secondary_color,
           tertiary_color: formData.branding.tertiary_color,
           typography: formData.branding.typography,
-        }),
+        })
       );
 
-      if (formData.branding.logo) {
-        fd.append("logo", formData.branding.logo);
-      }
+      if (formData.branding.logo) fd.append("logo", formData.branding.logo);
 
-      const res = await fetch("/api/public/onboarding", {
-        method: "POST",
-        body: fd,
-      });
-
+      const res = await fetch("/api/public/onboarding", { method: "POST", body: fd });
       const result = await res.json();
 
-      if (
-        result?.tenantId &&
-        result?.agency &&
-        result?.business &&
-        result?.website
-      ) {
-        // dispatch add created agency
+      if (result?.tenantId && result?.agency && result?.business && result?.website) {
         dispatch(addCreatedAgency(result.agency));
-
-        // dispatch add created business
         dispatch(addCreatedBusiness(result.business));
-
-        // dispatch add created website
         dispatch(addCreatedWebsite(result.website));
         toast.success(result.message);
+
         setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
         router.push(`/admin/agencies`);
       } else {
-        setMessage({
-          type: "error",
-          text: result?.message || "Failed to create account.",
-        });
+        setMessage({ type: "error", text: result?.message || "Failed to create account." });
       }
     } catch (error) {
       console.error(error);
-      setMessage({
-        type: "error",
-        text: "Failed to create account. Please try again.",
-      });
+      setMessage({ type: "error", text: "Failed to create account. Please try again." });
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  // ✅ 4 Steps
   const tabs = isAgencyPath
     ? [
-        { id: "agency", label: "Agency Details", icon: User },
-        { id: "business", label: "Business Details", icon: Briefcase },
-        { id: "branding", label: "Branding", icon: Palette },
+        { id: "agency" as const, label: "Agency Details", desc: "Basic organization setup", icon: User },
+        { id: "general" as const, label: "Account Details", desc: "Basic information & branding", icon: Briefcase },
+        { id: "business" as const, label: "Website Setup", desc: "Configure your website", icon: Briefcase },
+        { id: "branding" as const, label: "Branding", desc: "Colors, logo & typography", icon: Palette },
+        { id: "review" as const, label: "Review", desc: "Review & submit", icon: CheckCircle },
       ]
     : [
-        { id: "business", label: "Business Details", icon: Briefcase },
-        { id: "branding", label: "Branding", icon: Palette },
+        { id: "general" as const, label: "Account Details", desc: "Basic information", icon: Briefcase },
+        { id: "business" as const, label: "Website Setup", desc: "Configure your website", icon: Briefcase },
+        { id: "branding" as const, label: "Branding", desc: "Colors, logo & typography", icon: Palette },
+        { id: "review" as const, label: "Review", desc: "Review & submit", icon: CheckCircle },
       ];
 
-  const [businessType, setBusinessType] = useState([]);
+  const currentIdx = useMemo(() => tabs.findIndex((t) => t.id === activeTab), [tabs, activeTab]);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const req = await fetch("/api/admin/attributessets");
-        const res = await req.json();
-        if (res) {
-          setBusinessType(res.items);
-        }
-      } catch (error) {
-        toast.error(String(error));
-      }
-    })();
-  }, []);
+  const goPrev = () => {
+    if (currentIdx > 0) setActiveTab(tabs[currentIdx - 1].id);
+  };
 
+  const goNext = () => {
+    if (currentIdx < tabs.length - 1) setActiveTab(tabs[currentIdx + 1].id);
+  };
+
+  // values for review
+  const orgName = formData?.businessdetails?.business_name;
+  const slug = formData?.businessdetails?.business_url || formatBrandSlug(formData?.businessdetails?.brand_name || "");
+  const ownerEmail = formData?.businessdetails?.email;
+  const plan = formData?.businessdetails?.service;
+  const colors = [
+    formData?.branding?.primary_color || "#6366f1",
+    formData?.branding?.secondary_color || "#8b5cf6",
+    formData?.branding?.tertiary_color || "#ec4899",
+  ];
+
+  const websiteFull = slug ? `https://${slug}.kalptree.xyz` : "-";
 
   return (
-    <div className="min-h-screen bg-transparent p-8">
-      <div className=" mx-auto">
-        <div className="mb-8">
+    <div className="min-h-screen bg-[#f3f4f6]">
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        <div className="mb-6">
           <BreadCrumbPage />
-
-          <p className="text-gray-600">
-            {isAgencyPath
-              ? "Create agency and business accounts with complete branding"
-              : "Create and manage business accounts with complete branding"}
-          </p>
         </div>
 
-        <div className="bg-white rounded-md  overflow-hidden border border-primary-100">
-          <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
-            <div className="flex">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex-1 px-6 py-4 font-semibold transition-all relative ${
-                      activeTab === tab.id
-                        ? "text-primary"
-                        : "text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Icon className="w-5 h-5" />
-                      <span>{tab.label}</span>
-                    </div>
-                    {activeTab === tab.id && (
-                      <div className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-t-full" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* LEFT */}
+          <div className="lg:col-span-8">
+            <div className="overflow-hidden">
+              {message.text && (
+                <div
+                  className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${
+                    message.type === "success"
+                      ? "bg-green-50 text-green-800 border-green-200"
+                      : "bg-red-50 text-red-800 border-red-200"
+                  }`}
+                >
+                  {message.type === "success" ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                  <span className="text-sm">{message.text}</span>
+                </div>
+              )}
 
-          <div className="p-8">
-            {message.text && (
-              <div
-                className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                  message.type === "success"
-                    ? "bg-green-50 text-green-800 border border-green-200"
-                    : "bg-red-50 text-red-800 border border-red-200"
-                }`}
-              >
-                {message.type === "success" ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : (
-                  <XCircle className="w-5 h-5" />
+              {/* main */}
+              <div className="rounded-xl border border-gray-200 bg-white p-6">
+                {activeTab === "agency" && isAgencyPath && (
+                  <Userdetails
+                    handleInputChange={handleInputChange}
+                    formData={formData}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    role={safeUser.role}
+                  />
                 )}
-                {message.text}
+
+                {activeTab === "general" && (
+                  <Businessdetails
+                    step="general"
+                    handleInputChange={handleInputChange}
+                    formData={formData}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    user={user}
+                    agencies={agencies}
+                    businessType={[]}
+                  />
+                )}
+
+                {activeTab === "business" && (
+                  <Businessdetails
+                    step="business"
+                    handleInputChange={handleInputChange}
+                    formData={formData}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    user={user}
+                    agencies={agencies}
+                    businessType={[]}
+                  />
+                )}
+
+                {activeTab === "branding" && (
+                  <Brandingdetails handleInputChange={handleInputChange} formData={formData} logoPreview={logoPreview} />
+                )}
+
+                {/* ✅ REVIEW STEP */}
+                {activeTab === "review" && (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900">Review Your Information</h2>
+                      <p className="mt-1 text-sm text-gray-600">
+                        Please review all details before submitting
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      {/* Tenant Details */}
+                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <h3 className="text-base font-semibold text-gray-900">Tenant Details</h3>
+                        <div className="mt-3">
+                          <InfoRow label="Organization:" value={orgName} />
+                          <InfoRow label="Slug:" value={slug} />
+                          <InfoRow label="Email:" value={ownerEmail} />
+                          <InfoRow label="Account Type:" value={formData?.businessdetails?.industry} />
+                          <InfoRow label="Plan:" value={plan} />
+                          <InfoRow label="Brand Colors:" value={<ColorDots colors={colors} />} />
+                        </div>
+                      </div>
+
+                      {/* Owner Account */}
+                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <h3 className="text-base font-semibold text-gray-900">Owner Account</h3>
+                        <div className="mt-3">
+                          <InfoRow label="Name:" value={safeUser?.name} />
+                          <InfoRow label="Email:" value={safeUser?.email || ownerEmail} />
+                          <InfoRow label="Role:" value={safeUser?.role} />
+                        </div>
+                      </div>
+
+                      {/* Website Configuration */}
+                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                        <h3 className="text-base font-semibold text-gray-900">Website Configuration</h3>
+                        <div className="mt-3">
+                          <InfoRow label="Website Name:" value={formData?.businessdetails?.brand_name} />
+                          <InfoRow label="Service Type:" value={plan} />
+                          <InfoRow label="Primary Domain:" value={websiteFull} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
 
-            {activeTab === "agency" && isAgencyPath && (
-              <Userdetails
-                handleInputChange={handleInputChange}
-                formData={formData}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                role={safeUser.role}
-              />
-            )}
+              {/* footer buttons */}
+              <div className="mt-6 flex items-center justify-between">
+                <button
+                  onClick={goPrev}
+                  disabled={currentIdx === 0}
+                  className="rounded-md border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Previous
+                </button>
 
-            {activeTab === "business" && (
-              <Businessdetails
-                handleInputChange={handleInputChange}
-                formData={formData}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                user={user}
-                agencies={agencies}
-                businessType={businessType}
-              />
-            )}
-
-            {activeTab === "branding" && (
-              <Brandingdetails
-                handleInputChange={handleInputChange}
-                formData={formData}
-                logoPreview={logoPreview}
-              />
-            )}
-
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-              <button
-                onClick={() => {
-                  const idx = tabs.findIndex((t) => t.id === activeTab);
-                  if (idx > 0) setActiveTab(tabs[idx - 1].id);
-                }}
-                disabled={activeTab === tabs[0].id}
-                className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
-              >
-                Previous
-              </button>
-
-              <div className="flex gap-3">
-                {activeTab === "branding" ? (
+                {activeTab === "review" ? (
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting}
-                    className="px-8 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl hover:from-primary-700 hover:to-purple-700 disabled:from-primary-400 disabled:to-purple-400 disabled:cursor-not-allowed transition-all transform hover:scale-105 font-semibold shadow-lg"
+                    className="w-full ml-6 rounded-xl bg-gradient-to-r from-blue-600 to-fuchsia-600 px-7 py-3 text-sm font-semibold text-white shadow hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {isSubmitting ? "Creating Account..." : "Create Account"}
+                    {isSubmitting ? "Submitting..." : "Submit & Create Tenant"}
                   </button>
                 ) : (
                   <button
-                    onClick={() => {
-                      const idx = tabs.findIndex((t) => t.id === activeTab);
-                      if (idx < tabs.length - 1) setActiveTab(tabs[idx + 1].id);
-                    }}
-                    className="px-8 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-all transform hover:scale-105 font-semibold shadow-lg"
+                    onClick={goNext}
+                    className="rounded-md bg-[#7C2D64] px-7 py-2 text-sm font-semibold text-white shadow hover:bg-[#6B2457]"
                   >
                     Next
                   </button>
@@ -396,6 +410,70 @@ export default function BusinessCreatePage({
               </div>
             </div>
           </div>
+
+          {/* RIGHT */}
+          <div className="lg:col-span-4">
+            <div className="sticky top-6">
+              <div className="rounded-2xl bg-gradient-to-b from-[#0b1220] via-[#0f1a2f] to-[#0b1220] p-6 shadow-xl">
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white">Account Setup</h3>
+                  <p className="mt-1 text-sm text-white/70">Complete all steps to get started</p>
+                </div>
+
+                <div className="space-y-4">
+                  {tabs.map((step, idx) => {
+                    const isActive = idx === currentIdx;
+                    const isDone = idx < currentIdx;
+
+                    return (
+                      <div key={step.id} className="relative">
+                        {idx !== tabs.length - 1 && (
+                          <div className="absolute left-[33px] top-[42px] h-[68px] w-[2px] bg-white/10" />
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab(step.id)}
+                          className={[
+                            "w-full rounded-xl p-4 text-left transition",
+                            isActive ? "bg-white/10 ring-1 ring-white/15" : "bg-white/5 hover:bg-white/10",
+                          ].join(" ")}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div
+                              className={[
+                                "mt-0.5 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold",
+                                isDone
+                                  ? "bg-emerald-500 text-white"
+                                  : isActive
+                                  ? "bg-blue-600 text-white ring-4 ring-blue-600/25"
+                                  : "bg-white/10 text-white/70",
+                              ].join(" ")}
+                            >
+                              {isDone ? <Check className="h-4 w-4" /> : idx + 1}
+                            </div>
+
+                            <div className="min-w-0">
+                              <p className={["font-semibold", isActive ? "text-white" : "text-white/80"].join(" ")}>
+                                {step.label}
+                              </p>
+                              <p className="mt-1 text-xs text-white/60">{step.desc}</p>
+                            </div>
+                          </div>
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-sm text-white/75">Need help? Contact our support team at</p>
+                  <p className="mt-1 text-sm font-semibold text-blue-300">support@example.com</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* end right */}
         </div>
       </div>
     </div>
