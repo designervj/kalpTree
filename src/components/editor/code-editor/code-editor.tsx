@@ -30,18 +30,18 @@ export function CodeEditor({
   onUpdateCss,
   onUpdateJs,
 }: CodeEditorProps) {
-  const [localHtml, setLocalHtml] = useState(html);
-  const [localCss, setLocalCss] = useState(css);
-  const [localJs, setLocalJs] = useState(js);
+  const [localHtml, setLocalHtml] = useState("");
+  const [localCss, setLocalCss] = useState("");
+  const [localJs, setLocalJs] = useState("");
   const [preview, setPreview] = useState("");
   const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState("html");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  console.log("javascript", js)
+  console.log("editore", js)
   useEffect(() => {
-    setLocalHtml(html);
-    setLocalCss(css);
+    setLocalHtml(html || "");
+    setLocalCss(css || "");
     setLocalJs(js);
   }, [html, css, js]);
 
