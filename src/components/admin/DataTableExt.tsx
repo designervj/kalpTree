@@ -131,8 +131,8 @@ function formatPrettyDate2Line(v: any) {
   const top = isToday
     ? "Today"
     : isYesterday
-    ? "Yesterday"
-    : d.toLocaleDateString("en-GB", {
+      ? "Yesterday"
+      : d.toLocaleDateString("en-GB", {
         day: "2-digit",
         month: "short",
         year: "numeric",
@@ -147,7 +147,7 @@ function formatPrettyDate2Line(v: any) {
 }
 
 function getSlugIcon(slug?: string, title?: string) {
-  
+
   const s = (slug || "").toLowerCase();
   const t = (title || "").toLowerCase();
 
@@ -164,7 +164,7 @@ function getSlugIcon(slug?: string, title?: string) {
 async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {}
+  } catch { }
 }
 
 /* -----------------------------
@@ -501,20 +501,24 @@ export function DataTableExt({
   console.log("pageName", pageName);
 
   const handleBuilderEdit = async (row: WebsitePageModel) => {
-    const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
-      ? currentWebsite?.primaryDomain[0]
-      : currentWebsite?.primaryDomain;
+    if(!currentWebsite?.primaryDomain){
+      return
+    }
+    // const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
+    //   ? currentWebsite?.primaryDomain[0]
+    //   : currentWebsite?.primaryDomain;
 
-    const localsub =
-      typeof currentSubdomain === "string" ? currentSubdomain.split(".")[0] : "";
+    // const localsub =
+    //   typeof currentSubdomain === "string" ? currentSubdomain.split(".")[0] : "";
     const isLocalHost = window.location.hostname.includes("localhost");
 
     if (isLocalHost) {
-      const url = `http://${localsub}.localhost:55803/${row.slug}`;
+      const url = `http://${currentWebsite?.primaryDomain[1]}/builder/${currentWebsite?._id}?page=${row.slug}`;
 
       window.open(url, "_blank");
     } else {
-      const url = `https://${currentSubdomain}/${row.slug}`;
+      const url = `http://${currentWebsite?.primaryDomain[0]}/builder/${currentWebsite?._id}?page=${row.slug}`;
+
       window.open(url, "_blank");
     }
   };
@@ -818,7 +822,7 @@ export function DataTableExt({
                               </div>
 
                               {row.isHomePage === true ||
-                              String(row.isHomePage).toLowerCase() === "yes" ? (
+                                String(row.isHomePage).toLowerCase() === "yes" ? (
                                 <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shrink-0">
                                   <BadgeCheck className="h-3.5 w-3.5" />
                                   Home
