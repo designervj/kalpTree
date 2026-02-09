@@ -1,0 +1,235 @@
+[
+  [
+    {
+      "name": "Apparel Category",
+      "slug": "apparel-category",
+      "possible_values": ["Topwear", "Bottomwear", "Outerwear", "Ethnic"]
+    },
+    {
+      "name": "Product Type",
+      "slug": "product-type",
+      "possible_values": ["T-Shirt", "Shirt", "Jeans", "Kurta", "Dress"]
+    },
+    {
+      "name": "Garment Type",
+      "slug": "garment-type",
+      "possible_values": ["T-Shirt", "Shirt", "Kurta", "Trouser"]
+    },
+    {
+      "name": "Gender",
+      "slug": "gender",
+      "possible_values": ["Men", "Women", "Unisex", "Kids"]
+    },
+    {
+      "name": "Age Group",
+      "slug": "age-group",
+      "possible_values": ["Adult", "Kids", "Infant"]
+    },
+    {
+      "name": "Target Audience",
+      "slug": "target-audience",
+      "possible_values": ["Young Adults", "Working Professionals", "Families"]
+    },
+    {
+      "name": "Fabric Type",
+      "slug": "fabric-type",
+      "possible_values": ["Cotton", "Polyester", "Linen", "Denim"]
+    },
+    {
+      "name": "Fabric Blend",
+      "slug": "fabric-blend",
+      "possible_values": ["100% Cotton", "Cotton-Poly"]
+    },
+    {
+      "name": "Fabric GSM",
+      "slug": "fabric-gsm",
+      "possible_values": ["150 GSM", "200 GSM", "300 GSM", "400 GSM"]
+    },
+    {
+      "name": "Fabric Source",
+      "slug": "fabric-source",
+      "possible_values": ["Imported", "Local"]
+    },
+    {
+      "name": "Fabric Quality Grade",
+      "slug": "fabric-quality-grade",
+      "possible_values": ["Premium", "Standard", "Economy"]
+    },
+    {
+      "name": "Fabric Durability Grade",
+      "slug": "fabric-durability-grade",
+      "possible_values": ["Heavy Duty", "Standard"]
+    },
+    {
+      "name": "Color",
+      "slug": "color",
+      "possible_values": ["Walnut", "Teak", "Grey", "Navy Blue", "White"]
+    },
+    {
+      "name": "Pattern",
+      "slug": "pattern",
+      "possible_values": ["Solid", "Printed", "Striped", "Minimal"]
+    },
+    {
+      "name": "Fit Type",
+      "slug": "fit-type",
+      "possible_values": ["Slim", "Regular", "Oversized", "Relaxed", "Tailored"]
+    },
+    {
+      "name": "Size",
+      "slug": "size",
+      "possible_values": [
+        "XS",
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL",
+        "XXXL",
+        "5XL",
+        "6XL"
+      ]
+    },
+    {
+      "name": "Sleeve Type",
+      "slug": "sleeve-type",
+      "possible_values": ["Full", "Half", "Sleeveless"]
+    },
+    {
+      "name": "Neck Type",
+      "slug": "neck-type",
+      "possible_values": ["Round", "V", "Collar", "Polo"]
+    },
+    {
+      "name": "Season",
+      "slug": "season",
+      "possible_values": ["Summer", "Winter", "All-Season", "Resort"]
+    },
+    {
+      "name": "Wash Care",
+      "slug": "wash-care",
+      "possible_values": ["Machine Wash", "Hand Wash", "Industrial Wash"]
+    },
+    {
+      "name": "MOQ",
+      "slug": "moq",
+      "possible_values": ["50+", "500+", "1000+", "5000+"]
+    },
+    {
+      "name": "Lead Time",
+      "slug": "lead-time",
+      "possible_values": ["7-15 Days", "15-30 Days", "15-45 Days", "30 Days"]
+    },
+    {
+      "name": "Price Band",
+      "slug": "price-band",
+      "possible_values": ["₹200-₹800", "₹999-₹4999"]
+    },
+    {
+      "name": "Packaging Type",
+      "slug": "packaging-type",
+      "possible_values": ["Box", "Polybag", "Hanger Pack", "Carton"]
+    },
+    {
+      "name": "Customization Allowed",
+      "slug": "customization-allowed",
+      "possible_values": ["Yes", "No"]
+    }
+  ],
+  [
+    {
+      "name": "Ready-Made Apparel Sales",
+      "slug": "ready-made-apparel-sales",
+      "attributes": [
+        "apparel-category",
+        "product-type",
+        "gender",
+        "age-group",
+        "fabric-type",
+        "color",
+        "pattern",
+        "fit-type",
+        "size",
+        "sleeve-type",
+        "neck-type",
+        "season",
+        "wash-care",
+        "price-band",
+        "packaging-type"
+      ]
+    },
+    {
+      "name": "Custom Apparel Manufacturing",
+      "slug": "custom-apparel-manufacturing",
+      "attributes": [
+        "apparel-category",
+        "product-type",
+        "gender",
+        "fabric-type",
+        "fabric-blend",
+        "fabric-gsm",
+        "fabric-source",
+        "fit-type",
+        "size",
+        "customization-allowed",
+        "moq",
+        "lead-time"
+      ]
+    },
+    {
+      "name": "Fashion Retail & D2C",
+      "slug": "fashion-retail-d2c",
+      "attributes": [
+        "apparel-category",
+        "product-type",
+        "gender",
+        "target-audience",
+        "fabric-type",
+        "color",
+        "pattern",
+        "fit-type",
+        "size",
+        "season",
+        "price-band",
+        "packaging-type"
+      ]
+    },
+    {
+      "name": "Uniform & Corporate Apparel",
+      "slug": "uniform-corporate-apparel",
+      "attributes": [
+        "garment-type",
+        "gender",
+        "fabric-type",
+        "fabric-quality-grade",
+        "fabric-durability-grade",
+        "color",
+        "pattern",
+        "fit-type",
+        "size",
+        "wash-care",
+        "moq",
+        "lead-time",
+        "customization-allowed"
+      ]
+    },
+    {
+      "name": "Bulk / Wholesale Clothing Supply",
+      "slug": "bulk-wholesale-clothing-supply",
+      "attributes": [
+        "product-type",
+        "gender",
+        "fabric-type",
+        "fabric-quality-grade",
+        "color",
+        "pattern",
+        "fit-type",
+        "size",
+        "moq",
+        "lead-time",
+        "price-band",
+        "packaging-type"
+      ]
+    }
+  ]
+]

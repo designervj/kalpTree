@@ -1,0 +1,41 @@
+[
+  {
+    "name": "Modular Kitchen Set",
+    "attributes": [
+      "64f1a2b3c4d5e6f7890abc21",
+      "64f1a2b3c4d5e6f7890abc22",
+      "64f1a2b3c4d5e6f7890abc23",
+      "64f1a2b3c4d5e6f7890abc24",
+      "64f1a2b3c4d5e6f7890abc25"
+    ],
+    "sort_order": 1,
+    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+  },
+  {
+    "name": "Bedroom Furniture Set",
+    "attributes": [
+      "64f1a2b3c4d5e6f7890abc31",
+      "64f1a2b3c4d5e6f7890abc32",
+      "64f1a2b3c4d5e6f7890abc33",
+      "64f1a2b3c4d5e6f7890abc34",
+      "64f1a2b3c4d5e6f7890abc35",
+      "64f1a2b3c4d5e6f7890abc36"
+    ],
+    "sort_order": 2,
+    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+  },
+  {
+    "name": "Living Room Furniture Set",
+    "attributes": [
+      "64f1a2b3c4d5e6f7890abc41",
+      "64f1a2b3c4d5e6f7890abc42",
+      "64f1a2b3c4d5e6f7890abc43",
+      "64f1a2b3c4d5e6f7890abc44",
+      "64f1a2b3c4d5e6f7890abc45",
+      "64f1a2b3c4d5e6f7890abc46",
+      "64f1a2b3c4d5e6f7890abc47"
+    ],
+    "sort_order": 3,
+    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+  }
+]

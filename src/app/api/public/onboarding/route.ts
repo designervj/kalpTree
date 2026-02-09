@@ -11,7 +11,6 @@ import { demoPages } from "../../../../../utils/utlis";
 import { ObjectId } from "mongodb";
 import { Tenant } from "@/types";
 
-
 export async function POST(req: Request) {
   try {
     const session = await auth();
@@ -22,7 +21,7 @@ export async function POST(req: Request) {
     const agency_password = formData.get("agency_password") as string;
 
     const businessdetails = JSON.parse(
-      formData.get("businessdetails") as string
+      formData.get("businessdetails") as string,
     );
 
     const {
@@ -42,6 +41,7 @@ export async function POST(req: Request) {
       tenantId,
       lang,
       business_url,
+      primary_domain,
     } = businessdetails;
 
     const branding = JSON.parse(formData.get("branding") as string);
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
 
     let createByTenant = "";
 
-    let logo_url = "";  
+    let logo_url = "";
 
     let message = "";
 
@@ -93,7 +93,7 @@ export async function POST(req: Request) {
             Key: key,
             Body: buffer,
             ContentType: logo.type,
-          })
+          }),
         );
 
         logo_url = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
@@ -158,7 +158,7 @@ export async function POST(req: Request) {
           Key: key,
           Body: buffer,
           ContentType: logo.type,
-        })
+        }),
       );
 
       logoUrl = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
@@ -185,13 +185,16 @@ export async function POST(req: Request) {
     const primaryDomain = [
       `${business_url}.kalptree.xyz`,
       `${business_url}.localhost:55803`,
+      ...primary_domain,
     ];
+
+    const finalDomain = new Set([...primaryDomain]);
 
     const website = await websiteService.create({
       tenantId: businessTenant._id,
       name: business_name,
       serviceType: service ?? "WEBSITE_ONLY",
-      primaryDomain: primaryDomain,
+      primaryDomain: [...finalDomain],
       systemSubdomain: `${business_url}.kalptree.xyz`,
       lang,
       isComingSoon: true,
@@ -208,16 +211,16 @@ export async function POST(req: Request) {
           title: d.title,
           slug: d.slug,
           metaDescription: "",
-          focusKeywords: [{
-            keyword: "",
-            isSelected: false
-          }],
+          focusKeywords: [
+            {
+              keyword: "",
+              isSelected: false,
+            },
+          ],
           hideFromSearchResults: false,
           inNavigation: false,
           isHomePage: false,
-          
         },
-
       };
     });
 
@@ -237,7 +240,7 @@ export async function POST(req: Request) {
   } catch (e) {
     return NextResponse.json(
       { ok: false, error: e instanceof Error ? e.message : "Internal error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

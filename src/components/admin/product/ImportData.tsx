@@ -81,6 +81,7 @@ export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
 
   const handleDownloadJSON = () => {
     const link = document.createElement("a");
+    console.log(type)
     if (type == "attribute") {
       link.href = "/sampleatttibute.json";
       link.download = "attribute.json";
@@ -90,6 +91,9 @@ export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
     } else if (type == "product-type") {
       link.href = "/sampleproducttype.json";
       link.download = "producttype.json";
+    } else if (type == "businesstype") {
+      link.href = "/buisnesstype.json";
+      link.download = "buisnesstype.json";
     }
     document.body.appendChild(link);
     link.click();

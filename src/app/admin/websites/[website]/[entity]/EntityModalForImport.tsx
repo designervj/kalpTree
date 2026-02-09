@@ -2,7 +2,7 @@
 
 import { JSONImportModal } from "@/components/admin/product/ImportData";
 import { Button } from "@/components/ui/button";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 const EntityModalForImport = ({ type }: any) => {
@@ -16,7 +16,6 @@ const EntityModalForImport = ({ type }: any) => {
   };
 
   const handleImport = async (data: any) => {
-    console.log(type, data);
     try {
       const res = await fetch(`/api/admin/bulk?type=${type}`, {
         method: "POST",
