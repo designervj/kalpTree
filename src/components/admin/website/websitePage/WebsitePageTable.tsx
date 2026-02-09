@@ -76,23 +76,27 @@ const WebsitePageTable = () => {
   ];
 
   const handleViewTab = async (row: WebsitePageModel) => {
-    const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
-      ? currentWebsite?.primaryDomain[0]
-      : currentWebsite?.primaryDomain;
-    const localsub =
-      typeof currentSubdomain === "string"
-        ? currentSubdomain.split(".")[0]
-        : "";
+       if(!currentWebsite?.primaryDomain){
+      return
+    }
+    // const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
+    //   ? currentWebsite?.primaryDomain[0]
+    //   : currentWebsite?.primaryDomain;
+
+    // const localsub =
+    //   typeof currentSubdomain === "string" ? currentSubdomain.split(".")[0] : "";
     const isLocalHost = window.location.hostname.includes("localhost");
 
     if (isLocalHost) {
-      const url = `http://${localsub}.localhost:55803/${row.slug}`;
+      const url = `http://${currentWebsite?.primaryDomain[1]}/builder/${currentWebsite?._id}?page=${row.slug}`;
 
       window.open(url, "_blank");
     } else {
-      const url = `https://${currentSubdomain}/${row.slug}`;
+      const url = `http://${currentWebsite?.primaryDomain[0]}/builder/${currentWebsite?._id}?page=${row.slug}`;
+
       window.open(url, "_blank");
     }
+    
   };
 
   const createHref = buildWebsiteHref(
