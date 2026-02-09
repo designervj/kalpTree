@@ -93,8 +93,15 @@ export default function GrapesJSEditor() {
       .join("\n");
   }
 
-  const isCalled = useRef<boolean>(false);
+
   const contentLoadedRef = useRef<boolean>(false);
+
+  // Trigger loading state when page content changes
+  useEffect(() => {
+    if (page?.content && !contentLoadedRef.current) {
+      dispatch(setPageLoading(true));
+    }
+  }, [page?.id, page?.content, dispatch]);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
@@ -369,11 +376,32 @@ export default function GrapesJSEditor() {
   const handleSelectTemplate = (content: string, append = false) => {
     if (!state.editor) return;
 
+    // dispatch(setPageLoading(true));
+
+    console.log("content", content);
+    console.log("append", append);
     if (append) {
+      const wrapper = state.editor.getWrapper();
+      console.log("wrapper", wrapper);
+      // Look for footer tag at the top level of the wrapper first
+      const footer = wrapper.find('footer')[0];
+      console.log("footer", footer);
+      if (footer) {
+        const parent = footer.parent();
+        if (parent) {
+          const index = footer.index();
+          parent.append(content, { at: index });
+          return;
+        }
+      }
+
+      // Fallback if no footer found or error occurs
       state.editor.addComponents(content);
     } else {
       state.editor.setComponents(content);
     }
+
+
   };
 
   const handleClearCanvas = () => {
@@ -598,7 +626,25 @@ export default function GrapesJSEditor() {
 
   const [open, setOpen] = useState(false);
 
-  console.log("editorJs--->", editorJs);
+  const handleFormSave = (html: string) => {
+    if (state.editor) {
+      const selected = state.editor.getSelected();
+      if (selected) {
+        // Since 'html' includes the <form> tag, and 'selected' is the form component,
+        // we replace the entire component to avoid nesting and ensure all attributes are updated.
+        const newComponent = selected.replaceWith(html);
+
+        // Re-select the new component so the sidebar/editor state remains consistent
+        if (newComponent) {
+          const toSelect = Array.isArray(newComponent) ? newComponent[0] : newComponent;
+          state.editor.select(toSelect);
+        }
+
+        console.log("Form saved and updated on canvas");
+      }
+    }
+  };
+
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
@@ -681,7 +727,7 @@ export default function GrapesJSEditor() {
         />
 
         {/* edit form */}
-        <EditForm componentHtml={editForm} />
+        <EditForm componentHtml={editForm} onSave={handleFormSave} />
 
         <GetAllTemplate />
       </div>
