@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { User, Website } from "../AppShell";
 import { signOut } from "next-auth/react";
@@ -40,6 +41,10 @@ export function Topbar({
 }: TopbarProps) {
   const dispatch = useDispatch();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleSignOut = async () => {
 
@@ -166,7 +171,7 @@ export function Topbar({
             >
               <Avatar className="h-7 w-7">
                 <AvatarFallback>
-                  {user?.email?.charAt(0).toUpperCase() || "U"}
+                  {isMounted ? (user?.email?.charAt(0).toUpperCase() || "U") : "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>

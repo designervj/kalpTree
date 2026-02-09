@@ -119,7 +119,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { signOut } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
 import { Label } from "../ui/label";
@@ -832,16 +832,16 @@ export function FiCloseHint() {
 
 export function AppShell({
   children,
-  onWebsiteChange = () => {},
-  onTenantChange = () => {},
-  onAgencyChage = () => {},
+  onWebsiteChange = () => { },
+  onTenantChange = () => { },
+  onAgencyChage = () => { },
 }: AppShellProps) {
   // const { user, websites, currentWebsite } = useSelector(
   //   (state: RootState) => state.dashboardDetails
   // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
+  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [isHighLevelCollapsed, setIsHighLevelCollapsed] = React.useState(false);
   const params = useParams();
@@ -849,6 +849,10 @@ export function AppShell({
   const businessid = searchParams.get("businessid");
   const agencyid = searchParams.get("agencyid");
   const { user } = useSelector((state: RootState) => state.user);
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   const { websites, currentWebsite } = useSelector(
     (state: RootState) => state.websites,
   );
@@ -1046,10 +1050,10 @@ export function AppShell({
                   <AvatarFallback
                     className={cn(
                       "h-7 w-7 flex items-center justify-center text-black rounded-full font-semibold",
-                      getRoleAvatarClass(user?.role),
+                      isMounted ? getRoleAvatarClass(user?.role) : "bg-primary text-white",
                     )}
                   >
-                    {user?.email?.charAt(0).toUpperCase() || "U"}
+                    {isMounted ? (user?.email?.charAt(0).toUpperCase() || "U") : "U"}
                   </AvatarFallback>
                 </Avatar>
               </Button>
