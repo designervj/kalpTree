@@ -6,23 +6,27 @@ import { Button } from '@/components/ui/button';
 
 type EditFormProps = {
     componentHtml: string;
+    onSave?: (html: string) => void;
 }
-const EditForm = ({ componentHtml }: EditFormProps) => {
+const EditForm = ({ componentHtml, onSave }: EditFormProps) => {
     const [open, setOpen] = useState(false)
 
     useEffect(() => {
         console.log("componentHtml", componentHtml)
         if (componentHtml !== null) {
-            console.log("componentHtml", componentHtml)
             setOpen(true)
-        }else{
+        } else {
             setOpen(false)
         }
     }, [componentHtml])
     console.log("open", open)
     return (<>
-   <EditSection open={open} setOpen={setOpen}
-   componentHtml={componentHtml}/>
+        <EditSection
+            open={open}
+            setOpen={setOpen}
+            componentHtml={componentHtml}
+            onSaveHtml={onSave}
+        />
     </>)
 }
 

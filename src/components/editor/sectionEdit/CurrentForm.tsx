@@ -63,7 +63,7 @@ type TextInputType = "plain" | "email" | "phone";
 
 type FieldOption = { id: string; label: string };
 
-type FormField = {
+export interface FormField {
   id: string;
   kind: FieldKind;
   label: string;
@@ -74,7 +74,11 @@ type FormField = {
   options?: FieldOption[];
 };
 
-type Props = { componentHtml?: string };
+type Props = {
+  componentHtml?: string;
+  onChange?: (html: string) => void;
+  // onAddField?: (fields: FormField) => void
+};
 
 const uid = () => Math.random().toString(36).slice(2, 10);
 
@@ -251,7 +255,7 @@ function SortableFieldRow({
               value={field.label}
               onChange={(e) => onUpdate(field.id, { label: e.target.value })}
               className="h-10 rounded-md bg-slate-50"
-            /> 
+            />
           </div>
 
           {(field.kind === "short_answer" || field.kind === "paragraph") && (
@@ -402,11 +406,74 @@ function SortableFieldRow({
   );
 }
 
-export default function CurrentForm({ componentHtml }: Props) {
+export default function CurrentForm({ componentHtml, onChange }: Props) {
   const [fields, setFields] = React.useState<FormField[]>(DEFAULT_FIELDS);
   const [openFieldId, setOpenFieldId] = React.useState<string | undefined>(
     undefined
   );
+
+  console.log("fields", fields);
+  console.log("openFieldId", openFieldId);
+
+  const generateHtml = (currentFields: FormField[]) => {
+    let html = '<form class="gjs-form">';
+    currentFields.forEach((f) => {
+      if (!f.enabled) return;
+      html += `
+        <div class="form-group mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-1">${f.label}${f.required ? "*" : ""}</label>
+          ${f.kind === "paragraph"
+          ? `<textarea name="${f.label.toLowerCase().replace(/\s+/g, "_")}" placeholder="${f.placeholder || ""}" ${f.required ? "required" : ""} class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent"></textarea>`
+          : f.kind === "short_answer"
+            ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" placeholder="${f.placeholder || ""}" ${f.required ? "required" : ""} class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent" />`
+            : f.kind === "single_choice"
+              ? `
+                <div class="space-y-2">
+                  ${(f.options || [])
+                .map(
+                  (opt) => `
+                    <label class="flex items-center gap-2">
+                      <input type="radio" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" value="${opt.label}" class="text-violet-600 focus:ring-violet-500" />
+                      <span class="text-sm text-gray-700">${opt.label}</span>
+                    </label>
+                  `
+                )
+                .join("")}
+                </div>
+              `
+              : f.kind === "multiple_choice"
+                ? `
+                <div class="space-y-2">
+                  ${(f.options || [])
+                  .map(
+                    (opt) => `
+                    <label class="flex items-center gap-2">
+                      <input type="checkbox" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" value="${opt.label}" class="text-violet-600 focus:ring-violet-500 rounded" />
+                      <span class="text-sm text-gray-700">${opt.label}</span>
+                    </label>
+                  `
+                  )
+                  .join("")}
+                </div>
+              `
+                : ""
+        }
+        </div>
+      `;
+    });
+    html += `
+      <div class="mt-6">
+        <button type="submit" class="w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-violet-700 transition">Submit</button>
+      </div>
+    </form>`;
+    return html;
+  };
+
+  React.useEffect(() => {
+    if (onChange) {
+      onChange(generateHtml(fields));
+    }
+  }, [fields, onChange]);
 
   React.useEffect(() => {
     if (!componentHtml) return;
@@ -500,7 +567,7 @@ export default function CurrentForm({ componentHtml }: Props) {
       base.placeholder = meta.label;
       delete base.textType;
     }
-
+    // onAddField?.(base);
     setFields((p) => [...p, base]);
     setOpenFieldId(base.id);
   };
@@ -563,68 +630,68 @@ export default function CurrentForm({ componentHtml }: Props) {
 
   return (
     <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-sm">
-             <Select onValueChange={(v) => addField(v as FieldKind)}>
-            <SelectTrigger className="h-10 w-full rounded-md border-slate-200 bg-white px-4">
-              <div className="flex w-full items-center justify-between">
-                <div className="flex items-center gap-3 text-slate-600">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white">
-                    <Plus className="h-4 w-4" />
-                  </span>
-                  <SelectValue placeholder="Add new form field" />
-                </div>
-              </div>
-            </SelectTrigger>
-
-            <SelectContent className="min-w-[260px]">
-              {(Object.keys(FIELD_META) as FieldKind[]).map((k) => {
-                const Icon = FIELD_META[k].Icon;
-                return (
-                  <SelectItem key={k} value={k} className="py-2">
-                    <div className="flex items-center gap-3">
-                      <Icon className="h-4 w-4 text-slate-700" />
-                      <span>{FIELD_META[k].label}</span>
-                    </div>
-                  </SelectItem>
-                );
-              })}
-            </SelectContent>
-          </Select>
-
-          <div className="mt-4 rounded-md border border-slate-200 bg-white">
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={onDragEnd}
-            >
-              <SortableContext
-                items={fields.map((f) => f.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <Accordion
-                  type="single"
-                  collapsible
-                  className="w-full"
-                  value={openFieldId}
-                  onValueChange={(v) => setOpenFieldId(v || undefined)}
-                >
-                  {fields.map((f, idx) => (
-                    <SortableFieldRow
-                      key={f.id}
-                      field={f}
-                      index={idx}
-                      total={fields.length}
-                      onUpdate={updateField}
-                      onRemove={removeField}
-                      onMove={moveField}
-                      onAddOption={addOption}
-                      onUpdateOption={updateOption}
-                      onRemoveOption={removeOption}
-                    />
-                  ))}
-                </Accordion>
-              </SortableContext>
-            </DndContext>
+      <Select onValueChange={(v) => addField(v as FieldKind)}>
+        <SelectTrigger className="h-10 w-full rounded-md border-slate-200 bg-white px-4">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3 text-slate-600">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white">
+                <Plus className="h-4 w-4" />
+              </span>
+              <SelectValue placeholder="Add new form field" />
+            </div>
           </div>
+        </SelectTrigger>
+
+        <SelectContent className="min-w-[260px]">
+          {(Object.keys(FIELD_META) as FieldKind[]).map((k) => {
+            const Icon = FIELD_META[k].Icon;
+            return (
+              <SelectItem key={k} value={k} className="py-2">
+                <div className="flex items-center gap-3">
+                  <Icon className="h-4 w-4 text-slate-700" />
+                  <span>{FIELD_META[k].label}</span>
+                </div>
+              </SelectItem>
+            );
+          })}
+        </SelectContent>
+      </Select>
+
+      <div className="mt-4 rounded-md border border-slate-200 bg-white">
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={onDragEnd}
+        >
+          <SortableContext
+            items={fields.map((f) => f.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <Accordion
+              type="single"
+              collapsible
+              className="w-full"
+              value={openFieldId}
+              onValueChange={(v) => setOpenFieldId(v || undefined)}
+            >
+              {fields.map((f, idx) => (
+                <SortableFieldRow
+                  key={f.id}
+                  field={f}
+                  index={idx}
+                  total={fields.length}
+                  onUpdate={updateField}
+                  onRemove={removeField}
+                  onMove={moveField}
+                  onAddOption={addOption}
+                  onUpdateOption={updateOption}
+                  onRemoveOption={removeOption}
+                />
+              ))}
+            </Accordion>
+          </SortableContext>
+        </DndContext>
+      </div>
     </div>
   );
 }

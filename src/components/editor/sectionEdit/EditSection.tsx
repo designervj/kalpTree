@@ -44,7 +44,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import CurrentForm from "./CurrentForm";
+import CurrentForm, { FormField as InternalFormField } from "./CurrentForm";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -360,30 +360,47 @@ export function EditSection({
   open,
   setOpen,
   componentHtml,
+  onSaveHtml,
 }: {
   open?: boolean;
   setOpen?: (open: boolean) => void;
   componentHtml?: string;
-} = {}) {
+  onSaveHtml?: (html: string) => void;
+}) {
   const [tab, setTab] = React.useState<
     "general" | "fields" | "button" | "style" | "animation"
   >("general");
 
   const [settings, setSettings] = React.useState<FormSettings>(DEFAULT_SETTINGS);
+  const [formHtml, setFormHtml] = React.useState<string>("");
+
 
   const set = <K extends keyof FormSettings>(key: K, val: FormSettings[K]) =>
     setSettings((s) => ({ ...s, [key]: val }));
 
-  const onSave = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSave = () => {
+    // e.preventDefault();
     // ✅ send `settings` to API / store
-    // console.log(settings)
+    console.log("settings--->",settings)
+    console.log("formHtml--->",formHtml);
+    if (onSaveHtml) {
+      onSaveHtml(formHtml);
+    }
 
     // Close the modal after saving
     if (setOpen) {
       setOpen(false);
     }
   };
+
+
+
+  const handleHtmlChange=(html:string)=>{
+    console.log(html);
+    setFormHtml(html);
+  }
+
+
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -533,10 +550,11 @@ export function EditSection({
                 </div>
               ) : null}
 
-              {/* FIELDS (✅ replaced with accordion UI like screenshot) */}
               {tab === "fields" ? (
                 <CurrentForm
                   componentHtml={componentHtml}
+                  onChange={handleHtmlChange}
+                  // onAddField={handleAddHtml}
                 />
                 // <div className="space-y-4">
                 //   <FieldsEditor
@@ -939,9 +957,10 @@ export function EditSection({
             </DialogClose>
 
             <Button
-              type="submit"
+              // type="submit"
               className="rounded-xl text-white"
               style={{ backgroundColor: ACCENT }}
+              onClick={onSave}
             >
               Save changes
             </Button>
