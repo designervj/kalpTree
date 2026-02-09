@@ -16,7 +16,10 @@ export default async function AddBusiness() {
 
   return (
     <div className="space-y-6">
-      <BusinessCreatePage user={user} agencies={agencies} />
+      <BusinessCreatePage
+        user={JSON.parse(JSON.stringify(user))}
+        agencies={JSON.parse(JSON.stringify(agencies))}
+      />
     </div>
   );
 }
