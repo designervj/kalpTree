@@ -35,11 +35,12 @@ export default function StoreSettingsPage() {
             <div className="grid md:grid-cols-2 gap-4">
                <div className="space-y-2">
                   <Label>Store Name</Label>
-                  <Input defaultValue="Dzinly Store" />
+                  <Input defaultValue="KalpTree Store" />
                </div>
+               
                <div className="space-y-2">
                   <Label>Support Email</Label>
-                  <Input defaultValue="support@dzinly.com" />
+                  <Input defaultValue="support@kalptree.com" />
                </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">

@@ -951,6 +951,11 @@ export function DataTableExt({
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem onClick={() => opentab?.(row)}>
+                            <Eye className="h-4 w-4 mr-2 text-emerald-600" />
+                            Set is homepage
+                          </DropdownMenuItem>
+
                           {pageName === "pages" ? (
                             <DropdownMenuItem onClick={() => handleBuilderEdit(row)}>
                               <Layout className="h-4 w-4 mr-2" />
@@ -962,6 +967,8 @@ export function DataTableExt({
                             <Eye className="h-4 w-4 mr-2 text-emerald-600" />
                             View
                           </DropdownMenuItem>
+
+                          
 
                           <DropdownMenuItem onClick={() => onView?.(row)}>
                             <Edit2 className="h-4 w-4 mr-2" />

@@ -170,7 +170,7 @@ export default function BuilderSidebarLayout({
           {/* LEFT */}
           <div className="flex items-center gap-1 min-w-0">
             <img
-              src="/dzinly-favicon.svg"
+              src="/kalptree-favicon.svg"
               alt="KalpTree"
               className="w-[28px] h-[28px]"
             />

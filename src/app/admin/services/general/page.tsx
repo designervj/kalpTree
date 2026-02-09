@@ -28,7 +28,7 @@ export default function Page() {
             </label>
             <input
               type="text"
-              placeholder="Dzinly Admin"
+              placeholder="KalpTree Admin"
               className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -40,7 +40,7 @@ export default function Page() {
             </label>
             <input
               type="text"
-              placeholder="Dzinly Pvt Ltd"
+              placeholder="KalpTree Pvt Ltd"
               className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
@@ -52,9 +52,10 @@ export default function Page() {
             </label>
             <input
               type="email"
-              placeholder="support@dzinly.com"
+              placeholder="support@kalptree.com"
               className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
+            /> 
+            
           </div>
 
           {/* Phone */}

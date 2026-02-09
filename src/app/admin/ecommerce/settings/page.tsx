@@ -37,7 +37,7 @@ export default function StoreSettingsPage() {
                </div>
                <div className="space-y-2">
                   <Label>Support Email</Label>
-                  <Input defaultValue="support@KalpTree.com" />
+                  <Input defaultValue="support@kalptree.com" />
                </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">

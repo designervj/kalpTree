@@ -60,7 +60,7 @@ export function AccountSharing() {
             {activeTab === "request" && (
               <div className="space-y-4">
                 <p className="text-gray-600">
-                  Choose this option if there is another Hostinger account you
+                  Choose this option if there is another KalpTree account you
                   would like to manage. A request email will be sent to the
                   email address.
                 </p>

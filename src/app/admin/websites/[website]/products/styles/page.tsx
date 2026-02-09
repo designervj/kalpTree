@@ -105,7 +105,7 @@ const STYLES_SEED: StyleItem[] = [
     id: "s_1",
     name: "Modern Minimal",
     code: "modern-minimal",
-    brand: "Dzinly",
+    brand: "KalpTree",
     category: "Exterior",
     status: "active",
     featured: true,
@@ -118,7 +118,7 @@ const STYLES_SEED: StyleItem[] = [
     id: "s_2",
     name: "Warm Rustic",
     code: "warm-rustic",
-    brand: "Dzinly",
+    brand: "KalpTree",
     category: "Exterior",
     status: "active",
     featured: false,
@@ -399,7 +399,7 @@ export default function StylesPage() {
                       <Input
                         value={form.brand}
                         onChange={(e) => setForm((p) => ({ ...p, brand: e.target.value }))}
-                        placeholder="e.g., Dzinly / Partner Brand"
+                        placeholder="e.g., KalpTree  / Partner Brand"
                       />
                     </div>
 
