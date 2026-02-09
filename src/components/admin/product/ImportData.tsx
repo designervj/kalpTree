@@ -7,6 +7,14 @@ import {
   FileText,
   Loader2,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 
 export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
@@ -81,7 +89,7 @@ export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
 
   const handleDownloadJSON = () => {
     const link = document.createElement("a");
-    console.log(type)
+    console.log(type);
     if (type == "attribute") {
       link.href = "/sampleatttibute.json";
       link.download = "attribute.json";
@@ -107,6 +115,7 @@ export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
+          {/* Left */}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
               <Upload className="w-5 h-5 text-blue-600" />
@@ -118,9 +127,34 @@ export const JSONImportModal = ({ isOpen, onClose, onImport, type }: any) => {
               </p>
             </div>
           </div>
-          <button onClick={handleClose} disabled={isImporting}>
-            <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
-          </button>
+
+          {/* Right */}
+          {(type == "attribute" || type == "businesstype") && (
+            <div className="flex items-center gap-4">
+              {/* Category Select */}
+              <Select
+                // value={selectedCategory}
+                // onValueChange={setSelectedCategory}
+                disabled={isImporting}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue placeholder="Select Industry Type" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  <SelectItem value="furniture">Furniture</SelectItem>
+                  <SelectItem value="apparel">Apparel</SelectItem>
+                  <SelectItem value="electronics">Electronics</SelectItem>
+                  <SelectItem value="custom">Custom</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Close */}
+              <button onClick={handleClose} disabled={isImporting}>
+                <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Content */}

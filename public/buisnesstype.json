@@ -1,41 +1,101 @@
 [
   {
-    "name": "Modular Kitchen Set",
+    "name": "Ready-Made Apparel Sales",
+    "slug": "ready-made-apparel-sales",
     "attributes": [
-      "64f1a2b3c4d5e6f7890abc21",
-      "64f1a2b3c4d5e6f7890abc22",
-      "64f1a2b3c4d5e6f7890abc23",
-      "64f1a2b3c4d5e6f7890abc24",
-      "64f1a2b3c4d5e6f7890abc25"
+      "apparel-category",
+      "product-type",
+      "gender",
+      "age-group",
+      "fabric-type",
+      "color",
+      "pattern",
+      "fit-type",
+      "size",
+      "sleeve-type",
+      "neck-type",
+      "season",
+      "wash-care",
+      "price-band",
+      "packaging-type"
     ],
-    "sort_order": 1,
-    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+    "categoryId": "6989dadf2c688a2e33225813"
   },
   {
-    "name": "Bedroom Furniture Set",
+    "name": "Custom Apparel Manufacturing",
+    "slug": "custom-apparel-manufacturing",
     "attributes": [
-      "64f1a2b3c4d5e6f7890abc31",
-      "64f1a2b3c4d5e6f7890abc32",
-      "64f1a2b3c4d5e6f7890abc33",
-      "64f1a2b3c4d5e6f7890abc34",
-      "64f1a2b3c4d5e6f7890abc35",
-      "64f1a2b3c4d5e6f7890abc36"
+      "apparel-category",
+      "product-type",
+      "gender",
+      "fabric-type",
+      "fabric-blend",
+      "fabric-gsm",
+      "fabric-source",
+      "fit-type",
+      "size",
+      "customization-allowed",
+      "moq",
+      "lead-time"
     ],
-    "sort_order": 2,
-    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+    "categoryId": "6989dadf2c688a2e33225813"
   },
   {
-    "name": "Living Room Furniture Set",
+    "name": "Fashion Retail & D2C",
+    "slug": "fashion-retail-d2c",
     "attributes": [
-      "64f1a2b3c4d5e6f7890abc41",
-      "64f1a2b3c4d5e6f7890abc42",
-      "64f1a2b3c4d5e6f7890abc43",
-      "64f1a2b3c4d5e6f7890abc44",
-      "64f1a2b3c4d5e6f7890abc45",
-      "64f1a2b3c4d5e6f7890abc46",
-      "64f1a2b3c4d5e6f7890abc47"
+      "apparel-category",
+      "product-type",
+      "gender",
+      "target-audience",
+      "fabric-type",
+      "color",
+      "pattern",
+      "fit-type",
+      "size",
+      "season",
+      "price-band",
+      "packaging-type"
     ],
-    "sort_order": 3,
-    "categoryId": "6985c9e5198f7b2e93b9a7e6"
+    "categoryId": "6989dadf2c688a2e33225813"
+  },
+  {
+    "name": "Uniform & Corporate Apparel",
+    "slug": "uniform-corporate-apparel",
+    "attributes": [
+      "garment-type",
+      "gender",
+      "fabric-type",
+      "fabric-quality-grade",
+      "fabric-durability-grade",
+      "color",
+      "pattern",
+      "fit-type",
+      "size",
+      "wash-care",
+      "moq",
+      "lead-time",
+      "customization-allowed"
+    ],
+    "categoryId": "6989dadf2c688a2e33225813"
+  },
+  {
+    "name": "Bulk / Wholesale Clothing Supply",
+    "slug": "bulk-wholesale-clothing-supply",
+    "attributes": [
+      "product-type",
+      "gender",
+      "fabric-type",
+      "fabric-quality-grade",
+      "color",
+      "pattern",
+      "fit-type",
+      "size",
+      "moq",
+      "lead-time",
+      "price-band",
+      "packaging-type"
+    ],
+    "categoryId": "6989dadf2c688a2e33225813"
   }
 ]
