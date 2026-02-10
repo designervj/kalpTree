@@ -82,7 +82,7 @@ type FormField = {
   options: string[];
 };
 
-type FormSettings = {
+export type FormSettings = {
   // General
   mode: FormMode;
   formName: string;
@@ -551,11 +551,12 @@ export function EditSection({
               ) : null}
 
               {tab === "fields" ? (
-                <CurrentForm
-                  componentHtml={componentHtml}
-                  onChange={handleHtmlChange}
-                  // onAddField={handleAddHtml}
-                />
+                null
+                // <CurrentForm
+                //   componentHtml={componentHtml}
+                //   onChange={handleHtmlChange}
+                //   // onAddField={handleAddHtml}
+                // />
                 // <div className="space-y-4">
                 //   <FieldsEditor
                 //     fields={settings.fields}

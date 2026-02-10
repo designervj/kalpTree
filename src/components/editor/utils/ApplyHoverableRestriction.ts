@@ -22,6 +22,9 @@
     if (tagName === 'div' && isComponentUnderSection(component)) {
       component.set('hoverable', false);
     }
+    if(tagName === 'body'){
+      component.set('hoverable', false);
+    }
 
     const children = component.get('components');
     if (children && children.models) {

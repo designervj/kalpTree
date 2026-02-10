@@ -53,6 +53,8 @@ import {
   Trash2,
   Type,
 } from "lucide-react";
+import { useEditor } from "@/hooks/use-editor";
+import { useMemo } from "react";
 
 type FieldKind =
   | "short_answer"
@@ -76,7 +78,7 @@ export interface FormField {
 
 type Props = {
   componentHtml?: string;
-  onChange?: (html: string) => void;
+
   // onAddField?: (fields: FormField) => void
 };
 
@@ -406,35 +408,57 @@ function SortableFieldRow({
   );
 }
 
-export default function CurrentForm({ componentHtml, onChange }: Props) {
-  const [fields, setFields] = React.useState<FormField[]>(DEFAULT_FIELDS);
+export default function CurrentForm() {
+
+
+  const editorProps = useEditor("gjs-editor");
+  const {
+    state,
+    editForm,
+  } = editorProps;
+
+  const [fields, setFields] = React.useState<FormField[]>([]);
   const [openFieldId, setOpenFieldId] = React.useState<string | undefined>(
     undefined
   );
 
-  console.log("fields", fields);
-  console.log("openFieldId", openFieldId);
+  const componentHtml = useMemo(() => {
+    return editForm
+  }, [editForm])
+
 
   const generateHtml = (currentFields: FormField[]) => {
-    let html = '<form class="gjs-form">';
+
+    if (state.editor) {
+      const selected = state.editor.getSelected();
+      console.log("selected--->", selected);
+      const ccid = selected?.getId();
+      console.log("ccid--->", ccid);
+   
+    let html = `<form class="gjs-form" id="${ccid}">`;
     currentFields.forEach((f) => {
       if (!f.enabled) return;
+
+      const fieldName = f.label.toLowerCase().replace(/\s+/g, "_");
+      const requiredAttr = f.required ? "required" : "";
+      const labelText = `${f.label}${f.required ? "*" : ""}`;
+
       html += `
-        <div class="form-group mb-4">
-          <label class="block text-sm font-medium text-gray-700 mb-1">${f.label}${f.required ? "*" : ""}</label>
+        <div class="form-group">
+          <label>${labelText}</label>
           ${f.kind === "paragraph"
-          ? `<textarea name="${f.label.toLowerCase().replace(/\s+/g, "_")}" placeholder="${f.placeholder || ""}" ${f.required ? "required" : ""} class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent"></textarea>`
+          ? `<textarea name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} rows="5"></textarea>`
           : f.kind === "short_answer"
-            ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" placeholder="${f.placeholder || ""}" ${f.required ? "required" : ""} class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-violet-500 focus:border-transparent" />`
+            ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} />`
             : f.kind === "single_choice"
               ? `
-                <div class="space-y-2">
+                <div class="options-group">
                   ${(f.options || [])
                 .map(
                   (opt) => `
-                    <label class="flex items-center gap-2">
-                      <input type="radio" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" value="${opt.label}" class="text-violet-600 focus:ring-violet-500" />
-                      <span class="text-sm text-gray-700">${opt.label}</span>
+                    <label class="option-label">
+                      <input type="radio" name="${fieldName}" value="${opt.label}" />
+                      <span>${opt.label}</span>
                     </label>
                   `
                 )
@@ -443,13 +467,13 @@ export default function CurrentForm({ componentHtml, onChange }: Props) {
               `
               : f.kind === "multiple_choice"
                 ? `
-                <div class="space-y-2">
+                <div class="options-group">
                   ${(f.options || [])
                   .map(
                     (opt) => `
-                    <label class="flex items-center gap-2">
-                      <input type="checkbox" name="${f.label.toLowerCase().replace(/\s+/g, "_")}" value="${opt.label}" class="text-violet-600 focus:ring-violet-500 rounded" />
-                      <span class="text-sm text-gray-700">${opt.label}</span>
+                    <label class="option-label">
+                      <input type="checkbox" name="${fieldName}" value="${opt.label}" />
+                      <span>${opt.label}</span>
                     </label>
                   `
                   )
@@ -462,18 +486,15 @@ export default function CurrentForm({ componentHtml, onChange }: Props) {
       `;
     });
     html += `
-      <div class="mt-6">
-        <button type="submit" class="w-full bg-violet-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-violet-700 transition">Submit</button>
+      <div class="form-group">
+        <button type="submit">Submit</button>
       </div>
     </form>`;
     return html;
+  }
   };
 
-  React.useEffect(() => {
-    if (onChange) {
-      onChange(generateHtml(fields));
-    }
-  }, [fields, onChange]);
+
 
   React.useEffect(() => {
     if (!componentHtml) return;
@@ -482,46 +503,75 @@ export default function CurrentForm({ componentHtml, onChange }: Props) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(componentHtml, "text/html");
       const formGroups = doc.querySelectorAll(".form-group");
+      console.log("Found formGroups:", formGroups.length);
 
       const parsed: FormField[] = [];
 
       formGroups.forEach((group) => {
         const labelEl = group.querySelector("label");
-        const inputEl = group.querySelector("input");
-        const textEl = group.querySelector("textarea");
+        const textarea = group.querySelector("textarea");
+        const input = group.querySelector("input");
 
-        const el = (textEl || inputEl) as
-          | HTMLInputElement
-          | HTMLTextAreaElement
-          | null;
-        if (!labelEl || !el) return;
+        // Skip groups that don't have a label AND an input/textarea (like the submit button group)
+        if (!labelEl || (!textarea && !input)) return;
 
-        const name = el.getAttribute("name") || "";
-        if (!name) return;
+        let labelText = (labelEl.textContent || "").trim();
+        const required = labelText.endsWith("*") || (textarea || input)?.hasAttribute("required") || false;
+        if (labelText.endsWith("*")) labelText = labelText.slice(0, -1).trim();
 
-        let label = (labelEl.textContent || "").trim() || name;
-        if (label.endsWith("*")) label = label.slice(0, -1).trim();
+        let kind: FieldKind = "short_answer";
+        let placeholder = "";
+        let textType: TextInputType = "plain";
+        let options: FieldOption[] = [];
 
-        const required = el.hasAttribute("required");
-        const placeholder = el.getAttribute("placeholder") || "";
+        if (textarea) {
+          kind = "paragraph";
+          placeholder = textarea.getAttribute("placeholder") || "";
+        } else if (input) {
+          const type = input.getAttribute("type");
+          if (type === "radio") {
+            // Check if this label belongs to a radio group or is a single option
+            // In the case of multiple radios, they usually share a name
+            kind = "single_choice";
+            const radioGroup = group.querySelectorAll('input[type="radio"]');
+            radioGroup.forEach((r) => {
+              const optLabel = r.parentElement?.textContent?.trim() || (r as HTMLInputElement).value;
+              options.push({ id: uid(), label: optLabel });
+            });
+          } else if (type === "checkbox") {
+            kind = "multiple_choice";
+            const checkboxGroup = group.querySelectorAll('input[type="checkbox"]');
+            checkboxGroup.forEach((c) => {
+              const optLabel = c.parentElement?.textContent?.trim() || (c as HTMLInputElement).value;
+              options.push({ id: uid(), label: optLabel });
+            });
+          } else {
+            kind = "short_answer";
+            placeholder = input.getAttribute("placeholder") || "";
+            if (type === "email") textType = "email";
+            else if (type === "tel") textType = "phone";
+            else textType = "plain";
+          }
+        }
 
-        const tag = el.tagName.toLowerCase();
-        const kind: FieldKind = tag === "textarea" ? "paragraph" : "short_answer";
-
-        parsed.push({
+        const field: FormField = {
           id: uid(),
           kind,
-          label,
-          placeholder,
+          label: labelText,
           required,
           enabled: true,
-          textType: "plain",
-        });
+          placeholder: (kind === "paragraph" || kind === "short_answer") ? placeholder : undefined,
+          textType: kind === "short_answer" ? textType : undefined,
+          options: (kind === "single_choice" || kind === "multiple_choice") ? options : undefined,
+        };
+
+        parsed.push(field);
       });
 
+      console.log("Parsed fields:", parsed);
       if (parsed.length) setFields(parsed);
-    } catch {
-      // ignore parse errors
+    } catch (err) {
+      console.error("Parse error:", err);
     }
   }, [componentHtml]);
 
@@ -628,6 +678,30 @@ export default function CurrentForm({ componentHtml, onChange }: Props) {
     );
   };
 
+
+  const handleUpdateForm = () => {
+    const html = generateHtml(fields);
+    console.log("html--->", html);
+    if (html) {
+      if (state.editor) {
+      const selected = state.editor.getSelected();
+      console.log("selected--->", selected);
+      if (selected) {
+        // Since 'html' includes the <form> tag, and 'selected' is the form component,
+        // we replace the entire component to avoid nesting and ensure all attributes are updated.
+        const newComponent = selected.replaceWith(html);
+
+        // Re-select the new component so the sidebar/editor state remains consistent
+        if (newComponent) {
+          const toSelect = Array.isArray(newComponent) ? newComponent[0] : newComponent;
+          state.editor.select(toSelect);
+        }
+
+        console.log("Form saved and updated on canvas");
+      }
+    }
+    }
+  }
   return (
     <div className="w-full max-w-[420px] rounded-2xl bg-white shadow-sm">
       <Select onValueChange={(v) => addField(v as FieldKind)}>
@@ -692,6 +766,12 @@ export default function CurrentForm({ componentHtml, onChange }: Props) {
           </SortableContext>
         </DndContext>
       </div>
+
+      <Button
+        onClick={handleUpdateForm}
+      >
+        Update Form
+      </Button>
     </div>
   );
 }
