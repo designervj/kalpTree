@@ -12,6 +12,7 @@ import { updateHeader } from "./slices/header/HeaderThunk";
 import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
 import { handleInteractivityChange } from "@/hooks/editor-interactivity";
 import { defaultBlocks } from "../../utils/block-library";
+import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
 
 // Extend HTMLElement to include event handlers storage
 declare global {
@@ -375,6 +376,12 @@ export function useEditor(containerId: string) {
 
             // Setup event listeners
             setupEventListeners(editor as unknown as GrapesJSEditor);
+
+            // Apply hoverable restriction to existing components
+            const wrapper = editor.Components.getWrapper();
+            if (wrapper) {
+              applyHoverableRestriction(wrapper);
+            }
 
             // Get blocks
             try {
@@ -927,11 +934,15 @@ export function useEditor(containerId: string) {
 
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
+    // on mouse
+    editor.on("component:hover", (component: any) => {
+      const tagName = component.get('tagName');
+     
+    });
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component. --->", component)
-      // const scriptString = component?.getScript();
-      // console.log("Script string:", scriptString);
+      console.log("component.nes s --->", component)
+
       if (component?.attributes?.tagName === 'form') {
         // how to know the child of form
         const componentHtml = component.toHTML();
@@ -1087,9 +1098,17 @@ export function useEditor(containerId: string) {
 
     // Component changes - commented out component:update to prevent excessive updates
     // editor.on("component:update", () => updateLayers(editor));
-    editor.on("component:add", () => updateLayers(editor));
+    editor.on("component:add", (component: any) => {
+      const tagName = component.get('tagName');
+      if (tagName === 'div' && isComponentUnderSection(component)) {
+        component.set('hoverable', false);
+      }
+      updateLayers(editor);
+    });
     editor.on("component:remove", () => updateLayers(editor));
   };
+
+
 
   // Helper function to get the full hierarchy path of a component
   const getComponentHierarchy = (component: any): string[] => {

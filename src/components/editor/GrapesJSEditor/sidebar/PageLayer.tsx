@@ -340,9 +340,9 @@ const PageLayer = () => {
         const next = new Set(prev);
         state.autoExpandedLayers?.forEach((layerId) => {
           next.add(layerId);
-          console.log('➕ Expanding layer:', layerId);
+   
         });
-        console.log('📂 All expanded IDs:', Array.from(next));
+      
         return next;
       });
     }
@@ -550,7 +550,7 @@ const PageLayer = () => {
     return <div className="p-4 text-center text-gray-500 text-xs">Loading layers...</div>;
   }
 
-  console.log("root component", rootComponent);
+
 
 
 

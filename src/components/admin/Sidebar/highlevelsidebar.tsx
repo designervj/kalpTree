@@ -127,6 +127,7 @@ const navigationItems = [
       { label: "Webhooks", href: "/admin/settings/webhooks" },
       { label: "Data Export", href: "/admin/settings/data-export" },
       { label: "Security", href: "/admin/setting/security" },
+         { label: "Global Styles", href: "/admin/settings/global-styles" },
     ],
   },
   {
