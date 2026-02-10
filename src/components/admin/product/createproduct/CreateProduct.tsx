@@ -104,6 +104,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
     allcategories: [],
   });
 
+  console.log(formData);
+
   const [images, setImages] = useState<ImageFile[]>([]);
   const [productOptions, setProductOptions] = useState<ProductOption[]>([]);
   const [variantConfigs, setVariantConfigs] = useState<VariantConfig[]>([]);
@@ -111,6 +113,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
   const [showValueDropdown, setShowValueDropdown] = useState<number | null>(
     null,
   );
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [valueSearchTerm, setValueSearchTerm] = useState<{
     [key: number]: string;
@@ -253,6 +257,12 @@ export function CreateProduct({ productId }: { productId?: string }) {
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
+    if (name == "allCategories") {
+      const copied = structuredClone(formData);
+      if (formData.allcategories?.includes(value)) {
+      }
+      return;
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -409,6 +419,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
       productdata: {
         ...formData,
         options: productOptions,
+        allcategories: [...selectedCategories],
       },
       variantData: variantConfigs,
     };
@@ -753,6 +764,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
             attributesetid={attributesetid}
             setAttributeSetId={setAttributeSetId}
             listAttributeSets={listAttributeSets}
+            setSelectedCategories={setSelectedCategories}
+            selectedCategories={selectedCategories}
           />
         </div>
         {formData.productType === "hotel" && (

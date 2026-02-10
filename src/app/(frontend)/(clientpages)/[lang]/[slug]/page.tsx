@@ -8,6 +8,8 @@ import ModernCartPage from "@/components/admin/product/Cart/Cart";
 import ModernCheckout from "@/components/admin/product/Cart/CheckoutPage";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
+import ProductCategoryPage from "../product-category/page";
+import SingleProductPage from "../product/[slug]/page";
 
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
@@ -42,7 +44,7 @@ export default async function PageTemplate({
   // if(!session){
   //   redirect("/auth/signin");
   // }
-  
+
   let slug = param?.slug ? param.slug : null;
   let lang = param?.lang ? param.lang : null;
 
@@ -89,6 +91,18 @@ export default async function PageTemplate({
         _id: websitedata._id.toString(),
         tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
       };
+    }
+
+    if (
+      (lang!.length > 2 && lang === "product-category") ||
+      (lang!.length == 2 && slug == "product-category")
+    ) {
+      return <ProductCategoryPage params={params} />;
+    } else if (
+      (lang!.length > 2 && lang === "product") ||
+      (lang!.length == 2 && slug == "product")
+    ) {
+      return <SingleProductPage params={params} />;
     }
 
     const obj: any = {
@@ -197,4 +211,3 @@ export default async function PageTemplate({
     return <NotFound />;
   }
 }
-

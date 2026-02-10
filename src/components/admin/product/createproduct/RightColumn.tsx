@@ -50,6 +50,8 @@ export const RightColumn = ({
   attributesetid,
   setAttributeSetId,
   listAttributeSets,
+  setSelectedCategories,
+  selectedCategories
 }: any) => {
   const {
     listCategory,
@@ -75,7 +77,8 @@ export const RightColumn = ({
     return buildCategoryTree(listCategory);
   }, [listCategory]);
 
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+
+  
 
   const toggleCategory = (id: string) => {
     let copied = structuredClone(selectedCategories);
@@ -107,6 +110,8 @@ export const RightColumn = ({
       }
       copied.push(id);
     }
+
+    // handleInputChange()
 
     setSelectedCategories(copied);
   };

@@ -1081,7 +1081,7 @@ const ProductGalleryPage: React.FC = ({ actions }: any) => {
       ${config.showBadge && product.badge ? `<span style="position: absolute; top: 16px; right: 16px; background: #ef4444; color: white; padding: 6px 12px; border-radius: 6px; font-size: 14px; font-weight: 600;">${product.badge}</span>` : ""}
     </div>
     <div style="padding: 24px;">
-      <h3 style="font-size: 24px; font-weight: 700; margin: 0 0 8px 0; color: #1f2937;">${product.name}</h3>
+      <h3 pro-hint="price" style="font-size: 24px; font-weight: 700; margin: 0 0 8px 0; color: #1f2937;">${product.name}</h3>
       ${product.category ? `<p style="color: #6b7280; font-size: 14px; margin: 0 0 12px 0;">${product.category}</p>` : ""}
       ${config.showDescription && product.description ? `<p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">${product.description}</p>` : ""}
       ${config.showPrice ? `<p style="font-size: 28px; font-weight: 700; color: #059669; margin: 0;">$${product.price}</p>` : ""}
@@ -1091,10 +1091,12 @@ const ProductGalleryPage: React.FC = ({ actions }: any) => {
       )
       .join("");
 
+      
+
     return `
 <div class="product-gallery-container" style="position: relative; width: 100%; max-width: 800px; margin: 0 auto; padding: 40px 20px;">
   <div style="text-align: center; margin-bottom: 40px;">
-    <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">${heading}</h1>
+    <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">[pro_head]</h1>
     ${subheading ? `<h2 style="font-size: 20px; font-weight: 500; color: #6b7280; margin: 0 0 16px 0;">${subheading}</h2>` : ""}
     ${description ? `<p style="font-size: 16px; color: #4b5563; line-height: 1.6; max-width: 600px; margin: 0 auto;">${description}</p>` : ""}
   </div>
