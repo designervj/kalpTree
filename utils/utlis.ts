@@ -11,7 +11,7 @@ export const convertName = (name: string) => {
 export const demoPages = [
   {
     title: "Home",
-     content:`
+    content: `
      <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -453,7 +453,7 @@ export const demoPages = [
                 </div>
             </div>
             <div class="hero-image">
-                <div class="phone-mockup">
+                <div class="phone-mockup" data-no-select="true">
                     <img src="https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&q=80&w=400" alt="Video Call Application">
                 </div>
             </div>
@@ -530,7 +530,7 @@ export const demoPages = [
                     <div class="bubble b1">Is my baby getting enough sleep?</div>
                     <div class="bubble b2">How to handle a picky eater?</div>
                     <div class="bubble b3">What do I do if my son is addicted to his iPad?</div>
-                    <div class="phone-mockup" style="width: 280px; height: 560px; border-width: 8px;">
+                    <div class="phone-mockup" style="width: 280px; height: 560px; border-width: 8px;" data-no-select="true">
                         <img src="https://images.unsplash.com/photo-1587653263995-422546a72569?auto=format&fit=crop&q=80&w=400" alt="App Usage">
                     </div>
                 </div>

@@ -37,8 +37,7 @@ export function CodeEditor({
   const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState("html");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-  console.log("editore", js)
+  
   useEffect(() => {
     setLocalHtml(html || "");
     setLocalCss(css || "");
@@ -153,7 +152,7 @@ export function CodeEditor({
   };
 
 
-  console.log("localJs", localJs)
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>

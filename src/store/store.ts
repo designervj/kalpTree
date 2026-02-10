@@ -18,6 +18,7 @@ import templateReducer from "../hooks/slices/templates/TemplateSlice";
 import headerReducer from "../hooks/slices/header/HeaderSlice";
 import footerReducer from "../hooks/slices/footer/FooterSlice";
 import attributesetsReducer from "../hooks/slices/attributessets/attributeSetsSlice";
+import globalStyleReducer from "../hooks/slices/setting/globalStyle/GlobalStyleSlice";
 
 export const store = configureStore({
   reducer: {
@@ -43,6 +44,7 @@ export const store = configureStore({
     account: accountReducer,
 
     attributeSets: attributesetsReducer,
+    globalStyle: globalStyleReducer,
   },
 });
 
