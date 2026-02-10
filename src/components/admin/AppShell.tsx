@@ -144,6 +144,8 @@ export type Website = {
   status?: "active" | "paused" | "error";
   lang?: [{ name: string; code: string }];
   isComingSoon?: boolean;
+  globalStyle?: string;
+  globalStyles?: string;
 };
 
 export type User = {

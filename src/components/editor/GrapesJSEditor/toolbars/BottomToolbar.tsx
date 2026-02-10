@@ -17,7 +17,7 @@ type BottomToolbarProps = {
   devices: any[];
   onDeviceChange: (deviceId: string) => void;
   onToggleResponsivePanel: () => void;
-  onAddDevice: (device: any) => void;
+  onAddDevice: (device: any) => void; 
   onRemoveDevice: (deviceId: string) => void;
   onUpdateDevice: (deviceId: string, updates: Partial<any>) => void;
 };

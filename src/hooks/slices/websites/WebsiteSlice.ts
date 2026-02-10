@@ -50,7 +50,12 @@ const websitesSlice = createSlice({
       state.websites.unshift(action.payload);
       // state.selectedWebsites.unshift(action.payload);
       state.currentWebsite = action.payload;
-    },  
+    },
+    updateCurrentWebsiteGlobalStyle(state, action: PayloadAction<string>) {
+      if (state.currentWebsite) {
+        state.currentWebsite.globalStyle = action.payload;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -67,9 +72,9 @@ const websitesSlice = createSlice({
       .addCase(savedashboardDetailsThunk.pending, (state) => {
         state.isLoading = true;
       })
-.addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
+      .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { websites, user, business ,businessid } = action.payload;
+        const { websites, user, business, businessid } = action.payload;
         if (websites && business && businessid) {
           state.websites = websites;
 
@@ -78,7 +83,7 @@ const websitesSlice = createSlice({
           if (allwebsites) {
             state.selectedWebsites = allwebsites
             state.currentWebsite = allwebsites[0]
-           // state.currentWebsite = allwebsites[0]
+            // state.currentWebsite = allwebsites[0]
           }
         }
       })
@@ -87,7 +92,7 @@ const websitesSlice = createSlice({
       })
 
       //get current website
-   
+
       .addCase(getCurrentWebsites.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentWebsite = action.payload[0]
@@ -96,7 +101,7 @@ const websitesSlice = createSlice({
   },
 });
 
-export const { setWebsites, 
+export const { setWebsites,
   clearWebsites, setCurrentWebsite,
-   setSelectedWebsite,addCreatedWebsite } = websitesSlice.actions;
+  setSelectedWebsite, addCreatedWebsite, updateCurrentWebsiteGlobalStyle } = websitesSlice.actions;
 export default websitesSlice.reducer;

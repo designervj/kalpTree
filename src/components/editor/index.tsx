@@ -58,6 +58,10 @@ export default function GrapesJSEditor() {
     (state: RootState) => state.pageEdit,
   );
 
+  const { currentWebsite } = useSelector(
+    (state: RootState) => state.websites,
+  );
+
   // const parser = new DOMParser();
   // const doc = parser.parseFromString(editorHtml, "text/html");
   // const final = doc.querySelectorAll(".product-gallery-container");
@@ -96,16 +100,25 @@ export default function GrapesJSEditor() {
 
   const contentLoadedRef = useRef<boolean>(false);
 
+  // Reactive global style updates
+  useEffect(() => {
+    if (state.editor && currentWebsite?.globalStyle) {
+      console.log("🎨 Reactively updating global styles...");
+      actions.setGlobalStyles(currentWebsite.globalStyle);
+    }
+  }, [state.editor, currentWebsite?.globalStyle]);
+
   // Trigger loading state when page content changes
   useEffect(() => {
-    if (page?.content && !contentLoadedRef.current) {
+    if (page?.content && !contentLoadedRef.current && currentWebsite?.globalStyle) {
+      console.log("loading started")
       dispatch(setPageLoading(true));
     }
-  }, [page?.id, page?.content, dispatch]);
+  }, [page?.id, page?.content, currentWebsite?.globalStyle, dispatch]);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
-    if (!state.editor || !page?.content) return;
+    if (!state.editor || !page?.content || !currentWebsite?.globalStyle) return;
 
     const selected = getSelectedGalleryProductFromEditor(state.editor);
 
@@ -221,7 +234,7 @@ export default function GrapesJSEditor() {
     return () => {
       state.editor?.off("load", handleLoad);
     };
-  }, [state.editor, state.isLoading, page?.content]);
+  }, [state.editor, state.isLoading, page?.content, currentWebsite?.globalStyle]);
 
   function getSelectedGalleryProductFromEditor(editor: any) {
     if (!editor?.Canvas) return null;
@@ -276,7 +289,6 @@ export default function GrapesJSEditor() {
     const updateHandler = () => {
       const html = state.editor.getHtml();
 
-      console.log("hfjhhfdhhfhfh----", html);
 
       setEditorHtml(html);
       //  dispatch({ type: "pageEdit/setContent", payload: html });
@@ -645,6 +657,7 @@ export default function GrapesJSEditor() {
     }
   };
 
+
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
@@ -727,7 +740,7 @@ export default function GrapesJSEditor() {
         />
 
         {/* edit form */}
-        <EditForm componentHtml={editForm} onSave={handleFormSave} />
+        {/* <EditForm componentHtml={editForm} onSave={handleFormSave} /> */}
 
         <GetAllTemplate />
       </div>
