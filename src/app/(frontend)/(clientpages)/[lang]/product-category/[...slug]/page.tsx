@@ -92,8 +92,72 @@ export default async function SingleProductCategoryPage({
         <main className="flex-grow">
           <GetAllProduct websiteId={currentWebsite?._id} />
           <GetAllcategory websiteId={currentWebsite?._id} />
+          {/* <ProductShowcase
+            category={slug ? slug[slug.length - 1] : "All Products"}
+          /> */}
+          {/* <ProductShowcase
+            category={slug ? slug[slug.length - 1] : "All Products"}
+            layoutConfig={{
+              filterPosition: "top",
+              gridColumns: { mobile: 2, tablet: 3, desktop: 4 },
+            }}
+            styleConfig={{
+              primaryColor: "#dc2626",
+              secondaryColor: "#525252",
+              accentColor: "#f97316",
+              fontFamily: "Oswald",
+              buttonStyle: "pill",
+              cardStyle: "flat",
+            }}
+            heroConfig={{
+              backgroundImage: "https://example.com/sports-bg.jpg",
+              title: "UNLEASH YOUR POTENTIAL",
+              subtitle: "Premium Athletic Gear",
+              overlayOpacity: 0.5,
+              titleColor: "#ffffff",
+              titleSize: "5xl",
+              titleTracking: "8px",
+            }}
+            paginationConfig={{
+              enabled: true,
+              position: "both",
+              style: "compact",
+              buttonShape: "circular",
+              itemsPerPage: 16,
+            }}
+            cardConfig={{
+              showRating: true,
+              showSaleBadge: true,
+              imageAspectRatio: "3/4",
+              hoverEffect: "scale",
+              placeholderIcon: "⚡",
+            }}
+          /> */}
+
           <ProductShowcase
             category={slug ? slug[slug.length - 1] : "All Products"}
+            layoutConfig={{
+              filterPosition: "top",
+              gridColumns: { mobile: 1, tablet: 2, desktop: 3 },
+              showHeroSection: true,
+              heroHeight: "40vh",
+            }}
+            styleConfig={{
+              primaryColor: "#000000",
+              secondaryColor: "#666666",
+              accentColor: "#2563eb",
+              fontFamily: "Montserrat",
+              buttonStyle: "square",
+              cardStyle: "flat",
+            }}
+            paginationConfig={{
+              enabled: true,
+              position: "bottom",
+              style: "numbers",
+              buttonShape: "square",
+              itemsPerPage: 9,
+              showPageInfo: true,
+            }}
           />
         </main>
 

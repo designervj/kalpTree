@@ -105,29 +105,29 @@ export default async function PageTemplate({
       return <SingleProductPage params={params} />;
     }
 
-    const obj: any = {
-      cart: <ModernCartPage />,
-      checkout: (
-        <>
-          <GetAllProduct websiteId={currentWebsite?._id} />
-          <ModernCheckout />
-        </>
-      ),
-      product: (
-        <>
-          <GetAllProduct websiteId={currentWebsite?._id} />
+    // const obj: any = {
+    //   cart: <ModernCartPage />,
+    //   checkout: (
+    //     <>
+    //       <GetAllProduct websiteId={currentWebsite?._id} />
+    //       <ModernCheckout />
+    //     </>
+    //   ),
+    //   product: (
+    //     <>
+    //       <GetAllProduct websiteId={currentWebsite?._id} />
 
-          {/* <GetAllAttribute />
-          <GetAllcategory />
-          <GetAllBrand /> */}
-          <ProductShowcase />
-        </>
-      ),
-    };
+    //       {/* <GetAllAttribute />
+    //       <GetAllcategory />
+    //       <GetAllBrand /> */}
+    //       <ProductShowcase />
+    //     </>
+    //   ),
+    // };
 
-    if (slug! in obj) {
-      return obj[slug!];
-    }
+    // if (slug! in obj) {
+    //   return obj[slug!];
+    // }
 
     if (!website) {
       return <NotFound />;

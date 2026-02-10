@@ -267,3 +267,28 @@ export const extractStyles = (htmlContent: string): string => {
 
   return styles.join('\n');
 };
+
+
+export function groupAttributesByTitle(data:any) {
+  const map = new Map();
+
+  data.forEach((item:any) => {
+    const title = item.title;
+    const values = item.values || [];
+
+    if (!map.has(title)) {
+      map.set(title, new Set());
+    }
+
+    values.forEach((value:any) => {
+      if (typeof value === "string") {
+        map.get(title).add(value.trim());
+      }
+    });
+  });
+
+  return Array.from(map.entries()).map(([title, valuesSet]) => ({
+    title,
+    values: Array.from(valuesSet)
+  }));
+}
