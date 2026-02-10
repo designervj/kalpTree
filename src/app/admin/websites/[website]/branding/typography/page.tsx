@@ -1041,10 +1041,12 @@ export default function TypographyPage() {
             >
               Brand Guidelines for Web
             </div>
-            <div className="mt-2 text-sm opacity-85" style={{ maxWidth: 740 }}>
+            {/* <div className="mt-2 text-sm opacity-85" style={{ maxWidth: 740 }}>
               Is page ka goal: user ko clearly dikhaana chahiye ki kaunse colors, fonts, aur font sizes use ho rahe hain.
               Sab kuch root tokens se control hota hai.
-            </div>
+            </div> */}
+
+            <p className="borderColor">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>
           </div>
 
           {/* ✅ 4 buttons (clickable) */}
