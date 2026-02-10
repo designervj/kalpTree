@@ -219,24 +219,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           </Tabs>
         );
 
-      // case "setup":
-      //   if (!selectedElement) return renderEmptySelectionMessage("Box", "setup");
-      //   return (
-      //     <AttributesEditor
-      //       selectedElement={selectedElement}
-      //       onAttributeChange={onAttributeChange}
-      //     />
-      //   );
-
-      // case "interactivity":
-      //   if (!selectedElement)
-      //     return renderEmptySelectionMessage("MousePointer", "interactivity");
-      //   return (
-      //     <InteractivityEditor
-      //       selectedElement={selectedElement}
-      //       onInteractivityChange={onInteractivityChange}
-      //     />
-      //   );
 
         case "global":
       

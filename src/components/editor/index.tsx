@@ -268,7 +268,7 @@ export default function GrapesJSEditor() {
       finalGallery.push(final);
     });
 
-    console.log("====>>>.", finalGallery);
+
 
     // const productItem = doc.querySelectorAll(".gallery-item");
 
@@ -740,7 +740,7 @@ export default function GrapesJSEditor() {
         />
 
         {/* edit form */}
-        {/* <EditForm componentHtml={editForm} onSave={handleFormSave} /> */}
+        <EditForm componentHtml={editForm} onSave={handleFormSave} />
 
         <GetAllTemplate />
       </div>

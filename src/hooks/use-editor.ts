@@ -476,8 +476,7 @@ export function useEditor(containerId: string) {
               // Find the style for the current tenant or just use the first one if only one exist
               console.log("🔄 Using fallback globalStyle from Redux slice");
             }
-            console.log("global styles---->", styleToInject)
-            console.log("🎨 Style to inject found:", styleToInject ? "YES" : "NO");
+         
             injectCanvasStyles(editor, page?.content, styleToInject);
 
             // Setup event listeners
@@ -1042,7 +1041,7 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
     editor.on("component:hover", (component: any) => {
-      const tagName = component.get('tagName');
+      
 
     });
     // Component selection

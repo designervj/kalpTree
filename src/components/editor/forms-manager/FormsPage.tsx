@@ -46,71 +46,14 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import CurrentForm from "../sectionEdit/CurrentForm";
-
-
-/** 🎨 Keep the same purple look/feel */
-const ACCENT = "#6D5EF5";
-
-type FormMode = "standalone" | "connected";
-type SubmitAction = "message" | "link";
-type BtnPos = "left" | "center" | "right";
-type StyleElement = "form_fields" | "button" | "labels";
-type StyleState = "normal" | "hover";
-type Anim = "none" | "fade" | "slide" | "scale";
-
-/** ✅ New field input types as per screenshot */
-type FieldInputType = "short" | "paragraph" | "single" | "multi";
-
-type FormField = {
-    id: string;
-    label: string;
-
-    enabled: boolean;
-    required: boolean;
-
-    inputType: FieldInputType;
-    placeholder: string;
-
-    requiredMessage: string;
-
-    // only for single/multi choice
-    options: string[];
-};
-
-type FormSettings = {
-    // General
-    mode: FormMode;
-    formName: string;
-    notifyEmail: string;
-
-    // Fields
-    fields: FormField[];
-
-    // Button
-    buttonText: string;
-    stretchOnMobile: boolean;
-    buttonPosition: BtnPos;
-    submitAction: SubmitAction;
-    thankYouMessage: string;
-    redirectUrl: string;
-
-    // Style
-    styleElement: StyleElement;
-    styleState: StyleState;
-    fillColor: string;
-    fontFamily: string;
-    labelTextColor: string;
-    labelTextSize: number;
-    fieldTextColor: string;
-    fieldTextSize: number;
-    borderColor: string;
-    borderWidth: number;
-    cornerRadius: number;
-    spacing: number;
-
-    // Animation
-    animation: Anim;
-};
+import { ACCENT } from "./constants";
+import { TabHeader } from "./TabHeader";
+import { PillTabs } from "./PillTabs";
+import { SettingRow } from "./SettingRow";
+import { IconRadio } from "./IconRadio";
+import { AnimationCard } from "./AnimationCard";
+import { FormMode, FormSettings, FieldInputType, FormField, StyleElement, Anim } from "./types";
+import General from "./General";
 
 const uid = () =>
     typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -204,164 +147,11 @@ const DEFAULT_SETTINGS: FormSettings = {
     animation: "slide",
 };
 
-function TabHeader() {
-    return (
-        <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-                <h3 className="text-xl font-semibold tracking-tight">
-                    Contact form settings
-                </h3>
-            </div>
-            <DialogClose asChild>
-                <button
-                    className={cn(
-                        "inline-flex h-9 w-9 items-center justify-center rounded-full border bg-white text-slate-700",
-                        "hover:bg-slate-50"
-                    )}
-                    aria-label="Close"
-                >
-                    <X className="h-4 w-4" />
-                </button>
-            </DialogClose>
-        </div>
-    );
-}
 
-function PillTabs({
-    value,
-    onValueChange,
-}: {
-    value: string;
-    onValueChange: (v: string) => void;
-}) {
-    return (
-        <Tabs value={value} onValueChange={onValueChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 bg-transparent p-0">
-                {[
-                    ["general", "General"],
-                    ["fields", "Fields"],
-                    ["button", "Button"],
-                    ["style", "Style"],
 
-                ].map(([k, label]) => (
-                    <TabsTrigger
-                        key={k}
-                        value={k}
-                        className={cn(
-                            "rounded-none border-b-2 border-transparent px-0 py-3 text-sm",
-                            "data-[state=active]:bg-transparent data-[state=active]:shadow-none",
-                            "data-[state=active]:text-slate-900",
-                            "data-[state=inactive]:text-slate-500"
-                        )}
-                        style={
-                            k === value
-                                ? { borderBottomColor: ACCENT }
-                                : { borderBottomColor: "transparent" }
-                        }
-                    >
-                        {label}
-                    </TabsTrigger>
-                ))}
-            </TabsList>
-        </Tabs>
-    );
-}
-
-function SettingRow({
-    title,
-    desc,
-    left,
-    right,
-}: {
-    title: string;
-    desc?: string;
-    left?: React.ReactNode;
-    right?: React.ReactNode;
-}) {
-    return (
-        <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                    {left}
-                    <div className="text-sm font-medium text-slate-900">{title}</div>
-                </div>
-                {desc ? (
-                    <div className="mt-0.5 text-sm text-slate-500">{desc}</div>
-                ) : null}
-            </div>
-            {right ? <div className="shrink-0">{right}</div> : null}
-        </div>
-    );
-}
-
-function IconRadio({
-    checked,
-    title,
-    desc,
-}: {
-    checked: boolean;
-    title: string;
-    desc: string;
-}) {
-    return (
-       <div className="flex items-start gap-3">
-  {/* Radio Icon */}
-  <div
-    className={cn(
-      "relative mt-0.5 h-5 w-5 shrink-0 rounded-full border-2 flex items-center justify-center",
-      checked ? "border-transparent" : "border-slate-400"
-    )}
-    style={checked ? { backgroundColor: ACCENT } : undefined}
-  >
-    {checked && (
-      <span className="h-2.5 w-2.5 rounded-full bg-white" />
-    )}
-  </div>
-
-  {/* Text */}
-  <div className="min-w-0">
-    <div className="text-sm font-semibold text-slate-900 leading-tight">
-      {title}
-    </div>
-    <p className="text-[12px] text-slate-500 leading-snug">
-      {desc}
-    </p>
-  </div>
-</div>
-
-    );
-}
-
-function AnimationCard({
-    active,
-    title,
-    onClick,
-}: {
-    active: boolean;
-    title: string;
-    onClick: () => void;
-}) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={cn(
-                "group rounded-2xl border bg-white p-4 text-left transition",
-                active ? "border-transparent" : "border-slate-200 hover:bg-slate-50"
-            )}
-            style={active ? { outline: `2px solid ${ACCENT}` } : undefined}
-        >
-            <div className="flex h-16 items-center justify-center rounded-md bg-slate-100">
-                <div className="h-6 w-16 rounded-md bg-slate-400" />
-            </div>
-            <div className="mt-3 text-sm font-medium text-slate-900">{title}</div>
-        </button>
-    );
-}
 
 export function FormsPage({
-    open,
-    setOpen,
+ 
     componentHtml,
 }: {
     open?: boolean;
@@ -399,134 +189,16 @@ export function FormsPage({
                 <div className="px-0 py-0">
                     {/* GENERAL */}
                     {tab === "general" ? (
-                        <div className="space-y-5">
-                            {/* Purple promo card */}
-                            {/* <div
-                                className="rounded-2xl p-4 text-white"
-                                style={{ backgroundColor: ACCENT }}
-                            >
-                                <div className="text-base font-semibold">
-                                    Say hi to your subscribers – in minutes
-                                </div>
-                                <p className="mt-2 text-sm/5 text-white/90">
-                                    Let AI write and design on-brand emails that get noticed.
-                                    Track analytics to spot top performing emails.
-                                </p>
-                                <div className="mt-4 space-y-2">
-                                    <Button
-                                        type="button"
-                                        className="w-full rounded-md bg-white font-semibold"
-                                        style={{ color: ACCENT }}
-                                    >
-                                        Start sending emails
-                                        <ExternalLink className="ml-2 h-4 w-4" />
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="w-full rounded-md border-white/40 bg-transparent text-white hover:bg-white/10"
-                                    >
-                                        Learn more
-                                    </Button>
-                                </div>
-                            </div> */}
-
-                            {/* Form mode radios */}
-                            <RadioGroup
-                                value={settings.mode}
-                                onValueChange={(v) => set("mode", v as FormMode)}
-                                className="space-y-2"
-                            >
-                                <label className="cursor-pointer">
-                                    <div className="flex items-start gap-3">
-                                        <RadioGroupItem value="standalone" className="sr-only" />
-                                        <IconRadio
-                                            checked={settings.mode === "standalone"}
-                                            title="Stand-alone form"
-                                            desc="Collects its own list of submissions"
-                                        />
-                                    </div>
-                                </label>
-
-                                <label className="cursor-pointer">
-                                    <div className="flex items-start gap-3">
-                                        <RadioGroupItem value="connected" className="sr-only" />
-                                        <IconRadio
-                                            checked={settings.mode === "connected"}
-                                            title="Connected form"
-                                            desc="Collects submissions into one list with the connected form"
-                                        />
-                                    </div>
-                                </label>
-                            </RadioGroup>
-
-                            <Separator />
-
-                            <div className="space-y-3">
-                                <div className="space-y-1">
-                                    <Label className="text-sm font-semibold text-slate-900">
-                                        Form name
-                                    </Label>
-                                    <div className="text-sm text-slate-500">
-                                        Appears in the submissions list. Visible to you.
-                                    </div>
-                                </div>
-                                <Input
-                                    value={settings.formName}
-                                    onChange={(e) => set("formName", e.target.value)}
-                                    className="h-11 rounded-md"
-                                />
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="space-y-1">
-                                    <Label className="text-sm font-semibold text-slate-900">
-                                        Email
-                                    </Label>
-                                    <div className="text-sm text-slate-500">
-                                        Email notifications for submissions
-                                    </div>
-                                </div>
-                                <Input
-                                    value={settings.notifyEmail}
-                                    onChange={(e) => set("notifyEmail", e.target.value)}
-                                    className="h-11 rounded-md"
-                                />
-                            </div>
-
-                            <Separator />
-
-                            <div className="space-y-2">
-                                <div className="text-sm font-semibold text-slate-900">
-                                    Submissions Lists
-                                </div>
-                                <div className="text-sm text-slate-500">
-                                    Manage all form submissions
-                                </div>
-
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    className="w-full rounded-md mt-2"
-                                    style={{ color: ACCENT, borderColor: "#E5E7EB" }}
-                                >
-                                    View Submissions Lists
-                                </Button>
-                            </div>
-                        </div>
+                        <General
+                       
+                        />
                     ) : null}
 
                     {/* FIELDS (✅ replaced with accordion UI like screenshot) */}
                     {tab === "fields" ? (
                         <CurrentForm
-                            componentHtml={componentHtml}
                         />
-                        // <div className="space-y-4">
-                        //   <FieldsEditor
-                        //     fields={settings.fields}
-                        //     onChange={(next) => set("fields", next)}
-                        //   />
-                        // </div>
+
                     ) : null}
 
                     {/* BUTTON */}
@@ -857,8 +529,8 @@ export function FormsPage({
                                         min={0}
                                         max={24}
                                         step={1}
-                                            className="w-20"
-                                        
+                                        className="w-20"
+
                                     />
                                     <div className="w-10 rounded-md border bg-white px-2 py-1 text-center text-sm">
                                         {settings.cornerRadius}

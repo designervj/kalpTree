@@ -21,12 +21,12 @@ const EditForm = ({ componentHtml, onSave }: EditFormProps) => {
     }, [componentHtml])
     console.log("open", open)
     return (<>
-        <EditSection
+        {/* <EditSection
             open={open}
             setOpen={setOpen}
             componentHtml={componentHtml}
             onSaveHtml={onSave}
-        />
+        /> */}
     </>)
 }
 
