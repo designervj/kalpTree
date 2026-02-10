@@ -1107,10 +1107,9 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
   const tagType = selectedElement?.attributes?.type;
   const getAttributes = selectedElement.getAttributes();
   const classNames: string[] = selectedElement.getClasses();
-  console.log("classNames", classNames);
 
   const [elementStyles, setElementStyles] = useState({});
-  console.log("selectedElement", selectedElement);
+
   useEffect(() => {
     if (editor && selectedElement) {
       const currentClasses = selectedElement.getClasses() || [];
@@ -1183,16 +1182,14 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
         </AccordionItem>
 
 
-        <AccordionItem value="global" className="border-slate-700">
+        {/* <AccordionItem value="global" className="border-slate-700">
           <AccordionTrigger className="py-2 h-14 text-sm font-medium hover:no-underline">
             Global Styles
           </AccordionTrigger>
           <AccordionContent>
-            <GlobalStylesSection styles={styles} onStyleChange={onStyleChange}
-              rootStyles={rootStyles}
-            />
+            <GlobalStylesSection onStyleChange={onStyleChange} />
           </AccordionContent>
-        </AccordionItem>
+        </AccordionItem> */}
       </Accordion>
 
     </div>

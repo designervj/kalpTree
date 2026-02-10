@@ -46,6 +46,7 @@ const page = async ({
         serviceType: website.serviceType,
         status: website.status,
         lang: website.lang,
+        globalStyle: website.globalStyle,
         isComingSoon:website.isComingSoon??true
     };
 

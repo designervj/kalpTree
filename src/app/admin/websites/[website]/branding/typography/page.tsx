@@ -1518,10 +1518,10 @@ export default function TypographyPage() {
     leftTab === "colors"
       ? ColorsPreview
       : leftTab === "headings"
-      ? HeadingsPreview
-      : leftTab === "body"
-      ? BodyPreview
-      : ButtonsPreview;
+        ? HeadingsPreview
+        : leftTab === "body"
+          ? BodyPreview
+          : ButtonsPreview;
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-10">

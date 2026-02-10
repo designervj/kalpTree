@@ -13,6 +13,72 @@ import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-v
 import { handleInteractivityChange } from "@/hooks/editor-interactivity";
 import { defaultBlocks } from "../../utils/block-library";
 import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
+import { Website } from "@/components/admin/AppShell";
+import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
+
+/**
+ * Generates the full CSS content for global styles, including variables and base rules.
+ */
+const generateGlobalStyleContent = (cssVars: Record<string, string>) => {
+  const cssVarString = Object.entries(cssVars)
+    .map(([prop, val]) => `  ${prop}: ${val};`)
+    .sort()
+    .join('\n');
+
+  const headingStyles = [1, 2, 3, 4, 5, 6].map(num => `
+h${num} {
+  font-size: var(--h${num}-size);
+  font-weight: var(--h${num}-weight);
+  line-height: var(--h${num}-lh);
+  letter-spacing: var(--h${num}-ls);
+  margin-top: 0;
+  margin-bottom: 0.5em;
+}`).join('\n');
+
+  const buttonStyles = ['primary', 'secondary', 'outline'].map(type => `
+.btn-${type} {
+  background-color: var(--btn-${type}-bg);
+  color: var(--btn-${type}-text);
+  border: 1px solid var(--btn-${type}-border);
+  border-radius: var(--btn-radius);
+  font-size: var(--btn-size);
+  height: var(--btn-height);
+  transition: all var(--btn-transition);
+}
+.btn-${type}:hover {
+  background-color: var(--btn-${type}-hover-bg);
+}`).join('\n');
+
+  return `
+:root {
+${cssVarString}
+}
+
+body {
+  font-family: var(--font-body, var(--font-family, sans-serif));
+  font-size: var(--body-size, 16px);
+  font-weight: var(--body-weight, 400);
+  line-height: var(--body-lh, 1.5);
+  letter-spacing: var(--body-ls, 0);
+  color: var(--text, #000);
+  background-color: var(--bg, #fff);
+  margin: 0;
+  padding: 0;
+}
+
+${headingStyles}
+
+${buttonStyles}
+
+* {
+  box-sizing: border-box;
+}
+
+p {
+  margin-bottom: var(--body-paragraph-gap, 1rem);
+}
+`;
+};
 
 // Extend HTMLElement to include event handlers storage
 declare global {
@@ -119,129 +185,158 @@ export function useEditor(containerId: string) {
 
   const dispatch = useDispatch<AppDispatch>()
   const { page, type } = useSelector((state: RootState) => state.pageEdit)
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { style: globalStyleData } = useSelector((state: RootState) => state.globalStyle);
+
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
 
+  // Inject styles into canvas iframe
+  const injectCanvasStyles = (editor: any, pageContent?: string, globalStyle?: string, retryCount = 0): void => {
+    console.log("🔍 injectCanvasStyles called with globalStyle:", globalStyle ? "YES (length: " + globalStyle.length + ")" : "NO/UNDEFINED")
+    if (globalStyle) {
+      console.log("📄 Global Style Content Preview:", globalStyle.substring(0, 100) + "...");
+    }
+    const MAX_RETRIES = 3;
+    const frame = editor.Canvas?.getFrameEl?.();
+    const doc = frame?.contentDocument;
+
+    if (!doc) {
+      console.warn('Canvas iframe not available');
+      if (retryCount < MAX_RETRIES) {
+        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+      }
+      return;
+    }
+
+    const root = doc.documentElement;
+    if (root && !root.getAttribute("data-theme")) {
+      root.setAttribute("data-theme", "light");
+      console.log('✅ Canvas data-theme set to light');
+    }
+
+    if (!doc.head || !doc.body) {
+      console.warn('Canvas iframe head/body not ready');
+      if (retryCount < MAX_RETRIES) {
+        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+      }
+      return;
+    }
+
+    // Check readyState
+    if (doc.readyState === 'loading') {
+      console.log('Waiting for iframe DOMContentLoaded...');
+      doc.addEventListener('DOMContentLoaded', () => {
+        injectCanvasStyles(editor, pageContent, globalStyle, retryCount);
+      }, { once: true });
+      return;
+    }
+
+    try {
+      // Remove existing custom styles
+      doc.querySelector('[data-root-vars="true"]')?.remove();
+      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+      doc.querySelector('[data-tailwind="true"]')?.remove();
+
+      // Inject Tailwind CSS CDN for styling Tailwind classes in HTML strings
+      const tailwindScript = doc.createElement("script");
+      tailwindScript.src = "https://cdn.tailwindcss.com";
+      tailwindScript.setAttribute("data-tailwind", "true");
+      doc.head.appendChild(tailwindScript);
+
+      // Inject global styles from website settings
+      if (globalStyle) {
+        doc.querySelector('[data-global-styles="true"]')?.remove();
+        const gStyle = doc.createElement("style");
+        gStyle.setAttribute("data-global-styles", "true");
+
+        // Parse variables to ensure base rules are included
+        const vars: Record<string, string> = {};
+        const declRegex = /(--[\w-]+)\s*:\s*([^;]+)/g;
+        let match;
+        while ((match = declRegex.exec(globalStyle)) !== null) {
+          vars[match[1]] = match[2].trim();
+        }
+
+        gStyle.innerHTML = generateGlobalStyleContent(vars);
+        doc.head.appendChild(gStyle);
+        console.log('✅ Global styles injected');
+      }
+
+      if (pageContent) {
+        // Inject CSS variables
+        const style = doc.createElement("style");
+        style.setAttribute("data-root-vars", "true");
+        style.innerHTML = createCanvasStyleString(pageContent);
+        doc.head.appendChild(style);
+
+        // Inject font links
+        extractFontLinks(pageContent).forEach((url) => {
+          const link = doc.createElement("link");
+          link.rel = "stylesheet";
+          link.href = url;
+          link.setAttribute("data-font", "true");
+          doc.head.appendChild(link);
+        });
+
+        console.log('✅ Canvas styles, fonts, and Tailwind CSS injected');
+      } else {
+        console.log('✅ Tailwind CSS injected');
+      }
+    } catch (error) {
+      console.error('❌ Error injecting canvas styles:', error);
+      if (retryCount < MAX_RETRIES) {
+        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+      }
+    }
+  };
+
+  // Wait for iframe to be fully ready
+  const waitForIframe = (editor: any): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const maxAttempts = 50; // 5 seconds maximum
+      let attempts = 0;
+
+      const check = () => {
+        attempts++;
+        const frame = editor.Canvas?.getFrameEl?.();
+        const doc = frame?.contentDocument;
+
+        // Check if document is fully ready
+        if (doc && doc.readyState !== 'loading' && doc.head && doc.body) {
+          console.log('✅ Iframe fully loaded');
+          resolve();
+          return;
+        }
+
+        if (attempts >= maxAttempts) {
+          console.error('❌ Iframe failed to load within timeout');
+          reject(new Error('Iframe loading timeout'));
+          return;
+        }
+
+        requestAnimationFrame(check);
+      };
+      check();
+    });
+  };
+
+  // Helper to safely destroy editor
+  const destroyEditor = () => {
+    if (editorRef.current) {
+      try {
+        editorRef.current.off?.(); // Remove all event listeners
+        editorRef.current.destroy();
+      } catch (e) {
+        console.warn("Editor destroy error", e);
+      }
+      editorRef.current = null;
+    }
+  };
+
   useEffect(() => {
     let isMounted = true;
-
-    // Helper to safely destroy editor
-    const destroyEditor = () => {
-      if (editorRef.current) {
-        try {
-          editorRef.current.off?.(); // Remove all event listeners
-          editorRef.current.destroy();
-        } catch (e) {
-          console.warn("Editor destroy error", e);
-        }
-        editorRef.current = null;
-      }
-    };
-
-    // Destroy existing editor before initializing new one
-    destroyEditor();
-
-    // Wait for iframe to be fully ready
-    const waitForIframe = (editor: any): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        const maxAttempts = 50; // 5 seconds maximum
-        let attempts = 0;
-
-        const check = () => {
-          attempts++;
-          const frame = editor.Canvas?.getFrameEl?.();
-          const doc = frame?.contentDocument;
-
-          // Check if document is fully ready
-          if (doc && doc.readyState !== 'loading' && doc.head && doc.body) {
-            console.log('✅ Iframe fully loaded');
-            resolve();
-            return;
-          }
-
-          if (attempts >= maxAttempts) {
-            console.error('❌ Iframe failed to load within timeout');
-            reject(new Error('Iframe loading timeout'));
-            return;
-          }
-
-          requestAnimationFrame(check);
-        };
-        check();
-      });
-    };
-
-    // Inject styles into canvas iframe
-    const injectCanvasStyles = (editor: any, pageContent?: string, retryCount = 0): void => {
-      const MAX_RETRIES = 3;
-      const frame = editor.Canvas?.getFrameEl?.();
-      const doc = frame?.contentDocument;
-
-      if (!doc) {
-        console.warn('Canvas iframe not available');
-        if (retryCount < MAX_RETRIES) {
-          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
-        }
-        return;
-      }
-
-      if (!doc.head || !doc.body) {
-        console.warn('Canvas iframe head/body not ready');
-        if (retryCount < MAX_RETRIES) {
-          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
-        }
-        return;
-      }
-
-      // Check readyState
-      if (doc.readyState === 'loading') {
-        console.log('Waiting for iframe DOMContentLoaded...');
-        doc.addEventListener('DOMContentLoaded', () => {
-          injectCanvasStyles(editor, pageContent, retryCount);
-        }, { once: true });
-        return;
-      }
-
-      try {
-        // Remove existing custom styles
-        doc.querySelector('[data-root-vars="true"]')?.remove();
-        doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
-        doc.querySelector('[data-tailwind="true"]')?.remove();
-
-        // Inject Tailwind CSS CDN for styling Tailwind classes in HTML strings
-        const tailwindScript = doc.createElement("script");
-        tailwindScript.src = "https://cdn.tailwindcss.com";
-        tailwindScript.setAttribute("data-tailwind", "true");
-        doc.head.appendChild(tailwindScript);
-
-        if (pageContent) {
-          // Inject CSS variables
-          const style = doc.createElement("style");
-          style.setAttribute("data-root-vars", "true");
-          style.innerHTML = createCanvasStyleString(pageContent);
-          doc.head.appendChild(style);
-
-          // Inject font links
-          extractFontLinks(pageContent).forEach((url) => {
-            const link = doc.createElement("link");
-            link.rel = "stylesheet";
-            link.href = url;
-            link.setAttribute("data-font", "true");
-            doc.head.appendChild(link);
-          });
-
-          console.log('✅ Canvas styles, fonts, and Tailwind CSS injected');
-        } else {
-          console.log('✅ Tailwind CSS injected');
-        }
-      } catch (error) {
-        console.error('❌ Error injecting canvas styles:', error);
-        if (retryCount < MAX_RETRIES) {
-          setTimeout(() => injectCanvasStyles(editor, pageContent, retryCount + 1), 200);
-        }
-      }
-    };
 
     const initEditor = async () => {
       try {
@@ -372,7 +467,18 @@ export function useEditor(containerId: string) {
             await new Promise(resolve => setTimeout(resolve, 100));
 
             // Inject canvas styles
-            injectCanvasStyles(editor, page?.content);
+            console.log("🚀 Triggering injectCanvasStyles...");
+
+            // Try to get global style from currentWebsite or fallback to globalStyle slice
+            let styleToInject = currentWebsite?.globalStyle;
+
+            if (!styleToInject) {
+              // Find the style for the current tenant or just use the first one if only one exist
+              console.log("🔄 Using fallback globalStyle from Redux slice");
+            }
+            console.log("global styles---->", styleToInject)
+            console.log("🎨 Style to inject found:", styleToInject ? "YES" : "NO");
+            injectCanvasStyles(editor, page?.content, styleToInject);
 
             // Setup event listeners
             setupEventListeners(editor as unknown as GrapesJSEditor);
@@ -937,7 +1043,7 @@ export function useEditor(containerId: string) {
     // on mouse
     editor.on("component:hover", (component: any) => {
       const tagName = component.get('tagName');
-     
+
     });
     // Component selection
     editor.on("component:selected", (component: any) => {
@@ -1398,6 +1504,16 @@ export function useEditor(containerId: string) {
 
   // Editor actions
   const actions = {
+    setGlobalStyles: (globalStyle?: string, theme: 'light' | 'dark' = 'light') => {
+      if (editorRef.current) {
+        const frame = editorRef.current.Canvas?.getFrameEl?.();
+        const doc = frame?.contentDocument;
+        if (doc) {
+          doc.documentElement.setAttribute('data-theme', theme);
+        }
+        injectCanvasStyles(editorRef.current, page?.content, globalStyle || currentWebsite?.globalStyle);
+      }
+    },
     setDevice: (device: string) => {
       if (editorRef.current) {
         editorRef.current.setDevice(device);
@@ -1857,48 +1973,34 @@ export function useEditor(containerId: string) {
 
               // Get existing global styles
               const existingStyles = globalStyleEl.innerHTML;
-              const rootMatch = existingStyles.match(/:root\s*{([^}]*)}/);
 
-              let cssVars: Record<string, string> = {};
+              // Standard CSS variable regex
+              const cssVars: Record<string, string> = {};
 
-              if (rootMatch && rootMatch[1]) {
-                // Parse existing CSS variables
-                const declarations = rootMatch[1].split(';').filter((d: string) => d.trim());
-                declarations.forEach((decl: string) => {
-                  const [prop, val] = decl.split(':').map((s: string) => s.trim());
-                  if (prop && val) {
-                    cssVars[prop] = val;
-                  }
-                });
+              // Parse all variables from the content
+              const declRegex = /(--[\w-]+)\s*:\s*([^;]+)/g;
+              let match;
+              while ((match = declRegex.exec(existingStyles)) !== null) {
+                cssVars[match[1]] = match[2].trim();
               }
 
               // Update or add the new variable
               cssVars[property] = value;
 
-              // Rebuild the :root rule with CSS variables
-              const cssVarString = Object.entries(cssVars)
-                .map(([prop, val]) => `  ${prop}: ${val};`)
-                .join('\n');
+              const newGlobalStyle = generateGlobalStyleContent(cssVars);
+              globalStyleEl.innerHTML = newGlobalStyle;
 
-              // Include body and universal selector reset styles
-              globalStyleEl.innerHTML = `:root {
-${cssVarString}
-}
+              // Do not change the value of redux on edit.
+              // Instead, trigger a local state update to ensure UI re-renders and reflects canvas changes.
+              setState(prev => ({ ...prev }));
 
-body {
-  font-family: var(--font-family);
-  margin: 0;
-  padding: 0;
-}
+              console.log(`✅ Global CSS variable ${property} set to ${value} (Canvas only)`);
 
-* {
-  box-sizing: border-box;
-}`;
-
-              console.log(`✅ Global CSS variable ${property} set to ${value}`);
+              // Force editor refresh to apply variables if needed
+              editorRef.current?.refresh();
             }
           }
-          return; // Exit early for global variables
+          return;
         }
 
         // Handle regular component styles

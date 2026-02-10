@@ -6,14 +6,14 @@ import { useDispatch, useSelector } from 'react-redux'
 
 const GetGlobalStyle = () => {
 
-    const { globalStyle, isLoading, isError } = useSelector((state:RootState) => state.globalStyle)
+    const { style, isFetched, isError } = useSelector((state:RootState) => state.globalStyle)
     const dispatch = useDispatch<AppDispatch>()
 
     React.useEffect(() => {
-           if(!isLoading){
+           if(!isFetched){
             dispatch(fetchGlobalStyle())
            }
-    }, [isLoading])
+    }, [isFetched])
   return (
   null
   )

@@ -57,7 +57,7 @@ type PropertiesSidebarProps = {
 
 type TabKey =
   | "style"
-  // | "blog"
+   | "global"
   | "pages"
   | "forms"
   | "styles"
@@ -70,6 +70,7 @@ type TabKey =
 
 const TAB_TITLES: Record<TabKey, string> = {
   style: "Styles & Attributes ",
+  global: "Global",
   // attributes: "Attributes",
   // interactivity: "Interactivity",
   layer: "Layer",
@@ -87,6 +88,7 @@ const TAB_TITLES: Record<TabKey, string> = {
 
 import { useEditorContext } from "../../EditorContext";
 import ProductGalleryPage from "../../productgallery/ProductGalleryPage";
+import GlobalStylesSection from "../../style-editor/GlobalStyle";
 
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
@@ -236,6 +238,15 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //     />
       //   );
 
+        case "global":
+      
+        return (
+          <GlobalStylesSection
+         onStyleChange={onStyleChange}
+         
+          />
+        );
+
       case "layer":
         return <PageLayer />;
 
@@ -321,13 +332,13 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             onClick={() => setTab("style")}
             icon={<Palette className="w-5 h-5" />}
           />
-          {/* <IconTab
-            active={tab === "attributes"}
-            label="Attributes"
-            onClick={() => setTab("attributes")}
+          <IconTab
+            active={tab === "global"}
+            label="Global"
+            onClick={() => setTab("global")}
             icon={<Box className="w-5 h-5" />}
           />
-          <IconTab
+          {/* <IconTab
             active={tab === "interactivity"}
             label="Interactivity"
             onClick={() => setTab("interactivity")}

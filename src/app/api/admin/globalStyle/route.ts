@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { ObjectId } from 'mongodb';
 import { getDatabase } from '@/lib/db/mongodb';
 
-const COLLECTION_NAME = 'globalstyles';
+const COLLECTION_NAME = 'globals';
 
 export async function GET(request: NextRequest) {
     try {
@@ -12,15 +12,8 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { searchParams } = new URL(request.url);
-        const tenantId = searchParams.get('tenantId');
-
-        if (!tenantId) {
-            return NextResponse.json({ error: 'tenantId is required' }, { status: 400 });
-        }
-
         const db = await getDatabase();
-        const style = await db.collection(COLLECTION_NAME).findOne({ tenantId });
+        const style = await db.collection(COLLECTION_NAME).findOne();
 
         return NextResponse.json({ data: style || null });
     } catch (error) {
