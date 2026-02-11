@@ -20,6 +20,8 @@ import GetAllTemplate from "../admin/templates/GetAllTemplate";
 import EditForm from "./editForm/EditForm";
 import { EditorProvider } from "./EditorContext";
 import { registerProductGalleryComponent } from "./productgallery/updateProductGalleryProducts";
+import { addComponentAboveFooter } from "./utils/InsertionUtils";
+
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -245,9 +247,10 @@ export default function GrapesJSEditor() {
 
     if (!doc) return null;
 
-    const selectedItem = doc.querySelectorAll(".product-gallery-container");
+    const selectedItem = doc.querySelectorAll('section[class^="product-gallery-"]');
 
-    const selectedItemm = doc.querySelector(".product-gallery-container");
+    const selectedItemm = doc.querySelector('section[class^="product-gallery-"]');
+
 
     const finalGallery: any = [];
 
@@ -393,23 +396,28 @@ export default function GrapesJSEditor() {
     console.log("content", content);
     console.log("append", append);
     if (append) {
-      const wrapper = state.editor.getWrapper();
-      console.log("wrapper", wrapper);
-      // Look for footer tag at the top level of the wrapper first
-      const footer = wrapper.find('footer')[0];
-      console.log("footer", footer);
-      if (footer) {
-        const parent = footer.parent();
-        if (parent) {
-          const index = footer.index();
-          parent.append(content, { at: index });
-          return;
-        }
-      }
+      // Extract scripts if present
+      const { body, scripts } = extractHtmlParts(content);
 
-      // Fallback if no footer found or error occurs
-      state.editor.addComponents(content);
-    } else {
+      addComponentAboveFooter(state.editor, body);
+
+      if (scripts && scripts.length > 0) {
+        scripts.forEach((scriptContent: string) => {
+          if (scriptContent.trim()) {
+            const currentJs = (state.editor as any).getJs ? (state.editor as any).getJs() : "";
+            if (!currentJs.includes(scriptContent.trim())) {
+              const newJs = currentJs + "\n" + scriptContent.trim();
+              if (typeof (state.editor as any).setJs === "function") {
+                (state.editor as any).setJs(newJs);
+              }
+            }
+          }
+        });
+      }
+      return;
+    }
+
+    else {
       state.editor.setComponents(content);
     }
 

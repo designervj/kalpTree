@@ -15,7 +15,50 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { GalleryConfig } from "./ProductGalleryPage";
 import { Grid3x3, LayoutGrid, Columns3 } from "lucide-react";
+import { handleBuildComplete } from "next/dist/build/adapter/build-complete";
 
+
+const configOptions = [
+  {
+    layout: "grid",
+     columns: 3, 
+    gap: 20, 
+    showBadge: true, 
+    showRating: true,
+    showPrice: true,
+    showAddToCart: true,
+    hoverEffect: "lift", 
+      cardStyle: "default", 
+       showDescription: false,  
+    
+  },
+  {
+    layout: "carousel",
+    columns: 1, 
+    gap: 0, 
+    showBadge: true, 
+    showRating: true,
+    showPrice: true,
+    showAddToCart: true,
+    hoverEffect: "none", 
+      cardStyle: "elevated", 
+       showDescription: false,  
+    
+  },
+  {
+    layout: "masonry",
+    columns: 2, 
+    gap: 20, 
+    showBadge: true, 
+    showRating: true,
+    showPrice: true,
+    showAddToCart: true,
+    hoverEffect: "lift", 
+      cardStyle: "default", 
+       showDescription: false,  
+    
+  },
+];
 interface ProductGallerySettingsProps {
   config: GalleryConfig;
   onConfigChange: (config: GalleryConfig) => void;
@@ -29,6 +72,11 @@ const ProductGallerySettings: React.FC<ProductGallerySettingsProps> = ({
     onConfigChange({ ...config, ...updates });
   };
 
+
+  const handleLayoutType = (value: string) => {
+    updateConfig({ layout: value as GalleryConfig["layout"] });
+  };
+
   return (
     <div className="space-y-6">
       {/* Layout Type */}
@@ -40,9 +88,12 @@ const ProductGallerySettings: React.FC<ProductGallerySettingsProps> = ({
         <CardContent>
           <RadioGroup
             value={config.layout}
-            onValueChange={(value) =>
-              updateConfig({ layout: value as GalleryConfig["layout"] })
-            }
+            // onValueChange={(value) =>
+            //   updateConfig({ layout: value as GalleryConfig["layout"] })
+            // }
+
+
+            onValueChange={(value)=>{handleLayoutType(value)}}
           >
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="grid" id="layout-grid" />

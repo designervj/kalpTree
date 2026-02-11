@@ -10,11 +10,16 @@ import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
 import { updateHeader } from "./slices/header/HeaderThunk";
 import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
+import { extractHtmlParts as extractParts } from "@/lib/utils";
+
+
 import { handleInteractivityChange } from "@/hooks/editor-interactivity";
 import { defaultBlocks } from "../../utils/block-library";
 import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
 import { Website } from "@/components/admin/AppShell";
 import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
+import { addComponentAboveFooter } from "@/components/editor/utils/InsertionUtils";
+
 
 /**
  * Generates the full CSS content for global styles, including variables and base rules.
@@ -476,7 +481,7 @@ export function useEditor(containerId: string) {
               // Find the style for the current tenant or just use the first one if only one exist
               console.log("🔄 Using fallback globalStyle from Redux slice");
             }
-         
+
             injectCanvasStyles(editor, page?.content, styleToInject);
 
             // Setup event listeners
@@ -1041,7 +1046,7 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
     editor.on("component:hover", (component: any) => {
-      
+
 
     });
     // Component selection
@@ -1243,10 +1248,9 @@ export function useEditor(containerId: string) {
       // Get the wrapper component first, then get its children
       const wrapper = editor.Components.getWrapper();
 
-      console.log('🔍 Wrapper:', wrapper);
 
       if (!wrapper) {
-        console.warn('⚠️ Wrapper component not available');
+
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -1256,32 +1260,23 @@ export function useEditor(containerId: string) {
 
       // Get components from the wrapper
       let components = [];
-      console.log('🔍 Wrapper has components method?', typeof wrapper.components === 'function');
-      console.log('🔍 Wrapper has get method?', typeof wrapper.get === 'function');
+
 
       if (typeof wrapper.components === 'function') {
         components = wrapper.components();
-        console.log('✅ Got components via wrapper.components():', components);
       } else if (wrapper.get && typeof wrapper.get === 'function') {
         const comps = wrapper.get('components');
-        console.log('🔍 wrapper.get("components"):', comps);
-        console.log('🔍 Has models?', comps && typeof comps.models !== 'undefined');
 
         if (comps && typeof comps.models !== 'undefined') {
           components = comps.models;
-          console.log('✅ Got components via comps.models:', components);
         } else if (Array.isArray(comps)) {
           components = comps;
-          console.log('✅ Got components as array:', components);
         }
       }
 
-      console.log('📊 Final components array:', components);
-      console.log('📊 Components length:', components?.length);
 
       // Verify components is valid before mapping
       if (!components || !Array.isArray(components) || components.length === 0) {
-        console.log('❌ No components found, layers will be empty');
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -1290,14 +1285,12 @@ export function useEditor(containerId: string) {
       }
 
       const layerItems = mapComponentsToLayers(components);
-      console.log('✅ Layer items created:', layerItems);
 
       setState((prev) => ({
         ...prev,
         layers: layerItems,
       }));
     } catch (error) {
-      console.error("Error updating layers:", error);
       setState((prev) => ({
         ...prev,
         layers: [],
@@ -1651,52 +1644,32 @@ export function useEditor(containerId: string) {
           js = editorRef.current.getJs() || "";
         }
 
-        console.log("Initial JS from getJs():", js);
-
         const wrapper = editorRef.current.Components?.getWrapper() || (editorRef.current as any).getWrapper?.();
 
         if (wrapper) {
-          console.log("Wrapper found, searching for scripts...");
-
           const allFoundScripts: any[] = [];
 
-          const scanRecursive = (comp: any, depth = 0) => {
+          const scanRecursive = (comp: any) => {
             if (!comp) return;
 
             const tagName = comp.get('tagName')?.toLowerCase();
             const type = comp.get('type');
-            const attrs = comp.getAttributes();
-            const id = attrs?.id;
-
-            // Log direct children of the wrapper
-            if (depth === 0) {
-              const children = comp.get('components');
-              if (children && children.length) {
-                console.log(`Wrapper has ${children.length} direct children`);
-                children.forEach((c: any, i: number) => {
-                  console.log(`  Child ${i}: <${c.get('tagName')}> (id: ${c.getAttributes()?.id}, type: ${c.get('type')}, layerable: ${c.get('layerable')})`);
-                });
-              }
-            }
 
             if (tagName === 'script' || type === 'script') {
-              console.log(`Found possible script: <${tagName}>, id: ${id}, type: ${type}`);
               allFoundScripts.push(comp);
             }
 
             const children = comp.get('components');
             if (children && children.forEach) {
-              children.forEach((child: any) => scanRecursive(child, depth + 1));
+              children.forEach((child: any) => scanRecursive(child));
             }
           };
 
           scanRecursive(wrapper);
-          console.log(`Deep scan found ${allFoundScripts.length} script candidates`);
 
           allFoundScripts.forEach((scriptComp: any) => {
             let content = scriptComp.get('content');
 
-            // If it's a component with children, the actual script text might be in a text component child
             if (!content) {
               const innerComps = scriptComp.get('components');
               if (innerComps && innerComps.length > 0) {
@@ -1708,26 +1681,15 @@ export function useEditor(containerId: string) {
               const trimmedContent = content.trim();
               const id = scriptComp.getAttributes()?.id;
 
-              // Only add if this specific script content isn't already in our accumulated js
-              // and it's not empty. This helps prevent duplication from components 
-              // that might be rendered twice or already include their scripts.
               if (trimmedContent && !js.includes(trimmedContent)) {
-                console.log(`Adding script from component ${id || 'anonymous'}`);
                 js += `\n/* Interactivity Script: ${id || 'anonymous'} */\n${content}`;
-              } else {
-                console.log(`Skipping duplicate script from component ${id || 'anonymous'}`);
               }
             }
           });
-        } else {
-          console.warn("Could not find editor wrapper for script extraction");
         }
       } catch (error) {
         console.warn("Error getting JS:", error);
       }
-
-      console.log("Final Extracted JS:", js);
-      console.log("jssjjs", js)
       // Option A: store CSS and JS inline with HTML
       const fullHtml = `
     <style>
@@ -1750,12 +1712,6 @@ export function useEditor(containerId: string) {
       } else if (type === "header") {
 
 
-        console.log("header", {
-          ...page,
-          _id: page._id?.toString() ?? "",
-          tenantId: page.tenantId ?? "",
-          content: fullHtml
-        })
         const response = await dispatch(updateHeader({
           ...page,
           _id: page._id?.toString() ?? "",
@@ -1773,7 +1729,7 @@ export function useEditor(containerId: string) {
           content: fullHtml
         })).unwrap();
         // console.log("console.log", response)
-        if (response.ok) {
+        if (response) {
           toast.success("Page content updated successfully!");
         }
       }
@@ -1889,28 +1845,59 @@ export function useEditor(containerId: string) {
 
     addComponent: (content: any) => {
       if (!editorRef.current) return;
-
+      console.log("calling add function")
+      console.log("content", content)
       try {
         // Enhanced handling for different content types
         if (typeof content === "string") {
           // For HTML strings - this is the most common case for blocks
-          // Simply add the HTML string directly to the editor
-          editorRef.current.addComponents(content);
+          // Extract scripts if present to ensure they load on canvas
+          const { body, scripts, styles } = extractParts(content);
+          console.log("content scripts", scripts)
+          console.log("body", body)
+          console.log("styles", styles)
+
+          // Re-attach styles to the body if they exist
+          let contentToAdd = body;
+          if (styles) {
+            contentToAdd = `<style>${styles}</style>${body}`;
+          }
+
+          addComponentAboveFooter(editorRef.current, contentToAdd);
+
+          if (scripts && scripts.length > 0) {
+            console.log(`Adding ${scripts.length} scripts from component`);
+            scripts.forEach((scriptContent: string) => {
+              if (scriptContent.trim()) {
+                // Use actions.updateJs or directly setJs
+                const currentJs = editorRef.current!.getJs ? editorRef.current!.getJs() : "";
+                if (!currentJs.includes(scriptContent.trim())) {
+                  const newJs = currentJs + "\n" + scriptContent.trim();
+                  if (typeof (editorRef.current as any).setJs === "function") {
+                    (editorRef.current as any).setJs(newJs);
+                    setState(prev => ({ ...prev, editorJs: newJs }));
+                  }
+                }
+              }
+            });
+          }
         }
+
         // Handle object content (like for image components)
         else if (typeof content === "object") {
           // If content has a specific GrapesJS component type
           if (content.type) {
-            editorRef.current.addComponents({
+            addComponentAboveFooter(editorRef.current, {
               type: content.type,
               ...content,
             });
           }
           // Try to convert object to component
           else {
-            editorRef.current.addComponents(content);
+            addComponentAboveFooter(editorRef.current, content);
           }
         }
+
         // Fallback for any other type
         else {
           console.warn("Unrecognized content format", content);

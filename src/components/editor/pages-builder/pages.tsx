@@ -260,7 +260,7 @@ export default function Pages({ open, setOpen, openSeoModal }: Props) {
     console.log("I ran")
     const currentPage = websitePages.find((p) => p._id === page.id);
     if (currentPage) {
-      dispatch(setPageLoading(true));
+       dispatch(setPageLoading(true));
       dispatch(
         setPageEdit({
           page: currentPage,
