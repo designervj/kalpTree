@@ -34,6 +34,7 @@ const headerSlice = createSlice({
         },
         setCurrentHeader(state, action: PayloadAction<TemplateDocument | null>) {
             state.currentHeader = action.payload;
+            state.hasFetched = true;
         },
         addHeader(state, action: PayloadAction<TemplateDocument>) {
             state.allHeader.push(action.payload);

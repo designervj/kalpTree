@@ -1624,72 +1624,115 @@ export function useEditor(containerId: string) {
       let js = "";
 
       try {
-        html = editorRef.current.getHtml();
-      } catch (error) {
-        console.error("Error getting HTML:", error);
-        toast.error("Failed to get page HTML.");
-        return;
-      }
-
-      try {
-        if (typeof editorRef.current.getCss === 'function') {
-          css = editorRef.current.getCss() || "";
-        }
-      } catch (error) {
-        console.warn("Error getting CSS:", error);
-      }
-
-      try {
-        // Get JS from internal GrapesJS logic
-        if (typeof editorRef.current.getJs === 'function') {
-          js = editorRef.current.getJs() || "";
-        }
-
         const wrapper = editorRef.current.Components?.getWrapper() || (editorRef.current as any).getWrapper?.();
+        const pageBody = wrapper?.find('[data-gjs-type="page-body"]')[0];
 
-        if (wrapper) {
+        // If we found a page-body wrapper, it means we are in the combined mode
+        if (pageBody && type !== "header" && type !== "footer") {
+          console.log("📄 Extracting content from page-body only");
+          // Extract HTML: only children of page-body
+          html = "";
+          const components = pageBody.get("components");
+          if (components && components.forEach) {
+            components.forEach((comp: any) => {
+              html += comp.toHTML();
+            });
+          }
+
+          // Extract JS: only scripts within page-body
+          js = "";
           const allFoundScripts: any[] = [];
-
           const scanRecursive = (comp: any) => {
             if (!comp) return;
-
-            const tagName = comp.get('tagName')?.toLowerCase();
-            const type = comp.get('type');
-
-            if (tagName === 'script' || type === 'script') {
+            const tagName = comp.get("tagName")?.toLowerCase();
+            const compType = comp.get("type");
+            if (tagName === "script" || compType === "script") {
               allFoundScripts.push(comp);
             }
-
-            const children = comp.get('components');
+            const children = comp.get("components");
             if (children && children.forEach) {
               children.forEach((child: any) => scanRecursive(child));
             }
           };
 
-          scanRecursive(wrapper);
+          scanRecursive(pageBody);
 
           allFoundScripts.forEach((scriptComp: any) => {
-            let content = scriptComp.get('content');
-
+            let content = scriptComp.get("content");
             if (!content) {
-              const innerComps = scriptComp.get('components');
+              const innerComps = scriptComp.get("components");
               if (innerComps && innerComps.length > 0) {
-                content = innerComps.at(0).get('content');
+                content = innerComps.at(0).get("content");
               }
             }
-
             if (content) {
               const trimmedContent = content.trim();
               const id = scriptComp.getAttributes()?.id;
-
               if (trimmedContent && !js.includes(trimmedContent)) {
-                js += `\n/* Interactivity Script: ${id || 'anonymous'} */\n${content}`;
+                js += `\n/* Interactivity Script: ${id || "anonymous"} */\n${content}`;
               }
             }
           });
+        } else {
+          // Fallback to default behavior
+          html = editorRef.current.getHtml();
+
+          // Get JS from internal GrapesJS logic
+          if (typeof editorRef.current.getJs === "function") {
+            js = editorRef.current.getJs() || "";
+          }
+
+          if (wrapper) {
+            const allFoundScripts: any[] = [];
+
+            const scanRecursive = (comp: any) => {
+              if (!comp) return;
+
+              const tagName = comp.get("tagName")?.toLowerCase();
+              const compType = comp.get("type");
+
+              if (tagName === "script" || compType === "script") {
+                allFoundScripts.push(comp);
+              }
+
+              const children = comp.get("components");
+              if (children && children.forEach) {
+                children.forEach((child: any) => scanRecursive(child));
+              }
+            };
+
+            scanRecursive(wrapper);
+
+            allFoundScripts.forEach((scriptComp: any) => {
+              let content = scriptComp.get("content");
+
+              if (!content) {
+                const innerComps = scriptComp.get("components");
+                if (innerComps && innerComps.length > 0) {
+                  content = innerComps.at(0).get("content");
+                }
+              }
+
+              if (content) {
+                const trimmedContent = content.trim();
+                const id = scriptComp.getAttributes()?.id;
+
+                if (trimmedContent && !js.includes(trimmedContent)) {
+                  js += `\n/* Interactivity Script: ${id || "anonymous"} */\n${content}`;
+                }
+              }
+            });
+          }
+        }
+        try {
+          if (typeof editorRef.current.getCss === 'function') {
+            css = editorRef.current.getCss() || "";
+          }
+        } catch (error) {
+          console.warn("Error getting CSS:", error);
         }
       } catch (error) {
-        console.warn("Error getting JS:", error);
+        console.warn("Error getting HTML/JS:", error);
       }
       // Option A: store CSS and JS inline with HTML
       const fullHtml = `

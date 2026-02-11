@@ -53,7 +53,7 @@ import {
   Trash2,
   Type,
 } from "lucide-react";
-import { useEditor } from "@/hooks/use-editor";
+import { useEditorContext } from "../EditorContext";
 import { useMemo } from "react";
 
 type FieldKind =
@@ -411,11 +411,10 @@ function SortableFieldRow({
 export default function CurrentForm() {
 
 
-  const editorProps = useEditor("gjs-editor");
   const {
     state,
     editForm,
-  } = editorProps;
+  } = useEditorContext();
 
   const [fields, setFields] = React.useState<FormField[]>([]);
   const [openFieldId, setOpenFieldId] = React.useState<string | undefined>(
