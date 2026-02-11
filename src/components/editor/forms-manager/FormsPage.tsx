@@ -150,17 +150,9 @@ const DEFAULT_SETTINGS: FormSettings = {
 
 
 
-export function FormsPage({
+export function FormsPage(
+) {
 
-    componentHtml,
-}: {
-    open?: boolean;
-    setOpen?: (open: boolean) => void;
-    componentHtml?: string;
-} = {}) {
-    // const [tab, setTab] = React.useState<
-    //     "general" | "fields" | "button" | "style" | "animation"
-    // >("general");
 
     const [tab, setTab] = React.useState<string>("general");
 
@@ -169,13 +161,6 @@ export function FormsPage({
 
     const set = <K extends keyof FormSettings>(key: K, val: FormSettings[K]) =>
         setSettings((s) => ({ ...s, [key]: val }));
-
-    const onSave = (e: React.FormEvent) => {
-        e.preventDefault();
-        // ✅ send `settings` to API / store
-        // console.log(settings)
-    };
-
 
     const tabsWrapRef = React.useRef<HTMLDivElement | null>(null);
 

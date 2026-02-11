@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import React, { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { TemplateDocument } from "../TemplateType";
-import { Eye, Download, Trash2 } from "lucide-react";
+import { Eye, Download, Trash2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import TemplateTopBar from "./TemplateTopBar";
@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useRouter } from "next/navigation";
 
 function miniToast(msg: string) {
   const el = document.createElement("div");
@@ -32,7 +33,7 @@ function miniToast(msg: string) {
 const ShowTemplate = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { allTemplate } = useSelector((state: RootState) => state.template);
-
+  const router = useRouter();
   const [template, setTemplate] = useState<TemplateDocument[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
 
@@ -85,7 +86,15 @@ const ShowTemplate = () => {
   };
 
   const handleShowSelectedTemplate = (data: TemplateDocument[]) => {
+    console.log("data", data);
     setTemplate(data);
+  };
+
+  const handleEdit = (data: TemplateDocument) => {
+    console.log("data", data);
+    dispatch(setCurrentTemplate(data));
+    // setTemplate(data);
+    router.push(`/admin/website/templates/edit/${getId(data)}`);
   };
 
   return (
@@ -149,6 +158,21 @@ const ShowTemplate = () => {
 
                         {/* RIGHT icons */}
                         <div className="flex items-center gap-2">
+
+                          {/* edit */}
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                className="h-8 w-8 rounded-md border-gray-200 bg-white hover:bg-gray-50 cursor-pointer"
+                                onClick={() => handleEdit(t)}
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                            </TooltipTrigger>
+                          </Tooltip>
                           {/* PREVIEW */}
                           <Tooltip>
                             <TooltipTrigger asChild>

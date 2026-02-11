@@ -100,6 +100,8 @@ export default function GrapesJSEditor() {
       .join("\n");
   }
 
+
+  const lastPageIdRef = useRef<string | null>(null);
   const contentLoadedRef = useRef<boolean>(false);
 
   // Reactive global style updates
@@ -120,7 +122,7 @@ export default function GrapesJSEditor() {
       console.log("loading started");
       dispatch(setPageLoading(true));
     }
-  }, [page?.id, page?.content, currentWebsite?.globalStyle, dispatch]);
+  }, [page?._id, page?.content, currentWebsite?.globalStyle, dispatch]);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
@@ -132,13 +134,16 @@ export default function GrapesJSEditor() {
 
     // registerProductGalleryComponent(state.editor);
 
-    // Reset the content loaded flag when page content changes
-    if (contentLoadedRef.current) {
+    // Reset the content loaded flag ONLY when page ID changes
+    const currentPageId = page?._id?.toString() || null;
+    if (lastPageIdRef.current !== currentPageId) {
+      console.log(`📄 Page ID changed from ${lastPageIdRef.current} to ${currentPageId}, resetting content flag`);
       contentLoadedRef.current = false;
+      lastPageIdRef.current = currentPageId;
     }
 
     const loadContent = () => {
-      // Prevent loading content multiple times
+      // Prevent loading content if already loaded for this page
       if (contentLoadedRef.current) return;
 
       // Enhanced check for editor readiness
@@ -161,10 +166,12 @@ export default function GrapesJSEditor() {
         if (data) {
           const { body, styles, scripts } = extractHtmlParts(data);
 
-          // Safely set components with error handling - use only body to avoid duplication
-          state?.editor?.setComponents(body);
-
-          setEditorHtml(body);
+          // Only update components if they are different from current canvas content
+          const currentHtml = state.editor.getHtml();
+          if (currentHtml !== body) {
+            state?.editor?.setComponents(body);
+            setEditorHtml(body);
+          }
 
           // Extract and set CSS from the content
           if (styles && typeof state.editor.setStyle === "function") {
@@ -406,15 +413,16 @@ export default function GrapesJSEditor() {
   const handleSelectTemplate = (content: string, append = false) => {
     if (!state.editor) return;
 
-    // dispatch(setPageLoading(true));
-
-    console.log("content", content);
-    console.log("append", append);
     if (append) {
       // Extract scripts if present
-      const { body, scripts } = extractHtmlParts(content);
+      // const { body, scripts } = extractHtmlParts(content);
+      const { body, scripts, styles } = extractHtmlParts(content);
 
-      addComponentAboveFooter(state.editor, body);
+      let contentToAdd = body;
+      if (styles) {
+        contentToAdd = `<style>${styles}</style>${body}`;
+      }
+      addComponentAboveFooter(state.editor, contentToAdd);
 
       if (scripts && scripts.length > 0) {
         scripts.forEach((scriptContent: string) => {
@@ -819,7 +827,7 @@ export default function GrapesJSEditor() {
         />
 
         {/* edit form */}
-        <EditForm componentHtml={editForm} onSave={handleFormSave} />
+        {/* <EditForm componentHtml={editForm} onSave={handleFormSave} /> */}
 
         <GetAllTemplate />
       </div>

@@ -79,7 +79,7 @@ export function TemplateManager({
     return Array.from(uniqueCategories);
   }, [allTemplate]);
 
-  
+
   const filteredTemplates = useMemo(() => {
     return allTemplate.filter((template: TemplateDocument) => {
       if (!template.category)
@@ -91,7 +91,7 @@ export function TemplateManager({
         selectedCategory === "all" || template.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory,allTemplate]);
+  }, [searchTerm, selectedCategory, allTemplate]);
 
   const handleSaveTemplate = () => {
     if (templateName && currentContent) {
@@ -110,10 +110,10 @@ export function TemplateManager({
 
   const handleAddSelectedTemplates = () => {
     const templates = allTemplate.filter((template) =>
-      selectedTemplates.includes(template?.templateId??"")
+      selectedTemplates.includes(template?.templateId ?? "")
     );
 
-    templates.forEach((template) => onSelectTemplate(template?.content??"", true));
+    templates.forEach((template) => onSelectTemplate(template?.content ?? "", true));
 
     setSelectedTemplates([]);
     setOpen(false);
@@ -352,17 +352,20 @@ export function TemplateManager({
                     <ScrollArea className="flex-1 min-h-0 tm-scroll">
                       <div className="p-6">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          {filteredTemplates && filteredTemplates.map((template:TemplateDocument) => {
-                            const isSelected = selectedTemplates.includes(template?.templateId??"");
+                          {filteredTemplates && filteredTemplates.map((template: TemplateDocument, index: number) => {
+                            const isSelected = selectedTemplates.includes(template?.templateId ?? "");
+                            // Use _id, templateId, id, or index as key to ensure uniqueness
+                            const cardKey = (template as any)._id?.toString() || template.templateId || template.id || `template-${index}`;
+
                             return (
                               <Card
-                                key={template.id}
+                                key={cardKey}
                                 className={cn(
                                   "group cursor-pointer rounded-2xl border bg-white transition",
                                   "border-slate-200 hover:border-slate-300 hover:shadow-sm",
                                   isSelected && "ring-2 ring-violet-500 border-violet-300"
                                 )}
-                                onClick={() => handleTemplateSelection(template?.templateId??"")}
+                                onClick={() => handleTemplateSelection(template?.templateId ?? "")}
                                 onDoubleClick={() => handleTemplateDoubleClick(template)}
                               >
                                 <CardContent className="p-4">
@@ -410,7 +413,7 @@ export function TemplateManager({
                                     >
                                       Add
                                     </Button> */}
-                                  </div> 
+                                  </div>
                                 </CardContent>
                               </Card>
                             );
