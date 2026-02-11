@@ -35,6 +35,20 @@ const page = async ({
         return <div>No pages found</div>
     }
 
+    // get header
+    const allheader_coll = await db.collection("templates_header");
+    const headerData = await allheader_coll.findOne({ tenantId: website.tenantId });
+    if (!headerData) {
+        return <div>Header not found</div>
+    }
+
+    // get footer
+    // const allfooter_coll = await db.collection("templates_footer");
+    // const footerData = await allfooter_coll.findOne({ tenantId: website.tenantId });
+    // if (!footerData) {
+    //     return <div>Footer not found</div>
+    // }
+
     // Serialize MongoDB documents to plain objects for Client Component
     const serializedWebsite: Website = {
         _id: website._id.toString(),
@@ -71,6 +85,8 @@ const page = async ({
                 pages={serializedPages}
                 website={serializedWebsite} 
                 search={search}
+                headerData={JSON.parse(JSON.stringify(headerData))}
+                // footerData={JSON.parse(JSON.stringify(footerData))}
                 />
         </>
     )

@@ -150,13 +150,10 @@ const DEFAULT_SETTINGS: FormSettings = {
 
 
 
-export function FormsPage(
-) {
-
+export const FormsPage = (
+) => {
 
     const [tab, setTab] = React.useState<string>("general");
-
-
     const [settings, setSettings] = React.useState<FormSettings>(DEFAULT_SETTINGS);
 
     const set = <K extends keyof FormSettings>(key: K, val: FormSettings[K]) =>

@@ -11,14 +11,20 @@ import { setPageEdit } from '@/hooks/slices/pageEditSlice';
 import { fetchHeaders } from '@/hooks/slices/header/HeaderThunk';
 import { fetchFooters } from '@/hooks/slices/footer/FooterThunk';
 import GetGlobalStyle from '../admin/settings/global-styles/GetGlobalStyle';
+import { HeaderDataModel } from '../admin/header/HeaderType';
+import { TemplateDocument } from '../admin/templates/TemplateType';
+import { setCurrentFooter } from '@/hooks/slices/footer/FooterSlice';
+import { setCurrentHeader } from '@/hooks/slices/header/HeaderSlice';
 
 
 type WebsiteBuilderProps = {
     pages: WebsitePageModel[];
     website: Website;
     search?: { slug: string };
+    headerData: HeaderDataModel;
+    // footerData: TemplateDocument;
 }
-const WebsiteBuilder = ({ pages, website, search }: WebsiteBuilderProps) => {
+const WebsiteBuilder = ({ pages, website, search, headerData }: WebsiteBuilderProps) => {
 
     const { currentWebsite: currentWebsiteData } = useSelector((state: RootState) => state.websites);
     const { websitePages } = useSelector((state: RootState) => state.websitePage);
@@ -55,18 +61,19 @@ const WebsiteBuilder = ({ pages, website, search }: WebsiteBuilderProps) => {
     // get Header 
     useEffect(() => {
         if (currentWebsiteData && currentHeader == null) {
-            dispatch(fetchHeaders({ websiteId: currentWebsiteData._id }))
+            dispatch(setCurrentHeader(headerData))
+            // dispatch(fetchHeaders({ websiteId: currentWebsiteData._id }))
         }
     }, [currentWebsiteData, currentHeader, dispatch])
 
 
     // get  footer
-    useEffect(() => {
-        if (currentWebsiteData && currentFooter == null) {
-
-            dispatch(fetchFooters({ websiteId: currentWebsiteData._id }))
-        }
-    }, [currentWebsiteData, currentFooter, dispatch])
+    // useEffect(() => {
+    //     if (currentWebsiteData && currentFooter == null) {
+    //        dispatch(setCurrentFooter(footerData))
+    //         // dispatch(fetchFooters({ websiteId: currentWebsiteData._id }))
+    //     }
+    // }, [currentWebsiteData, currentFooter, dispatch])
 
     return (
         <>

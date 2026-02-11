@@ -59,10 +59,13 @@ export default function GrapesJSEditor() {
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
 
   const dispatch = require("react-redux").useDispatch();
-  const { page, isLoading: isPageLoading } = useSelector(
+  const { page, type, isLoading: isPageLoading } = useSelector(
     (state: RootState) => state.pageEdit,
   );
 
+
+  const { currentHeader } = useSelector((state: RootState) => state.header);
+  const { currentFooter } = useSelector((state: RootState) => state.footer);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
   // const parser = new DOMParser();
@@ -117,22 +120,17 @@ export default function GrapesJSEditor() {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-      currentWebsite?.globalStyle
+      currentWebsite?.globalStyle &&
+      currentHeader?.content
     ) {
-      console.log("loading started");
+
       dispatch(setPageLoading(true));
     }
-  }, [page?._id, page?.content, currentWebsite?.globalStyle, dispatch]);
+  }, [page?._id, page?.content, currentWebsite?.globalStyle, currentHeader, dispatch]);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
-    if (!state.editor || !page?.content || !currentWebsite?.globalStyle) return;
-
-    const selected = getSelectedGalleryProductFromEditor(state.editor);
-
-    console.log("🎯 Selected Product:", selected);
-
-    // registerProductGalleryComponent(state.editor);
+    if (!state.editor || !page?.content || !currentWebsite?.globalStyle || !currentHeader?.content) return;
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
@@ -163,8 +161,38 @@ export default function GrapesJSEditor() {
 
       try {
         const data = page.content;
+        const headerData = currentHeader?.content;
+
         if (data) {
-          const { body, styles, scripts } = extractHtmlParts(data);
+          const pageParts = extractHtmlParts(data);
+          let body = pageParts.body;
+          let styles = pageParts.styles;
+          let scripts = pageParts.scripts;
+
+          // If we are editing a normal page (not header/footer), prepend the site header
+          if (type !== "header" && type !== "footer" && headerData) {
+            const headerParts = extractHtmlParts(headerData);
+
+            // Merge styles
+            if (headerParts.styles) {
+              styles = `${headerParts.styles}\n${styles}`;
+            }
+
+            // Merge scripts
+            if (headerParts.scripts && headerParts.scripts.length > 0) {
+              scripts = [...headerParts.scripts, ...scripts];
+            }
+
+            // Combine bodies with wrappers
+            body = `
+              <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
+                ${headerParts.body}
+              </div>
+              <div data-gjs-type="page-body">
+                ${pageParts.body}
+              </div>
+            `;
+          }
 
           // Only update components if they are different from current canvas content
           const currentHtml = state.editor.getHtml();
@@ -179,14 +207,17 @@ export default function GrapesJSEditor() {
             setEditorCss(styles);
           }
 
-          const js = extractScriptsFromHtml(data);
-          if (js && typeof state.editor.setJs === "function") {
-            state.editor.setJs(js);
-            setEditorJs(js);
+          const js = extractScriptsFromHtml(data); // Note: extractScriptsFromHtml might need update if combining scripts
+          // Better to join the scripts array and then wrap
+          const combinedScriptsHtml = scripts.join("\n");
+          const jsWrapped = extractScriptsFromHtml(combinedScriptsHtml);
+
+          if (jsWrapped && typeof state.editor.setJs === "function") {
+            state.editor.setJs(jsWrapped);
+            setEditorJs(jsWrapped);
           }
 
           // Refresh layers after content is loaded
-          // Use longer delay and retry mechanism to ensure components are parsed
           console.log("🔄 Content loaded, refreshing layers...");
 
           let retryCount = 0;
@@ -252,6 +283,7 @@ export default function GrapesJSEditor() {
     state.isLoading,
     page?.content,
     currentWebsite?.globalStyle,
+    currentHeader
   ]);
 
   function getSelectedGalleryProductFromEditor(editor: any) {
@@ -728,9 +760,8 @@ export default function GrapesJSEditor() {
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
-                pagetype !== "normal" ? "hidden" : ""
-              }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
+                }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">

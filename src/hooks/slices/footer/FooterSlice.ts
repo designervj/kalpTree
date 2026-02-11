@@ -33,6 +33,7 @@ const footerSlice = createSlice({
         },
         setCurrentFooter(state, action: PayloadAction<TemplateDocument | null>) {
             state.currentFooter = action.payload;
+            state.hasFetched = true;
         },
         addFooter(state, action: PayloadAction<TemplateDocument>) {
             state.allFooter.push(action.payload);
