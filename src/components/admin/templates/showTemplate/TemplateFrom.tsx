@@ -35,7 +35,8 @@ import { Upload, X, Wand2, Image as ImageIcon } from "lucide-react";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
-import { createTemplate } from "@/hooks/slices/templates/TemplateThunk";
+import { createTemplate, updateTemplate } from "@/hooks/slices/templates/TemplateThunk";
+import { TemplateDocument } from "../TemplateType";
 
 const TEMPLATE_TYPES = [
   { value: "section", label: "Section" },
@@ -119,7 +120,7 @@ function slugify(input: string) {
 
 
 
-export default function AddTemplatePage() {
+export default function TemplateForm({ initialData, isEdit }: { initialData?: TemplateDocument | null, isEdit?: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const dispatch = useDispatch<AppDispatch>();
@@ -128,21 +129,40 @@ export default function AddTemplatePage() {
   const form = useForm<TemplateFormData>({
     resolver: zodResolver(PostSchema),
     defaultValues: {
-      label: "",
-      slug: "",
-      templateType: "",
-      pageType: "",
-      content: "<h1> Hello World </h1>",
-      imageDataUrl: "",
-      description: "",
-      tags: ["tag1", "tag2", "tag3"],
-      category: "",
-      version: "1.0.0",
-      isPublic: true,
-      notes: "",
+      label: initialData?.label || "",
+      slug: initialData?.slug || (initialData?.label ? slugify(initialData.label) : ""),
+      templateType: (initialData?.templateType as any) || "",
+      pageType: (initialData?.pageType as any) || "",
+      content: initialData?.content || "<h1> Hello World </h1>",
+      imageDataUrl: initialData?.imageDataUrl || "",
+      description: initialData?.description || "",
+      tags: initialData?.tags || ["tag1", "tag2", "tag3"],
+      category: initialData?.category || "",
+      version: initialData?.version || "1.0.0",
+      isPublic: initialData?.isPublic ?? true,
+      notes: initialData?.notes || "",
     },
     mode: "onChange",
   });
+
+  React.useEffect(() => {
+    if (initialData) {
+      form.reset({
+        label: initialData.label || "",
+        slug: initialData.slug || (initialData.label ? slugify(initialData.label) : ""),
+        templateType: (initialData.category || initialData.templateType) as any || "",
+        pageType: initialData.pageType as any || "",
+        content: initialData.content || "<h1> Hello World </h1>",
+        imageDataUrl: initialData.imageDataUrl || "",
+        description: initialData.description || "",
+        tags: initialData.tags || ["tag1", "tag2", "tag3"],
+        category: initialData.category || "",
+        version: initialData.version || "1.0.0",
+        isPublic: initialData.isPublic ?? true,
+        notes: initialData.notes || "",
+      });
+    }
+  }, [initialData, form]);
 
   const label = form.watch("label");
   const isPublic = form.watch("isPublic");
@@ -193,11 +213,17 @@ export default function AddTemplatePage() {
       tags: typeof values.tags === 'string' ? values.tags.split(',').map((t: string) => t.trim()) : values.tags,
     }
     try {
-      await dispatch(createTemplate(data)).unwrap();
-      toast.success("Template created");
-      router.push("/admin/templates");
+      if (isEdit && (initialData?._id || initialData?.id)) {
+        const templateId = initialData?._id?.toString() || initialData?.id || "";
+        await dispatch(updateTemplate({ templateId, input: data })).unwrap();
+        toast.success("Template updated");
+      } else {
+        await dispatch(createTemplate(data as any)).unwrap();
+        toast.success("Template created");
+      }
+      router.push("/admin/website/templates");
     } catch (error) {
-      toast.error("Failed to create template");
+      toast.error(isEdit ? "Failed to update template" : "Failed to create template");
     }
   };
 
@@ -439,7 +465,7 @@ export default function AddTemplatePage() {
 
               <div className="flex gap-2">
                 <Button type="submit" className="flex-1" disabled={isPending}>
-                  {isPending ? "Saving..." : "Create Template"}
+                  {isPending ? "Saving..." : isEdit ? "Update Template" : "Create Template"}
                 </Button>
                 <Button
                   type="button"

@@ -43,9 +43,10 @@ export class TemplateService {
      */
     static async getTemplateById(templateId: string) {
         const db = await getDatabase();
+        const id= new ObjectId(templateId)
         const template = await db
             .collection<TemplateDocument>(this.COLLECTION_NAME)
-            .findOne({ templateId, status: 'active' });
+            .findOne({ _id:id, status: 'active' });
 
         return template;
     }
@@ -106,7 +107,7 @@ export class TemplateService {
     static async updateTemplate(templateId: string, input: UpdateTemplateInput) {
         const db = await getDatabase();
         const now = new Date();
-
+        const id = new ObjectId(templateId)
         const updateData = {
             ...input,
             updatedAt: now,
@@ -115,7 +116,7 @@ export class TemplateService {
         const result = await db
             .collection<TemplateDocument>(this.COLLECTION_NAME)
             .updateOne(
-                { templateId },
+                { _id: id },
                 { $set: updateData }
             );
 

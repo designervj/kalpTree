@@ -434,45 +434,30 @@ export default function CurrentForm() {
       console.log("selected--->", selected);
       const ccid = selected?.getId();
       console.log("ccid--->", ccid);
-   
-    let html = `<form class="gjs-form" id="${ccid}">`;
-    currentFields.forEach((f) => {
-      if (!f.enabled) return;
 
-      const fieldName = f.label.toLowerCase().replace(/\s+/g, "_");
-      const requiredAttr = f.required ? "required" : "";
-      const labelText = `${f.label}${f.required ? "*" : ""}`;
+      let html = `<form class="gjs-form" id="${ccid}">`;
+      currentFields.forEach((f) => {
+        if (!f.enabled) return;
 
-      html += `
-        <div class="form-group">
+        const fieldName = f.label.toLowerCase().replace(/\s+/g, "_");
+        const requiredAttr = f.required ? "required" : "";
+        const labelText = `${f.label}${f.required ? "*" : ""}`;
+
+        html += `
+        <div class="form-group" data-id="${f.id}">
           <label>${labelText}</label>
           ${f.kind === "paragraph"
-          ? `<textarea name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} rows="5"></textarea>`
-          : f.kind === "short_answer"
-            ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} />`
-            : f.kind === "single_choice"
-              ? `
-                <div class="options-group">
-                  ${(f.options || [])
-                .map(
-                  (opt) => `
-                    <label class="option-label">
-                      <input type="radio" name="${fieldName}" value="${opt.label}" />
-                      <span>${opt.label}</span>
-                    </label>
-                  `
-                )
-                .join("")}
-                </div>
-              `
-              : f.kind === "multiple_choice"
+            ? `<textarea name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} rows="5"></textarea>`
+            : f.kind === "short_answer"
+              ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} />`
+              : f.kind === "single_choice"
                 ? `
                 <div class="options-group">
                   ${(f.options || [])
                   .map(
                     (opt) => `
                     <label class="option-label">
-                      <input type="checkbox" name="${fieldName}" value="${opt.label}" />
+                      <input type="radio" name="${fieldName}" value="${opt.label}" />
                       <span>${opt.label}</span>
                     </label>
                   `
@@ -480,18 +465,34 @@ export default function CurrentForm() {
                   .join("")}
                 </div>
               `
-                : ""
-        }
+                : f.kind === "multiple_choice"
+                  ? `
+                <div class="options-group">
+                  ${(f.options || [])
+                    .map(
+                      (opt) => `
+                    <label class="option-label">
+                      <input type="checkbox" name="${fieldName}" value="${opt.label}" />
+                      <span>${opt.label}</span>
+                    </label>
+                  `
+                    )
+                    .join("")}
+                </div>
+              `
+                  : ""
+          }
         </div>
       `;
-    });
-    html += `
-      <div class="form-group">
-        <button type="submit">Submit</button>
+      });
+      html += `
+      <div class="form-submit">
+        <button type="submit" class="btn-primary">Submit</button>
       </div>
     </form>`;
-    return html;
-  }
+      return html;
+    }
+    return "";
   };
 
 
@@ -518,6 +519,8 @@ export default function CurrentForm() {
         let labelText = (labelEl.textContent || "").trim();
         const required = labelText.endsWith("*") || (textarea || input)?.hasAttribute("required") || false;
         if (labelText.endsWith("*")) labelText = labelText.slice(0, -1).trim();
+
+        const dataId = group.getAttribute("data-id");
 
         let kind: FieldKind = "short_answer";
         let placeholder = "";
@@ -555,7 +558,7 @@ export default function CurrentForm() {
         }
 
         const field: FormField = {
-          id: uid(),
+          id: dataId || uid(),
           kind,
           label: labelText,
           required,
@@ -684,22 +687,22 @@ export default function CurrentForm() {
     console.log("html--->", html);
     if (html) {
       if (state.editor) {
-      const selected = state.editor.getSelected();
-      console.log("selected--->", selected);
-      if (selected) {
-        // Since 'html' includes the <form> tag, and 'selected' is the form component,
-        // we replace the entire component to avoid nesting and ensure all attributes are updated.
-        const newComponent = selected.replaceWith(html);
+        const selected = state.editor.getSelected();
+        console.log("selected--->", selected);
+        if (selected) {
+          // Since 'html' includes the <form> tag, and 'selected' is the form component,
+          // we replace the entire component to avoid nesting and ensure all attributes are updated.
+          const newComponent = selected.replaceWith(html);
 
-        // Re-select the new component so the sidebar/editor state remains consistent
-        if (newComponent) {
-          const toSelect = Array.isArray(newComponent) ? newComponent[0] : newComponent;
-          state.editor.select(toSelect);
+          // Re-select the new component so the sidebar/editor state remains consistent
+          if (newComponent) {
+            const toSelect = Array.isArray(newComponent) ? newComponent[0] : newComponent;
+            state.editor.select(toSelect);
+          }
+
+          console.log("Form saved and updated on canvas");
         }
-
-        console.log("Form saved and updated on canvas");
       }
-    }
     }
   }
   return (

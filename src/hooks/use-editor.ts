@@ -1054,6 +1054,7 @@ export function useEditor(containerId: string) {
       console.log("component.nes s --->", component)
 
       if (component?.attributes?.tagName === 'form') {
+        console.log("form selected")
         // how to know the child of form
         const componentHtml = component.toHTML();
 
@@ -1853,9 +1854,6 @@ export function useEditor(containerId: string) {
           // For HTML strings - this is the most common case for blocks
           // Extract scripts if present to ensure they load on canvas
           const { body, scripts, styles } = extractParts(content);
-          console.log("content scripts", scripts)
-          console.log("body", body)
-          console.log("styles", styles)
 
           // Re-attach styles to the body if they exist
           let contentToAdd = body;
