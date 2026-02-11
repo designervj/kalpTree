@@ -53,6 +53,10 @@ type PropertiesSidebarProps = {
   setOpen: (open: boolean) => void;
   open: boolean;
   actions: any;
+  handlePageType: (type: string) => void;
+  pagetype: string;
+  categoryStyleConfigs: any;
+  setCategoryStyleConfigs: any;
 };
 
 type TabKey =
@@ -89,6 +93,7 @@ const TAB_TITLES: Record<TabKey, string> = {
 import { useEditorContext } from "../../EditorContext";
 import ProductGalleryPage from "../../productgallery/ProductGalleryPage";
 import GlobalStylesSection from "../../style-editor/GlobalStyle";
+import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
 
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
@@ -100,6 +105,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   setOpen,
   open,
   actions,
+  handlePageType,
+  pagetype,
+  categoryStyleConfigs,
+  setCategoryStyleConfigs,
 }) => {
   const [tab, setTab] = React.useState<TabKey>("style");
 
@@ -219,15 +228,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           </Tabs>
         );
 
-
       case "global":
-
-        return (
-          <GlobalStylesSection
-            onStyleChange={onStyleChange}
-
-          />
-        );
+        return <GlobalStylesSection onStyleChange={onStyleChange} />;
 
       case "layer":
         return <PageLayer />;
@@ -237,11 +239,18 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
       case "pages":
         return (
-          <Pages
-            setOpen={setOpen}
-            open={open}
-            openSeoModal={handleOpenSeoModal}
-          />
+          <>
+            <GetAllcategory />
+            <Pages
+              setOpen={setOpen}
+              open={open}
+              openSeoModal={handleOpenSeoModal}
+              handlePageType={handlePageType}
+              pagetype={pagetype}
+              categoryStyleConfigs={categoryStyleConfigs}
+              setCategoryStyleConfigs={setCategoryStyleConfigs}
+            />
+          </>
         );
 
       // ✅ HERE: show the Pages component when Pages tab is selected

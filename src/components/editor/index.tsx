@@ -21,6 +21,9 @@ import EditForm from "./editForm/EditForm";
 import { EditorProvider } from "./EditorContext";
 import { registerProductGalleryComponent } from "./productgallery/updateProductGalleryProducts";
 import { addComponentAboveFooter } from "./utils/InsertionUtils";
+import GetAllProduct from "../admin/product/productList/GetAllProduct";
+import ProductShowcase from "../admin/product/Cart/Products";
+import { ProductShowcaseStyleConfig } from "./pages-builder/pages";
 
 
 type PropertiesSidebarProps = {
@@ -60,9 +63,7 @@ export default function GrapesJSEditor() {
     (state: RootState) => state.pageEdit,
   );
 
-  const { currentWebsite } = useSelector(
-    (state: RootState) => state.websites,
-  );
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
   // const parser = new DOMParser();
   // const doc = parser.parseFromString(editorHtml, "text/html");
@@ -99,7 +100,6 @@ export default function GrapesJSEditor() {
       .join("\n");
   }
 
-
   const contentLoadedRef = useRef<boolean>(false);
 
   // Reactive global style updates
@@ -112,8 +112,12 @@ export default function GrapesJSEditor() {
 
   // Trigger loading state when page content changes
   useEffect(() => {
-    if (page?.content && !contentLoadedRef.current && currentWebsite?.globalStyle) {
-      console.log("loading started")
+    if (
+      page?.content &&
+      !contentLoadedRef.current &&
+      currentWebsite?.globalStyle
+    ) {
+      console.log("loading started");
       dispatch(setPageLoading(true));
     }
   }, [page?.id, page?.content, currentWebsite?.globalStyle, dispatch]);
@@ -236,7 +240,12 @@ export default function GrapesJSEditor() {
     return () => {
       state.editor?.off("load", handleLoad);
     };
-  }, [state.editor, state.isLoading, page?.content, currentWebsite?.globalStyle]);
+  }, [
+    state.editor,
+    state.isLoading,
+    page?.content,
+    currentWebsite?.globalStyle,
+  ]);
 
   function getSelectedGalleryProductFromEditor(editor: any) {
     if (!editor?.Canvas) return null;
@@ -271,8 +280,6 @@ export default function GrapesJSEditor() {
       finalGallery.push(final);
     });
 
-
-
     // const productItem = doc.querySelectorAll(".gallery-item");
 
     if (!selectedItemm) return null;
@@ -291,7 +298,6 @@ export default function GrapesJSEditor() {
     if (!state.editor) return;
     const updateHandler = () => {
       const html = state.editor.getHtml();
-
 
       setEditorHtml(html);
       //  dispatch({ type: "pageEdit/setContent", payload: html });
@@ -353,6 +359,12 @@ export default function GrapesJSEditor() {
     if (state.editor?.DeviceManager) {
       state.editor.DeviceManager.remove(deviceId);
     }
+  };
+
+  const [pagetype, setPageType] = useState("normal");
+
+  const handlePageType = (type: string) => {
+    setPageType(type);
   };
 
   const handleUpdateDevice = (
@@ -420,8 +432,6 @@ export default function GrapesJSEditor() {
     else {
       state.editor.setComponents(content);
     }
-
-
   };
 
   const handleClearCanvas = () => {
@@ -656,7 +666,9 @@ export default function GrapesJSEditor() {
 
         // Re-select the new component so the sidebar/editor state remains consistent
         if (newComponent) {
-          const toSelect = Array.isArray(newComponent) ? newComponent[0] : newComponent;
+          const toSelect = Array.isArray(newComponent)
+            ? newComponent[0]
+            : newComponent;
           state.editor.select(toSelect);
         }
 
@@ -665,6 +677,11 @@ export default function GrapesJSEditor() {
     }
   };
 
+  const [categoryStyleConfigs, setCategoryStyleConfigs] = useState<
+    Record<string, ProductShowcaseStyleConfig>
+  >({});
+
+  console.log(categoryStyleConfigs);
 
   return (
     <EditorProvider editorState={editorProps}>
@@ -698,8 +715,12 @@ export default function GrapesJSEditor() {
           />
 
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
-            {/* Canvas */}
-            <div className="flex-1 min-w-0 transition-all duration-300 ease-in-out relative">
+            {/* Canvas - Normal Editor */}
+            <div
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
+                pagetype !== "normal" ? "hidden" : ""
+              }`}
+            >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
                   <div className="w-10 h-10 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin" />
@@ -712,6 +733,42 @@ export default function GrapesJSEditor() {
               />
             </div>
 
+            {/* Alternative view - Product Pages */}
+            {pagetype !== "normal" && (
+              <div className="flex-1 min-w-0 overflow-auto bg-white">
+                <GetAllProduct websiteId={currentWebsite?._id} />
+                <ProductShowcase
+                  category={pagetype}
+                  layoutConfig={categoryStyleConfigs[pagetype].layoutConfig}
+                  styleConfig={categoryStyleConfigs[pagetype].styleConfig}
+                  heroConfig={categoryStyleConfigs[pagetype].heroConfig}
+                  cardConfig={categoryStyleConfigs[pagetype].cardConfig}
+                  filterConfig={categoryStyleConfigs[pagetype].filterConfig}
+                  paginationConfig={
+                    categoryStyleConfigs[pagetype].paginationConfig
+                  }
+                />
+              </div>
+            )}
+            {/* Canvas */}
+            {/* {pagetype == "normal" ? (
+              <div className="flex-1 min-w-0 transition-all duration-300 ease-in-out relative">
+                {(state.isLoading || isPageLoading) && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
+                    <div className="w-10 h-10 border-t-2 border-b-2 border-indigo-500 rounded-full animate-spin" />
+                  </div>
+                )}
+                <div
+                  id="gjs-editor"
+                  className="w-full h-full"
+                  ref={containerRef}
+                />
+              </div>
+            ) : (
+              <div className="flex-1 min-w-0 transition-all duration-300 ease-in-out relative">
+                My Name is Khan
+              </div>
+            )} */}
             {/* Sidebar */}
             <PropertiesSidebar
               showSidebar={showSidebar}
@@ -723,6 +780,10 @@ export default function GrapesJSEditor() {
               open={open}
               setOpen={setOpen}
               actions={actions}
+              handlePageType={handlePageType}
+              pagetype={pagetype}
+              categoryStyleConfigs={categoryStyleConfigs}
+              setCategoryStyleConfigs={setCategoryStyleConfigs}
             />
           </div>
 
