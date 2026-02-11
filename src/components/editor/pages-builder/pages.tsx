@@ -1,4 +1,3 @@
-
 "use client";
 
 import * as React from "react";
@@ -680,6 +679,8 @@ export default function Pages({
   const dispatch = useDispatch<AppDispatch>();
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { listCategory } = useSelector((state: RootState) => state.category);
+  const { listProduct } = useSelector((state: RootState) => state.product);
+
   const [mainNav, setMainNav] = React.useState<PageItem[]>([]);
 
   // Collapsible sections state
@@ -854,7 +855,7 @@ export default function Pages({
   const handlePages = (page: PageItem) => {
     const currentPage = websitePages.find((p) => p._id === page.id);
     if (currentPage) {
-       dispatch(setPageLoading(true));
+      dispatch(setPageLoading(true));
       dispatch(
         setPageEdit({
           page: currentPage,
@@ -898,6 +899,10 @@ export default function Pages({
         [categorySlug]: defaultConfig,
       });
     }
+  };
+
+  const handleProductClick = (productid: string) => {
+    handlePageType(productid);
   };
 
   const handleEditStyle = (categorySlug: string) => {
@@ -1074,10 +1079,38 @@ export default function Pages({
                     </div>
 
                     {productPagesExpanded && (
-                      <div className="pb-2 pl-10 space-y-1">
-                        <div className="text-xs text-slate-500 dark:text-slate-400 py-1">
-                          No product pages yet
-                        </div>
+                      <div className="pb-2 pl-10 space-y-2">
+                        {listProduct && listProduct.length > 0 ? (
+                          listProduct.map((product) => (
+                            <div
+                              key={product._id}
+                              className="flex items-center justify-between group py-1.5 px-2 rounded hover:bg-slate-100 dark:hover:bg-white/5"
+                            >
+                              <div
+                                className="flex-1 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
+                                onClick={() =>
+                                  handleProductClick(`product-${product._id}`)
+                                }
+                              >
+                                {product.title}
+                              </div>
+                              <button
+                                // onClick={(e) => {
+                                //   e.stopPropagation();
+                                //   handleEditStyle(category.slug);
+                                // }}
+                                className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-slate-200 dark:hover:bg-white/10 rounded transition-opacity"
+                                title="Edit style"
+                              >
+                                <Settings className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+                              </button>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 py-1">
+                            No categories yet
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

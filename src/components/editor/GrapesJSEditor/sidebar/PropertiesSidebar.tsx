@@ -94,6 +94,7 @@ import { useEditorContext } from "../../EditorContext";
 import ProductGalleryPage from "../../productgallery/ProductGalleryPage";
 import GlobalStylesSection from "../../style-editor/GlobalStyle";
 import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
+import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
 
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
@@ -241,6 +242,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         return (
           <>
             <GetAllcategory />
+            <GetAllProduct />
             <Pages
               setOpen={setOpen}
               open={open}
@@ -317,7 +319,6 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       <aside className="w-[450px] h-full flex border-l bg-white border-slate-200 text-slate-900 dark:bg-[#0b1220] dark:border-slate-800 dark:text-slate-100">
         {/* LEFT ICON TABS */}
         <div className="w-[64px] shrink-0 border-r bg-slate-50 border-slate-200 flex flex-col items-center py-2 gap-2 dark:bg-[#081021] dark:border-slate-800">
-
           <IconTab
             active={tab === "global"}
             label="Global"

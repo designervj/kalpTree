@@ -24,7 +24,7 @@ import { addComponentAboveFooter } from "./utils/InsertionUtils";
 import GetAllProduct from "../admin/product/productList/GetAllProduct";
 import ProductShowcase from "../admin/product/Cart/Products";
 import { ProductShowcaseStyleConfig } from "./pages-builder/pages";
-
+import SingleProductShowcase from "../admin/product/Cart/SingleProduct";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -256,10 +256,13 @@ export default function GrapesJSEditor() {
 
     if (!doc) return null;
 
-    const selectedItem = doc.querySelectorAll('section[class^="product-gallery-"]');
+    const selectedItem = doc.querySelectorAll(
+      'section[class^="product-gallery-"]',
+    );
 
-    const selectedItemm = doc.querySelector('section[class^="product-gallery-"]');
-
+    const selectedItemm = doc.querySelector(
+      'section[class^="product-gallery-"]',
+    );
 
     const finalGallery: any = [];
 
@@ -416,7 +419,9 @@ export default function GrapesJSEditor() {
       if (scripts && scripts.length > 0) {
         scripts.forEach((scriptContent: string) => {
           if (scriptContent.trim()) {
-            const currentJs = (state.editor as any).getJs ? (state.editor as any).getJs() : "";
+            const currentJs = (state.editor as any).getJs
+              ? (state.editor as any).getJs()
+              : "";
             if (!currentJs.includes(scriptContent.trim())) {
               const newJs = currentJs + "\n" + scriptContent.trim();
               if (typeof (state.editor as any).setJs === "function") {
@@ -427,9 +432,7 @@ export default function GrapesJSEditor() {
         });
       }
       return;
-    }
-
-    else {
+    } else {
       state.editor.setComponents(content);
     }
   };
@@ -734,7 +737,7 @@ export default function GrapesJSEditor() {
             </div>
 
             {/* Alternative view - Product Pages */}
-            {pagetype !== "normal" && (
+            {pagetype !== "normal" && !pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
                 <ProductShowcase
@@ -748,6 +751,13 @@ export default function GrapesJSEditor() {
                     categoryStyleConfigs[pagetype].paginationConfig
                   }
                 />
+              </div>
+            )}
+
+            {pagetype !== "normal" && pagetype.startsWith("product") && (
+              <div className="flex-1 min-w-0 overflow-auto bg-white">
+                <GetAllProduct websiteId={currentWebsite?._id} />
+                <SingleProductShowcase />
               </div>
             )}
             {/* Canvas */}

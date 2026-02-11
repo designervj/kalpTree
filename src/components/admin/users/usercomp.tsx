@@ -695,7 +695,6 @@ export default function BusinessCreatePage({
   const router = useRouter();
   const isAgencyPath = path.includes("agencies");
   const dispatch = useDispatch();
-
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
@@ -786,19 +785,18 @@ export default function BusinessCreatePage({
   }, [safeUser.id, safeUser.role, isAgencyPath]);
 
   // Update primary_domain when business_url changes
-  useEffect(() => {
-    if (formData.businessdetails.business_url) {
-      setFormData((prev: any) => ({
-        ...prev,
-        businessdetails: {
-          ...prev.businessdetails,
-          primary_domain: `${formData.businessdetails.business_url}.kalptree.xyz`,
-        },
-      }));
-    }
-  }, [formData.businessdetails.business_url]);
+  // useEffect(() => {
+  //   if (formData.businessdetails.business_url) {
+  //     setFormData((prev: any) => ({
+  //       ...prev,
+  //       businessdetails: {
+  //         ...prev.businessdetails,
+  //         primary_domain: `${formData.businessdetails.business_url}.kalptree.xyz`,
+  //       },
+  //     }));
+  //   }
+  // }, [formData.businessdetails.business_url]);
 
-  console.log(formData);
 
   const handleInputChange = (e: any) => {
     const { name, value, type, files } = e.target;
