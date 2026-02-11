@@ -15,6 +15,8 @@ import { defaultBlocks } from "../../utils/block-library";
 import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
 import { Website } from "@/components/admin/AppShell";
 import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
+import { addComponentAboveFooter } from "@/components/editor/utils/InsertionUtils";
+
 
 /**
  * Generates the full CSS content for global styles, including variables and base rules.
@@ -476,7 +478,7 @@ export function useEditor(containerId: string) {
               // Find the style for the current tenant or just use the first one if only one exist
               console.log("🔄 Using fallback globalStyle from Redux slice");
             }
-         
+
             injectCanvasStyles(editor, page?.content, styleToInject);
 
             // Setup event listeners
@@ -1041,7 +1043,7 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
     editor.on("component:hover", (component: any) => {
-      
+
 
     });
     // Component selection
@@ -1895,22 +1897,23 @@ export function useEditor(containerId: string) {
         if (typeof content === "string") {
           // For HTML strings - this is the most common case for blocks
           // Simply add the HTML string directly to the editor
-          editorRef.current.addComponents(content);
+          addComponentAboveFooter(editorRef.current, content);
         }
         // Handle object content (like for image components)
         else if (typeof content === "object") {
           // If content has a specific GrapesJS component type
           if (content.type) {
-            editorRef.current.addComponents({
+            addComponentAboveFooter(editorRef.current, {
               type: content.type,
               ...content,
             });
           }
           // Try to convert object to component
           else {
-            editorRef.current.addComponents(content);
+            addComponentAboveFooter(editorRef.current, content);
           }
         }
+
         // Fallback for any other type
         else {
           console.warn("Unrecognized content format", content);

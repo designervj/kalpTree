@@ -308,17 +308,18 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       <aside className="w-[450px] h-full flex border-l bg-white border-slate-200 text-slate-900 dark:bg-[#0b1220] dark:border-slate-800 dark:text-slate-100">
         {/* LEFT ICON TABS */}
         <div className="w-[64px] shrink-0 border-r bg-slate-50 border-slate-200 flex flex-col items-center py-2 gap-2 dark:bg-[#081021] dark:border-slate-800">
-          <IconTab
-            active={tab === "style"}
-            label="Style"
-            onClick={() => setTab("style")}
-            icon={<Palette className="w-5 h-5" />}
-          />
+          
           <IconTab
             active={tab === "global"}
             label="Global"
             onClick={() => setTab("global")}
             icon={<Box className="w-5 h-5" />}
+          />
+          <IconTab
+            active={tab === "style"}
+            label="Style"
+            onClick={() => setTab("style")}
+            icon={<Palette className="w-5 h-5" />}
           />
           {/* <IconTab
             active={tab === "interactivity"}

@@ -20,6 +20,8 @@ import GetAllTemplate from "../admin/templates/GetAllTemplate";
 import EditForm from "./editForm/EditForm";
 import { EditorProvider } from "./EditorContext";
 import { registerProductGalleryComponent } from "./productgallery/updateProductGalleryProducts";
+import { addComponentAboveFooter } from "./utils/InsertionUtils";
+
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -393,23 +395,10 @@ export default function GrapesJSEditor() {
     console.log("content", content);
     console.log("append", append);
     if (append) {
-      const wrapper = state.editor.getWrapper();
-      console.log("wrapper", wrapper);
-      // Look for footer tag at the top level of the wrapper first
-      const footer = wrapper.find('footer')[0];
-      console.log("footer", footer);
-      if (footer) {
-        const parent = footer.parent();
-        if (parent) {
-          const index = footer.index();
-          parent.append(content, { at: index });
-          return;
-        }
-      }
-
-      // Fallback if no footer found or error occurs
-      state.editor.addComponents(content);
-    } else {
+      addComponentAboveFooter(state.editor, content);
+      return;
+    }
+    else {
       state.editor.setComponents(content);
     }
 
