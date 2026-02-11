@@ -33,10 +33,11 @@ export const generateGridGalleryHTML = (
     .join("");
 
   return `
+  <body>
 <section class="product-gallery-grid" style="width: 100%; padding: 40px 20px;">
   <div style="max-width: 1200px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">[pro_head]</h1>
+      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">${heading}</h1>
       ${subheading ? `<h2 style="font-size: 20px; font-weight: 500; color: #6b7280; margin: 0 0 16px 0;">${subheading}</h2>` : ""}
       ${description ? `<p style="font-size: 16px; color: #4b5563; line-height: 1.6; max-width: 700px; margin: 0 auto;">${description}</p>` : ""}
     </div>
@@ -44,7 +45,9 @@ export const generateGridGalleryHTML = (
       ${productCards}
     </div>
   </div>
-  <style>
+  
+</section>
+<style>
     .grid-item:hover {
       transform: translateY(-8px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
@@ -60,7 +63,7 @@ export const generateGridGalleryHTML = (
       }
     }
   </style>
-</section>`;
+</body>`;
 };
 
 /**
@@ -95,10 +98,11 @@ export const generateCarouselGalleryHTML = (
     .join("");
 
   return `
+  <body>
 <section class="product-gallery-carousel" style="width: 100%; padding: 40px 20px;">
   <div style="max-width: 800px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">[pro_head]</h1>
+      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">${heading}</h1>
       ${subheading ? `<h2 style="font-size: 20px; font-weight: 500; color: #6b7280; margin: 0 0 16px 0;">${subheading}</h2>` : ""}
       ${description ? `<p style="font-size: 16px; color: #4b5563; line-height: 1.6; max-width: 600px; margin: 0 auto;">${description}</p>` : ""}
     </div>
@@ -109,7 +113,9 @@ export const generateCarouselGalleryHTML = (
       <button id="nextBtn" style="background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;">Next</button>
     </div>
   </div>
-  <script>
+ 
+</section>
+ <script>
     (function() {
       let currentIndex = 0;
       const totalItems = ${products.length};
@@ -150,7 +156,7 @@ export const generateCarouselGalleryHTML = (
       });
     })();
   </script>
-</section>`;
+</body>`;
 };
 
 /**
@@ -186,10 +192,11 @@ export const generateMasonryGalleryHTML = (
     .join("");
 
   return `
+  <body>
 <section class="product-gallery-masonry" style="width: 100%; padding: 40px 20px; background: #f9fafb;">
   <div style="max-width: 1200px; margin: 0 auto;">
     <div style="text-align: center; margin-bottom: 40px;">
-      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">[pro_head]</h1>
+      <h1 style="font-size: 36px; font-weight: 800; color: #1f2937; margin: 0 0 12px 0;">${heading}</h1>
       ${subheading ? `<h2 style="font-size: 20px; font-weight: 500; color: #6b7280; margin: 0 0 16px 0;">${subheading}</h2>` : ""}
       ${description ? `<p style="font-size: 16px; color: #4b5563; line-height: 1.6; max-width: 700px; margin: 0 auto;">${description}</p>` : ""}
     </div>
@@ -197,7 +204,9 @@ export const generateMasonryGalleryHTML = (
       ${productCards}
     </div>
   </div>
-  <style>
+ 
+</section>
+ <style>
     .masonry-item:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
@@ -213,7 +222,7 @@ export const generateMasonryGalleryHTML = (
       }
     }
   </style>
-</section>`;
+</body>`;
 };
 
 /**

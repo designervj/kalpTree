@@ -10,11 +10,13 @@ export const addComponentAboveFooter = (editor: any, content: any) => {
     const wrapper = editor.getWrapper();
     // Look for footer tag at the top level of the wrapper
     const footer = wrapper.find('footer')[0];
-
+   console.log("footer", footer)
     if (footer) {
         const parent = footer.parent();
+        console.log("parent", parent)
         if (parent) {
             const index = footer.index();
+            console.log("index", index)
             // Insert before the footer
             return parent.append(content, { at: index });
         }

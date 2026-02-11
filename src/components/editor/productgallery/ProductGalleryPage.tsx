@@ -39,6 +39,9 @@ import ProductGallerySettings from "./ProductGallerySettings";
 import ProductGalleryPreview from "./ProductGalleryPreview";
 import SelectGalleryModal from "./SelectGalleryModal";
 import { generateGalleryHTML } from "./util/GenerateHtml";
+import { parseGalleryHtml } from "./util/ParseGalleryHtml";
+
+import { useEditorContext } from "../EditorContext";
 
 export interface Product {
   id: string;
@@ -72,9 +75,16 @@ export interface SavedGallery {
   createdAt: Date;
 }
 
-const ProductGalleryPage: React.FC<{ actions?: any }> = ({ actions }) => {
+const ProductGalleryPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
+  const editorContext = useEditorContext();
+  const {
+    state,
+    actions
+  } = editorContext;
+
+
 
   // Gallery management
   const [savedGalleries, setSavedGalleries] = useState<SavedGallery[]>([]);
@@ -104,6 +114,37 @@ const ProductGalleryPage: React.FC<{ actions?: any }> = ({ actions }) => {
     cardStyle: "default",
     hoverEffect: "lift",
   });
+
+
+
+  const extractGallerySections = () => {
+    if (!state.editor) return [];
+
+    const wrapper = state.editor.getWrapper();
+    // Find all sections where class starts with product-gallery
+    const sections = wrapper.find('section[class^="product-gallery-"]');
+
+    return sections.map((section: any) => {
+      const html = section.toHTML();
+      const extractedData = parseGalleryHtml(html);
+
+      return extractedData
+    });
+
+  };
+
+  useEffect(() => {
+    if (state.editor) {
+      const galleries = extractGallerySections();
+      if (galleries.length > 0) {
+        setSavedGalleries(galleries);
+      } else {
+        setSavedGalleries([]);
+      }
+
+    }
+  }, [state.editor]);
+
 
   // Fetch products
   const fetchProducts = async () => {

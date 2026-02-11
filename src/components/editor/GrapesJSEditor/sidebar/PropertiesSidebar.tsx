@@ -57,7 +57,7 @@ type PropertiesSidebarProps = {
 
 type TabKey =
   | "style"
-   | "global"
+  | "global"
   | "pages"
   | "forms"
   | "styles"
@@ -220,12 +220,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         );
 
 
-        case "global":
-      
+      case "global":
+
         return (
           <GlobalStylesSection
-         onStyleChange={onStyleChange}
-         
+            onStyleChange={onStyleChange}
+
           />
         );
 
@@ -286,7 +286,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         return renderPlaceholder(<AllBuilderPage />);
 
       case "productgallery":
-        return <ProductGalleryPage actions={actions} />;
+        return <ProductGalleryPage />;
 
       // case "more":
       //   return renderPlaceholder(
@@ -308,7 +308,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       <aside className="w-[450px] h-full flex border-l bg-white border-slate-200 text-slate-900 dark:bg-[#0b1220] dark:border-slate-800 dark:text-slate-100">
         {/* LEFT ICON TABS */}
         <div className="w-[64px] shrink-0 border-r bg-slate-50 border-slate-200 flex flex-col items-center py-2 gap-2 dark:bg-[#081021] dark:border-slate-800">
-          
+
           <IconTab
             active={tab === "global"}
             label="Global"
