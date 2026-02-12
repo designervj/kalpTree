@@ -120,8 +120,8 @@ export default function GrapesJSEditor() {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-      currentWebsite?.globalStyle &&
-      currentHeader?.content
+      currentWebsite?.globalStyle
+
     ) {
 
       dispatch(setPageLoading(true));
@@ -130,7 +130,7 @@ export default function GrapesJSEditor() {
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
-    if (!state.editor || !page?.content || !currentWebsite?.globalStyle || !currentHeader?.content) return;
+    if (!state.editor || !page?.content || !currentWebsite?.globalStyle) return;
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
@@ -197,6 +197,7 @@ export default function GrapesJSEditor() {
           // Only update components if they are different from current canvas content
           const currentHtml = state.editor.getHtml();
           if (currentHtml !== body) {
+            state.editor.DomComponents.clear();
             state?.editor?.setComponents(body);
             setEditorHtml(body);
           }
