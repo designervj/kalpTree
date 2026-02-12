@@ -8,13 +8,13 @@ import { WebsitePageModel } from '@/components/admin/website/websitePage/Website
 
 const page = async ({
     params,
-    searchParams 
+    searchParams
 }: {
     params?: Promise<{ id: string }>;
     searchParams?: Promise<{ slug: string }>;
 }) => {
     const param = await params;
-    const search = await searchParams; 
+    const search = await searchParams;
     console.log("search", search);
 
     if (!param?.id || !ObjectId.isValid(param.id)) {
@@ -38,9 +38,9 @@ const page = async ({
     // get header
     const allheader_coll = await db.collection("templates_header");
     const headerData = await allheader_coll.findOne({ tenantId: website.tenantId });
-    if (!headerData) {
-        return <div>Header not found</div>
-    }
+    // if (!headerData) {
+    //     return <div>Header not found</div>
+    // }
 
     // get footer
     // const allfooter_coll = await db.collection("templates_footer");
@@ -61,7 +61,7 @@ const page = async ({
         status: website.status,
         lang: website.lang,
         globalStyle: website.globalStyle,
-        isComingSoon:website.isComingSoon??true
+        isComingSoon: website.isComingSoon ?? true
     };
 
     const serializedPages: WebsitePageModel[] = pagesData.map((page) => ({
@@ -74,20 +74,20 @@ const page = async ({
         seo: page.seo,
         status: page.status,
         isHomePage: page.isHomePage,
-        createdAt: page.createdAt,
-        updatedAt: page.updatedAt,
-        publishedAt: page.publishedAt,
+        createdAt: page.createdAt ? new Date(page.createdAt).toISOString() : "",
+        updatedAt: page.updatedAt ? new Date(page.updatedAt).toISOString() : "",
+        publishedAt: page.publishedAt ? new Date(page.publishedAt).toISOString() : "",
     }));
 
     return (
         <>
             <WebsiteBuilder
                 pages={serializedPages}
-                website={serializedWebsite} 
+                website={serializedWebsite}
                 search={search}
                 headerData={JSON.parse(JSON.stringify(headerData))}
-                // footerData={JSON.parse(JSON.stringify(footerData))}
-                />
+            // footerData={JSON.parse(JSON.stringify(footerData))}
+            />
         </>
     )
 }

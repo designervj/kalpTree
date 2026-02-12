@@ -5,6 +5,7 @@ import { GlobalStyleSettings } from "@/components/admin/settings/global-styles/G
 
 export type GlobalStyleState = {
     style: GlobalStyleSettings[] | null;
+    currentStyle: GlobalStyleSettings | null;
     isFetched: boolean;
     isLoading: boolean;
     isError: boolean;
@@ -12,6 +13,7 @@ export type GlobalStyleState = {
 
 const initialState: GlobalStyleState = {
     style: null,
+    currentStyle: null,
     isFetched: false,
     isLoading: false,
     isError: false,
@@ -47,8 +49,10 @@ const globalStyleSlice = createSlice({
                state.isFetched = true;
                if(state.style){
                 state.style.push(action.payload)
+                state.currentStyle = action.payload
                }else{
                 state.style = [action.payload]
+                state.currentStyle = action.payload
                }
                 state.isLoading = false;
             })
