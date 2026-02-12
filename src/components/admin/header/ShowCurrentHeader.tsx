@@ -2,16 +2,23 @@
 import { Button } from '@/components/ui/button';
 import { fetchCurrentHeaders, fetchHeaders } from '@/hooks/slices/header/HeaderThunk';
 import { AppDispatch, RootState } from '@/store/store';
-import { Layout, Trash2 } from 'lucide-react';
+import { Layout, Pencil, Trash2 } from 'lucide-react';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { TemplateDocument } from '../templates/TemplateType';
 import { setPageEdit } from '@/hooks/slices/pageEditSlice';
+import { useRouter } from 'next/navigation';
 
 const ShowCurrentHeader = () => {
     const { currentHeader, hasFetched } = useSelector((state: RootState) => state.header);
     const { currentWebsite } = useSelector((state: RootState) => state.websites);
+    const router = useRouter();
+    const {currentBusiness} = useSelector((state: RootState) => state.business);
+    const {curretAgency} = useSelector((state: RootState) => state.agency);
 
+
+
+   
     const dispatch = useDispatch<AppDispatch>();
     // fetch the current header based on tenantId
     useEffect(() => {
@@ -37,8 +44,13 @@ const ShowCurrentHeader = () => {
             // Add your delete logic here
             console.log('Delete clicked');
         };
-    
-    return (
+
+        //admin/websites/vastram.kalptree.xyz/website/header?businessid=698455719de505b3869933a9&agencyid=697a0775f5c90450fb2a301f
+        const handleEditHeader = (header: TemplateDocument) => {
+            // Add your edit logic here
+          router.push(`/admin/websites/${currentWebsite?.primaryDomain?.[0]}/website/header/${header._id}?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`);
+        };
+        return (
         <div>
             {!hasFetched && (
                 <div className="flex items-center justify-center h-full">
@@ -51,6 +63,15 @@ const ShowCurrentHeader = () => {
                     <div className="flex items-center justify-between gap-2 p-2 border-b bg-gray-50">
                         <h3 className="text-lg font-semibold text-gray-700 flex-1 text-center">Website Header</h3>
                         <div className="flex items-center gap-2">
+                               <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-green-500 hover:text-green-700 hover:bg-green-50"
+                                onClick={() => handleEditHeader(currentHeader)}
+                                title="Edit"
+                            >
+                                <Pencil className="h-4 w-4" />
+                            </Button>
                             <Button
                                 variant="ghost"
                                 size="sm"

@@ -8,9 +8,10 @@ import { AppDispatch, RootState } from '@/store/store';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { createHeader } from '@/hooks/slices/header/HeaderThunk';
+import { createHeader, updateHeader } from '@/hooks/slices/header/HeaderThunk';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { TemplateDocument } from '../templates/TemplateType';
 
 
 export type FieldConfig = {
@@ -72,13 +73,18 @@ const fields: FieldConfig[] = [
     },
 ];
 
-const AddHeader = () => {
+
+type Props = {
+    header?: TemplateDocument
+    isEdit?: boolean
+}
+const AddHeader = ({ header, isEdit }: Props) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const dispatch = useDispatch<AppDispatch>();
 
     const { currentWebsite } = useSelector((state: RootState) => state.websites);
-   const {currentBusiness} = useSelector((state: RootState) => state.business);
+    const { currentBusiness } = useSelector((state: RootState) => state.business);
     const [saving, setSaving] = useState(false);
     const [mode, setMode] = useState<"html" | "preview">("html");
     const [msg, setMsg] = useState("");
@@ -93,6 +99,18 @@ const AddHeader = () => {
         website: "",
     });
 
+    useEffect(() => {
+        if (header) {
+            setFormData((prev) => ({
+                ...prev,
+                content: header.content,
+                slug: header.slug,
+                status: header.status,
+
+            }))
+        }
+    }, [header]);
+
     const leftFields = fields.filter((f) => f.side === "left");
     const rightFields = fields.filter((f) => f.side === "right");
 
@@ -102,7 +120,7 @@ const AddHeader = () => {
             setFormData(prev => ({
                 ...prev,
                 website: currentWebsite.name || "",
-               tenant: currentBusiness.name || "",
+                tenant: currentBusiness.name || "",
             }));
         }
     }, [currentWebsite, currentBusiness]);
@@ -301,29 +319,39 @@ const AddHeader = () => {
         setMsg("");
 
         try {
-            const headerData = {
+            const headerData: any = {
                 slug: formData.slug,
                 content: formData.content,
                 tenantId: currentWebsite.tenantId,
                 websiteId: currentWebsite._id,
+                status: formData.status,
             };
 
-            const result = await dispatch(createHeader(headerData));
+            let result;
+            if (isEdit && header?._id) {
+                headerData._id = header._id;
+                result = await dispatch(updateHeader(headerData));
+            } else {
+                result = await dispatch(createHeader(headerData));
+            }
 
-            if (createHeader.fulfilled.match(result)) {
-                toast.success("Header created successfully!");
-                setMsg("Success: Header created successfully!");
+            if (createHeader.fulfilled.match(result) || updateHeader.fulfilled.match(result)) {
+                const actionText = isEdit ? "updated" : "created";
+                toast.success(`Header ${actionText} successfully!`);
+                setMsg(`Success: Header ${actionText} successfully!`);
                 // Optionally redirect back
                 setTimeout(() => {
                     router.back();
                 }, 1500);
             } else {
-                toast.error(result.payload as string || "Failed to create header");
-                setMsg(result.payload as string || "Failed to create header");
+                const actionText = isEdit ? "update" : "create";
+                toast.error(result.payload as string || `Failed to ${actionText} header`);
+                setMsg(result.payload as string || `Failed to ${actionText} header`);
             }
         } catch (error) {
-            toast.error("An error occurred while creating header");
-            setMsg("Error: An error occurred while creating header");
+            const actionText = isEdit ? "updating" : "creating";
+            toast.error(`An error occurred while ${actionText} header`);
+            setMsg(`Error: An error occurred while ${actionText} header`);
         } finally {
             setSaving(false);
         }
@@ -358,7 +386,7 @@ const AddHeader = () => {
                                 disabled={saving}
                             // className="h-10 rounded-md bg-violet-700 hover:bg-violet-800"
                             >
-                                {saving ? "Creating..." : "Save"}
+                                {saving ? (isEdit ? "Updating..." : "Creating...") : (isEdit ? "Update" : "Save")}
                             </Button>
                         </div>
                     </div>
