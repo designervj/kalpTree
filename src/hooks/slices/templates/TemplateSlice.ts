@@ -72,14 +72,14 @@ const templateSlice = createSlice({
         state.isLoading = false;
         state.currentTemplate = action.payload;
         // Also update in allTemplate array if it exists
-        // const index = state.allTemplate.findIndex(
-        //     (t) => t._id.toString() === action.payload._id.toString()
-        // );
-        // if (index !== -1) {
-        //     state.allTemplate[index] = action.payload;
-        // } else {
-        //     state.allTemplate.push(action.payload);
-        // }
+        const index = state.allTemplate.findIndex(
+          (t) => t._id?.toString() === action.payload._id?.toString()
+        );
+        if (index !== -1) {
+          state.allTemplate[index] = action.payload;
+        } else {
+          state.allTemplate.push(action.payload);
+        }
       })
       .addCase(fetchTemplateById.rejected, (state, action) => {
         state.isLoading = false;
@@ -106,19 +106,20 @@ const templateSlice = createSlice({
       })
       .addCase(updateTemplate.fulfilled, (state, action) => {
         state.isLoading = false;
-        // const index = state.allTemplate.findIndex(
-        //     (t) => t._id.toString() === action.payload._id.toString()
-        // );
-        // if (index !== -1) {
-        //     state.allTemplate[index] = action.payload;
-        // }
-        // // Update currentTemplate if it's the same one
-        // if (
-        //     state.currentTemplate?._id.toString() ===
-        //     action.payload._id.toString()
-        // ) {
-        //     state.currentTemplate = action.payload;
-        // }
+        const updatedTemplate = action.payload;
+        const index = state.allTemplate.findIndex(
+          (t) => t._id?.toString() === updatedTemplate._id?.toString()
+        );
+        if (index !== -1) {
+          state.allTemplate[index] = updatedTemplate;
+        }
+        // Update currentTemplate if it's the same one
+        if (
+          state.currentTemplate?._id?.toString() ===
+          updatedTemplate._id?.toString()
+        ) {
+          state.currentTemplate = updatedTemplate;
+        }
       })
       .addCase(updateTemplate.rejected, (state, action) => {
         state.isLoading = false;
@@ -133,14 +134,14 @@ const templateSlice = createSlice({
         state.isLoading = false;
         const deletedId = action.payload.deletedId;
         // Remove from allTemplate array
-        // state.allTemplate = state.allTemplate.filter(
-        //     (t: TemplateDocument) => t._id.toString() !== deletedId
-        // );
-        // // Clear currentTemplate if it was the deleted one
-        // if (state.currentTemplate?._id.toString() === deletedId) {
-        //     state.currentTemplate =
-        //         state.allTemplate.length > 0 ? state.allTemplate[0] : null;
-        // }
+        state.allTemplate = state.allTemplate.filter(
+          (t: TemplateDocument) => t._id?.toString() !== deletedId && t.templateId !== deletedId
+        );
+        // Clear currentTemplate if it was the deleted one
+        if (state.currentTemplate?._id?.toString() === deletedId || state.currentTemplate?.templateId === deletedId) {
+          state.currentTemplate =
+            state.allTemplate.length > 0 ? state.allTemplate[0] : null;
+        }
       })
       .addCase(deleteTemplate.rejected, (state, action) => {
         state.isLoading = false;

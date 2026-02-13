@@ -30,6 +30,8 @@ import {
 import { createWebsitePage } from "@/hooks/slices/website/websitePageSlice";
 import { PAGE_TEMPLATES } from "./DemoTemplate";
 import { TemplateDocument } from "./templates/TemplateType";
+import { extractHeader } from "./website/websitePage/util/ExtractHeader";
+import { createHeader } from "@/hooks/slices/header/HeaderThunk";
 
 /* -----------------------------
   Types
@@ -308,7 +310,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   const searchParams = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
   const [saving, startTransition] = useTransition();
-
+   const {user}=useSelector((state:RootState)=>state.user)
   const [msg, setMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"html" | "preview">("html");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -412,9 +414,28 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       toast.error("Content is required");
       return;
     }
+     const { header, updatedHtml } = extractHeader(formData?.content ?? null);
+       
+     if(header &&updatedHtml){
+         const keepHeader = confirm("Do you want to keep the existing header?");
 
+  if (keepHeader) {
+      // User clicked "OK" (Yes)
+      console.log("Keeping existing header");
+      callApi(updatedHtml)
+    } else {
+      callApi(formData.content)
+    }
+    callApi(formData.content)
+     }
+    
+  };
+
+
+  //update page 
+  const callApi=async(content:string)=>{
     startTransition(async () => {
-      const res = await dispatch(createWebsitePage(formData));
+      const res = await dispatch(createWebsitePage({...formData,content}));
       if (createWebsitePage.fulfilled.match(res)) {
         setMsg("Created successfully!");
         toast.success("Created successfully!");
@@ -424,8 +445,36 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
         toast.error("Create failed");
       }
     });
-  };
+  }
 
+  //update headerPage 
+
+
+  const updateHeaderPage=async(content:string)=>{
+ 
+        const data:TemplateDocument={
+          slug:formData.slug,
+          status: "draft",
+          content:content,
+          websiteId:formData.websiteId,
+          category: "navbar",
+          tenantId:formData.tenantId,
+          createdBy:user?._id,
+          pageSlug:[formData.slug],
+          createdAt:new Date(),
+          updatedAt:new Date(),
+          
+        }
+        const result = await dispatch(createHeader(data));
+        if (createHeader.fulfilled.match(result)) {
+          setMsg("Created successfully!");
+          toast.success("Created successfully!");
+          goBack();
+        } else {
+          setMsg("Create failed");
+          toast.error("Create failed");
+        }
+  }
   const leftFields = fields.filter((f) => f.side === "left");
   const rightFields = fields.filter((f) => f.side === "right");
 
@@ -513,7 +562,6 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   );
 
 
-  console.log("selectedTemplate--",selectedTemplate)
   const filteredTemplates = useMemo(() => {
     const q = tplSearch.trim().toLowerCase();
     return PAGE_TEMPLATES.filter((t) => {
@@ -527,7 +575,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
   const applyTemplate = (tpl: TemplateDocument, withSeoDefaults = true) => {
     // Replace full content
-   // setContentValue(tpl?.content);
+   //setContentValue(tpl?.content);
 
     // Auto fill SEO (only if empty)
     // if (withSeoDefaults && tpl.seo) {
@@ -539,18 +587,24 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
     //   }));
     // }
 
+    setFormData((p) => ({
+      ...p,
+      content: tpl?.content,
+    }));
+    
+
     toast.success(`Applied template: ${tpl.label}`);
   };
 
-  const insertTemplateAtCursor = (tpl: PageTemplate) => {
+  const insertTemplateAtCursor = (tpl: TemplateDocument) => {
     const el = editorRef.current;
     const current = String(formData?.content || "");
-    const insertText = `\n${tpl.html}\n`;
+    const insertText = `\n${tpl.content}\n`;
 
     if (!el) {
       // fallback append
       setContentValue(current + insertText);
-      toast.success(`Inserted template: ${tpl.name}`);
+      toast.success(`Inserted template: ${tpl.label}`);
       return;
     }
 
@@ -565,7 +619,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       el.setSelectionRange(pos, pos);
     });
 
-    toast.success(`Inserted template: ${tpl.name}`);
+    toast.success(`Inserted template: ${tpl.label}`);
   };
 
   const copyToClipboard = async (text: string) => {
@@ -1115,7 +1169,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                         // onClick={() => insertTemplateAtCursor(selectedTemplate)}
+                          onClick={() => insertTemplateAtCursor(selectedTemplate)}
                         >
                           <PlusCircle className="h-4 w-4 mr-2" />
                           Insert
@@ -1125,7 +1179,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                         // onClick={() => copyToClipboard(selectedTemplate?.html || "")}
+                          onClick={() => copyToClipboard(selectedTemplate?.content || "")}
                         >
                           <Copy className="h-4 w-4 mr-2" />
                           Copy

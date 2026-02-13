@@ -61,34 +61,7 @@ export async function POST(request: NextRequest) {
 
         const db = await getDatabase();
 
-        // Check if header with the given websiteId already exists
-        const existingHeader = await db.collection(COLLECTION_NAME).findOne({
-            websiteId: body.websiteId,
-        });
-
-        if (existingHeader) {
-            // Update only content and updatedAt
-            const updateResult = await db.collection(COLLECTION_NAME).updateOne(
-                { websiteId: body.websiteId },
-                {
-                    $set: {
-                        content: body.content || '',
-                        updatedAt: new Date(),
-                    },
-                }
-            );
-
-            // Fetch the updated document
-            const updatedHeader = await db.collection(COLLECTION_NAME).findOne({
-                websiteId: body.websiteId,
-            });
-
-            return NextResponse.json({
-                success: true,
-                data: updatedHeader,
-                message: 'Header updated successfully',
-            }, { status: 200 });
-        } else {
+  
             // Create new header
             const newHeader = {
                 slug: body.slug,
@@ -96,6 +69,9 @@ export async function POST(request: NextRequest) {
                 websiteId: body.websiteId,
                 content: body.content || '',
                 createdBy: session?.user?.id,
+                pageSlug:[body.slug],
+                category:"navbar",
+                status:"draft",
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -107,7 +83,7 @@ export async function POST(request: NextRequest) {
                 data: { _id: result.insertedId, ...newHeader },
                 message: 'Header created successfully',
             }, { status: 201 });
-        }
+        
     } catch (error) {
         console.error('Error creating/updating header:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

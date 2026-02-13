@@ -39,7 +39,12 @@ const ShowTemplate = () => {
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useEffect(() => {
-    setTemplate(allTemplate);
+    const sorted = [...allTemplate].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+    setTemplate(sorted);
   }, [allTemplate]);
 
   const getThumb = useMemo(() => {
@@ -87,8 +92,12 @@ const ShowTemplate = () => {
   };
 
   const handleShowSelectedTemplate = (data: TemplateDocument[]) => {
-    console.log("data", data);
-    setTemplate(data);
+    const sorted = [...data].sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return dateB - dateA;
+    });
+    setTemplate(sorted);
   };
 
   const handleEdit = (data: TemplateDocument) => {
