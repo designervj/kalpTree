@@ -120,8 +120,8 @@ export default function GrapesJSEditor() {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-      currentWebsite?.globalStyle &&
-      currentHeader?.content
+      currentWebsite?.globalStyle
+
     ) {
       dispatch(setPageLoading(true));
     }
@@ -210,6 +210,7 @@ export default function GrapesJSEditor() {
           // Only update components if they are different from current canvas content
           const currentHtml = state.editor.getHtml();
           if (currentHtml !== body) {
+            state.editor.DomComponents.clear();
             state?.editor?.setComponents(body);
             setEditorHtml(body);
           }
