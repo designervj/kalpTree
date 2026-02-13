@@ -22,7 +22,7 @@ export default async function PageTemplate({
   const header = await headers();
   const host = header.get("host");
   const db = await getDatabase();
-
+   console.log("host", host);
   const EditButton = (await import("../../EditButtonBackup")).default;
 
   // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
@@ -66,7 +66,7 @@ export default async function PageTemplate({
           $in: [host],
         },
       });
-
+  console.log("websitedata-->", websitedata);
       let page;
 
       if (!slug) {
@@ -80,7 +80,7 @@ export default async function PageTemplate({
           slug: slug,
         });
       }
-
+ console.log("page--->", page);
       // console.log("page--->", page);
       if (!lang && websitedata.lang) {
         lang = websitedata.lang.find((d: any) => d.default == true)?.name;
