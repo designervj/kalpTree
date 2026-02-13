@@ -69,11 +69,7 @@ export default function GrapesJSEditor() {
   const { currentFooter } = useSelector((state: RootState) => state.footer);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const {currentStyle} = useSelector((state: RootState) => state.globalStyle);
-  // const parser = new DOMParser();
-  // const doc = parser.parseFromString(editorHtml, "text/html");
-  // const final = doc.querySelectorAll(".product-gallery-container");
 
-  // console.log("===>>>>", final);
 
   function extractScriptsFromHtml(html: string): string {
     const scripts = extractHtmlParts(html).scripts;
@@ -121,7 +117,7 @@ export default function GrapesJSEditor() {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-      currentWebsite?.globalStyle
+     ( currentWebsite?.globalStyle ||currentStyle?.globalStyle)
 
     ) {
       dispatch(setPageLoading(true));
@@ -139,10 +135,13 @@ export default function GrapesJSEditor() {
   useEffect(() => {
     if (
       !state.editor ||
-      !page?.content ||
-      !currentHeader?.content
-    )
-      return;
+      !page?.content 
+      // !currentHeader?.content
+    ){
+      console.log("not getting header, page.content")
+      return 
+    }
+ 
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
