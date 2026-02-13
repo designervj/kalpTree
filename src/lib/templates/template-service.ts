@@ -123,7 +123,7 @@ export class TemplateService {
                 { $set: updateData }
             );
 
-        return result.modifiedCount > 0;
+        return result
     }
 
     /**

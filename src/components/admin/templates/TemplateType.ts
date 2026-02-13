@@ -28,6 +28,7 @@ export interface TemplateDocument {
     isPremium?: boolean;
     tags?: string[];
     notes?: string;
+    pageSlug?:string[]
     // Timestamps
     createdAt?: Date;
     updatedAt?: Date;
