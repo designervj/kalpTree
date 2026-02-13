@@ -19,6 +19,7 @@ import type {
   ProposalPageModel,
   ProposalType,
 } from "../ProposalModel";
+import { useRouter } from "next/navigation";
 
 type HtmlMode = "html" | "preview";
 
@@ -196,6 +197,8 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
   const [pageState, setPageState] = useState<ProposalPageModel>(
     page ?? { ...DEFAULT_PAGE }
   );
+
+  const router = useRouter();
   const [bodyState, setBodyState] = useState<ProposalModel>(
     body ?? { ...DEFAULT_BODY }
   );
@@ -259,7 +262,7 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
-            <Button type="button" variant="outline">
+            <Button type="button" variant="outline" onClick={() => router.back()}>
               Cancel
             </Button>
 

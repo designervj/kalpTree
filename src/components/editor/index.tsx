@@ -68,7 +68,7 @@ export default function GrapesJSEditor() {
   const { currentHeader } = useSelector((state: RootState) => state.header);
   const { currentFooter } = useSelector((state: RootState) => state.footer);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
+  const {currentStyle} = useSelector((state: RootState) => state.globalStyle);
   // const parser = new DOMParser();
   // const doc = parser.parseFromString(editorHtml, "text/html");
   // const final = doc.querySelectorAll(".product-gallery-container");
@@ -109,9 +109,10 @@ export default function GrapesJSEditor() {
 
   // Reactive global style updates
   useEffect(() => {
-    if (state.editor && currentWebsite?.globalStyle) {
+    if (state.editor && (currentWebsite?.globalStyle || currentStyle?.globalStyle)) {
       console.log("🎨 Reactively updating global styles...");
-      actions.setGlobalStyles(currentWebsite.globalStyle);
+      const globalStyle = currentWebsite?.globalStyle || currentStyle?.globalStyle;
+      actions.setGlobalStyles(globalStyle);
     }
   }, [state.editor, currentWebsite?.globalStyle]);
 
@@ -130,6 +131,7 @@ export default function GrapesJSEditor() {
     page?.content,
     currentWebsite?.globalStyle,
     currentHeader,
+    currentStyle?.globalStyle,
     dispatch,
   ]);
 
@@ -138,7 +140,6 @@ export default function GrapesJSEditor() {
     if (
       !state.editor ||
       !page?.content ||
-      !currentWebsite?.globalStyle ||
       !currentHeader?.content
     )
       return;
@@ -297,6 +298,7 @@ export default function GrapesJSEditor() {
     state.isLoading,
     page?.content,
     currentWebsite?.globalStyle,
+    currentStyle?.globalStyle,
     currentHeader,
   ]);
 
