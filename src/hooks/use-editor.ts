@@ -14,13 +14,13 @@ import { extractHtmlParts as extractParts } from "@/lib/utils";
 
 
 import { handleInteractivityChange } from "@/hooks/editor-interactivity";
+import { openAddSectionModal } from "@/components/editor/utils/AddSectionModal";
 import { defaultBlocks } from "../../utils/block-library";
 import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
 import { Website } from "@/components/admin/AppShell";
 import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
 import { addComponentAboveFooter } from "@/components/editor/utils/InsertionUtils";
 import { cleanupComponentStylesAndScripts } from "@/components/editor/utils/CleanupComponentStylesAndScripts";
-
 
 /**
  * Generates the full CSS content for global styles, including variables and base rules.
@@ -198,6 +198,39 @@ export function useEditor(containerId: string) {
   const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
 
+  // Handle messages from GrapesJS modals (e.g., adding a section)
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data !== 'object' || !event.data.type) return;
+
+      const { type, index, template } = event.data;
+
+      if (type === 'ADD_SECTION' && editorRef.current) {
+        console.log(`➕ Adding ${template} section at index ${index}`);
+
+        let content: any = '<section class="py-16 bg-gray-50"><div class="container mx-auto px-4 max-w-6xl">New Section</div></section>';
+
+        if (template === 'basic') {
+          const block = defaultBlocks.find(b => b.id === 'section');
+          if (block) content = block.content;
+        } else if (template === 'feature') {
+          const block = defaultBlocks.find(b => b.id === 'cta');
+          if (block) content = block.content;
+        }
+
+        const wrapper = editorRef.current.Components.getWrapper();
+        if (wrapper) {
+          wrapper.append(content, { at: index });
+          editorRef.current.Modal.close();
+          toast.success(`${template.charAt(0).toUpperCase() + template.slice(1)} section added!`);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, [state.editor]);
+
   // Inject styles into canvas iframe
   const injectCanvasStyles = (editor: any, pageContent?: string, globalStyle?: string, retryCount = 0): void => {
     console.log("🔍 injectCanvasStyles called with globalStyle:", globalStyle ? "YES (length: " + globalStyle.length + ")" : "NO/UNDEFINED")
@@ -290,6 +323,42 @@ export function useEditor(containerId: string) {
       } else {
         console.log('✅ Tailwind CSS injected');
       }
+
+      // Inject Floating Add Section Button Styles
+      const addSectionStyle = doc.createElement("style");
+      addSectionStyle.setAttribute("data-add-section-styles", "true");
+      addSectionStyle.innerHTML = `
+        .gjs-add-section-btn {
+          position: absolute;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 32px;
+          height: 32px;
+          background-color: #6366f1;
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 1000;
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+          transition: all 0.2s ease;
+          pointer-events: auto;
+          border: 2px solid white;
+          opacity: 1;
+        }
+        .gjs-add-section-btn:hover {
+          background-color: #4f46e5;
+          transform: translate(-50%, -50%) scale(1.1);
+        }
+        .gjs-add-section-btn svg {
+          width: 20px;
+          height: 20px;
+          pointer-events: none;
+        }
+      `;
+      doc.head.appendChild(addSectionStyle);
     } catch (error) {
       console.error('❌ Error injecting canvas styles:', error);
       if (retryCount < MAX_RETRIES) {
@@ -1048,9 +1117,68 @@ export function useEditor(containerId: string) {
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
+    let addSectionBtn: HTMLElement | null = null;
+
     editor.on("component:hover", (component: any) => {
+      // @ts-ignore - Canvas might be undefined in some types
+      const canvas = editor.Canvas;
+      const frame = canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+      if (!doc) return;
 
+      // Helper to remove button
+      const removeBtn = () => {
+        if (addSectionBtn) {
+          addSectionBtn.remove();
+          addSectionBtn = null;
+        }
+      };
 
+      // Tag name or type check for section
+      const isSection = component.get('tagName') === 'section' || component.get('type') === 'section';
+
+      if (isSection) {
+        const el = component.getEl();
+        if (!el) return;
+
+        // Remove old if exists
+        removeBtn();
+
+        // Create new button
+        addSectionBtn = doc.createElement('div');
+        addSectionBtn.className = 'gjs-add-section-btn';
+        addSectionBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+        `;
+
+        // Position at bottom center
+        const rect = el.getBoundingClientRect();
+        // Adjust for scroll in iframe
+        const scrollY = doc.defaultView?.scrollY || 0;
+        const scrollX = doc.defaultView?.scrollX || 0;
+
+        addSectionBtn.style.top = `${rect.bottom + scrollY}px`;
+        addSectionBtn.style.left = `${rect.left + rect.width / 2 + scrollX}px`;
+
+        addSectionBtn.onclick = (e) => {
+          e.stopPropagation();
+          openAddSectionModal(editor, component);
+        };
+
+        doc.body.appendChild(addSectionBtn);
+      } else {
+        // Not a section, remove button if it belongs to a different type
+        removeBtn();
+      }
+    });
+
+    // Cleanup button when mouse leaves canvas or component selection changes
+    editor.on("component:hovered:out", () => {
+      // Optional: add a small delay before removing to allow clicking
+      // For now, we'll keep it simple
     });
     // Component selection
     editor.on("component:selected", (component: any) => {
@@ -1139,19 +1267,9 @@ export function useEditor(containerId: string) {
         ];
         component.set('toolbar', customToolbar);
       }
+
     });
 
-    // Commented out to prevent excessive state updates
-    // editor.on("component:update", (component: any) => {
-    //   if (
-    //     state.selectedElement &&
-    //     component &&
-    //     component.cid === state.selectedElement.cid
-    //   ) {
-    //     // Update styles when the currently selected component is updated
-    //     updateStylesFromComponent(component);
-    //   }
-    // });
 
     editor.on("component:deselected", () => {
       setState((prev) => ({
@@ -1221,7 +1339,7 @@ export function useEditor(containerId: string) {
     });
     editor.on("component:remove", (component: any) => {
       // Clean up styles and scripts associated with the deleted component
-    const currentJs=  cleanupComponentStylesAndScripts(editor, component);
+      const currentJs = cleanupComponentStylesAndScripts(editor, component);
       setState((prev) => ({ ...prev, editorJs: currentJs }));
       updateLayers(editor);
     });
