@@ -2,6 +2,9 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "grapesjs/dist/css/grapes.min.css";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 type HeaderDesignKey = "hdrA" | "hdrB";
 type FooterDesignKey = "ftrA" | "ftrB";
@@ -1104,6 +1107,15 @@ export default function Page() {
 
   const gridCols = mode === "edit" ? "lg:grid-cols-1" : "lg:grid-cols-[360px_1fr]";
 
+  const router = useRouter();
+
+  const {currentWebsite} = useSelector((state: RootState) => state.websites);
+   const {currentBusiness} = useSelector((state: RootState) => state.business);
+   const {curretAgency} = useSelector((state: RootState) => state.agency);
+
+  const addPageTemplate = () => {
+    router.push(`/admin/websites/${currentWebsite?.websiteId}/marketing/proposal/create?businessId=${currentBusiness?._id}&agencyId=${curretAgency?._id}`);
+  }; 
   return (
     <div style={uiStyleVars as any} className="min-h-screen bg-[var(--ui-app-bg)] text-[var(--ui-text)]">
       {/* Topbar */}
@@ -1137,7 +1149,7 @@ export default function Page() {
               >
                 Customize
               </button>
-            </div>
+            </div>  
 
             <div className="flex items-center gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] p-2">
               <div className="w-14 text-right text-sm font-semibold text-[var(--ui-muted)]">
@@ -1172,6 +1184,13 @@ export default function Page() {
               className="rounded-md bg-[var(--ui-btn)] px-4 py-2 text-sm font-semibold text-[var(--ui-btn-text)] hover:opacity-90"
             >
               Add Page
+            </button>
+            <button
+              type="button"
+              onClick={addPageTemplate}
+              className="rounded-md bg-[var(--ui-btn)] px-4 py-2 text-sm font-semibold text-[var(--ui-btn-text)] hover:opacity-90"
+            >
+              Add Template
             </button>
           </div>
         </div>

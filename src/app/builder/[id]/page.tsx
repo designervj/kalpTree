@@ -11,11 +11,17 @@ const page = async ({
     searchParams
 }: {
     params?: Promise<{ id: string }>;
-    searchParams?: Promise<{ slug: string }>;
+    searchParams?: Promise<{ page?: string; slug?: string }>;
 }) => {
     const param = await params;
-    const search = await searchParams;
-    console.log("search", search);
+    const searchParamsData = await searchParams;
+    // Normalize searchParams: if 'page' exists, use it as 'slug'
+    const search = searchParamsData?.page 
+        ? { slug: searchParamsData.page } 
+        : searchParamsData?.slug 
+        ? { slug: searchParamsData.slug } 
+        : undefined;
+  
 
     if (!param?.id || !ObjectId.isValid(param.id)) {
         return <div>Invalid Website ID</div>
@@ -38,6 +44,8 @@ const page = async ({
     // get header
     const allheader_coll = await db.collection("templates_header");
     const headerData = await allheader_coll.findOne({ tenantId: website.tenantId });
+
+    
     // if (!headerData) {
     //     return <div>Header not found</div>
     // }

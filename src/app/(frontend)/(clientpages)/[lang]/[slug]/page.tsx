@@ -116,10 +116,6 @@ export default async function PageTemplate({
       product: (
         <>
           <GetAllProduct websiteId={currentWebsite?._id} />
-
-          {/* <GetAllAttribute />
-          <GetAllcategory />
-          <GetAllBrand /> */}
           <ProductShowcase />
         </>
       ),
