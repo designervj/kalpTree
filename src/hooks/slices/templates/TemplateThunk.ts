@@ -59,7 +59,7 @@ export const createTemplate = createAsyncThunk(
             }
 
             const data = await response.json();
-            return data.insertedId;
+            return data.template as TemplateDocument;
         } catch (error: any) {
             return rejectWithValue(error.message || "Failed to create template");
         }

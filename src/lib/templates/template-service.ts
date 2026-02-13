@@ -43,10 +43,10 @@ export class TemplateService {
      */
     static async getTemplateById(templateId: string) {
         const db = await getDatabase();
-        const id= new ObjectId(templateId)
+        const id = new ObjectId(templateId)
         const template = await db
             .collection<TemplateDocument>(this.COLLECTION_NAME)
-            .findOne({ _id:id, status: 'active' });
+            .findOne({ _id: id, status: 'active' });
 
         return template;
     }
@@ -98,7 +98,7 @@ export class TemplateService {
             .collection<TemplateDocument>(this.COLLECTION_NAME)
             .insertOne(template as TemplateDocument);
 
-        return result.insertedId;
+        return { ...template, _id: result.insertedId } as TemplateDocument;
     }
 
     /**

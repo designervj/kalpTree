@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
             const templates = await TemplateService.getTemplatesByCategory(category);
             return NextResponse.json({ templates });
         }
-  
+
         // Fetch all active public templates
         const templates = await TemplateService.getAllTemplates();
         console.log("template --", templates.length)
@@ -104,9 +104,9 @@ export async function POST(req: NextRequest) {
         };
 
         // Create the template
-        const insertedId = await TemplateService.createTemplate(templateInput);
+        const template = await TemplateService.createTemplate(templateInput);
 
-        return NextResponse.json({ insertedId }, { status: 201 });
+        return NextResponse.json({ template }, { status: 201 });
     } catch (error) {
         console.error('POST /api/template error:', error);
         return NextResponse.json(

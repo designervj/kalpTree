@@ -592,7 +592,7 @@ function SeoRow({
 /* -----------------------------
   Main Component (EDIT PAGE) — same UI like PageCreator
 ------------------------------ */
-export default function   PageEditor({
+export default function PageEditor({
   id,
   item,
   fields,
@@ -781,7 +781,7 @@ export default function   PageEditor({
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     setMsg(null);
-    const {header, updatedHtml} = extractHeader(editorRef.current?.value ?? null);
+    const { header, updatedHtml } = extractHeader(editorRef.current?.value ?? null);
     console.log("hehhhhh", header)
     if (!formData?.title || !formData?.slug || !formData?.websiteId) {
       toast.error("Please fill all required fields");
@@ -827,7 +827,7 @@ export default function   PageEditor({
       try {
         const payload = buildPayload();
         const res = await dispatch(updateWebsitePage(payload as any));
-  
+
         if (updateWebsitePage.fulfilled.match(res)) {
           setMsg("Updated successfully!");
           toast.success("Page Updated Successfully");
@@ -994,14 +994,14 @@ export default function   PageEditor({
         raw == null || raw === "" ? "—" : String(raw);
 
       return (
-    
-          <div key={`${name}${nestedKey ? "." + nestedKey : ""}`} className="grid items-center gap-2">
-        
+
+        <div key={`${name}${nestedKey ? "." + nestedKey : ""}`} className="grid items-center gap-2">
+
           <span className="text-xs font-semibold text-slate-600">{label}:</span>
           <span className="text-xs text-slate-700 px-2.5 py-2 rounded-md border border-slate-200 bg-white">
             {value}
           </span>
-          </div>
+        </div>
       );
     }
 
@@ -1048,71 +1048,71 @@ export default function   PageEditor({
     if (name === "content") {
       return (
         <>
-        <div key={name} className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <Label className="text-[14px] font-semibold text-slate-900">{label}</Label>
-              <div className="text-xs text-slate-500 mt-0.5">
-                Edit HTML and preview instantly. Use templates from the right panel.
-              </div>
-            </div>
-
-            <div className="flex items-center rounded-md border border-slate-200 bg-white p-1 shadow-sm">
-              <Button
-                type="button"
-                variant={mode === "html" ? "default" : "ghost"}
-                className={cn(
-                  "h-9 rounded-md px-4",
-                  mode === "html" && "bg-violet-600 hover:bg-violet-700 text-white"
-                )}
-                onClick={() => setMode("html")}
-              >
-                HTML
-              </Button>
-              <Button
-                type="button"
-                variant={mode === "preview" ? "default" : "ghost"}
-                className={cn(
-                  "h-9 rounded-md px-4",
-                  mode === "preview" && "bg-violet-600 hover:bg-violet-700 text-white"
-                )}
-                onClick={() => setMode("preview")}
-              >
-                Preview
-              </Button>
-            </div>
-          </div>
-
-          {mode === "html" && (
-            <HtmlCodeEditor
-              ref={editorRef}
-              value={formData.content || ""}
-              onChange={(v) => handleChange("content", v)}
-              rows={rows || 18}
-              placeholder="<h1>Title</h1><p>Content...</p>"
-            />
-          )}
-
-          {mode === "preview" && (
-            <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
-              <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                <div className="text-sm font-semibold text-slate-900">Live Preview</div>
-                <div className="text-xs text-slate-500">Sandbox iframe</div>
-              </div>
-
-              <div className="p-4">
-                <div className="rounded-md border border-slate-200 overflow-hidden bg-white">
-                  <iframe
-                    title="preview"
-                    className="w-full h-[520px] bg-white"
-                    srcDoc={iframeDoc}
-                    sandbox="allow-same-origin"
-                  />
+          <div key={name} className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <Label className="text-[14px] font-semibold text-slate-900">{label}</Label>
+                <div className="text-xs text-slate-500 mt-0.5">
+                  Edit HTML and preview instantly. Use templates from the right panel.
                 </div>
               </div>
+
+              <div className="flex items-center rounded-md border border-slate-200 bg-white p-1 shadow-sm">
+                <Button
+                  type="button"
+                  variant={mode === "html" ? "default" : "ghost"}
+                  className={cn(
+                    "h-9 rounded-md px-4",
+                    mode === "html" && "bg-violet-600 hover:bg-violet-700 text-white"
+                  )}
+                  onClick={() => setMode("html")}
+                >
+                  HTML
+                </Button>
+                <Button
+                  type="button"
+                  variant={mode === "preview" ? "default" : "ghost"}
+                  className={cn(
+                    "h-9 rounded-md px-4",
+                    mode === "preview" && "bg-violet-600 hover:bg-violet-700 text-white"
+                  )}
+                  onClick={() => setMode("preview")}
+                >
+                  Preview
+                </Button>
+              </div>
             </div>
-          )}
-        </div>
+
+            {mode === "html" && (
+              <HtmlCodeEditor
+                ref={editorRef}
+                value={formData.content || ""}
+                onChange={(v) => handleChange("content", v)}
+                rows={rows || 18}
+                placeholder="<h1>Title</h1><p>Content...</p>"
+              />
+            )}
+
+            {mode === "preview" && (
+              <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
+                <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <div className="text-sm font-semibold text-slate-900">Live Preview</div>
+                  <div className="text-xs text-slate-500">Sandbox iframe</div>
+                </div>
+
+                <div className="p-4">
+                  <div className="rounded-md border border-slate-200 overflow-hidden bg-white">
+                    <iframe
+                      title="preview"
+                      className="w-full h-[520px] bg-white"
+                      srcDoc={iframeDoc}
+                      sandbox="allow-scripts allow-same-origin"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </>
       );
     }
@@ -1267,7 +1267,7 @@ export default function   PageEditor({
             <div className="rounded-md border border-slate-200 bg-white shadow-sm p-7">
               <div className="space-y-4">
                 {leftFields.map((f) => renderField(f))}
-                </div>
+              </div>
             </div>
 
             {/* SEO Panel (same style) */}
@@ -1441,7 +1441,7 @@ export default function   PageEditor({
                                   <iframe
                                     title={`tpl-${t.key}`}
                                     srcDoc={doc}
-                                    sandbox="allow-same-origin"
+                                    sandbox="allow-scripts allow-same-origin"
                                     className="absolute left-0 top-0 origin-top-left"
                                     style={{
                                       transform: `scale(${CARD_SCALE})`,
@@ -1486,7 +1486,7 @@ export default function   PageEditor({
                           <iframe
                             title="selected-template"
                             srcDoc={buildIframeDoc(selectedTemplate?.html || "")}
-                            sandbox="allow-same-origin"
+                            sandbox="allow-scripts allow-same-origin"
                             className="absolute left-0 top-0 origin-top-left"
                             style={{
                               transform: `scale(${SELECTED_SCALE})`,
@@ -1554,7 +1554,7 @@ export default function   PageEditor({
                         <iframe
                           title="thumbnail"
                           srcDoc={iframeDoc}
-                          sandbox="allow-same-origin"
+                          sandbox="allow-scripts allow-same-origin"
                           className="absolute left-0 top-0 origin-top-left"
                           style={{
                             transform: `scale(${THUMB_SCALE})`,
