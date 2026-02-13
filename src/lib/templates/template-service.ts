@@ -1,8 +1,11 @@
+import {
+  CreateTemplateInput,
+  TemplateDocument,
+  UpdateTemplateInput,
+} from "@/components/admin/templates/TemplateType";
+import { getDatabase } from "../db/mongodb";
 
-import { CreateTemplateInput, TemplateDocument, UpdateTemplateInput } from '@/components/admin/templates/TemplateType';
-import { getDatabase } from '../db/mongodb';
-
-import { ObjectId } from 'mongodb';
+import { ObjectId } from "mongodb";
 
 /**
  * Service for managing component templates in MongoDB

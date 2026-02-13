@@ -20,6 +20,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useRouter } from "next/navigation";
+import { deleteTemplate } from "@/hooks/slices/templates/TemplateThunk";
 
 function miniToast(msg: string) {
   const el = document.createElement("div");
@@ -75,9 +76,9 @@ const ShowTemplate = () => {
     if (!ok) return;
 
     try {
-      // await dispatch(deleteTemplateThunk(getId(data))).unwrap()
+      await dispatch(deleteTemplate(getId(data))).unwrap();
       setTemplate((prev: any) =>
-        prev.filter((x: any) => getId(x) !== getId(data))
+        prev.filter((x: any) => getId(x) !== getId(data)),
       );
       miniToast("Template deleted");
     } catch (e) {
@@ -158,7 +159,6 @@ const ShowTemplate = () => {
 
                         {/* RIGHT icons */}
                         <div className="flex items-center gap-2">
-
                           {/* edit */}
                           <Tooltip>
                             <TooltipTrigger asChild>
