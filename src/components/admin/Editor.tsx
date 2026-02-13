@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/select";
 
 import { updateWebsitePage } from "@/hooks/slices/website/websitePageSlice";
+import { extractHeader } from "./website/websitePage/util/ExtractHeader";
 
 /* -----------------------------
   Types
@@ -591,7 +592,7 @@ function SeoRow({
 /* -----------------------------
   Main Component (EDIT PAGE) — same UI like PageCreator
 ------------------------------ */
-export default function PageEditor({
+export default function   PageEditor({
   id,
   item,
   fields,
@@ -780,7 +781,8 @@ export default function PageEditor({
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     setMsg(null);
-
+    const {header, updatedHtml} = extractHeader(editorRef.current?.value ?? null);
+    console.log("hehhhhh", header)
     if (!formData?.title || !formData?.slug || !formData?.websiteId) {
       toast.error("Please fill all required fields");
       return;
@@ -789,11 +791,43 @@ export default function PageEditor({
       toast.error("Content is required");
       return;
     }
+    const keepHeader = confirm("Do you want to keep the existing header?");
 
+    if (keepHeader) {
+      // User clicked "OK" (Yes)
+      console.log("Keeping existing header");
+      handleUpdate()
+    } else {
+      handleUpdate()
+    }
+
+    // startTransition(async () => {
+    //   try {
+    //     const payload = buildPayload();
+    //     const res = await dispatch(updateWebsitePage(payload as any));
+    //     if (updateWebsitePage.fulfilled.match(res)) {
+    //       setMsg("Updated successfully!");
+    //       toast.success("Page Updated Successfully");
+    //       goBack();
+    //     } else {
+    //       setMsg("Update failed");
+    //       toast.error("Update failed");
+    //     }
+    //   } catch (err) {
+    //     setMsg("Update failed");
+    //     toast.error("Update failed");
+    //   }
+    // });
+  };
+
+
+
+  const handleUpdate = () => {
     startTransition(async () => {
       try {
         const payload = buildPayload();
         const res = await dispatch(updateWebsitePage(payload as any));
+  
         if (updateWebsitePage.fulfilled.match(res)) {
           setMsg("Updated successfully!");
           toast.success("Page Updated Successfully");
@@ -808,7 +842,6 @@ export default function PageEditor({
       }
     });
   };
-
   const handleDelete = async () => {
     if (!confirm("Delete this page?")) return;
     try {
