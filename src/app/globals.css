@@ -43,11 +43,14 @@
   --radius: 0.625rem;
 
   /* Backgrounds */
-  --background: 210 40% 98%; /* Very slight blue tint for premium feel */
-  --foreground: 222.2 84% 4.9%; /* Deep dark blue-black text */
+  --background: 210 40% 98%;
+  /* Very slight blue tint for premium feel */
+  --foreground: 222.2 84% 4.9%;
+  /* Deep dark blue-black text */
 
   /* Cards */
-  --card: 0 0% 100%; /* Pure White */
+  --card: 0 0% 100%;
+  /* Pure White */
   --card-foreground: 222.2 84% 4.9%;
 
   /* Popovers */
@@ -55,7 +58,8 @@
   --popover-foreground: 222.2 84% 4.9%;
 
   /* Primary (Indigo - Matches GrapesJS) */
-  --primary: 243 75% 59%; /* #6366f1 - Your main brand color */
+  --primary: 243 75% 59%;
+  /* #6366f1 - Your main brand color */
   --primary-foreground: 210 40% 98%;
 
   /* Secondary */
@@ -155,6 +159,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
