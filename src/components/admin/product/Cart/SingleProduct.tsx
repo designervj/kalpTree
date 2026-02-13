@@ -25,7 +25,7 @@ import {
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-const SingleProductShowcase = () => {
+const SingleProductShowcase = ({slug}:{slug?:any}) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState({});
   const [matchedVariant, setMatchedVariant] = useState(null);
@@ -35,7 +35,7 @@ const SingleProductShowcase = () => {
   const [activeTab, setActiveTab] = useState("description");
 
   const params = useParams();
-  const productId = params.slug;
+  const productId = slug? slug : params.slug;
 
   const {
     listProduct: products,

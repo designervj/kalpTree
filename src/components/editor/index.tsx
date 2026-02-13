@@ -59,10 +59,11 @@ export default function GrapesJSEditor() {
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
 
   const dispatch = require("react-redux").useDispatch();
-  const { page, type, isLoading: isPageLoading } = useSelector(
-    (state: RootState) => state.pageEdit,
-  );
-
+  const {
+    page,
+    type,
+    isLoading: isPageLoading,
+  } = useSelector((state: RootState) => state.pageEdit);
 
   const { currentHeader } = useSelector((state: RootState) => state.header);
   const { currentFooter } = useSelector((state: RootState) => state.footer);
@@ -103,7 +104,6 @@ export default function GrapesJSEditor() {
       .join("\n");
   }
 
-
   const lastPageIdRef = useRef<string | null>(null);
   const contentLoadedRef = useRef<boolean>(false);
 
@@ -123,19 +123,32 @@ export default function GrapesJSEditor() {
       currentWebsite?.globalStyle &&
       currentHeader?.content
     ) {
-
       dispatch(setPageLoading(true));
     }
-  }, [page?._id, page?.content, currentWebsite?.globalStyle, currentHeader, dispatch]);
+  }, [
+    page?._id,
+    page?.content,
+    currentWebsite?.globalStyle,
+    currentHeader,
+    dispatch,
+  ]);
 
   // update the page content into editor - wait for editor load event
   useEffect(() => {
-    if (!state.editor || !page?.content || !currentWebsite?.globalStyle || !currentHeader?.content) return;
+    if (
+      !state.editor ||
+      !page?.content ||
+      !currentWebsite?.globalStyle ||
+      !currentHeader?.content
+    )
+      return;
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
     if (lastPageIdRef.current !== currentPageId) {
-      console.log(`📄 Page ID changed from ${lastPageIdRef.current} to ${currentPageId}, resetting content flag`);
+      console.log(
+        `📄 Page ID changed from ${lastPageIdRef.current} to ${currentPageId}, resetting content flag`,
+      );
       contentLoadedRef.current = false;
       lastPageIdRef.current = currentPageId;
     }
@@ -283,7 +296,7 @@ export default function GrapesJSEditor() {
     state.isLoading,
     page?.content,
     currentWebsite?.globalStyle,
-    currentHeader
+    currentHeader,
   ]);
 
   function getSelectedGalleryProductFromEditor(editor: any) {
@@ -760,8 +773,9 @@ export default function GrapesJSEditor() {
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
-                }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
+                pagetype !== "normal" ? "hidden" : ""
+              }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
@@ -796,7 +810,7 @@ export default function GrapesJSEditor() {
             {pagetype !== "normal" && pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
-                <SingleProductShowcase />
+                <SingleProductShowcase slug={pagetype.split("-")[1]} />
               </div>
             )}
             {/* Canvas */}
