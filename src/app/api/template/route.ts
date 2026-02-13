@@ -8,6 +8,60 @@ import {
 import { TemplateFormData } from "@/components/admin/templates/showTemplate/TemplateFrom";
 
 export async function GET(req: NextRequest) {
+<<<<<<< development
+    try {
+        const { searchParams } = new URL(req.url);
+        const templateId = searchParams.get('templateId');
+        const category = searchParams.get('category');
+        const search = searchParams.get('search');
+        const premium = searchParams.get('premium');
+        const categories = searchParams.get('categories');
+
+        // Fetch template categories with counts
+        if (categories === 'true') {
+            const categoryList = await TemplateService.getTemplateCategories();
+            return NextResponse.json({ categories: categoryList });
+        }
+
+        // Fetch single template by templateId
+        if (templateId) {
+            const template = await TemplateService.getTemplateById(templateId);
+
+            if (!template) {
+                return NextResponse.json(
+                    { error: 'Template not found' },
+                    { status: 404 }
+                );
+            }
+
+            return NextResponse.json({ template });
+        }
+
+        // Fetch premium templates
+        if (premium === 'true') {
+            const templates = await TemplateService.getPremiumTemplates();
+            return NextResponse.json({ templates });
+        }
+
+        // Search templates by query
+        if (search) {
+            const templates = await TemplateService.searchTemplates(search);
+            return NextResponse.json({ templates });
+        }
+
+        // Fetch templates by category
+        if (category) {
+            const templates = await TemplateService.getTemplatesByCategory(category);
+            return NextResponse.json({ templates });
+        }
+
+        // Fetch all active public templates
+        const templates = await TemplateService.getAllTemplates();
+        console.log("template --", templates.length)
+        return NextResponse.json({ templates });
+    } catch (error) {
+        console.error('GET /api/template error:', error);
+=======
   try {
     const { searchParams } = new URL(req.url);
     const templateId = searchParams.get("templateId");
@@ -27,6 +81,7 @@ export async function GET(req: NextRequest) {
       const template = await TemplateService.getTemplateById(templateId);
 
       if (!template) {
+>>>>>>> development
         return NextResponse.json(
           { error: "Template not found" },
           { status: 404 },
@@ -72,6 +127,52 @@ export async function GET(req: NextRequest) {
  * Body: CreateTemplateInput
  */
 export async function POST(req: NextRequest) {
+<<<<<<< development
+    try {
+        const body: TemplateFormData = await req.json();
+
+        // Validate required fields
+        if (!body.label || !body.category || !body.content) {
+            return NextResponse.json(
+                {
+                    error: 'Missing required fields: label, category, and content are required',
+                },
+                { status: 400 }
+            );
+        }
+
+        // Transform TemplateDocument to CreateTemplateInput
+        const templateInput: CreateTemplateInput = {
+            templateId: body.slug || `template-${Date.now()}`,
+            label: body.label,
+            category: body.category,
+            content: body.content,
+            attributes: {
+                templateType: body.templateType,
+                pageType: body.pageType,
+                description: body.description,
+                demo: body.demo,
+                version: body.version,
+                notes: body.notes,
+            },
+            thumbnail: body.imageDataUrl || null,
+            status: 'active',
+            isPublic: body.isPublic ?? true,
+            isPremium: false,
+            tags: body.tags ? (typeof body.tags === 'string' ? body.tags?.split(',').map((t: string) => t.trim()) : body.tags) : [body.category],
+        };
+
+        // Create the template
+        const template = await TemplateService.createTemplate(templateInput);
+
+        return NextResponse.json({ template }, { status: 201 });
+    } catch (error) {
+        console.error('POST /api/template error:', error);
+        return NextResponse.json(
+            { error: (error as Error).message },
+            { status: 500 }
+        );
+=======
   try {
     const body: TemplateFormData = await req.json();
 
@@ -84,6 +185,7 @@ export async function POST(req: NextRequest) {
         },
         { status: 400 },
       );
+>>>>>>> development
     }
 
     // Transform TemplateDocument to CreateTemplateInput

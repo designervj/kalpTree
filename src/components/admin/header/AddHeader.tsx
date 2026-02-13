@@ -225,7 +225,7 @@ const AddHeader = ({ header, isEdit }: Props) => {
                                         title="preview"
                                         className="w-full h-[520px] bg-white"
                                         srcDoc={iframeDoc}
-                                        sandbox="allow-same-origin" // blocks scripts by default, keeps layout safe
+                                        sandbox="allow-scripts allow-same-origin" // blocks scripts by default, keeps layout safe
                                     />
                                 </div>
                             </div>
@@ -433,7 +433,7 @@ const AddHeader = ({ header, isEdit }: Props) => {
                                                     <iframe
                                                         title="thumbnail"
                                                         srcDoc={iframeDoc}
-                                                        sandbox="allow-same-origin"
+                                                        sandbox="allow-scripts allow-same-origin"
                                                         className="absolute left-0 top-0 origin-top-left w-full h-full"
                                                         style={{
                                                             transform: "scale(0.5)",

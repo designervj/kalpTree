@@ -323,7 +323,7 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
                       className={cn(
                         "h-9 rounded-md px-4",
                         mode === "html" &&
-                          "bg-violet-600 hover:bg-violet-700 text-white"
+                        "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
                       onClick={() => setMode("html")}
                     >
@@ -335,7 +335,7 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
                       className={cn(
                         "h-9 rounded-md px-4",
                         mode === "preview" &&
-                          "bg-violet-600 hover:bg-violet-700 text-white"
+                        "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
                       onClick={() => setMode("preview")}
                     >
@@ -371,7 +371,7 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
                           title="proposal-preview"
                           className="w-full h-[520px] bg-white"
                           srcDoc={iframeDoc}
-                          sandbox="allow-same-origin"
+                          sandbox="allow-scripts allow-same-origin"
                         />
                       </div>
                     </div>
@@ -497,7 +497,7 @@ const AddProposalHome: React.FC<AddProposalHomeProps> = ({
                       <iframe
                         title="proposal-thumbnail"
                         srcDoc={iframeDoc}
-                        sandbox="allow-same-origin"
+                        sandbox="allow-scripts allow-same-origin"
                         className="absolute left-0 top-0 origin-top-left"
                         style={{
                           transform: `scale(${THUMB_SCALE})`,

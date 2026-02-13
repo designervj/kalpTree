@@ -30,6 +30,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 import { Upload, X, Wand2, Image as ImageIcon } from "lucide-react";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
@@ -78,6 +84,7 @@ const PAGE_TYPES = [
   { value: "category", label: "Category" },
   { value: "landing", label: "Landing" },
   { value: "custom", label: "Custom" },
+  { value: "none", label: "None" },
 ] as const;
 
 const PostSchema = z.object({
@@ -221,7 +228,7 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
         await dispatch(createTemplate(data as any)).unwrap();
         toast.success("Template created");
       }
-      router.push("/admin/website/templates");
+      router.back();
     } catch (error) {
       toast.error(isEdit ? "Failed to update template" : "Failed to create template");
     }
@@ -298,11 +305,17 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                 <Label>Template Type</Label>
                 <Select
                   value={form.watch("templateType")}
-                  onValueChange={(v) =>
+                  onValueChange={(v) => {
                     form.setValue("templateType", v as any, {
                       shouldValidate: true,
                     })
-                  }>
+                    if(v === "page") {
+                      form.setValue("pageType", "none", {
+                        shouldValidate: true,
+                      })
+                    }
+                  }}
+                  >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select template type" />
                   </SelectTrigger>
@@ -379,22 +392,83 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
 
             <Separator />
 
-            {/* HTML */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-semibold">HTML</h3>
-                <Badge variant="outline" className="rounded-full">
-                  required
-                </Badge>
-              </div>
-              <Textarea
-                rows={16}
-                placeholder="Paste your HTML here..."
-                className="font-mono text-sm"
-                {...form.register("content")}
-              />
+            {/* HTML Content with Preview Toggle */}
+            <div className="space-y-4">
+              <Tabs defaultValue="html" className="w-full">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-semibold text-gray-900">HTML Content</h3>
+                      <Badge variant="outline" className="rounded-full bg-blue-50 text-blue-700 border-blue-200">
+                        required
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Enter your HTML content. Preview updates instantly.
+                    </p>
+                  </div>
+                  <TabsList className="bg-gray-100 p-1 rounded-xl h-11 border border-gray-200">
+                    <TabsTrigger
+                      value="html"
+                      className="rounded-lg px-6 data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white transition-all duration-200"
+                    >
+                      HTML
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="preview"
+                      className="rounded-lg px-6 data-[state=active]:bg-[#7C3AED] data-[state=active]:text-white transition-all duration-200"
+                    >
+                      Preview
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+
+                <div className="mt-4">
+                  <TabsContent value="html" className="focus-visible:outline-none">
+                    <Textarea
+                      rows={16}
+                      placeholder="Paste your HTML here..."
+                      className="font-mono text-sm border-gray-200 focus:ring-purple-500 focus:border-purple-500 rounded-xl"
+                      {...form.register("content")}
+                    />
+                  </TabsContent>
+                  <TabsContent value="preview" className="focus-visible:outline-none">
+                    <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden min-h-[400px]">
+                      <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                        <div className="text-sm font-semibold text-slate-900">Live Preview</div>
+                        <div className="text-xs text-slate-500">Sandbox iframe</div>
+                      </div>
+                      <div className="p-4 bg-white">
+                        <div className="rounded-lg border border-slate-100 overflow-hidden shadow-inner">
+                          <iframe
+                            srcDoc={`
+                              <html>
+                                <head>
+                                  <style>
+                                    body { 
+                                      margin: 0; 
+                                      padding: 20px;
+                                      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                                    }
+                                    * { box-sizing: border-box; }
+                                  </style>
+                                </head>
+                                <body>
+                                  ${form.watch("content") || ""}
+                                </body>
+                              </html>
+                            `}
+                            className="w-full min-h-[450px] border-none"
+                            title="HTML Preview"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </div>
+              </Tabs>
               {form.formState.errors.content && (
-                <p className="text-sm text-red-600">
+                <p className="text-sm text-red-600 mt-1">
                   {form.formState.errors.content.message}
                 </p>
               )}

@@ -44,6 +44,29 @@ export const fetchTemplateById = createAsyncThunk(
 
 // Thunk to create a new template
 export const createTemplate = createAsyncThunk(
+<<<<<<< development
+    "templates/create",
+    async (input: TemplateDocument, { rejectWithValue }) => {
+        try {
+            const response = await fetch("/api/template", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(input),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Failed to create template");
+            }
+
+            const data = await response.json();
+            return data.template as TemplateDocument;
+        } catch (error: any) {
+            return rejectWithValue(error.message || "Failed to create template");
+        }
+=======
   "templates/create",
   async (input: TemplateDocument, { rejectWithValue }) => {
     try {
@@ -64,6 +87,7 @@ export const createTemplate = createAsyncThunk(
       return data.insertedId;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to create template");
+>>>>>>> development
     }
   },
 );
