@@ -1,7 +1,7 @@
 import {
-  CreateTemplateInput,
-  TemplateDocument,
-  UpdateTemplateInput,
+    CreateTemplateInput,
+    TemplateDocument,
+    UpdateTemplateInput,
 } from "@/components/admin/templates/TemplateType";
 import { getDatabase } from "../db/mongodb";
 
@@ -132,11 +132,12 @@ export class TemplateService {
     static async deleteTemplate(templateId: string) {
         const db = await getDatabase();
         const now = new Date();
+        const id = new ObjectId(templateId);
 
         const result = await db
             .collection<TemplateDocument>(this.COLLECTION_NAME)
             .updateOne(
-                { templateId },
+                { _id: id },
                 { $set: { status: 'inactive', updatedAt: now } }
             );
 
