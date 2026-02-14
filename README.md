@@ -92,6 +92,7 @@ Comprehensive documentation is available in the root directory:
 - [DYNAMIC_ENTITY_SYSTEM.md](./DYNAMIC_ENTITY_SYSTEM.md): Guide to the dynamic entity system.
 - [QUICK_START_NEW_ENTITY.md](./QUICK_START_NEW_ENTITY.md): Guide for adding new entities.
 - [REPEATABLE_COMPONENTS_GUIDE.md](./REPEATABLE_COMPONENTS_GUIDE.md): Guidelines for creating repeatable components.
+- [GRAPESJS_COMPATIBILITY_GUIDELINES.md](./GRAPESJS_COMPATIBILITY_GUIDELINES.md): Best practices for GrapesJS-compatible HTML.
 - [REFACTORING_SUMMARY.md](./REFACTORING_SUMMARY.md): Summary of recent refactoring efforts.
 
 ## Scripts

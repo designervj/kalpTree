@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   extractScriptsFromHtml,
   executeScript,
+  isHeaderPresent,
 } from "@/components/editor/utils/htmlParser";
 import { useServerInsertedHTML } from "next/navigation";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
@@ -90,6 +91,12 @@ const RenderHtml = ({
 
   const { body } = extractHtmlParts(html);
 
+  const isHeaderPresentInHtml = useMemo(()=>{
+    return isHeaderPresent(html)
+  },[html])
+
+  console.log("isHeaderPresentInHtml",isHeaderPresentInHtml)
+
   return (
     <>
 
@@ -102,7 +109,7 @@ const RenderHtml = ({
                 />
             )}
       {/* Render header at the top if headerData exists */}
-      {headerData && headerData.content && (
+      {headerData && headerData.content && !isHeaderPresentInHtml && (
         <div
           suppressHydrationWarning
           dangerouslySetInnerHTML={{

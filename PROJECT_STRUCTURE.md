@@ -1,5 +1,5 @@
-
 # Recommended Project Structure Diagram
+
 KalpTree-next/
 ├── public/
 ├── scripts/
@@ -7,62 +7,74 @@ KalpTree-next/
 ├── types/
 ├── utils/
 ├── src/
-│   ├── app/
-│   │   ├── api/
-│   │   ├── admin/
-│   │   ├── auth/
-│   │   ├── builder/
-│   │   ├── onboarding/
-│   │   ├── (frontend)/
-│   │   ├── AppSidebar.tsx
-│   │   ├── layout.tsx
-│   │   ├── not-found.tsx
-│   │   ├── page.tsx
-│   │   └── search-form.tsx
-│   ├── domains/
-│   │   ├── blocks/
-│   │   │   ├── components/
-│   │   │   ├── hooks/
-│   │   │   ├── slices/
-│   │   │   ├── types/
-│   │   │   └── BlockPage.tsx
-│   │   ├── users/
-│   │   │   ├── components/
-│   │   │   ├── hooks/
-│   │   │   ├── slices/
-│   │   │   ├── types/
-│   │   │   └── UserPage.tsx
-│   │   ├── products/
-│   │   │   ├── components/
-│   │   │   ├── hooks/
-│   │   │   ├── slices/
-│   │   │   ├── types/
-│   │   │   └── ProductPage.tsx
-│   ├── shared/                # Shared code used across multiple domains/features
-│   │   ├── components/        # Reusable UI components (buttons, modals, etc.)
-│   │   ├── hooks/             # Generic React hooks (e.g., useToggle, useDebounce)
-│   │   └── utils/             # Utility functions/helpers (e.g., formatters, validators)
+│ ├── app/
+│ │ ├── api/
+│ │ ├── admin/
+│ │ ├── auth/
+│ │ ├── builder/
+│ │ ├── onboarding/
+│ │ ├── (frontend)/
+│ │ ├── AppSidebar.tsx
+│ │ ├── layout.tsx
+│ │ ├── not-found.tsx
+│ │ ├── page.tsx
+│ │ └── search-form.tsx
+│ ├── domains/
+│ │ ├── blocks/
+│ │ │ ├── components/
+│ │ │ ├── hooks/
+│ │ │ ├── slices/
+│ │ │ ├── types/
+│ │ │ └── BlockPage.tsx
+│ │ ├── users/
+│ │ │ ├── components/
+│ │ │ ├── hooks/
+│ │ │ ├── slices/
+│ │ │ ├── types/
+│ │ │ └── UserPage.tsx
+│ │ ├── products/
+│ │ │ ├── components/
+│ │ │ ├── hooks/
+│ │ │ ├── slices/
+│ │ │ ├── types/
+│ │ │ └── ProductPage.tsx
+│ ├── shared/ # Shared code used across multiple domains/features
+│ │ ├── components/ # Reusable UI components (buttons, modals, etc.)
+│ │ ├── hooks/ # Generic React hooks (e.g., useToggle, useDebounce)
+│ │ └── utils/ # Utility functions/helpers (e.g., formatters, validators)
+
 #
-# Why 'shared'? 
-# The 'shared' folder contains code that is not specific to any single domain or feature, but is used across multiple parts of the application. This helps avoid duplication and encourages reusability. 
+
+# Why 'shared'?
+
+# The 'shared' folder contains code that is not specific to any single domain or feature, but is used across multiple parts of the application. This helps avoid duplication and encourages reusability.
+
 #
+
 # What to put in 'shared':
+
 # - UI components that are used in more than one domain (e.g., Button, Modal, Table)
+
 # - Generic hooks (e.g., useToggle, useMediaQuery)
+
 # - Utility functions (e.g., date formatting, string manipulation)
+
 #
+
 # This keeps your codebase DRY (Don't Repeat Yourself) and makes it easier to maintain and scale.
-│   ├── store/
-│   ├── lib/
-│   ├── models/
-│   ├── middleware/
-│   ├── config/
-│   └── tests/
+
+│ ├── store/
+│ ├── lib/
+│ ├── models/
+│ ├── middleware/
+│ ├── config/
+│ └── tests/
 ├── .env
 ├── .env.example
 ├── .gitignore
 ├── ARCHITECTURE.md
 ├── DYNAMIC_ENTITY_SYSTEM.md
+├── GRAPESJS_COMPATIBILITY_GUIDELINES.md
 ├── QUICK_START_NEW_ENTITY.md
 ├── RBAC_SYSTEM.md
 ├── README.md
@@ -77,8 +89,8 @@ KalpTree-next/
 ├── postcss.config.js
 ├── postcss.config.mjs
 ├── tsconfig.json
-# Project Structure Diagram
 
+# Project Structure Diagram
 
 ```
 KalpTree-next/
@@ -87,6 +99,7 @@ KalpTree-next/
 ├── .gitignore
 ├── ARCHITECTURE.md
 ├── DYNAMIC_ENTITY_SYSTEM.md
+├── GRAPESJS_COMPATIBILITY_GUIDELINES.md
 ├── QUICK_START_NEW_ENTITY.md
 ├── RBAC_SYSTEM.md
 ├── README.md
@@ -288,9 +301,10 @@ KalpTree-next/
 This document provides an overview of the folder and file structure for the `KalpTree-next` project.
 
 ## Root Directory
+
 - `.env`, `.env.example` - Environment variable files
 - `.gitignore` - Git ignore rules
-- `ARCHITECTURE.md`, `DYNAMIC_ENTITY_SYSTEM.md`, `QUICK_START_NEW_ENTITY.md`, `RBAC_SYSTEM.md`, `README.md`, `REFACTORING_SUMMARY.md` - Documentation
+- `ARCHITECTURE.md`, `DYNAMIC_ENTITY_SYSTEM.md`, `GRAPESJS_COMPATIBILITY_GUIDELINES.md`, `QUICK_START_NEW_ENTITY.md`, `RBAC_SYSTEM.md`, `README.md`, `REFACTORING_SUMMARY.md` - Documentation
 - `components.json` - Component registry/config
 - `eslint.config.mjs` - ESLint config
 - `next-env.d.ts`, `next.config.ts` - Next.js config
@@ -300,57 +314,77 @@ This document provides an overview of the folder and file structure for the `Kal
 - Folders: `public/`, `scripts/`, `src/`, `styles/`, `types/`, `utils/`
 
 ## /public
+
 Static assets (images, SVGs, etc.)
 
 ## /scripts
+
 Project scripts (TypeScript/JS/SH)
 
 ## /styles
+
 Global CSS files
 
 ## /types
+
 TypeScript type definitions
 
 ## /utils
+
 Utility functions and libraries
 
 ## /src
+
 Main application source code
 
 ### /src/app
+
 - Next.js app directory (routing, layouts, pages)
 - Subfolders: `admin/`, `api/`, `auth/`, `builder/`, `onboarding/`, `(frontend)/`
 - Common files: `AppSidebar.tsx`, `layout.tsx`, `not-found.tsx`, `page.tsx`, `search-form.tsx`, `globals.css`
 
 #### /src/app/admin
+
 Admin dashboard and modules (e.g., `activity-log/`, `analytics/`, `block-manager/`, etc.)
 
 #### /src/app/api
+
 API route handlers (REST endpoints)
 
 ### /src/components
+
 UI and feature components
+
 - Subfolders: `admin/`, `editor/`, `landing-page/`, `ui/`, `website/`
 
 #### /src/components/admin/blocksManager
+
 Block management UI
+
 - Subfolders: `blockManagerlist/`, `form/`, `types/`
 
 ### /src/hooks
+
 Custom React hooks and Redux slices
+
 - Subfolders: `slices/` (with domain-specific slices)
 
 ### /src/lib
+
 Library code (database, auth, billing, etc.)
+
 - Subfolders: `db/`, `auth/`, `branding/`, etc.
 
 ### /src/models
+
 Database models (e.g., `tenant.ts`, `user.ts`)
 
 ### /src/store
+
 Redux store setup
 
 ### /src/tests
+
 Test files
 
 ---

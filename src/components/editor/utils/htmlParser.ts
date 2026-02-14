@@ -68,3 +68,14 @@ export function executeScript(scriptContent: string): void {
         console.error('Error executing script:', error);
     }
 }
+
+/**
+ * Checks if a <header> tag is present in the HTML string
+ * @param html - The HTML string to check
+ * @returns True if a <header> tag is found, otherwise false
+ */
+export function isHeaderPresent(html: string): boolean {
+    if (!html) return false;
+    const headerRegex = /<header\b[^>]*>([\s\S]*?)<\/header>/gi;
+    return headerRegex.test(html);
+}
