@@ -45,6 +45,47 @@ export const fetchHeaders = createAsyncThunk<
         },
     }
 );
+export const fetchWebsiteCurrentHeaders = createAsyncThunk<
+    TemplateDocument[],
+    { websiteId?: string|ObjectId; tenantId?: string|ObjectId, id?: string },
+    { state: { header: HeaderState }; rejectValue: string }
+>(
+    "header/fetchCurrentHeaders",
+    async ({ websiteId, tenantId, id }, { rejectWithValue }) => {
+        try {
+            let url = `/api/admin/header`;
+            const params = new URLSearchParams();
+            if (websiteId) params.append('websiteId', websiteId.toString());
+            if (tenantId) params.append('tenantId', tenantId.toString());
+            if (id) params.append('id', id.toString());
+            if (params.toString()) url += `?${params.toString()}`;
+
+            const res = await fetch(url);
+            if (!res.ok) {
+                const body = await res.json().catch(() => ({}));
+                return rejectWithValue(body?.error || `HTTP ${res.status}`);
+            }
+            const data = await res.json();
+            console.log("Headers data", data);
+            return data?.items || [];
+        } catch (error: unknown) {
+            return rejectWithValue(
+                error instanceof Error ? error.message : "Network error"
+            );
+        }
+    },
+    {
+        // prevent duplicate concurrent fetches
+        condition: (_, { getState }) => {
+            try {
+                const state = getState() as { header: HeaderState };
+                return !state.header.isLoading;
+            } catch {
+                return true;
+            }
+        },
+    }
+);
 export const fetchCurrentHeaders = createAsyncThunk<
     TemplateDocument[],
     { websiteId?: string|ObjectId; tenantId?: string|ObjectId, id?: string },

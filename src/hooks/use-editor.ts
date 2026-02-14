@@ -1165,7 +1165,8 @@ export function useEditor(containerId: string) {
 
         addSectionBtn.onclick = (e) => {
           e.stopPropagation();
-          openAddSectionModal(editor, component);
+          const targetIndex = component.index() + 1;
+          window.parent.postMessage({ type: 'OPEN_TEMPLATE_MANAGER', index: targetIndex }, '*');
         };
 
         doc.body.appendChild(addSectionBtn);
