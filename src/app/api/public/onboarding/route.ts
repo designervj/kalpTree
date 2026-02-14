@@ -198,6 +198,7 @@ export async function POST(req: Request) {
       systemSubdomain: `${business_url}.kalptree.xyz`,
       lang,
       isComingSoon: true,
+      // isHomePage:true
     });
 
     const pageColl = await getCollection("pages");
@@ -219,7 +220,7 @@ export async function POST(req: Request) {
           ],
           hideFromSearchResults: false,
           inNavigation: false,
-          isHomePage: false,
+          isHomePage: true,
         },
       };
     });
