@@ -211,6 +211,7 @@ export function buildCategoryTree(categories: any) {
 export function extractHtmlParts(html: string) {
   let styles = "";
   let scripts: string[] = [];
+  let externalScripts: string[] = [];
   let body = html;
 
   // 1. Extract all <style> tags
@@ -226,26 +227,31 @@ export function extractHtmlParts(html: string) {
   }
 
   // 2. Extract all <script> tags
-  const scriptMatches = html.match(/<script[^>]*>([\s\S]*?)<\/script>/gi);
+  const scriptMatches = html.match(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi);
 
   if (scriptMatches) {
-    scripts = scriptMatches
-      .map((scriptTag) => {
-        // Skip external scripts (those with src attribute)
-        if (scriptTag.includes("src=")) return "";
-        const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
-        return inner ? inner[1].trim() : "";
-      })
-      .filter((script) => script.trim());
+    scriptMatches.forEach((scriptTag) => {
+      const attributes = scriptTag.match(/<script\b([^>]*)>/i)?.[1] || "";
+      const srcMatch = attributes.match(/src=["'](.*?)["']/);
 
-    // Remove scripts from HTML
+      if (srcMatch) {
+        externalScripts.push(srcMatch[1]);
+      } else {
+        const inner = scriptTag.match(/<script[^>]*>([\s\S]*?)<\/script>/i);
+        if (inner && inner[1]) {
+          scripts.push(inner[1].trim());
+        }
+      }
+    });
+
+    // Remove all scripts from HTML
     body = body.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
   }
 
   // 3. Remove <body> wrapper if present
   body = body.replace(/<\/?body[^>]*>/gi, "").trim();
 
-  return { styles, body, scripts };
+  return { styles, body, scripts, externalScripts };
 }
 
 export const extractScripts = (html: string): string => {
@@ -269,10 +275,10 @@ export const extractStyles = (htmlContent: string): string => {
 };
 
 
-export function groupAttributesByTitle(data:any) {
+export function groupAttributesByTitle(data: any) {
   const map = new Map();
 
-  data.forEach((item:any) => {
+  data.forEach((item: any) => {
     const title = item.title;
     const values = item.values || [];
 
@@ -280,7 +286,7 @@ export function groupAttributesByTitle(data:any) {
       map.set(title, new Set());
     }
 
-    values.forEach((value:any) => {
+    values.forEach((value: any) => {
       if (typeof value === "string") {
         map.get(title).add(value.trim());
       }
