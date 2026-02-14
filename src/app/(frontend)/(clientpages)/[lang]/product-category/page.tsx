@@ -5,6 +5,8 @@ import { cookies, headers } from "next/headers";
 import { getDatabase } from "@/lib/db/mongodb";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
+import CategoryPage from "@/components/admin/product/Cart/CategoryPage";
+import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
 
 export default async function ProductCategoryPage({
   params,
@@ -79,6 +81,8 @@ export default async function ProductCategoryPage({
         ? serializedFooterData.content2[lang]
         : serializedFooterData?.content;
 
+    console.log;
+
     return (
       <div className="min-h-screen flex flex-col">
         {/* Header */}
@@ -88,8 +92,18 @@ export default async function ProductCategoryPage({
 
         {/* Main Content - Product Page */}
         <main className="flex-grow">
+          <GetAllcategory websiteId={currentWebsite?._id} />0
           <GetAllProduct websiteId={currentWebsite?._id} />
-          <ProductShowcase category={slug ? slug[0] : "All Products"} />
+          <ProductShowcase
+            category={
+              slug ? (Array.isArray(slug) ? slug[0] : slug) : "All Products"
+            }
+          />
+          <CategoryPage
+            category={
+              slug ? (Array.isArray(slug) ? slug[0] : slug) : "All Products"
+            }
+          />
         </main>
 
         {/* Footer */}

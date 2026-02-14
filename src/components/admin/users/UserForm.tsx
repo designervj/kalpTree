@@ -73,10 +73,11 @@ export function UserForm() {
     (state: RootState) => state.rolePermission
   );
 
-
   const { allAccounts, hasFetched: allaccountsfetched } = useSelector(
     (state: RootState) => state.account
   );
+
+  
 
   const [showTenantDropdown, setShowTenantDropdown] = useState(false);
   const [tenantSearchQuery, setTenantSearchQuery] = useState("");
@@ -270,7 +271,6 @@ export function UserForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  console.log(errors);
 
   const handleSubmit = async () => {
     setMessage({ type: "", text: "" });
@@ -411,6 +411,9 @@ export function UserForm() {
       tenant.name?.toLowerCase().includes(tenantSearchQuery.toLowerCase()) ||
       tenant.slug?.toLowerCase().includes(tenantSearchQuery.toLowerCase())
   );
+
+  console.log(allAccounts)
+
 
   const selectedTenants = tenants.filter((tenant) => {
     if (Array.isArray(formData.tenantId) && typeof tenant._id == "string") {

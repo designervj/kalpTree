@@ -6,6 +6,7 @@ import { getDatabase } from "@/lib/db/mongodb";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
 import SingleProductShowcase from "@/components/admin/product/Cart/SingleProduct";
+import SingleProductNestCraft from "@/components/admin/product/Cart/SingleProductSecond";
 
 export default async function SingleProductPage({
   params,
@@ -90,7 +91,8 @@ export default async function SingleProductPage({
         {/* Main Content - Product Page */}
         <main className="flex-grow">
           <GetAllProduct websiteId={currentWebsite?._id} />
-          <SingleProductShowcase />
+          {/* <SingleProductShowcase /> */}
+          <SingleProductNestCraft/>
         </main>
 
         {/* Footer */}

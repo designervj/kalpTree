@@ -78,6 +78,8 @@ const ShowBusiness = () => {
   const { allBusiness, pagination } = useSelector(
     (state: RootState) => state.business
   );
+
+  console.log("====>>",allBusiness)
   const params = useSearchParams();
   const itemsperpage = params.get("itemsperpage") || 30;
   const router = useRouter();

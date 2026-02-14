@@ -204,6 +204,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   const { filterPosition, gridColumns, showHeroSection, heroHeight } =
     mergedLayoutConfig;
 
+
   // Style
   const {
     primaryColor,
@@ -277,6 +278,8 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   } = useSelector((state: RootState) => state.product);
 
   const { listCategory } = useSelector((state: RootState) => state.category);
+
+  console.log(listCategory)
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();

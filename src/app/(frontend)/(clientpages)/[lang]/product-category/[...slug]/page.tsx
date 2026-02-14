@@ -6,6 +6,7 @@ import { getDatabase } from "@/lib/db/mongodb";
 import ProductShowcase from "@/components/admin/product/Cart/Products";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
 import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
+import CategoryPage from "@/components/admin/product/Cart/CategoryPage";
 
 export default async function SingleProductCategoryPage({
   params,
@@ -92,49 +93,21 @@ export default async function SingleProductCategoryPage({
         <main className="flex-grow">
           <GetAllProduct websiteId={currentWebsite?._id} />
           <GetAllcategory websiteId={currentWebsite?._id} />
-          {/* <ProductShowcase
-            category={slug ? slug[slug.length - 1] : "All Products"}
-          /> */}
-          {/* <ProductShowcase
-            category={slug ? slug[slug.length - 1] : "All Products"}
-            layoutConfig={{
-              filterPosition: "top",
-              gridColumns: { mobile: 2, tablet: 3, desktop: 4 },
-            }}
-            styleConfig={{
-              primaryColor: "#dc2626",
-              secondaryColor: "#525252",
-              accentColor: "#f97316",
-              fontFamily: "Oswald",
-              buttonStyle: "pill",
-              cardStyle: "flat",
-            }}
-            heroConfig={{
-              backgroundImage: "https://example.com/sports-bg.jpg",
-              title: "UNLEASH YOUR POTENTIAL",
-              subtitle: "Premium Athletic Gear",
-              overlayOpacity: 0.5,
-              titleColor: "#ffffff",
-              titleSize: "5xl",
-              titleTracking: "8px",
-            }}
-            paginationConfig={{
-              enabled: true,
-              position: "both",
-              style: "compact",
-              buttonShape: "circular",
-              itemsPerPage: 16,
-            }}
-            cardConfig={{
-              showRating: true,
-              showSaleBadge: true,
-              imageAspectRatio: "3/4",
-              hoverEffect: "scale",
-              placeholderIcon: "⚡",
-            }}
-          /> */}
-
           <ProductShowcase
+            category={slug ? slug[slug.length - 1] : "All Products"}
+          />
+
+          <CategoryPage
+            category={
+              slug
+                ? Array.isArray(slug)
+                  ? slug[slug.length - 1]
+                  : slug
+                : "All Products"
+            }
+          />
+
+          {/* <ProductShowcase
             category={slug ? slug[slug.length - 1] : "All Products"}
             layoutConfig={{
               filterPosition: "top",
@@ -158,7 +131,7 @@ export default async function SingleProductCategoryPage({
               itemsPerPage: 9,
               showPageInfo: true,
             }}
-          />
+          /> */}
         </main>
 
         {/* Footer */}
