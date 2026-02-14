@@ -1,168 +1,319 @@
 # GrapesJS HTML Compatibility Guidelines
 
-This document outlines the best practices and requirements for creating HTML content that is compatible with the GrapesJS editor in the KalpTree project.
+This document outlines the best practices and requirements for creating HTML content that is compatible with the GrapesJS editor in the KalpTree project. These guidelines ensure that the generated HTML is not only functional but also fully editable within the GrapesJS builder's Style Manager.
+
+---
+
+## 🚀 AI Agent Quick Checklist
+
+AI agents generating components **MUST** follow these rules to ensure perfect compatibility:
+
+1.  **Wrap in Section**: Always wrap your component in a `<section>` tag with a descriptive ID.
+2.  **No Tailwind**: Do not use Tailwind utility classes. Use semantic class names (e.g., `.hero-title`, `.feature-card`).
+3.  **Class-Based Styles**: Define all styles in a `<style>` block using simple classes. This allows GrapesJS to map them to the Style Manager.
+4.  **Theme Awareness**: Use CSS variables for colors: `var(--primary)`, `var(--secondary)`, `var(--text)`, etc.
+5.  **No `!important`**: Never use `!important`. It prevents users from changing styles in the editor.
+6.  **Responsive Design**: Use Media Queries (`@media`) within your `<style>` block for responsiveness instead of fixed widths.
+7.  **Script Isolation**: Wrap all JavaScript in an IIFE and use the provided pattern for component scoping.
+
+---
 
 ## 1. Structural Requirements
 
 ### Section Pattern
 
-All top-level content blocks should be wrapped in a `<section>` tag with standard padding and container constraints.
+All top-level content blocks should be wrapped in a `<section>` tag. This helps GrapesJS identify individual sections for movement and deletion.
 
 ```html
-<section class="py-16 bg-white">
-  <div class="container mx-auto px-4 max-w-6xl">
+<section
+  id="features-section"
+  class="section-padding"
+  data-gjs-custom-name="Features Section"
+>
+  <div class="container">
     <!-- Your content here -->
   </div>
 </section>
+
+<style>
+  .section-padding {
+    padding: 80px 0;
+    background-color: var(--bg-body);
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+</style>
 ```
 
-- **Padding**: Use `py-16` or `py-20` for vertical spacing.
-- **Container**: Use `container mx-auto px-4 max-w-6xl` to maintain consistent alignment with other sections.
+### Layout & Responsiveness
 
-### Columns and Layout
-
-Use Tailwind's Flexbox or Grid utilities for responsive layouts.
+Use Flexbox or Grid within your CSS classes. Avoid absolute positioning unless necessary.
 
 ```html
-<!-- Flexbox Columns -->
-<div class="flex flex-wrap -mx-4">
-  <div class="w-full md:w-1/2 p-4">
-    <!-- Column 1 -->
-  </div>
-  <div class="w-full md:w-1/2 p-4">
-    <!-- Column 2 -->
-  </div>
+<div class="grid-layout">
+  <div class="card">...</div>
+  <div class="card">...</div>
 </div>
 
-<!-- Grid Columns -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-  <!-- Items -->
-</div>
+<style>
+  .grid-layout {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  @media (max-width: 768px) {
+    .grid-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 ```
 
-## 2. Tailwind CSS Usage
+---
 
-The editor uses Tailwind CSS (via CDN) for styling. Ensure all components use standard Tailwind utility classes.
+## 2. Style & Theme Integration
 
-- **Colors**: Use the `primary` variable for theme consistency:
-  - `bg-primary`, `text-primary`, `border-primary`.
-- **Text**: Use `text-gray-700`, `text-gray-800` for body text and `text-gray-900` for headings.
-- **Backgrounds**: Standard backgrounds are `bg-white`, `bg-gray-50`, and `bg-gray-900` (dark).
+The project uses a dynamic theme system. To ensure components adapt to the user's branding, follow these styling rules:
+
+### CSS Variables (Theming)
+
+The editor injects a `:root` style block. **Directly use these variables** in your class definitions.
+
+| Variable           | Description             |
+| :----------------- | :---------------------- |
+| `var(--primary)`   | Main brand color        |
+| `var(--secondary)` | Secondary brand color   |
+| `var(--accent)`    | Accent/highlight color  |
+| `var(--text)`      | Default body text color |
+| `var(--bg-body)`   | Main background color   |
+| `var(--border)`    | Default border color    |
+
+### Writing Editable Styles
+
+GrapesJS identifies "classes" and makes them editable. To make your component user-friendly:
+
+1.  **Unique Names**: Use specific class names like `.kt-hero-btn` to avoid conflicts.
+2.  **Flat Selectors**: Avoid deep nesting like `.card div ul li`. Use `.card-item` directly.
+3.  **No Inline Styles**: Never use `style="..."` on elements. Everything should be in the `<style>` block.
+
+---
 
 ## 3. GrapesJS Specific Attributes
 
-To improve the editing experience, use the following `data-gjs-*` attributes:
+Use these attributes to control how GrapesJS handles your HTML.
 
-| Attribute                     | Purpose                                                                    |
-| ----------------------------- | -------------------------------------------------------------------------- |
-| `data-gjs-type="text"`        | Explicitly marks an element as a text component for better inline editing. |
-| `data-gjs-droppable=".cell"`  | Restricts what can be dropped inside the element.                          |
-| `data-gjs-draggable=".row"`   | Restrict where the element can be dragged.                                 |
-| `data-gjs-custom-name="Hero"` | Sets the display name in the Layers panel.                                 |
-| `data-gjs-selectable="false"` | Prevents the element from being selected in the canvas.                    |
+| Attribute                           | Purpose                                                               |
+| :---------------------------------- | :-------------------------------------------------------------------- |
+| `data-gjs-type="text"`              | Forces the element to use the Text component (better inline editing). |
+| `data-gjs-custom-name="Hero Image"` | Sets the label in the Layers panel (highly recommended).              |
+| `data-gjs-draggable="false"`        | Prevents a specific element from being moved.                         |
+| `data-gjs-removable="false"`        | Prevents a crucial element (like a inner wrapper) from being deleted. |
 
-## 4. Components
+---
+
+## 4. Components & Interactive Elements
 
 ### Buttons
 
-Buttons should have consistent sizing and transition effects.
+Buttons should use the primary theme colors and have clear hover states defined in CSS.
 
 ```html
-<button
-  class="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors duration-200"
->
-  Button Text
-</button>
+<button class="primary-button">Get Started</button>
+
+<style>
+  .primary-button {
+    background-color: var(--primary);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .primary-button:hover {
+    filter: brightness(0.9);
+  }
+</style>
 ```
 
-### Forms
+### Images
 
-Forms require specific handling in GrapesJS. Use the `form` type and ensure inputs are properly styled.
+Ensure images are responsive using CSS classes.
 
 ```html
-<form data-gjs-type="form" class="space-y-6">
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Label</label>
-    <input
-      type="text"
-      class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:border-transparent"
-    />
-  </div>
-  <button
-    type="submit"
-    class="w-full px-6 py-3 bg-primary text-white rounded-md"
-  >
-    Submit
-  </button>
-</form>
+<img
+  src="https://via.placeholder.com/800x600"
+  alt="Feature Image"
+  class="responsive-image"
+/>
+
+<style>
+  .responsive-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px;
+  }
+</style>
 ```
 
-### Images and Media
+---
 
-Always ensure images are responsive and have consistent styling.
+## 5. JavaScript Logic (Scripts)
+
+Scripts are extracted and run in an isolated environment. AI agents must follow this specific pattern:
+
+### Script Implementation Protocol
+
+1.  **IIFE Wrapping**: Scripts should never leak into the global scope.
+2.  **Component Scoping**: Use a unique ID or class on the parent section to target children.
+3.  **No `document.getElementById`**: Prefer `document.querySelector` scoped to the component's root.
+
+**Correct Script Pattern for AI:**
 
 ```html
-<img src="URL" alt="Description" class="w-full h-auto rounded-lg shadow-md" />
+<script>
+  (function () {
+    // 1. Select the component root
+    const section = document.querySelector("#a6-unique-id");
+    if (!section) return;
+
+    // 2. Perform logic inside the section scope
+    const tabBtns = section.querySelectorAll(".tab-btn");
+    tabBtns.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        // Toggle logic
+      });
+    });
+  })();
+</script>
 ```
 
-## 5. JavaScript and Interactivity
+---
 
-Scripts are handled specially in this project. All inline `<script>` tags are extracted from the HTML, wrapped in IIFEs (Immediately Invoked Function Expressions), and managed by the GrapesJS Script Editor.
+## 6. Common Errors to Avoid
 
-### Best Practices for Scripts
+- ❌ **Using Tailwind**: Do not use `w-full`, `mt-4`, etc. Define these in your CSS block.
+- ❌ **Fixed Pixel Widths**: Avoid `width: 1200px`. Use `max-width: 100%` or `max-width: 1200px`.
+- ❌ **Complex CSS Selectors**: GrapesJS might struggle to map complex selectors to the correct element. Keep it simple.
+- ❌ **Hardcoded Colors**: Never use `#3b82f6` if it should be the brand color. Use `var(--primary)`.
+- ❌ **Boilerplate Tags**: Do NOT use `<html>`, `<head>`, or `<body>`.
 
-1. **Use IIFEs for Isolation**: To prevent naming collisions between different sections, always wrap your logic in an IIFE.
+---
 
-   ```javascript
-   (function() {
-     // Your logic here
-     const btn = document.querySelector('.my-button');
-     btn.addEventListener('click', () => { ... });
-   })();
-   ```
+## 7. Standard Component Structure for AI Agents
 
-   _Note: The project's automated extractor will attempt to wrap your code if you don't, but manual wrapping is safer._
+### Should I provide the `<head>` tag?
 
-2. **Avoid Global Variables**: Do not declare variables in the global scope (`window`). Use local variables instead.
+**NO.** Do not provide a `<head>` tag.
 
-3. **External Scripts**: Script tags with `src` attributes (e.g., `<script src="...">`) are currently filtered out during the extraction process. If you need external libraries, ensure they are available in the editor's canvas configuration or use dynamic script loading.
+- In GrapesJS, the `<head>` is managed by the editor framework. Adding it will result in double head tags or broken imports.
+- Global styles and external libraries are already injected by the KalpTree `RenderHtml` component.
+- The AI agent should output only the **Style**, **Partial HTML**, and **Script** blocks.
 
-4. **Event Listeners**: Avoid inline event handlers like `onclick="..."`. Use `addEventListener` within your script block to maintain clean HTML and better compatibility with GrapesJS.
+### The Standard Template
 
-5. **Idempotence**: Scripts may be re-run when sections are re-ordered or re-rendered in the editor. Ensure your code can handle being executed multiple times (e.g., check if a listener is already attached or clear previous state).
+AI Agents should output the component in this exact order:
 
-6. **Selecting Elements**: When writing scripts for a specific section, use unique classes or IDs to ensure you're targeting the correct elements.
+1.  **CSS Block**: `<style> ... </style>` - Contains all component styling.
+2.  **HTML Block**: `<section> ... </section>` - The visual structure.
+3.  **JS Block**: `<script> ... </script>` - The interactivity wrapper.
 
-   ```javascript
-   // Bad: might target elements in other sections
-   const items = document.querySelectorAll(".item");
+**Full Example of AI Agent Output:**
 
-   // Good: use a scoped selector
-   const section = document.querySelector("#my-unique-section");
-   const items = section.querySelectorAll(".item");
-   ```
+```html
+<!-- 1. STYLE TAGS FIRST -->
+<style>
+  #section-unique-id .interactive-element {
+    color: var(--primary);
+  }
+</style>
 
-### GrapesJS Component Scripts (Advanced)
+<!-- 2. SEMANTIC HTML (No <html>, <head>, or <body> tags) -->
+<section id="section-unique-id" data-gjs-custom-name="My Component">
+  <button class="scroll-btn">Scroll Down</button>
+  <button class="api-btn">Call API</button>
+  <div class="result-box"></div>
+</section>
 
-If you are developing a native GrapesJS component, you can use the `script` property:
+<!-- 3. SCRIPT TAG LAST -->
+<script>
+  (function () {
+    const root = document.querySelector("#section-unique-id");
+    if (!root) return;
 
-```javascript
-editor.Components.addType("my-comp", {
-  model: {
-    defaults: {
-      script: function () {
-        // 'this' refers to the component's DOM element
-        console.log("Component element:", this);
-      },
-    },
-  },
-});
+    // --- Example 1: Scroll to another section ---
+    const scrollBtn = root.querySelector(".scroll-btn");
+    scrollBtn.addEventListener("click", () => {
+      const targetSection = document.querySelector("#next-section");
+      if (targetSection) {
+        targetSection.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+
+    // --- Example 2: API Call with Fetch ---
+    const apiBtn = root.querySelector(".api-btn");
+    const resultBox = root.querySelector(".result-box");
+
+    async function fetchData() {
+      try {
+        resultBox.textContent = "Loading...";
+        const response = await fetch("https://api.example.com/data");
+        const data = await response.json();
+        resultBox.textContent = JSON.stringify(data);
+      } catch (err) {
+        resultBox.textContent = "Error fetching data";
+      }
+    }
+
+    apiBtn.addEventListener("click", fetchData);
+
+    // --- Example 3: Defining and calling a local function ---
+    function myLocalFunction() {
+      console.log("Function called within component scope");
+    }
+    myLocalFunction();
+  })();
+</script>
 ```
 
-## 6. Best Practices Summary
+### Important Structural Rules:
 
-1. **Avoid Hardcoded Styles**: Use Tailwind classes instead of `style="..."` whenever possible.
-2. **Layer Naming**: Use `data-gjs-custom-name` for complex components to keep the Layers panel organized.
-3. **Responsive Design**: Always use mobile-first classes (e.g., `w-full md:w-1/2`).
-4. **Interactive Elements**: Ensure hover states are defined (`hover:bg-primary/90`).
-5. **Clean HTML**: Keep the DOM structure deep enough for layout but shallow enough for easy selection.
+- **No Boilerplate**: Do NOT include `<!DOCTYPE html>`, `<html>`, `<head>`, or `<body>` tags. These are already managed by the GrapesJS canvas.
+- **Root Element**: There should only be ONE root tag (the `<section>`). All other tags (`header`, `footer`, `div`) must be inside that section.
+- **Section ID**: Generated IDs must be unique (e.g., `section-{{random_hex}}`) to ensure the script's `querySelector` targets the correct component on pages with multiple similar sections.
+
+---
+
+## 8. Database Storage Structure
+
+When information is saved in the KalpTree database (PostgreSQL/MongoDB), it is stored as a single flattened string. This string follows a specific sequence which the `RenderHtml` component parses at runtime.
+
+### Final DB String Format:
+
+```html
+<style>
+  /* All component and section CSS combined */
+  .section-1 { ... }
+  .btn-primary { ... }
+</style>
+
+<!-- Body Content (HTML Sections) -->
+<section id="section-1">...</section>
+<section id="section-2">...</section>
+
+<script>
+  /* All extracted JavaScript logic */
+  (function() { ... })();
+  (function() { ... })();
+</script>
+```
+
+### Why this structure?
+
+- **Style Priority**: The `<style>` block is placed at the top so the browser can paint the layout correctly as soon as the body content loads.
+- **Fragment-Based**: It does **not** include `<html>` or `<body>` wrappers. It is a "document fragment" that gets injected into the project's layout template.
+- **Script Deferral**: The `<script>` block is placed at the end to ensure all DOM elements are rendered before any interactivity is initialized.

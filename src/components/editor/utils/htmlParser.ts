@@ -6,15 +6,19 @@
 export function extractScriptsFromHtml(html: string): {
     htmlWithoutScripts: string;
     scripts: string[];
+    externalScripts: string[];
 } {
     const scripts: string[] = [];
+    const externalScripts: string[] = [];
 
     // Extract all script tags and their content
     const htmlWithoutScripts = html.replace(
-        /<script\b[^>]*>([\s\S]*?)<\/script>/gi,
-        (match, scriptContent) => {
-            // Only extract inline scripts (not external src scripts)
-            if (!match.includes('src=')) {
+        /<script\b([^>]*)>([\s\S]*?)<\/script>/gi,
+        (match, attributes, scriptContent) => {
+            const srcMatch = attributes.match(/src=["'](.*?)["']/);
+            if (srcMatch) {
+                externalScripts.push(srcMatch[1]);
+            } else {
                 scripts.push(scriptContent.trim());
             }
             return ''; // Remove the script tag from HTML
@@ -24,6 +28,7 @@ export function extractScriptsFromHtml(html: string): {
     return {
         htmlWithoutScripts: htmlWithoutScripts.trim(),
         scripts,
+        externalScripts,
     };
 }
 

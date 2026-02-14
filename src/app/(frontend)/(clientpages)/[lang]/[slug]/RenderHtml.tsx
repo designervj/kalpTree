@@ -8,7 +8,7 @@ import {
   executeScript,
   isHeaderPresent,
 } from "@/components/editor/utils/htmlParser";
-import { useServerInsertedHTML } from "next/navigation";
+import Script from "next/script";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
 
 type props = {
@@ -33,53 +33,63 @@ const RenderHtml = ({
 
   // Extract scripts from header, main content, and footer
   const headerParsed = useMemo(() => {
-    if (!headerData?.content) return { htmlWithoutScripts: "", scripts: [] };
+    if (!headerData?.content) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
     return extractScriptsFromHtml(headerData.content.replace(/\\n/g, ""));
   }, [headerData?.content]);
 
   const mainParsed = useMemo(() => {
-    if (!html) return { htmlWithoutScripts: "", scripts: [] };
+    if (!html) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
     return extractScriptsFromHtml(html);
   }, [html]);
 
   const footerParsed = useMemo(() => {
-    if (!footerData?.content) return { htmlWithoutScripts: "", scripts: [] };
+    if (!footerData?.content) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
     return extractScriptsFromHtml(footerData.content.replace(/\\n/g, ""));
   }, [footerData?.content]);
 
 
-      // Extract styles from header, main content, and footer
-    const extractedStyles = useMemo(() => {
-        const headerStyles = headerData?.content ? extractStyles(headerData.content) : '';
-        const mainStyles = html ? extractStyles(html) : '';
-        const footerStyles = footerData?.content ? extractStyles(footerData.content) : '';
+  // Extract styles from header, main content, and footer
+  const extractedStyles = useMemo(() => {
+    const headerStyles = headerData?.content ? extractStyles(headerData.content) : '';
+    const mainStyles = html ? extractStyles(html) : '';
+    const footerStyles = footerData?.content ? extractStyles(footerData.content) : '';
 
-        const combinedStyles = `${headerStyles}\n${mainStyles}\n${footerStyles}`;
+    const combinedStyles = `${headerStyles}\n${mainStyles}\n${footerStyles}`;
 
 
-        return combinedStyles;
-    }, [html]);
+    return combinedStyles;
+  }, [html]);
   // Execute all scripts after the component mounts and content is rendered
   useEffect(() => {
-    // Execute header scripts
-    if(headerParsed?.scripts.length > 0){
-    headerParsed?.scripts.forEach((script) => {
-      executeScript(script);
-    });
-    }
+    const allScripts = [
+      ...(headerParsed?.scripts || []),
+      ...(mainParsed?.scripts || []),
+      ...(footerParsed?.scripts || []),
+    ];
 
-    // Execute main content scripts
-    if(mainParsed?.scripts.length > 0){
-    mainParsed?.scripts.forEach((script) => {
-      executeScript(script);
-    });
-    }
+    if (allScripts.length > 0) {
+      // If scripts contain 'lucide', make sure lucide is available
+      const needsLucide = allScripts.some(s => s.includes('lucide'));
 
-    // Execute footer scripts
-    if(footerParsed?.scripts.length > 0){
-    footerParsed?.scripts.forEach((script) => {
-      executeScript(script);
-    });
+      const runScripts = () => {
+        headerParsed?.scripts.forEach(executeScript);
+        mainParsed?.scripts.forEach(executeScript);
+        footerParsed?.scripts.forEach(executeScript);
+      };
+
+      if (needsLucide && !(window as any).lucide) {
+        // Wait for lucide to be available if it's being loaded via Script component
+        const checkLucide = setInterval(() => {
+          if ((window as any).lucide) {
+            clearInterval(checkLucide);
+            runScripts();
+          }
+        }, 100);
+        // Timeout after 5 seconds to avoid infinite loop
+        setTimeout(() => clearInterval(checkLucide), 5000);
+      } else {
+        runScripts();
+      }
     }
 
     // Cleanup function to remove event listeners if needed
@@ -91,23 +101,37 @@ const RenderHtml = ({
 
   const { body } = extractHtmlParts(html);
 
-  const isHeaderPresentInHtml = useMemo(()=>{
+  const isHeaderPresentInHtml = useMemo(() => {
     return isHeaderPresent(html)
-  },[html])
+  }, [html])
 
-  console.log("isHeaderPresentInHtml",isHeaderPresentInHtml)
+  console.log("isHeaderPresentInHtml", isHeaderPresentInHtml)
 
   return (
     <>
 
-        {/* apply style */}
-         {/* Inject extracted styles globally */}
-            {extractedStyles && (
-                <style
-                    suppressHydrationWarning
-                    dangerouslySetInnerHTML={{ __html: extractedStyles }}
-                />
-            )}
+      {/* Load Lucide icons library as it is a common dependency for templates */}
+      <Script
+        src="https://unpkg.com/lucide@latest"
+        strategy="afterInteractive"
+      />
+
+      {/* Load any other external scripts extracted from HTML */}
+      {[
+        ...headerParsed.externalScripts,
+        ...mainParsed.externalScripts,
+        ...footerParsed.externalScripts
+      ].map((src, idx) => (
+        <Script key={idx} src={src} strategy="afterInteractive" />
+      ))}
+
+      {/* Inject extracted styles globally */}
+      {extractedStyles && (
+        <style
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: extractedStyles }}
+        />
+      )}
       {/* Render header at the top if headerData exists */}
       {headerData && headerData.content && !isHeaderPresentInHtml && (
         <div
