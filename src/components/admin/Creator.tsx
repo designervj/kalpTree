@@ -422,14 +422,15 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
       if (keepHeader) {
         // User clicked "OK" (Yes)
+        callApi(formData.content)
+      } else {
         console.log("Keeping existing header");
         callApi(updatedHtml)
         updateHeaderPage(header)
-      } else {
-        callApi(formData.content)
+
       }
-     
-    }else{
+
+    } else {
       callApi(formData.content)
     }
 
@@ -441,7 +442,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
     console.log("formData", formData)
     startTransition(async () => {
-      const res = await dispatch(createWebsitePage({ ...formData, content }));
+      const res = await dispatch(createWebsitePage({ ...formData, content, isHomePage: formData.slug === "home" ? true : false }));
       if (createWebsitePage.fulfilled.match(res)) {
         setMsg("Created successfully!");
         toast.success("Created successfully!");
