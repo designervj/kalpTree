@@ -201,6 +201,7 @@ export class WebsiteService {
     systemSubdomain?: string;
     lang: any[];
     isComingSoon?: boolean;
+    // isHomePage?:boolean
   }) {
     const c = await this.col();
     const tid =
@@ -222,6 +223,7 @@ export class WebsiteService {
       systemSubdomain: params.systemSubdomain,
       lang: params.lang,
       isComingSoon: params.isComingSoon,
+      // isHomepage:params.isHomepage
     };
     const r = await c.insertOne(doc as WebsiteDoc);
     return { ...doc, _id: r.insertedId } as WebsiteDoc;

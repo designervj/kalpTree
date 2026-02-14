@@ -24,10 +24,10 @@ export default async function MainHomePage({
   const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
   // If not localhost or main domain, show the custom domain page (PageTemplate)
-  console.log("params", params);
-  console.log("isLocalhost", isLocalhost);
-  console.log("isMainKalpTree", isMainKalpTree);
-  console.log("host", host);
+  // console.log("params", params);
+  // console.log("isLocalhost", isLocalhost);
+  // console.log("isMainKalpTree", isMainKalpTree);
+  // console.log("host", host);
   if (!isLocalhost && !isMainKalpTree) {
     return <PageTemplate params={params} />;
   }

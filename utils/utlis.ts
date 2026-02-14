@@ -675,7 +675,7 @@ export const demoPages = [
 </body>
 </html>
        `,
-    slug: "about",
+    slug: "home",
     status: "published",
     createdAt: new Date(),
     updatedAr: new Date(),
