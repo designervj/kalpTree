@@ -126,7 +126,7 @@ KalpTree-next/
 │   ├── placeholder-user.jpg
 │   ├── placeholder.jpg
 │   ├── placeholder.svg
-│   ├── vercel.svg
+│   ├── kalptree-favicon.svg
 │   └── window.svg
 ├── scripts/
 │   ├── create-collections.ts

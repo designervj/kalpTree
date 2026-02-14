@@ -22,6 +22,23 @@ import {
 import { useRouter } from "next/navigation";
 import { deleteTemplate } from "@/hooks/slices/templates/TemplateThunk";
 
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { BsThreeDotsVertical } from "react-icons/bs";
+
 function miniToast(msg: string) {
   const el = document.createElement("div");
   el.innerText = msg;
@@ -126,6 +143,8 @@ const ShowTemplate = () => {
               const tid = getId(t);
 
               return (
+        
+         
                 <div key={tid} className="space-y-2">
                   <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md hover:border-gray-300">
                     {/* THUMB */}
@@ -154,7 +173,7 @@ const ShowTemplate = () => {
                     </div>
 
                     {/* FOOTER: LEFT title + RIGHT icons */}
-                    <div className="border-t bg-white px-4 py-3">
+                    <div className="border-t bg-white px-2 py-3">
                       <div className="flex items-center justify-between gap-3">
                         {/* LEFT */}
                         <div className="min-w-0">
@@ -166,9 +185,56 @@ const ShowTemplate = () => {
                           </p>
                         </div>
 
+
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="cursor-pointer border-none bg-transparent hover:bg-transparent outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                            >
+                              <BsThreeDotsVertical />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-40" align="start">
+                            <DropdownMenuGroup>
+                              <DropdownMenuLabel onClick={() => handleEdit(t)}>
+                                <div className="flex items-center gap-2 cursor-pointer font-normal">
+                                  <Edit2 className="h-4 w-4" />
+                                  Edit
+                                </div>
+                              </DropdownMenuLabel>
+                              <DropdownMenuItem onClick={() => handlePreview(t)}>
+                                <div className="flex items-center  gap-2 cursor-pointer font-normal ">
+                                  <Eye className="h-4 w-4" />
+                                   Preview
+                                </div>
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem onClick={() => handleImport(t)}>
+                                <div className="flex items-center gap-2 font-normal">
+                                  <Download className="h-4 w-4" />
+                                  Import
+                                </div>
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem onClick={() => handleDelete(t)}>
+                                <div className="flex items-center  gap-2 font-normal">
+                                  <Trash2 className="h-4 w-4 text-red-600" />
+                                  Delete
+                                </div>
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+
                         {/* RIGHT icons */}
-                        <div className="flex items-center gap-2">
-                          {/* edit */}
+                        {/* <div className="flex items-center gap-2">
+       
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -182,7 +248,7 @@ const ShowTemplate = () => {
                               </Button>
                             </TooltipTrigger>
                           </Tooltip>
-                          {/* PREVIEW */}
+                        
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -200,7 +266,7 @@ const ShowTemplate = () => {
                             </TooltipContent>
                           </Tooltip>
 
-                          {/* IMPORT */}
+                   
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <Button
@@ -217,7 +283,7 @@ const ShowTemplate = () => {
                             </TooltipContent>
                           </Tooltip>
 
-                          {/* DELETE */}
+                         
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <div className="relative">
@@ -231,7 +297,7 @@ const ShowTemplate = () => {
                                   <Trash2 className="h-4 w-4 text-red-600" />
                                 </Button>
 
-                                {/* red dot */}
+                   
                                 <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-600 ring-2 ring-white" />
                               </div>
                             </TooltipTrigger>
@@ -239,11 +305,12 @@ const ShowTemplate = () => {
                               Delete
                             </TooltipContent>
                           </Tooltip>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
                 </div>
+         
               );
             })}
           </div>

@@ -294,11 +294,10 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                   <div
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`aspect-[3/4] cursor-pointer border transition-all ${
-                      activeImageIndex === idx
+                    className={`aspect-[3/4] cursor-pointer border transition-all ${activeImageIndex === idx
                         ? "border-gray-900 opacity-100"
                         : "border-transparent opacity-60 hover:opacity-80"
-                    }`}
+                      }`}
                   >
                     <img
                       src={img}
@@ -384,11 +383,10 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                                 onClick={() =>
                                   handleOptionChange(option.id, value)
                                 }
-                                className={`border px-4 py-2.5 min-w-[65px] text-center text-sm cursor-pointer rounded-md transition-all font-medium ${
-                                  isSelected
+                                className={`border px-4 py-2.5 min-w-[65px] text-center text-sm cursor-pointer rounded-md transition-all font-medium ${isSelected
                                     ? "border-[#967249] bg-[#fdf8f2]"
                                     : "border-[#d4bda2] bg-white hover:border-[#967249] hover:bg-[#fdf8f2]"
-                                }`}
+                                  }`}
                               >
                                 {value}
                               </button>
@@ -432,12 +430,11 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                     !matchedVariant ||
                     parseInt(matchedVariant?.stock || 0) === 0
                   }
-                  className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 font-bold uppercase text-sm transition-all ${
-                    !matchedVariant ||
-                    parseInt(matchedVariant?.stock || 0) === 0
+                  className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 font-bold uppercase text-sm transition-all ${!matchedVariant ||
+                      parseInt(matchedVariant?.stock || 0) === 0
                       ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                       : "bg-gray-900 text-white hover:bg-gray-800"
-                  }`}
+                    }`}
                 >
                   <ShoppingCart size={18} />
                   Add to Cart
@@ -468,11 +465,10 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-5 font-bold text-xs uppercase relative transition-colors ${
-                    activeTab === tab
+                  className={`pb-5 font-bold text-xs uppercase relative transition-colors ${activeTab === tab
                       ? "text-gray-900"
                       : "text-gray-400 hover:text-gray-600"
-                  }`}
+                    }`}
                 >
                   {tab === "description" && "Description"}
                   {tab === "sizeGuide" && "Size Guide"}

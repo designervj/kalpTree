@@ -253,7 +253,7 @@ export function AdminThemeProvider({ children }: { children: React.ReactNode }) 
     // active = a bit stronger than accent
     root.style.setProperty("--admin-sidebar-bg", hslToCss(sidebarBg));
     root.style.setProperty("--admin-sidebar-fg", hslToCss(sidebarFg));
-    root.style.setProperty("--admin-sidebar-muted", "hsl(var(--muted-foreground))");
+    root.style.setProperty("--admin-sidebar-white", "hsl(var(--muted-foreground))");
 
     root.style.setProperty("--admin-sidebar-hover", hslToCss(sidebarAccent));
     root.style.setProperty("--admin-sidebar-active-bg", "hsl(var(--card))");

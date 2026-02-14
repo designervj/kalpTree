@@ -125,9 +125,114 @@ function slugify(input: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+/* =========================================================
+   ✅ TAG INPUT (type + enter, remove chips, suggestions)
+   - Works with react-hook-form as string[]
+   ========================================================= */
+function TagInput({
+  value,
+  onChange,
+  placeholder = "Type tag and press Enter",
+  suggestions = ["shop", "ecommerce", "banner", "hero", "pricing", "footer", "forms", "blog"],
+}: {
+  value: string[];
+  onChange: (next: string[]) => void;
+  placeholder?: string;
+  suggestions?: string[];
+}) {
+  const [input, setInput] = React.useState("");
 
+  const filteredSuggestions = React.useMemo(() => {
+    const q = input.trim().toLowerCase();
+    if (!q) return suggestions.slice(0, 8);
+    return suggestions
+      .filter((s) => s.toLowerCase().includes(q))
+      .slice(0, 8);
+  }, [input, suggestions]);
 
-export default function TemplateForm({ initialData, isEdit }: { initialData?: TemplateDocument | null, isEdit?: boolean }) {
+  const addTag = (tag: string) => {
+    const clean = tag.trim().replace(/\s+/g, " ");
+    if (!clean) return;
+    const exists = value.some((t) => t.toLowerCase() === clean.toLowerCase());
+    if (exists) {
+      setInput("");
+      return;
+    }
+    onChange([...value, clean]);
+    setInput("");
+  };
+
+  const removeTag = (tag: string) => {
+    onChange(value.filter((t) => t !== tag));
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2 rounded-md border p-2">
+        {value.map((tag) => (
+          <span
+            key={tag}
+            className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm"
+          >
+            {tag}
+            <button
+              type="button"
+              onClick={() => removeTag(tag)}
+              className="text-muted-foreground hover:text-foreground"
+              aria-label={`Remove ${tag}`}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </span>
+        ))}
+
+        <Input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={placeholder}
+          className="h-8 w-[220px] border-0 p-0 shadow-none focus-visible:ring-0"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addTag(input);
+            }
+            if (e.key === ",") {
+              e.preventDefault();
+              addTag(input);
+            }
+            if (e.key === "Backspace" && !input && value.length > 0) {
+              // remove last tag on backspace when input empty
+              onChange(value.slice(0, -1));
+            }
+          }}
+        />
+      </div>
+
+      {filteredSuggestions.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {filteredSuggestions.map((s) => (
+            <button
+              key={s}
+              type="button"
+              onClick={() => addTag(s)}
+              className="rounded-full border px-3 py-1 text-xs hover:bg-muted"
+            >
+              + {s}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TemplateForm({
+  initialData,
+  isEdit,
+}: {
+  initialData?: TemplateDocument | null;
+  isEdit?: boolean;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const dispatch = useDispatch<AppDispatch>();
@@ -158,11 +263,11 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
         label: initialData.label || "",
         slug: initialData.slug || (initialData.label ? slugify(initialData.label) : ""),
         templateType: (initialData.category || initialData.templateType) as any || "",
-        pageType: initialData.pageType as any || "",
+        pageType: (initialData.pageType as any) || "",
         content: initialData.content || "<h1> Hello World </h1>",
         imageDataUrl: initialData.imageDataUrl || "",
         description: initialData.description || "",
-        tags: initialData.tags || ["tag1", "tag2", "tag3"],
+        tags: (initialData.tags as any) || ["tag1", "tag2", "tag3"],
         category: initialData.category || "",
         version: initialData.version || "1.0.0",
         isPublic: initialData.isPublic ?? true,
@@ -213,12 +318,15 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
   };
 
   const onSubmit = async (values: TemplateFormData) => {
-
     const data = {
       ...values,
       category: values.templateType,
-      tags: typeof values.tags === 'string' ? values.tags.split(',').map((t: string) => t.trim()) : values.tags,
-    }
+      tags:
+        typeof values.tags === "string"
+          ? values.tags.split(",").map((t: string) => t.trim()).filter(Boolean)
+          : (values.tags || []),
+    };
+
     try {
       if (isEdit && (initialData?._id || initialData?.id)) {
         const templateId = initialData?._id?.toString() || initialData?.id || "";
@@ -238,21 +346,14 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
     <div className="w-full">
       <div className="mb-6">
         <BreadCrumbPage />
-        {/* <p>Title, slug, template type, page type, and HTML. Image upload</p> */}
       </div>
-
 
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="grid gap-6 lg:grid-cols-[1fr_380px]">
+        className="grid gap-6 lg:grid-cols-[1fr_380px]"
+      >
         {/* LEFT */}
-
-
         <Card className="rounded-md">
-
-
-
-
           <CardContent className="space-y-6">
             {/* Title + Slug */}
             <div className="grid gap-4 md:grid-cols-2">
@@ -282,15 +383,8 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label>Slug</Label>
-                  {/* <Button type="button" variant="ghost" size="sm" onClick={onAutoSlug}>
-                    <Wand2 className="h-4 w-4 mr-2" />
-                    Auto
-                  </Button> */}
                 </div>
-                <Input
-                  placeholder="shop-35-2-column-offer"
-                  {...form.register("slug")}
-                />
+                <Input placeholder="shop-35-2-column-offer" {...form.register("slug")} />
                 {form.formState.errors.slug && (
                   <p className="text-sm text-red-600">
                     {form.formState.errors.slug.message}
@@ -308,19 +402,18 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                   onValueChange={(v) => {
                     form.setValue("templateType", v as any, {
                       shouldValidate: true,
-                    })
-                    if(v === "page") {
+                    });
+                    if (v === "page") {
                       form.setValue("pageType", "none", {
                         shouldValidate: true,
-                      })
+                      });
                     }
                   }}
-                  >
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select template type" />
                   </SelectTrigger>
 
-                  {/* dropdown width match trigger */}
                   <SelectContent className="w-[var(--radix-select-trigger-width)]">
                     {TEMPLATE_TYPES.map((o) => (
                       <SelectItem key={o.value} value={o.value}>
@@ -344,7 +437,8 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                     form.setValue("pageType", v as any, {
                       shouldValidate: true,
                     })
-                  }>
+                  }
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select page type" />
                   </SelectTrigger>
@@ -380,13 +474,28 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                 )}
               </div>
 
+              {/* ✅ ONLY THIS TAG SECTION CHANGED */}
               <div className="space-y-2">
                 <Label>Tags (optional)</Label>
-                <Input
-                  placeholder="e.g. shop, ecommerce, banner"
-                  {...form.register("tags")}
+
+                <TagInput
+                  value={
+                    Array.isArray(form.watch("tags"))
+                      ? (form.watch("tags") as string[])
+                      : String(form.watch("tags") || "")
+                          .split(",")
+                          .map((t) => t.trim())
+                          .filter(Boolean)
+                  }
+                  onChange={(next) =>
+                    form.setValue("tags", next as any, { shouldDirty: true, shouldValidate: true })
+                  }
+                  placeholder="Type tag and press Enter"
                 />
-                <p className="text-xs text-muted-foreground">Comma separated</p>
+
+                <p className="text-xs text-muted-foreground">
+                  Type and press Enter (or comma)
+                </p>
               </div>
             </div>
 
@@ -467,6 +576,7 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                   </TabsContent>
                 </div>
               </Tabs>
+
               {form.formState.errors.content && (
                 <p className="text-sm text-red-600 mt-1">
                   {form.formState.errors.content.message}
@@ -517,10 +627,7 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
               <div className="grid gap-3">
                 <div className="space-y-2">
                   <Label>Demo (optional)</Label>
-                  <Input
-                    placeholder="e.g. Shop 35"
-                    {...form.register("demo")}
-                  />
+                  <Input placeholder="e.g. Shop 35" {...form.register("demo")} />
                 </div>
 
                 <div className="space-y-2">
@@ -546,7 +653,8 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                   variant="secondary"
                   className="flex-1"
                   disabled={isPending}
-                  onClick={() => router.push("/admin/templates")}>
+                  onClick={() => router.push("/admin/templates")}
+                >
                   Cancel
                 </Button>
               </div>
@@ -579,9 +687,7 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                           type="file"
                           accept="image/png,image/jpeg,image/webp"
                           className="hidden"
-                          onChange={(e) =>
-                            onPickImage(e.target.files?.[0] ?? null)
-                          }
+                          onChange={(e) => onPickImage(e.target.files?.[0] ?? null)}
                         />
                       </label>
 
@@ -591,7 +697,8 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
                           variant="outline"
                           size="sm"
                           onClick={removeImage}
-                          className="rounded-lg">
+                          className="rounded-lg"
+                        >
                           <X className="h-4 w-4 mr-2" />
                           Remove
                         </Button>
@@ -620,12 +727,6 @@ export default function TemplateForm({ initialData, isEdit }: { initialData?: Te
           </Card>
         </div>
       </form>
-
-      {/* Dev hint */}
-      {/* <p className="mt-6 text-xs text-muted-foreground">
-        Note: image is saved as <b>base64 dataUrl</b> right now. Production me
-        S3/Supabase upload karke url store karna best hai.
-      </p> */}
     </div>
   );
 }
