@@ -68,7 +68,7 @@ export default function GrapesJSEditor() {
   const { currentHeader } = useSelector((state: RootState) => state.header);
   const { currentFooter } = useSelector((state: RootState) => state.footer);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const {currentStyle} = useSelector((state: RootState) => state.globalStyle);
+  const { currentStyle } = useSelector((state: RootState) => state.globalStyle);
 
 
   function extractScriptsFromHtml(html: string): string {
@@ -117,7 +117,7 @@ export default function GrapesJSEditor() {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-     ( currentWebsite?.globalStyle ||currentStyle?.globalStyle)
+      (currentWebsite?.globalStyle || currentStyle?.globalStyle)
 
     ) {
       dispatch(setPageLoading(true));
@@ -135,13 +135,13 @@ export default function GrapesJSEditor() {
   useEffect(() => {
     if (
       !state.editor ||
-      !page?.content 
+      !page?.content
       // !currentHeader?.content
-    ){
+    ) {
       console.log("not getting header, page.content")
-      return 
+      return
     }
- 
+
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
@@ -173,8 +173,8 @@ export default function GrapesJSEditor() {
       }
 
       try {
-        const data = page.content;
-        const headerData = currentHeader?.content;
+        const data = page.content?.replace(/\\n/g, "");
+        const headerData = currentHeader?.content?.replace(/\\n/g, "").trim();
 
         if (data) {
           const pageParts = extractHtmlParts(data);
@@ -469,7 +469,18 @@ export default function GrapesJSEditor() {
       if (styles) {
         contentToAdd = `<style>${styles}</style>${body}`;
       }
-      addComponentAboveFooter(state.editor, contentToAdd);
+      if (insertionIndex !== null) {
+        const wrapper = state.editor.Components.getWrapper();
+        if (wrapper) {
+          // Find page-body container if it exists (combined mode), otherwise use wrapper
+          const container = wrapper.find('[data-gjs-type="page-body"]')[0] || wrapper;
+          container.append(contentToAdd, { at: insertionIndex });
+
+          setInsertionIndex(prev => prev !== null ? prev + 1 : null);
+        }
+      } else {
+        addComponentAboveFooter(state.editor, contentToAdd);
+      }
 
       if (scripts && scripts.length > 0) {
         scripts.forEach((scriptContent: string) => {
@@ -713,6 +724,22 @@ export default function GrapesJSEditor() {
   };
 
   const [open, setOpen] = useState(false);
+  const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
+
+  // callink function on As Section
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (typeof event.data !== "object" || !event.data.type) return;
+
+      if (event.data.type === "OPEN_TEMPLATE_MANAGER") {
+        setInsertionIndex(event.data.index ?? null);
+        setOpen(true);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   const handleFormSave = (html: string) => {
     if (state.editor) {
@@ -768,16 +795,18 @@ export default function GrapesJSEditor() {
             onSelectTemplate={handleSelectTemplate}
             onSaveTemplate={handleSaveTemplate}
             onSave={handleSaveData}
-            setOpen={setOpen}
+            setOpen={(isOpen) => {
+              setOpen(isOpen);
+              if (!isOpen) setInsertionIndex(null);
+            }}
             open={open}
           />
 
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
-                pagetype !== "normal" ? "hidden" : ""
-              }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
+                }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">

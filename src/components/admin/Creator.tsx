@@ -305,12 +305,12 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   const pageTemplates = useMemo(() => {
     return allTemplate.filter((t) => t.category === "page");
   }, [allTemplate]);
-  console.log("pageTemplates", pageTemplates);
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
   const [saving, startTransition] = useTransition();
-   const {user}=useSelector((state:RootState)=>state.user)
+  const { user } = useSelector((state: RootState) => state.user)
   const [msg, setMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"html" | "preview">("html");
   const [slugTouched, setSlugTouched] = useState(false);
@@ -333,7 +333,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
     initial.seoTitle = item?.seoTitle ?? "";
     initial.metaDescription = item?.metaDescription ?? "";
-    initial.focusKeyword = item?.focusKeyword ?? "";
+    initial.focusKeyword = item?.focusKeyword ?? [];
+    initial.selectedKeyWord = item?.selectedKeyWord ?? "";
 
     if (currentWebsite?._id) initial.websiteId = currentWebsite._id;
     if (currentWebsite?.tenantId) initial.tenantId = currentWebsite.tenantId;
@@ -414,28 +415,33 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       toast.error("Content is required");
       return;
     }
-     const { header, updatedHtml } = extractHeader(formData?.content ?? null);
-       
-     if(header &&updatedHtml){
-         const keepHeader = confirm("Do you want to keep the existing header?");
+    const { header, updatedHtml } = extractHeader(formData?.content ?? null);
 
-  if (keepHeader) {
-      // User clicked "OK" (Yes)
-      console.log("Keeping existing header");
-      callApi(updatedHtml)
-    } else {
+    if (header && updatedHtml) {
+      const keepHeader = confirm("Do you want to keep the existing header?");
+
+      if (keepHeader) {
+        // User clicked "OK" (Yes)
+        console.log("Keeping existing header");
+        callApi(updatedHtml)
+        updateHeaderPage(header)
+      } else {
+        callApi(formData.content)
+      }
+     
+    }else{
       callApi(formData.content)
     }
-    callApi(formData.content)
-     }
-    
+
   };
 
 
   //update page 
-  const callApi=async(content:string)=>{
+  const callApi = async (content: string) => {
+
+    console.log("formData", formData)
     startTransition(async () => {
-      const res = await dispatch(createWebsitePage({...formData,content}));
+      const res = await dispatch(createWebsitePage({ ...formData, content }));
       if (createWebsitePage.fulfilled.match(res)) {
         setMsg("Created successfully!");
         toast.success("Created successfully!");
@@ -450,30 +456,30 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   //update headerPage 
 
 
-  const updateHeaderPage=async(content:string)=>{
- 
-        const data:TemplateDocument={
-          slug:formData.slug,
-          status: "draft",
-          content:content,
-          websiteId:formData.websiteId,
-          category: "navbar",
-          tenantId:formData.tenantId,
-          createdBy:user?._id,
-          pageSlug:[formData.slug],
-          createdAt:new Date(),
-          updatedAt:new Date(),
-          
-        }
-        const result = await dispatch(createHeader(data));
-        if (createHeader.fulfilled.match(result)) {
-          setMsg("Created successfully!");
-          toast.success("Created successfully!");
-          goBack();
-        } else {
-          setMsg("Create failed");
-          toast.error("Create failed");
-        }
+  const updateHeaderPage = async (content: string) => {
+
+    const data: TemplateDocument = {
+      slug: formData.slug,
+      status: "draft",
+      content: content,
+      websiteId: formData.websiteId,
+      category: "navbar",
+      tenantId: formData.tenantId,
+      createdBy: user?._id,
+      pageSlug: [formData.slug],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+
+    }
+    const result = await dispatch(createHeader(data));
+    if (createHeader.fulfilled.match(result)) {
+      setMsg("Created successfully!");
+      toast.success("Created successfully!");
+      // goBack();
+    } else {
+      setMsg("Create failed");
+      toast.error("Create failed");
+    }
   }
   const leftFields = fields.filter((f) => f.side === "left");
   const rightFields = fields.filter((f) => f.side === "right");
@@ -511,7 +517,11 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   };
 
   // SEO computed
-  const focusKeyword = (formData?.focusKeyword || "").trim();
+  const focusKeywordStr = Array.isArray(formData?.focusKeyword)
+    ? formData.focusKeyword.join(", ")
+    : (formData?.focusKeyword || "").trim();
+  const focusKeyword = focusKeywordStr; // Keeping the name for compatibility with existing code
+
   const seoTitleLen = String(formData?.seoTitle || "").trim().length;
   const metaLen = String(formData?.metaDescription || "").trim().length;
 
@@ -550,7 +560,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
   const keywordIn = (hay: string) => {
     if (!focusKeyword) return null;
-    return hay.toLowerCase().includes(focusKeyword.toLowerCase());
+    return hay.toLowerCase().includes(focusKeywordStr.toLowerCase());
   };
 
   /* -----------------------------
@@ -575,7 +585,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
   const applyTemplate = (tpl: TemplateDocument, withSeoDefaults = true) => {
     // Replace full content
-   //setContentValue(tpl?.content);
+    //setContentValue(tpl?.content);
 
     // Auto fill SEO (only if empty)
     // if (withSeoDefaults && tpl.seo) {
@@ -591,7 +601,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       ...p,
       content: tpl?.content,
     }));
-    
+
 
     toast.success(`Applied template: ${tpl.label}`);
   };

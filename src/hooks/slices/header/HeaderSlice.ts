@@ -8,6 +8,7 @@ import {
     updateHeader,
     deleteHeader,
     fetchCurrentHeaders,
+    fetchWebsiteCurrentHeaders,
 } from "./HeaderThunk";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
@@ -16,10 +17,12 @@ export type HeaderState = {
     currentHeader: TemplateDocument | null;
     hasFetched: boolean;
     isLoading: boolean;
+    websiteHeader: TemplateDocument[];
 };
 
 const initialState: HeaderState = {
     allHeader: [],
+    websiteHeader: [],
     currentHeader: null,
     hasFetched: false,
     isLoading: false,
@@ -102,23 +105,37 @@ const headerSlice = createSlice({
             .addCase(fetchHeaders.rejected, (state) => {
                 state.isLoading = false;
             })
-
-
-            //fetch current header
+            // fetch all current website header
             .addCase(fetchCurrentHeaders.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(
-                fetchCurrentHeaders.fulfilled,
+                fetchWebsiteCurrentHeaders.fulfilled,
                 (state, action: PayloadAction<TemplateDocument[]>) => {
-                    state.currentHeader = action.payload[0];
+                    state.websiteHeader = action.payload;
                     state.hasFetched = true;
-                    state.isLoading = false;
+                    state.isLoading = false;    
                 }
             )
-            .addCase(fetchCurrentHeaders.rejected, (state) => {
+            .addCase(fetchWebsiteCurrentHeaders.rejected, (state) => {
                 state.isLoading = false;
-            })  
+            })
+
+            //fetch current header
+            // .addCase(fetchCurrentHeaders.pending, (state) => {
+            //     state.isLoading = true;
+            // })
+            // .addCase(
+            //     fetchCurrentHeaders.fulfilled,
+            //     (state, action: PayloadAction<TemplateDocument[]>) => {
+            //         state.currentHeader = action.payload[0];
+            //         state.hasFetched = true;
+            //         state.isLoading = false;
+            //     }
+            // )
+            // .addCase(fetchCurrentHeaders.rejected, (state) => {
+            //     state.isLoading = false;
+            // })  
             // Fetch header by ID
             .addCase(fetchHeaderById.pending, (state) => {
                 state.isLoading = true;
