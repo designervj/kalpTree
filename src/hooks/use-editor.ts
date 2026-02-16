@@ -278,6 +278,24 @@ export function useEditor(containerId: string) {
       doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
       doc.querySelector('[data-tailwind="true"]')?.remove();
 
+      // Inject Lucide Icons for icon hydration - avoid redundant reloads
+      if (!doc.querySelector('[data-lucide="true"]')) {
+        const lucideScript = doc.createElement("script");
+        lucideScript.src = "https://unpkg.com/lucide@latest";
+        lucideScript.setAttribute("data-lucide", "true");
+        doc.head.appendChild(lucideScript);
+        lucideScript.onload = () => {
+          if ((doc.defaultView as any).lucide) {
+            (doc.defaultView as any).lucide.createIcons();
+          }
+        };
+      } else {
+        // If script already exists, just re-run createIcons to catch new components
+        if ((doc.defaultView as any).lucide) {
+          (doc.defaultView as any).lucide.createIcons();
+        }
+      }
+
       // Inject Tailwind CSS CDN for styling Tailwind classes in HTML strings
       const tailwindScript = doc.createElement("script");
       tailwindScript.src = "https://cdn.tailwindcss.com";
@@ -476,31 +494,50 @@ export function useEditor(containerId: string) {
         // Add JS fallback methods if not present
         if (typeof (editor as any).setJs !== "function") {
           (editor as any).setJs = (js: string) => {
-            let script = editor.Components.getWrapper()?.find(
-              'script[data-gjs-type="custom-script"]'
-            )[0];
+            console.log("Setting JS in editor:", js ? js.substring(0, 50) + "..." : "empty");
+            const wrapper = editor.Components.getWrapper();
+            if (!wrapper) return;
+
+            // Search for existing custom script component
+            let script = wrapper.find('script[data-gjs-type="custom-script"]')[0];
 
             if (!script) {
-              const addedComponents = editor.Components.addComponent({
+              console.log("No custom-script found, adding new one to wrapper");
+              // Add to wrapper directly instead of global Components to avoid nesting in selection
+              const added = wrapper.append({
                 tagName: "script",
                 attributes: { "data-gjs-type": "custom-script" },
                 content: js,
-                layerable: false,
+                selectable: false,
+                hoverable: false,
                 draggable: false,
                 removable: false,
+                layerable: false,
               });
-              script = Array.isArray(addedComponents) ? addedComponents[0] : addedComponents;
+              script = Array.isArray(added) ? added[0] : added;
             } else {
               script.set("content", js);
             }
+
+            // Explicitly sync to state to ensure UI updates
+            setState(prev => ({ ...prev, editorJs: js }));
           };
         }
 
         if (typeof (editor as any).getJs !== "function") {
           (editor as any).getJs = () => {
-            const script = editor.Components.getWrapper()?.find(
-              'script[data-gjs-type="custom-script"]'
-            )[0];
+            const wrapper = editor.Components.getWrapper();
+            if (!wrapper) return "";
+
+            const scripts = wrapper.find('script[data-gjs-type="custom-script"]');
+            const script = scripts[0];
+
+            if (!script && scripts.length === 0) {
+              // Fallback: search all components if wrapper.find somehow fails
+              const allComps = editor.DomComponents.getComponents();
+              // This is just a backup
+            }
+
             return script?.get("content") || "";
           };
         }
@@ -1166,6 +1203,7 @@ export function useEditor(containerId: string) {
         addSectionBtn.onclick = (e) => {
           e.stopPropagation();
           const targetIndex = component.index() + 1;
+          console.log("targetIndex===>", targetIndex)
           window.parent.postMessage({ type: 'OPEN_TEMPLATE_MANAGER', index: targetIndex }, '*');
         };
 
@@ -1295,17 +1333,17 @@ export function useEditor(containerId: string) {
 
     // Script-related events
     editor.on("script:update", () => {
-      // try {
-      //   if (editor && editor.getJs && typeof editor.getJs === 'function') {
-      //     const js = editor.getJs() || "";
-      //     setState((prev) => ({
-      //       ...prev,
-      //       editorJs: js,
-      //     }));
-      //   }
-      // } catch (error) {
-      //   console.error('Error handling script update:', error);
-      // }
+      try {
+        if (editor && (editor as any).getJs && typeof (editor as any).getJs === 'function') {
+          const js = (editor as any).getJs() || "";
+          setState((prev) => ({
+            ...prev,
+            editorJs: js,
+          }));
+        }
+      } catch (error) {
+        console.error('Error handling script update:', error);
+      }
     });
 
     editor.on("script:add", () => {
@@ -1323,26 +1361,56 @@ export function useEditor(containerId: string) {
     });
 
     editor.on("script:remove", () => {
-      setState((prev) => ({
-        ...prev,
-        editorJs: "",
-      }));
+      if (editor && (editor as any).getJs) {
+        const js = (editor as any).getJs() || "";
+        setState((prev) => ({
+          ...prev,
+          editorJs: js,
+        }));
+      }
     });
 
     // Component changes - commented out component:update to prevent excessive updates
     // editor.on("component:update", () => updateLayers(editor));
+
+    const hydrateIcons = () => {
+      const frame = editor.Canvas?.getFrameEl?.();
+      const doc = frame?.contentDocument;
+      if (!doc || !doc.defaultView) return;
+      const win = doc.defaultView as any;
+
+      if (win.lucide && typeof win.lucide.createIcons === 'function') {
+        win.lucide.createIcons();
+      } else {
+        // Fallback in case lucide is not yet available in the iframe window
+        const interval = setInterval(() => {
+          if (win.lucide && typeof win.lucide.createIcons === 'function') {
+            win.lucide.createIcons();
+            clearInterval(interval);
+          }
+        }, 100);
+        setTimeout(() => clearInterval(interval), 2000); // Stop trying after 2s
+      }
+    };
+
     editor.on("component:add", (component: any) => {
       const tagName = component.get('tagName');
       if (tagName === 'div' && isComponentUnderSection(component)) {
         component.set('hoverable', false);
       }
       updateLayers(editor);
+      hydrateIcons();
     });
+
+    editor.on("component:update", hydrateIcons);
+    editor.on("canvas:drop", hydrateIcons);
+
     editor.on("component:remove", (component: any) => {
       // Clean up styles and scripts associated with the deleted component
       const currentJs = cleanupComponentStylesAndScripts(editor, component);
       setState((prev) => ({ ...prev, editorJs: currentJs }));
       updateLayers(editor);
+      hydrateIcons();
     });
   };
 

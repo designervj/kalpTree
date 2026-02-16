@@ -145,7 +145,7 @@ const DEFAULT_SETTINGS: FormSettings = {
   // ✅ fields now match screenshot behavior (accordion editable)
   fields: [
     {
-      id: uid(),
+      id: "field-name",
       label: "Name",
       enabled: true,
       required: true,
@@ -155,7 +155,7 @@ const DEFAULT_SETTINGS: FormSettings = {
       options: [],
     },
     {
-      id: uid(),
+      id: "field-lastname",
       label: "Last name",
       enabled: true,
       required: true,
@@ -165,7 +165,7 @@ const DEFAULT_SETTINGS: FormSettings = {
       options: [],
     },
     {
-      id: uid(),
+      id: "field-email",
       label: "Email",
       enabled: true,
       required: true,
@@ -175,7 +175,7 @@ const DEFAULT_SETTINGS: FormSettings = {
       options: [],
     },
     {
-      id: uid(),
+      id: "field-message",
       label: "Message",
       enabled: true,
       required: true,
@@ -381,8 +381,8 @@ export function EditSection({
   const onSave = () => {
     // e.preventDefault();
     // ✅ send `settings` to API / store
-    console.log("settings--->",settings)
-    console.log("formHtml--->",formHtml);
+    console.log("settings--->", settings)
+    console.log("formHtml--->", formHtml);
     if (onSaveHtml) {
       onSaveHtml(formHtml);
     }
@@ -395,7 +395,7 @@ export function EditSection({
 
 
 
-  const handleHtmlChange=(html:string)=>{
+  const handleHtmlChange = (html: string) => {
     console.log(html);
     setFormHtml(html);
   }
@@ -404,18 +404,18 @@ export function EditSection({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <form onSubmit={onSave}>
-        <DialogTrigger asChild>
-          <Button variant="ghost" size="sm" className="h-8 text-xs">
-            <FiEdit className="mr-1.5 h-3.5 w-3.5" />
-            Form
-          </Button>
-        </DialogTrigger>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm" className="h-8 text-xs" type="button">
+          <FiEdit className="mr-1.5 h-3.5 w-3.5" />
+          Form
+        </Button>
+      </DialogTrigger>
 
-        <DialogContent
-          className="p-0 sm:max-w-[520px] overflow-hidden bg-white"
-          onInteractOutside={(e) => e.preventDefault()}
-        >
+      <DialogContent
+        className="p-0 sm:max-w-[520px] overflow-hidden bg-white"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <form onSubmit={(e) => { e.preventDefault(); onSave(); }}>
           {/* Top header */}
           <DialogHeader className="px-6 pt-4 pb-0">
             <DialogTitle className="sr-only">Contact form settings</DialogTitle>
@@ -946,28 +946,25 @@ export function EditSection({
             </div>
           </ScrollArea>
 
-
-
-
           {/* Footer actions */}
           <DialogFooter className="px-6 py-2">
             <DialogClose asChild>
-              <Button variant="outline" className="rounded-xl">
+              <Button variant="outline" className="rounded-xl" type="button">
                 Cancel
               </Button>
             </DialogClose>
 
             <Button
-              // type="submit"
+              type="submit"
               className="rounded-xl text-white"
               style={{ backgroundColor: ACCENT }}
-              onClick={onSave}
             >
               Save changes
             </Button>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 }
+

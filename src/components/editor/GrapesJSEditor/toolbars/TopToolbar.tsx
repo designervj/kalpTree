@@ -145,7 +145,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
         </div>
 
 
-    
+
 
         <div className="flex items-center space-x-1.5">
 
@@ -153,27 +153,12 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             Edit
           </Button> */}
 
-          
-            <Tooltip>
-            <TooltipTrigger asChild>
-             
 
-              <EditSection/>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Form</TooltipContent>
-          </Tooltip>
+          <EditSection />
+          <HeaderEditForm />
 
-            <Tooltip>
-            <TooltipTrigger asChild>
-             
 
-              <HeaderEditForm />
 
-            </TooltipTrigger>
-            <TooltipContent side="bottom">Header Edit Form</TooltipContent>
-          </Tooltip>
-
-          
           {/* THEME TOGGLE */}
           <Tooltip>
             <TooltipTrigger asChild>
@@ -197,7 +182,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
           </Tooltip>
 
 
-          
+
 
           <div className="hidden md:block h-6 w-px bg-slate-200 dark:bg-slate-800" />
 
@@ -215,7 +200,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             <TooltipContent side="bottom">Blocks</TooltipContent>
           </Tooltip>
 
-             
+
 
           <Tooltip>
             <TooltipTrigger asChild>
@@ -332,7 +317,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
           </Tooltip>
 
 
-            
+
 
           <Tooltip>
             <TooltipTrigger asChild>
