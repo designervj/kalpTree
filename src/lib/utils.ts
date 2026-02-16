@@ -254,9 +254,9 @@ export function extractHtmlParts(html: string) {
   return { styles, body, scripts, externalScripts };
 }
 
-export const extractScripts = (html: string): string => {
+export const extractScripts = (html: string): string[] => {
   const { scripts } = extractHtmlParts(html);
-  return scripts.join("\n");
+  return scripts;
 };
 
 
@@ -273,6 +273,33 @@ export const extractStyles = (htmlContent: string): string => {
 
   return styles.join('\n');
 };
+
+
+export const wrapScripts = (scripts: string[]): string => {
+    if (!scripts || scripts.length === 0) return "";
+
+    return scripts
+      .map((content: string) => {
+        const trimmed = content.trim();
+        if (!trimmed) return "";
+
+        // Remove comments at the beginning to accurately check for IIFE
+        const codeOnly = trimmed
+          .replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "")
+          .trim();
+
+        // Check if it already looks like an IIFE to prevent double-wrapping
+        if (
+          codeOnly.startsWith("(function") ||
+          codeOnly.startsWith("(async function")
+        ) {
+          return trimmed;
+        }
+        return `(function(){ ${trimmed} })();`;
+      })
+      .filter((s: string) => s.trim())
+      .join("\n");
+  }
 
 
 export function groupAttributesByTitle(data: any) {

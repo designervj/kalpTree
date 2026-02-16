@@ -240,6 +240,7 @@ AI Agents should output the component in this exact order:
 </section>
 
 <!-- 3. SCRIPT TAG LAST -->
+
 <script>
   (function () {
     const root = document.querySelector("#section-unique-id");
@@ -317,3 +318,61 @@ When information is saved in the KalpTree database (PostgreSQL/MongoDB), it is s
 - **Style Priority**: The `<style>` block is placed at the top so the browser can paint the layout correctly as soon as the body content loads.
 - **Fragment-Based**: It does **not** include `<html>` or `<body>` wrappers. It is a "document fragment" that gets injected into the project's layout template.
 - **Script Deferral**: The `<script>` block is placed at the end to ensure all DOM elements are rendered before any interactivity is initialized.
+
+---
+
+## 9. External Fonts & JS Libraries
+
+If your component requires external assets (e.g., Google Fonts, FontAwesome, or third-party JS libraries like Chart.js), follow these rules:
+
+### 1. External Fonts (Google Fonts)
+
+Place the `<link>` tag at the very top of your output. The system will automatically extract it and inject it into the editor canvas and the final page.
+
+**Example:**
+
+```html
+<!-- Include Google Fonts at the top -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Cormorant+Garamond:wght@500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  .my-text {
+    font-family: "Cormorant Garamond", serif;
+  }
+</style>
+
+<section id="custom-font-section">
+  <h2 class="my-text">Elegant Typography</h2>
+</section>
+```
+
+### 2. External JS Libraries (CDN)
+
+Include the `<script src="...">` tag within your fragment. The system will ensure it is loaded before your component's interactive logic runs.
+
+**Example:**
+
+```html
+<section id="chart-section">
+  <canvas id="myChart"></canvas>
+</section>
+
+<!-- Include library via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+  (function() {
+    // Your logic that uses Chart.js
+    const ctx = document.querySelector('#chart-section #myChart');
+    new Chart(ctx, { ... });
+  })();
+</script>
+```
+
+### Important Notes:
+
+- **Dependencies**: Lucide Icons is already available by default.
+- **Placement**: Place external assets (links/scripts) outside the main `<section>` but within the single output string provided to GrapesJS. The parser will handle the rest.
