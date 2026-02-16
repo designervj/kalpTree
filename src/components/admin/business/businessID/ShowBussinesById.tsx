@@ -999,10 +999,10 @@ const ShowBussinesById = ({ business, user }: Props) => {
 
         {/* MAIN GRID */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-          {/* LEFT */}
+      
           <div className="lg:col-span-8 space-y-4">
-            {/* QUICK ACTIONS */}
-            <Card className="rounded-md border bg-white shadow-sm">
+  
+            {/* <Card className="rounded-md border bg-white shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <LayoutDashboard className="h-5 w-5 text-slate-700" />
@@ -1063,7 +1063,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
                   </Button>
                 </div>
               </CardContent>
-            </Card>
+            </Card> */}
 
             {/* WEBSITES */}
             <Card className="rounded-md border bg-white shadow-sm">
@@ -1225,7 +1225,61 @@ const ShowBussinesById = ({ business, user }: Props) => {
                                 )}
                               </div>
                             </div>
+
+                           
+
                           </div>
+
+                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Button className="rounded-md h-12 justify-between" asChild>
+                    <Link href={`/admin/businesses/${id}/websites`}>
+                      <span className="inline-flex items-center gap-2">
+                        <Store className="h-4 w-4" /> Manage websites
+                      </span>
+                      <ExternalLink className="h-4 w-4 opacity-70" />
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-md h-12 justify-between"
+                    asChild
+                  >
+                    <Link href={`/admin/businesses/${id}/domains`}>
+                      <span className="inline-flex items-center gap-2">
+                        <Globe className="h-4 w-4" /> Domain & SSL
+                      </span>
+                      <ExternalLink className="h-4 w-4 opacity-60" />
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-md h-12 justify-between"
+                    asChild
+                  >
+                    <Link href={`/admin/businesses/${id}/branding`}>
+                      <span className="inline-flex items-center gap-2">
+                        <Palette className="h-4 w-4" /> Branding
+                      </span>
+                      <ExternalLink className="h-4 w-4 opacity-60" />
+                    </Link>
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="rounded-md h-12 justify-between"
+                    asChild
+                  >
+                    <Link href={`/admin/businesses/${id}/billing`}>
+                      <span className="inline-flex items-center gap-2">
+                        <CreditCard className="h-4 w-4" /> Billing
+                      </span>
+                      <ExternalLink className="h-4 w-4 opacity-60" />
+                    </Link>
+                  </Button>
+                               </div>
+
                         </div>
                       </div>
                     );

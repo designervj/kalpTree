@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import ColorPallet from "./ColorPallet";
 
 /* -----------------------------
   Types
@@ -603,6 +604,8 @@ export default function TypographyPage() {
               </div>
             </div>
           </div>
+
+          <ColorPallet/>
 
           <HexInput label="Primary" value={brand.primary} fallback="#1F6F43" onCommit={(v) => setC({ primary: v })} />
           <HexInput label="Secondary" value={brand.secondary} fallback="#2EA76A" onCommit={(v) => setC({ secondary: v })} />
