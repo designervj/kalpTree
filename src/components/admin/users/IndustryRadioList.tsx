@@ -18,7 +18,7 @@ import { toast } from "sonner";
 
 type IndustryOption = {
   _id: string;
-  value: string;
+  value?: string;
   name: string;
   desc?: string;
   icon?: LucideIcon; // ✅ icon support
@@ -166,13 +166,14 @@ export default function IndustryRadioList({
       <div className="grid grid-cols-3 gap-3">
         {visibleIndustries.map((opt, idx) => {
           const checked = selected === opt._id;
-          const id = `industry_${idx}_${opt.value.replace(/\s+/g, "_")}`;
+          const industryValue = opt.value || opt.name || opt._id;
+          const id = `industry_${idx}_${industryValue.replace(/\s+/g, "_")}`;
 
           const Icon = ICON_MAP[opt.name] || Briefcase;
 
           return (
             <label
-              key={opt.value}
+              key={opt._id}
               htmlFor={id}
               className={[
                 "relative cursor-pointer select-none rounded-md border p-3 transition-all",

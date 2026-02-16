@@ -198,14 +198,13 @@ export default function GrapesJSEditor() {
 
           // Wrap the combined scripts
           const jsWrapped = wrapScripts(scripts);
-          console.log("jsWrapped===>", jsWrapped)
+
           if (jsWrapped && typeof state.editor.setJs === "function") {
             state.editor.setJs(jsWrapped);
             setEditorJs(jsWrapped);
           }
 
           // Refresh layers after content is loaded
-          console.log("🔄 Content loaded, refreshing layers...");
 
           let retryCount = 0;
           const maxRetries = 3;
@@ -449,6 +448,8 @@ export default function GrapesJSEditor() {
 
     const { body, scripts, styles } = extractHtmlParts(content);
     // romovve the root style
+    console.log("editorJs--", editorJs);
+
     const cleanedStyles = styles?.replace(/\.root(?=[\s{,])/g, "").trim();
 
     if (append) {
@@ -465,24 +466,26 @@ export default function GrapesJSEditor() {
 
           container.append(contentToAdd, { at: insertionIndex });
 
-          setInsertionIndex(prev => prev !== null ? prev + 1 : null);
+          setInsertionIndex((prev) => (prev !== null ? prev + 1 : null));
         }
       } else {
         addComponentAboveFooter(state.editor, contentToAdd);
       }
 
       if (scripts && scripts.length > 0) {
-        const currentJs = (state.editor as any).getJs
-          ? (state.editor as any).getJs()
-          : "";
+        // Use editorJs state as the base to ensure we don't lose anything
+        const currentJs = editorJs || "";
+        console.log("currentJs (from state)-->", currentJs);
+
         let updatedJs = currentJs;
 
         scripts.forEach((scriptContent: string) => {
           if (scriptContent.trim()) {
             const wrapped = wrapScripts([scriptContent]);
             // Check if already present to avoid duplicates
-            if (!updatedJs.includes(scriptContent.trim()) && !updatedJs.includes(wrapped)) {
-              updatedJs += (updatedJs ? "\n\n" : "") + wrapped;
+            // We trim and check for the wrapped version to be safe
+            if (!updatedJs.includes(wrapped.trim())) {
+              updatedJs += (updatedJs.trim() ? "\n\n" : "") + wrapped;
             }
           }
         });
@@ -492,7 +495,7 @@ export default function GrapesJSEditor() {
             (state.editor as any).setJs(updatedJs);
             setEditorJs(updatedJs);
           }
-        }
+        } 
       }
     } else {
       state.editor.setComponents(body);
