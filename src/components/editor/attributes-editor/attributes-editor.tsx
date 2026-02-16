@@ -24,7 +24,9 @@ export function AttributesEditor({
       return;
     }
 
+    console.log(selectedElement);
     const currentAttrs = selectedElement.getAttributes?.() || {};
+    console.log(currentAttrs);
     setAttributes(currentAttrs);
 
     const componentTraits = selectedElement.get?.("traits");

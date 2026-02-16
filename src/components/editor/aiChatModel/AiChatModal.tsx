@@ -85,7 +85,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
         const tagMatch = sourceText.match(/(<[a-z][\s\S]*>)/i);
         if (tagMatch) html = tagMatch[1].trim();
       }
-
+    
       setExtractedHtml(html);
     } catch {
       setExtractedHtml("");
@@ -122,7 +122,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
           <DialogHeader className="border-b border-gray-200 px-6 py-4 bg-white">
             <div className="flex items-center justify-between gap-4">
               <DialogTitle className="text-base md:text-lg font-semibold text-gray-900">
-                AI Component Editor - {isMounted && componentTag} ({isMounted && componentType})
+                AI Component Editor - {isMounted && componentTag}
               </DialogTitle>
 
             </div>

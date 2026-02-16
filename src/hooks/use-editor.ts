@@ -1407,8 +1407,10 @@ export function useEditor(containerId: string) {
 
     editor.on("component:remove", (component: any) => {
       // Clean up styles and scripts associated with the deleted component
-      const currentJs = cleanupComponentStylesAndScripts(editor, component);
-      setState((prev) => ({ ...prev, editorJs: currentJs }));
+      const currentJs = cleanupComponentStylesAndScripts(editor as unknown as GrapesJSEditor, component);
+      if (typeof currentJs === 'string') {
+        setState((prev) => ({ ...prev, editorJs: currentJs }));
+      }
       updateLayers(editor);
       hydrateIcons();
     });
@@ -1834,15 +1836,26 @@ export function useEditor(containerId: string) {
             });
           }
 
-          // Extract JS: only scripts within page-body
+          // Extract JS: scan page-body AND look for global scripts
           js = "";
+
+          // 1. Get global JS via the helper if available
+          if (typeof (editorRef.current as any).getJs === "function") {
+            js = (editorRef.current as any).getJs() || "";
+          }
+
+          // 2. Also scan for any other scripts that might be missed
           const allFoundScripts: any[] = [];
           const scanRecursive = (comp: any) => {
             if (!comp) return;
             const tagName = comp.get("tagName")?.toLowerCase();
             const compType = comp.get("type");
             if (tagName === "script" || compType === "script") {
-              allFoundScripts.push(comp);
+              const isGlobal = comp.getAttributes()?.["data-gjs-type"] === "custom-script";
+              // If it's the global script, we already got it via getJs()
+              if (!isGlobal) {
+                allFoundScripts.push(comp);
+              }
             }
             const children = comp.get("components");
             if (children && children.forEach) {
@@ -1863,6 +1876,7 @@ export function useEditor(containerId: string) {
             if (content) {
               const trimmedContent = content.trim();
               const id = scriptComp.getAttributes()?.id;
+              // Only add if not already in the combined js
               if (trimmedContent && !js.includes(trimmedContent)) {
                 js += `\n/* Interactivity Script: ${id || "anonymous"} */\n${content}`;
               }

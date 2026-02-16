@@ -35,6 +35,7 @@ import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
+import ShowHTMLtemplate from "@/components/admin/templates/showTemplate/ShowHTMLtemplate";
 
 interface TemplateManagerProps {
   onSelectTemplate: (content: string, append?: boolean) => void;
@@ -371,14 +372,19 @@ export function TemplateManager({
                                 <CardContent className="p-4">
                                   <div className="relative">
                                     <div className="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                      <img
+                                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white">
+                                        <ShowHTMLtemplate 
+                                        html={template?.content || ""} 
+                                        />
+                                      </div>
+                                      {/* <img
                                         src={
                                           template.thumbnail ||
                                           "/placeholder.svg?height=420&width=720"
                                         }
                                         alt={template.label}
                                         className="w-full h-full object-cover"
-                                      />
+                                      /> */}
                                     </div>
 
                                     {/* Selection badge (top-left) */}
