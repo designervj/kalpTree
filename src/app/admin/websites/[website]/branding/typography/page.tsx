@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import ColorPallet from "./ColorPallet";
+import { FontUploader } from "./Fontuploader";
 
 /* -----------------------------
   Types
@@ -111,7 +112,8 @@ function shadowToCss(s: ButtonBaseStyle["shadow"]) {
   return "none";
 }
 function cssFont(f: string) {
-  if (!f) return "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+  if (!f)
+    return "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
   if (f.includes(" "))
     return `"${f}", system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
   return `${f}, system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
@@ -139,7 +141,7 @@ function mixHex(a: string, b: string, t: number) {
   return rgbToHex(
     A.r + (B.r - A.r) * t,
     A.g + (B.g - A.g) * t,
-    A.b + (B.b - A.b) * t
+    A.b + (B.b - A.b) * t,
   );
 }
 function rgba(hex: string, alpha: number) {
@@ -227,6 +229,8 @@ export default function TypographyPage() {
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
 
+  const [allHeading, setAllHeading] = useState([]);
+
   /* RIGHT tabs */
   const [rightPanel, setRightPanel] = useState<RightPanelTab>("preview");
 
@@ -271,6 +275,20 @@ export default function TypographyPage() {
     paragraphGapPx: 14,
   });
 
+  useEffect(() => {
+    (async () => {
+      try {
+        const req = await fetch("/api/admin/typography");
+        const res = await req.json();
+        setAllHeading(res.data);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, []);
+
+  console.log(allHeading);
+
   const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
   const [hoveredBtn, setHoveredBtn] = useState<BtnKey | null>(null);
 
@@ -288,7 +306,9 @@ export default function TypographyPage() {
     transitionMs: 160,
   });
 
-  const [buttonColors, setButtonColors] = useState<Record<BtnKey, ButtonColors>>({
+  const [buttonColors, setButtonColors] = useState<
+    Record<BtnKey, ButtonColors>
+  >({
     primary: {
       bg: "#1F6F43",
       text: "#FFFFFF",
@@ -318,7 +338,8 @@ export default function TypographyPage() {
   const activeHeading = headings[selectedHeading];
   const activeBtnColors = buttonColors[selectedBtn];
 
-  const headingPx = (k: HeadingKey) => Math.round(headingBaseSize * headings[k].scale);
+  const headingPx = (k: HeadingKey) =>
+    Math.round(headingBaseSize * headings[k].scale);
 
   /* -----------------------------------------
     ✅ Apply theme to HTML (robust global usage)
@@ -398,8 +419,12 @@ export default function TypographyPage() {
 
     lines.push(`/* =========================================================`);
     lines.push(`   BRAND GUIDELINES • GLOBAL TOKENS (COPY TO globals.css)`);
-    lines.push(`   Usage: documentElement.setAttribute("data-theme","light|dark")`);
-    lines.push(`   ========================================================= */`);
+    lines.push(
+      `   Usage: documentElement.setAttribute("data-theme","light|dark")`,
+    );
+    lines.push(
+      `   ========================================================= */`,
+    );
     lines.push(``);
 
     // 1) BASE TOKENS (shared across modes)
@@ -487,12 +512,24 @@ export default function TypographyPage() {
     lines.push(`  color: var(--text);`);
     lines.push(`  font-family: var(--font-body);`);
     lines.push(`}`);
-    lines.push(`h1{font-family:var(--font-heading);font-size:var(--h1-size);font-weight:var(--h1-weight);line-height:var(--h1-lh);letter-spacing:var(--h1-ls);}`);
-    lines.push(`h2{font-family:var(--font-heading);font-size:var(--h2-size);font-weight:var(--h2-weight);line-height:var(--h2-lh);letter-spacing:var(--h2-ls);}`);
-    lines.push(`h3{font-family:var(--font-heading);font-size:var(--h3-size);font-weight:var(--h3-weight);line-height:var(--h3-lh);letter-spacing:var(--h3-ls);}`);
-    lines.push(`h4{font-family:var(--font-heading);font-size:var(--h4-size);font-weight:var(--h4-weight);line-height:var(--h4-lh);letter-spacing:var(--h4-ls);}`);
-    lines.push(`h5{font-family:var(--font-heading);font-size:var(--h5-size);font-weight:var(--h5-weight);line-height:var(--h5-lh);letter-spacing:var(--h5-ls);}`);
-    lines.push(`h6{font-family:var(--font-heading);font-size:var(--h6-size);font-weight:var(--h6-weight);line-height:var(--h6-lh);letter-spacing:var(--h6-ls);}`);
+    lines.push(
+      `h1{font-family:var(--font-heading);font-size:var(--h1-size);font-weight:var(--h1-weight);line-height:var(--h1-lh);letter-spacing:var(--h1-ls);}`,
+    );
+    lines.push(
+      `h2{font-family:var(--font-heading);font-size:var(--h2-size);font-weight:var(--h2-weight);line-height:var(--h2-lh);letter-spacing:var(--h2-ls);}`,
+    );
+    lines.push(
+      `h3{font-family:var(--font-heading);font-size:var(--h3-size);font-weight:var(--h3-weight);line-height:var(--h3-lh);letter-spacing:var(--h3-ls);}`,
+    );
+    lines.push(
+      `h4{font-family:var(--font-heading);font-size:var(--h4-size);font-weight:var(--h4-weight);line-height:var(--h4-lh);letter-spacing:var(--h4-ls);}`,
+    );
+    lines.push(
+      `h5{font-family:var(--font-heading);font-size:var(--h5-size);font-weight:var(--h5-weight);line-height:var(--h5-lh);letter-spacing:var(--h5-ls);}`,
+    );
+    lines.push(
+      `h6{font-family:var(--font-heading);font-size:var(--h6-size);font-weight:var(--h6-weight);line-height:var(--h6-lh);letter-spacing:var(--h6-ls);}`,
+    );
     lines.push(``);
 
     return lines.join("\n");
@@ -528,7 +565,7 @@ export default function TypographyPage() {
         color: uiPalette.text,
         fontFamily: globalFontFamily,
       }) as React.CSSProperties,
-    [uiPalette, globalFontFamily]
+    [uiPalette, globalFontFamily],
   );
 
   const cardPreviewStyle = useMemo(
@@ -538,7 +575,7 @@ export default function TypographyPage() {
         borderColor: uiPalette.border,
         color: uiPalette.text,
       }) as React.CSSProperties,
-    [uiPalette]
+    [uiPalette],
   );
 
   const softBg = useMemo(
@@ -546,7 +583,7 @@ export default function TypographyPage() {
       mode === "light"
         ? mixHex("#F4F6F5", brand.accent, 0.35)
         : rgba(brand.accent, 0.08),
-    [mode, brand.accent]
+    [mode, brand.accent],
   );
 
   /* Buttons used in preview areas */
@@ -590,6 +627,13 @@ export default function TypographyPage() {
     const setC = (patch: Partial<BrandColors>) =>
       setBrand((p) => ({ ...p, ...patch }));
 
+    const handleColorPallet = (allcolors: any) => {
+      if (!allcolors) return;
+      const { brand, buttons } = allcolors;
+      setBrand(brand);
+      setButtonColors(buttons);
+    };
+
     return (
       <Card>
         <CardContent className="pt-6 space-y-5">
@@ -599,25 +643,66 @@ export default function TypographyPage() {
               <div>
                 <p className="text-sm font-semibold">Theme Colors</p>
                 <p className="text-xs text-muted-foreground">
-                  Left side change → right preview same time update. (Background/Surface are mode-driven)
+                  Left side change → right preview same time update.
+                  (Background/Surface are mode-driven)
                 </p>
               </div>
             </div>
           </div>
 
-          <ColorPallet/>
+          <ColorPallet handleColorPallet={handleColorPallet} />
 
-          <HexInput label="Primary" value={brand.primary} fallback="#1F6F43" onCommit={(v) => setC({ primary: v })} />
-          <HexInput label="Secondary" value={brand.secondary} fallback="#2EA76A" onCommit={(v) => setC({ secondary: v })} />
-          <HexInput label="Accent" value={brand.accent} fallback="#B9F3D5" onCommit={(v) => setC({ accent: v })} />
-          <HexInput label="Dark" value={brand.dark} fallback="#0B3A2A" onCommit={(v) => setC({ dark: v })} />
+          <HexInput
+            label="Primary"
+            value={brand.primary}
+            fallback="#1F6F43"
+            onCommit={(v) => setC({ primary: v })}
+          />
+          <HexInput
+            label="Secondary"
+            value={brand.secondary}
+            fallback="#2EA76A"
+            onCommit={(v) => setC({ secondary: v })}
+          />
+          <HexInput
+            label="Accent"
+            value={brand.accent}
+            fallback="#B9F3D5"
+            onCommit={(v) => setC({ accent: v })}
+          />
+          <HexInput
+            label="Dark"
+            value={brand.dark}
+            fallback="#0B3A2A"
+            onCommit={(v) => setC({ dark: v })}
+          />
 
           <Separator />
 
-          <HexInput label="Text (Light Mode)" value={brand.text} fallback="#0B2A1F" onCommit={(v) => setC({ text: v })} />
-          <HexInput label="Muted Text (Light Mode)" value={brand.mutedText} fallback="#5E6E65" onCommit={(v) => setC({ mutedText: v })} />
-          <HexInput label="Border (Light Mode)" value={brand.border} fallback="#DDE6E1" onCommit={(v) => setC({ border: v })} />
-          <HexInput label="Ring" value={brand.ring} fallback="#2EA76A" onCommit={(v) => setC({ ring: v })} />
+          <HexInput
+            label="Text (Light Mode)"
+            value={brand.text}
+            fallback="#0B2A1F"
+            onCommit={(v) => setC({ text: v })}
+          />
+          <HexInput
+            label="Muted Text (Light Mode)"
+            value={brand.mutedText}
+            fallback="#5E6E65"
+            onCommit={(v) => setC({ mutedText: v })}
+          />
+          <HexInput
+            label="Border (Light Mode)"
+            value={brand.border}
+            fallback="#DDE6E1"
+            onCommit={(v) => setC({ border: v })}
+          />
+          <HexInput
+            label="Ring"
+            value={brand.ring}
+            fallback="#2EA76A"
+            onCommit={(v) => setC({ ring: v })}
+          />
 
           <div className="rounded-lg border p-3 text-xs text-muted-foreground">
             <div className="flex items-center justify-between">
@@ -644,6 +729,14 @@ export default function TypographyPage() {
 
     return (
       <Card>
+        <FontUploader
+          s3Config={{
+            bucketName: process.env.NEXT_PUBLIC_AWS_S3_BUCKET!,
+            region: process.env.NEXT_PUBLIC_AWS_REGION!,
+            accessKeyId: process.env.NEXT_PUBLIC_AWS_ACCESS_KEY_ID!,
+            secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!,
+          }}
+        />
         <CardContent className="pt-6 space-y-5">
           <div className="rounded-lg border bg-muted/20 p-4 space-y-4">
             <div className="flex items-center gap-2">
@@ -658,15 +751,29 @@ export default function TypographyPage() {
 
             <div className="space-y-2">
               <Label>Heading Font Family</Label>
-              <Select value={headingFontFamily} onValueChange={setHeadingFontFamily}>
+              <Select
+                value={headingFontFamily}
+                onValueChange={setHeadingFontFamily}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Inter">Inter</SelectItem>
-                  <SelectItem value="Roboto">Roboto</SelectItem>
-                  <SelectItem value="Merriweather">Merriweather (Serif)</SelectItem>
-                  <SelectItem value="Space Mono">Space Mono (Monospace)</SelectItem>
+                  <SelectItem value="Merriweather">
+                    Merriweather (Serif)
+                  </SelectItem>
+                  <SelectItem value="Space Mono">
+                    Space Mono (Monospace)
+                  </SelectItem>
+                  {allHeading.length > 0 &&
+                    allHeading.map((d: any) => {
+                      return (
+                        <SelectItem key={d._id} value={d.name}>
+                          {d.name}
+                        </SelectItem>
+                      );
+                    })}
                 </SelectContent>
               </Select>
             </div>
@@ -674,7 +781,9 @@ export default function TypographyPage() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <Label>Heading Base Size</Label>
-                <span className="text-xs text-muted-foreground">{headingBaseSize}px</span>
+                <span className="text-xs text-muted-foreground">
+                  {headingBaseSize}px
+                </span>
               </div>
               <Slider
                 value={[headingBaseSize]}
@@ -691,16 +800,18 @@ export default function TypographyPage() {
               <TypeIcon className="h-4 w-4" /> Heading Level
             </Label>
             <div className="grid grid-cols-6 gap-2">
-              {(["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).map((k) => (
-                <Button
-                  key={k}
-                  size="sm"
-                  variant={selectedHeading === k ? "default" : "outline"}
-                  onClick={() => setSelectedHeading(k)}
-                >
-                  {k.toUpperCase()}
-                </Button>
-              ))}
+              {(["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).map(
+                (k) => (
+                  <Button
+                    key={k}
+                    size="sm"
+                    variant={selectedHeading === k ? "default" : "outline"}
+                    onClick={() => setSelectedHeading(k)}
+                  >
+                    {k.toUpperCase()}
+                  </Button>
+                ),
+              )}
             </div>
           </div>
 
@@ -724,7 +835,8 @@ export default function TypographyPage() {
             <div className="flex justify-between">
               <Label>Size Scale</Label>
               <span className="text-xs text-muted-foreground">
-                {activeHeading.scale.toFixed(2)} → {headingPx(selectedHeading)}px
+                {activeHeading.scale.toFixed(2)} → {headingPx(selectedHeading)}
+                px
               </span>
             </div>
             <Slider
@@ -741,7 +853,9 @@ export default function TypographyPage() {
               <Label className="flex items-center gap-2">
                 <MoveVertical className="w-3 h-3" /> Line Height
               </Label>
-              <span className="text-xs text-muted-foreground">{activeHeading.lineHeight.toFixed(2)}</span>
+              <span className="text-xs text-muted-foreground">
+                {activeHeading.lineHeight.toFixed(2)}
+              </span>
             </div>
             <Slider
               value={[activeHeading.lineHeight]}
@@ -757,7 +871,9 @@ export default function TypographyPage() {
               <Label className="flex items-center gap-2">
                 <AlignLeft className="w-3 h-3" /> Letter Spacing
               </Label>
-              <span className="text-xs text-muted-foreground">{activeHeading.letterSpacingEm.toFixed(2)}em</span>
+              <span className="text-xs text-muted-foreground">
+                {activeHeading.letterSpacingEm.toFixed(2)}em
+              </span>
             </div>
             <Slider
               value={[activeHeading.letterSpacingEm * 100]}
@@ -770,25 +886,39 @@ export default function TypographyPage() {
         </CardContent>
       </Card>
     );
-  }, [activeHeading, selectedHeading, headingBaseSize, headingFontFamily, headings]);
+  }, [
+    activeHeading,
+    selectedHeading,
+    headingBaseSize,
+    headingFontFamily,
+    headings,
+  ]);
 
   const bodyControls = useMemo(() => {
-    const setB = (patch: Partial<BodyStyle>) => setBody((p) => ({ ...p, ...patch }));
+    const setB = (patch: Partial<BodyStyle>) =>
+      setBody((p) => ({ ...p, ...patch }));
 
     return (
       <Card>
         <CardContent className="pt-6 space-y-5">
           <div className="space-y-2">
             <Label>Body Font Family</Label>
-            <Select value={globalFontFamily} onValueChange={setGlobalFontFamily}>
+            <Select
+              value={globalFontFamily}
+              onValueChange={setGlobalFontFamily}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Inter">Inter</SelectItem>
                 <SelectItem value="Roboto">Roboto</SelectItem>
-                <SelectItem value="Merriweather">Merriweather (Serif)</SelectItem>
-                <SelectItem value="Space Mono">Space Mono (Monospace)</SelectItem>
+                <SelectItem value="Merriweather">
+                  Merriweather (Serif)
+                </SelectItem>
+                <SelectItem value="Space Mono">
+                  Space Mono (Monospace)
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -796,9 +926,17 @@ export default function TypographyPage() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <Label>Body Size</Label>
-              <span className="text-xs text-muted-foreground">{body.sizePx}px</span>
+              <span className="text-xs text-muted-foreground">
+                {body.sizePx}px
+              </span>
             </div>
-            <Slider value={[body.sizePx]} min={12} max={24} step={1} onValueChange={(v) => setB({ sizePx: v[0] })} />
+            <Slider
+              value={[body.sizePx]}
+              min={12}
+              max={24}
+              step={1}
+              onValueChange={(v) => setB({ sizePx: v[0] })}
+            />
           </div>
 
           <div className="space-y-3">
@@ -822,9 +960,17 @@ export default function TypographyPage() {
               <Label className="flex items-center gap-2">
                 <MoveVertical className="w-3 h-3" /> Line Height
               </Label>
-              <span className="text-xs text-muted-foreground">{body.lineHeight.toFixed(2)}</span>
+              <span className="text-xs text-muted-foreground">
+                {body.lineHeight.toFixed(2)}
+              </span>
             </div>
-            <Slider value={[body.lineHeight]} min={1.1} max={2.2} step={0.05} onValueChange={(v) => setB({ lineHeight: v[0] })} />
+            <Slider
+              value={[body.lineHeight]}
+              min={1.1}
+              max={2.2}
+              step={0.05}
+              onValueChange={(v) => setB({ lineHeight: v[0] })}
+            />
           </div>
 
           <div className="space-y-3">
@@ -832,7 +978,9 @@ export default function TypographyPage() {
               <Label className="flex items-center gap-2">
                 <AlignLeft className="w-3 h-3" /> Letter Spacing
               </Label>
-              <span className="text-xs text-muted-foreground">{body.letterSpacingEm.toFixed(2)}em</span>
+              <span className="text-xs text-muted-foreground">
+                {body.letterSpacingEm.toFixed(2)}em
+              </span>
             </div>
             <Slider
               value={[body.letterSpacingEm * 100]}
@@ -846,17 +994,33 @@ export default function TypographyPage() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <Label>Paragraph Max Width</Label>
-              <span className="text-xs text-muted-foreground">{body.maxWidthCh}ch</span>
+              <span className="text-xs text-muted-foreground">
+                {body.maxWidthCh}ch
+              </span>
             </div>
-            <Slider value={[body.maxWidthCh]} min={40} max={90} step={1} onValueChange={(v) => setB({ maxWidthCh: v[0] })} />
+            <Slider
+              value={[body.maxWidthCh]}
+              min={40}
+              max={90}
+              step={1}
+              onValueChange={(v) => setB({ maxWidthCh: v[0] })}
+            />
           </div>
 
           <div className="space-y-3">
             <div className="flex justify-between">
               <Label>Paragraph Gap</Label>
-              <span className="text-xs text-muted-foreground">{body.paragraphGapPx}px</span>
+              <span className="text-xs text-muted-foreground">
+                {body.paragraphGapPx}px
+              </span>
             </div>
-            <Slider value={[body.paragraphGapPx]} min={0} max={32} step={1} onValueChange={(v) => setB({ paragraphGapPx: v[0] })} />
+            <Slider
+              value={[body.paragraphGapPx]}
+              min={0}
+              max={32}
+              step={1}
+              onValueChange={(v) => setB({ paragraphGapPx: v[0] })}
+            />
           </div>
         </CardContent>
       </Card>
@@ -864,7 +1028,8 @@ export default function TypographyPage() {
   }, [body, globalFontFamily]);
 
   const buttonControls = useMemo(() => {
-    const setBase = (patch: Partial<ButtonBaseStyle>) => setButtonBase((p) => ({ ...p, ...patch }));
+    const setBase = (patch: Partial<ButtonBaseStyle>) =>
+      setButtonBase((p) => ({ ...p, ...patch }));
     const setColors = (patch: Partial<ButtonColors>) => {
       setButtonColors((prev) => ({
         ...prev,
@@ -880,7 +1045,9 @@ export default function TypographyPage() {
               <Paintbrush className="h-4 w-4 text-muted-foreground" />
               <div>
                 <p className="text-sm font-semibold">Button Settings</p>
-                <p className="text-xs text-muted-foreground">Primary / Secondary / Outline (+ Ghost preview)</p>
+                <p className="text-xs text-muted-foreground">
+                  Primary / Secondary / Outline (+ Ghost preview)
+                </p>
               </div>
             </div>
           </div>
@@ -889,8 +1056,17 @@ export default function TypographyPage() {
             <Label>Button Type (colors)</Label>
             <div className="grid grid-cols-3 gap-2">
               {(["primary", "secondary", "outline"] as BtnKey[]).map((k) => (
-                <Button key={k} size="sm" variant={selectedBtn === k ? "default" : "outline"} onClick={() => setSelectedBtn(k)}>
-                  {k === "primary" ? "Primary" : k === "secondary" ? "Secondary" : "Outline"}
+                <Button
+                  key={k}
+                  size="sm"
+                  variant={selectedBtn === k ? "default" : "outline"}
+                  onClick={() => setSelectedBtn(k)}
+                >
+                  {k === "primary"
+                    ? "Primary"
+                    : k === "secondary"
+                      ? "Secondary"
+                      : "Outline"}
                 </Button>
               ))}
             </div>
@@ -898,15 +1074,22 @@ export default function TypographyPage() {
 
           <div className="space-y-2">
             <Label>Button Font Family</Label>
-            <Select value={buttonBase.fontFamily} onValueChange={(v) => setBase({ fontFamily: v })}>
+            <Select
+              value={buttonBase.fontFamily}
+              onValueChange={(v) => setBase({ fontFamily: v })}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Inter">Inter</SelectItem>
                 <SelectItem value="Roboto">Roboto</SelectItem>
-                <SelectItem value="Merriweather">Merriweather (Serif)</SelectItem>
-                <SelectItem value="Space Mono">Space Mono (Monospace)</SelectItem>
+                <SelectItem value="Merriweather">
+                  Merriweather (Serif)
+                </SelectItem>
+                <SelectItem value="Space Mono">
+                  Space Mono (Monospace)
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -914,16 +1097,29 @@ export default function TypographyPage() {
           <div className="space-y-3">
             <div className="flex justify-between">
               <Label>Font Size</Label>
-              <span className="text-xs text-muted-foreground">{buttonBase.sizePx}px</span>
+              <span className="text-xs text-muted-foreground">
+                {buttonBase.sizePx}px
+              </span>
             </div>
-            <Slider value={[buttonBase.sizePx]} min={12} max={20} step={1} onValueChange={(v) => setBase({ sizePx: v[0] })} />
+            <Slider
+              value={[buttonBase.sizePx]}
+              min={12}
+              max={20}
+              step={1}
+              onValueChange={(v) => setBase({ sizePx: v[0] })}
+            />
           </div>
 
           <div className="space-y-3">
             <Label>Font Weight</Label>
             <div className="grid grid-cols-3 gap-2">
               {WEIGHTS.filter((w) => w >= 400).map((w) => (
-                <Button key={w} variant={buttonBase.weight === w ? "default" : "outline"} size="sm" onClick={() => setBase({ weight: w })}>
+                <Button
+                  key={w}
+                  variant={buttonBase.weight === w ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setBase({ weight: w })}
+                >
                   {w}
                 </Button>
               ))}
@@ -932,7 +1128,16 @@ export default function TypographyPage() {
 
           <Separator />
 
-          {(["bg", "text", "border", "hoverBg", "hoverText", "hoverBorder"] as const).map((key) => {
+          {(
+            [
+              "bg",
+              "text",
+              "border",
+              "hoverBg",
+              "hoverText",
+              "hoverBorder",
+            ] as const
+          ).map((key) => {
             const labelMap: Record<typeof key, string> = {
               bg: "Background",
               text: "Text",
@@ -952,7 +1157,10 @@ export default function TypographyPage() {
                     onChange={(e) =>
                       setButtonColors((p) => ({
                         ...p,
-                        [selectedBtn]: { ...p[selectedBtn], [key]: e.target.value } as any,
+                        [selectedBtn]: {
+                          ...p[selectedBtn],
+                          [key]: e.target.value,
+                        } as any,
                       }))
                     }
                   />
@@ -960,7 +1168,9 @@ export default function TypographyPage() {
                     type="color"
                     className="h-9 w-10 rounded-md border bg-background px-1"
                     value={isHexColor(val) ? val : "#000000"}
-                    onChange={(e) => setColors({ [key]: e.target.value } as any)}
+                    onChange={(e) =>
+                      setColors({ [key]: e.target.value } as any)
+                    }
                   />
                 </div>
               </div>
@@ -969,7 +1179,13 @@ export default function TypographyPage() {
         </CardContent>
       </Card>
     );
-  }, [activeBtnColors, buttonBase.fontFamily, buttonBase.sizePx, buttonBase.weight, selectedBtn]);
+  }, [
+    activeBtnColors,
+    buttonBase.fontFamily,
+    buttonBase.sizePx,
+    buttonBase.weight,
+    selectedBtn,
+  ]);
 
   /* -----------------------------
     Preview Blocks (NO gradient)
@@ -981,7 +1197,10 @@ export default function TypographyPage() {
     <span
       className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold border"
       style={{
-        background: mode === "light" ? mixHex(brand.accent, "#FFFFFF", 0.65) : rgba(brand.accent, 0.12),
+        background:
+          mode === "light"
+            ? mixHex(brand.accent, "#FFFFFF", 0.65)
+            : rgba(brand.accent, 0.12),
         color: mode === "light" ? brand.dark : uiPalette.text,
         borderColor: rgba(brand.secondary, mode === "light" ? 0.35 : 0.22),
       }}
@@ -1049,7 +1268,12 @@ export default function TypographyPage() {
               Sab kuch root tokens se control hota hai.
             </div> */}
 
-            <p className="borderColor">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book</p>
+            <p className="borderColor">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s, when an unknown printer took a galley of
+              type and scrambled it to make a type specimen book
+            </p>
           </div>
 
           {/* ✅ 4 buttons (clickable) */}
@@ -1063,7 +1287,9 @@ export default function TypographyPage() {
                   onClick={() => onLeftTab(t.key)}
                   className="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold"
                   style={{
-                    background: isActive ? rgba("#ffffff", 0.16) : rgba("#ffffff", 0.1),
+                    background: isActive
+                      ? rgba("#ffffff", 0.16)
+                      : rgba("#ffffff", 0.1),
                     borderColor: rgba("#ffffff", isActive ? 0.38 : 0.22),
                     color: "#ffffff",
                   }}
@@ -1085,11 +1311,18 @@ export default function TypographyPage() {
       <div className="mt-6">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold" style={{ color: uiPalette.text }}>
+            <div
+              className="text-sm font-semibold"
+              style={{ color: uiPalette.text }}
+            >
               Brand Preview Gallery
             </div>
-            <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
-              Task/goal: user ko ek glance me brand pages ka look feel samajh aata hai.
+            <div
+              className="text-xs mt-1"
+              style={{ color: uiPalette.mutedText }}
+            >
+              Task/goal: user ko ek glance me brand pages ka look feel samajh
+              aata hai.
             </div>
           </div>
           <Pill text="Templates" />
@@ -1098,16 +1331,24 @@ export default function TypographyPage() {
         <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-4">
           {/* BIG LEFT CARD */}
           <div className="md:col-span-7">
-            <div className="rounded-2xl border overflow-hidden" style={cardPreviewStyle}>
+            <div
+              className="rounded-2xl border overflow-hidden"
+              style={cardPreviewStyle}
+            >
               <div
                 className="p-4 border-b"
                 style={{
                   borderColor: uiPalette.border,
-                  background: mode === "light" ? rgba(brand.accent, 0.12) : rgba(brand.accent, 0.08),
+                  background:
+                    mode === "light"
+                      ? rgba(brand.accent, 0.12)
+                      : rgba(brand.accent, 0.08),
                 }}
               >
                 <div className="flex items-center justify-between text-[11px]">
-                  <span style={{ color: uiPalette.mutedText }}>Cover / Brand Guidelines</span>
+                  <span style={{ color: uiPalette.mutedText }}>
+                    Cover / Brand Guidelines
+                  </span>
                   <Pill text="Hero" />
                 </div>
               </div>
@@ -1116,17 +1357,27 @@ export default function TypographyPage() {
               <div
                 className="p-6"
                 style={{
-                  background: mode === "light" ? mixHex(brand.dark, "#000000", 0.08) : "#06140F",
+                  background:
+                    mode === "light"
+                      ? mixHex(brand.dark, "#000000", 0.08)
+                      : "#06140F",
                   color: "#ffffff",
                   minHeight: 170,
                   position: "relative",
                 }}
               >
                 <div style={{ fontFamily: headingFontFamily }}>
-                  <div className="text-2xl font-extrabold leading-tight">KalpTree</div>
-                  <div className="text-2xl font-extrabold leading-tight opacity-90">Brand Guidelines.</div>
+                  <div className="text-2xl font-extrabold leading-tight">
+                    KalpTree
+                  </div>
+                  <div className="text-2xl font-extrabold leading-tight opacity-90">
+                    Brand Guidelines.
+                  </div>
                 </div>
-                <div className="mt-2 text-xs opacity-85" style={{ maxWidth: 360 }}>
+                <div
+                  className="mt-2 text-xs opacity-85"
+                  style={{ maxWidth: 360 }}
+                >
                   Premium layout, consistent spacing, and token-driven design.
                 </div>
 
@@ -1142,11 +1393,16 @@ export default function TypographyPage() {
                   </span>
                 </div>
 
-                <div className="absolute right-5 bottom-5 text-[11px] opacity-70">v1.0</div>
+                <div className="absolute right-5 bottom-5 text-[11px] opacity-70">
+                  v1.0
+                </div>
               </div>
 
               {/* inside cards */}
-              <div className="p-4 grid grid-cols-1 gap-3" style={{ background: softBg }}>
+              <div
+                className="p-4 grid grid-cols-1 gap-3"
+                style={{ background: softBg }}
+              >
                 {/* Typography */}
                 <div className="rounded-xl border p-4" style={cardPreviewStyle}>
                   <div className="flex items-center justify-between">
@@ -1155,19 +1411,33 @@ export default function TypographyPage() {
                   </div>
 
                   <div className="mt-3">
-                    <div className="text-lg font-bold" style={{ fontFamily: headingFontFamily }}>
+                    <div
+                      className="text-lg font-bold"
+                      style={{ fontFamily: headingFontFamily }}
+                    >
                       {headingFontFamily}
                     </div>
-                    <div className="text-[11px] mt-1" style={{ color: uiPalette.mutedText }}>
+                    <div
+                      className="text-[11px] mt-1"
+                      style={{ color: uiPalette.mutedText }}
+                    >
                       Headings + Body scale
                     </div>
 
-                    <div className="mt-3 flex items-end gap-2" style={{ fontFamily: headingFontFamily }}>
+                    <div
+                      className="mt-3 flex items-end gap-2"
+                      style={{ fontFamily: headingFontFamily }}
+                    >
                       <span className="text-lg font-extrabold">Aa</span>
                       <span className="text-base font-bold opacity-90">Aa</span>
-                      <span className="text-sm font-semibold opacity-80">Aa</span>
+                      <span className="text-sm font-semibold opacity-80">
+                        Aa
+                      </span>
                       <span className="text-xs font-medium opacity-70">Aa</span>
-                      <span className="ml-auto text-[10px]" style={{ color: uiPalette.mutedText }}>
+                      <span
+                        className="ml-auto text-[10px]"
+                        style={{ color: uiPalette.mutedText }}
+                      >
                         Scale
                       </span>
                     </div>
@@ -1187,13 +1457,23 @@ export default function TypographyPage() {
                       { name: "Secondary", v: brand.secondary },
                       { name: "Accent", v: brand.accent },
                     ].map((c) => (
-                      <div key={c.name} className="rounded-xl border overflow-hidden" style={{ borderColor: uiPalette.border }}>
+                      <div
+                        key={c.name}
+                        className="rounded-xl border overflow-hidden"
+                        style={{ borderColor: uiPalette.border }}
+                      >
                         <div style={{ height: 44, background: c.v }} />
                         <div className="p-2">
-                          <div className="text-[11px] font-semibold" style={{ color: uiPalette.text }}>
+                          <div
+                            className="text-[11px] font-semibold"
+                            style={{ color: uiPalette.text }}
+                          >
                             {c.name}
                           </div>
-                          <div className="text-[10px]" style={{ color: uiPalette.mutedText }}>
+                          <div
+                            className="text-[10px]"
+                            style={{ color: uiPalette.mutedText }}
+                          >
                             {c.v}
                           </div>
                         </div>
@@ -1209,22 +1489,29 @@ export default function TypographyPage() {
                     <Pill text="UI" />
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    {(["primary", "secondary", "outline"] as BtnKey[]).map((k) => {
-                      const v = getBtnVisual(k);
-                      const label = k === "primary" ? "Primary" : k === "secondary" ? "Secondary" : "Outline";
-                      return (
-                        <button
-                          key={k}
-                          type="button"
-                          className={v.className}
-                          style={v.style}
-                          onMouseEnter={() => setHoveredBtn(k)}
-                          onMouseLeave={() => setHoveredBtn(null)}
-                        >
-                          {label}
-                        </button>
-                      );
-                    })}
+                    {(["primary", "secondary", "outline"] as BtnKey[]).map(
+                      (k) => {
+                        const v = getBtnVisual(k);
+                        const label =
+                          k === "primary"
+                            ? "Primary"
+                            : k === "secondary"
+                              ? "Secondary"
+                              : "Outline";
+                        return (
+                          <button
+                            key={k}
+                            type="button"
+                            className={v.className}
+                            style={v.style}
+                            onMouseEnter={() => setHoveredBtn(k)}
+                            onMouseLeave={() => setHoveredBtn(null)}
+                          >
+                            {label}
+                          </button>
+                        );
+                      },
+                    )}
 
                     {/* 4th button (Ghost) */}
                     <button
@@ -1265,22 +1552,42 @@ export default function TypographyPage() {
                   <div
                     key={i}
                     className="h-2 rounded-full"
-                    style={{ background: rgba(uiPalette.border, 0.9), width: `${w}%` }}
+                    style={{
+                      background: rgba(uiPalette.border, 0.9),
+                      width: `${w}%`,
+                    }}
                   />
                 ))}
               </div>
               <div className="mt-4 grid grid-cols-2 gap-2">
-                <div className="h-10 rounded-xl border" style={{ borderColor: uiPalette.border, background: rgba(uiPalette.bg, 0.6) }} />
-                <div className="h-10 rounded-xl border" style={{ borderColor: uiPalette.border, background: rgba(uiPalette.bg, 0.6) }} />
+                <div
+                  className="h-10 rounded-xl border"
+                  style={{
+                    borderColor: uiPalette.border,
+                    background: rgba(uiPalette.bg, 0.6),
+                  }}
+                />
+                <div
+                  className="h-10 rounded-xl border"
+                  style={{
+                    borderColor: uiPalette.border,
+                    background: rgba(uiPalette.bg, 0.6),
+                  }}
+                />
               </div>
             </div>
 
             <div className="rounded-2xl border p-4" style={cardPreviewStyle}>
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold">Brand story + values</div>
+                <div className="text-xs font-semibold">
+                  Brand story + values
+                </div>
                 <Pill text="Layout A" />
               </div>
-              <div className="mt-3 h-20 rounded-xl border" style={{ borderColor: uiPalette.border, background: softBg }} />
+              <div
+                className="mt-3 h-20 rounded-xl border"
+                style={{ borderColor: uiPalette.border, background: softBg }}
+              />
             </div>
 
             <div className="rounded-2xl border p-4" style={cardPreviewStyle}>
@@ -1292,20 +1599,39 @@ export default function TypographyPage() {
                 className="mt-3 rounded-xl border overflow-hidden"
                 style={{
                   borderColor: uiPalette.border,
-                  background: mixHex(brand.accent, "#FFFFFF", mode === "light" ? 0.55 : 0.1),
+                  background: mixHex(
+                    brand.accent,
+                    "#FFFFFF",
+                    mode === "light" ? 0.55 : 0.1,
+                  ),
                 }}
               >
                 <div className="p-4">
-                  <div className="text-sm font-bold" style={{ color: uiPalette.text }}>
+                  <div
+                    className="text-sm font-bold"
+                    style={{ color: uiPalette.text }}
+                  >
                     Build clean pages
                   </div>
-                  <div className="text-[11px] mt-1" style={{ color: uiPalette.mutedText }}>
+                  <div
+                    className="text-[11px] mt-1"
+                    style={{ color: uiPalette.mutedText }}
+                  >
                     Consistent tokens • premium spacing • strong CTA
                   </div>
                   <div className="mt-3 flex gap-2">
-                    <span className="h-2 w-2 rounded-full" style={{ background: brand.primary }} />
-                    <span className="h-2 w-2 rounded-full" style={{ background: brand.secondary }} />
-                    <span className="h-2 w-2 rounded-full" style={{ background: brand.accent }} />
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ background: brand.primary }}
+                    />
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ background: brand.secondary }}
+                    />
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ background: brand.accent }}
+                    />
                   </div>
                 </div>
               </div>
@@ -1316,12 +1642,20 @@ export default function TypographyPage() {
         {/* Tokens block */}
         <div
           className="mt-6 rounded-2xl border p-5"
-          style={{ ...cardPreviewStyle, background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15) }}
+          style={{
+            ...cardPreviewStyle,
+            background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+          }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold">Design Tokens (What is being used)</div>
-              <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
+              <div className="text-sm font-semibold">
+                Design Tokens (What is being used)
+              </div>
+              <div
+                className="text-xs mt-1"
+                style={{ color: uiPalette.mutedText }}
+              >
                 Colors + fonts + sizes + radius + shadow (same page me clear).
               </div>
             </div>
@@ -1329,19 +1663,36 @@ export default function TypographyPage() {
           </div>
 
           <div className="mt-4 grid grid-cols-1 md:grid-cols-12 gap-4">
-            <div className="md:col-span-6 rounded-xl border p-4" style={cardPreviewStyle}>
+            <div
+              className="md:col-span-6 rounded-xl border p-4"
+              style={cardPreviewStyle}
+            >
               <div className="text-xs font-semibold">Font Family</div>
-              <div className="mt-2 text-[11px]" style={{ color: uiPalette.mutedText }}>
-                --font-body: <span className="font-mono">{cssFont(globalFontFamily)}</span>
+              <div
+                className="mt-2 text-[11px]"
+                style={{ color: uiPalette.mutedText }}
+              >
+                --font-body:{" "}
+                <span className="font-mono">{cssFont(globalFontFamily)}</span>
               </div>
-              <div className="mt-2 text-[11px]" style={{ color: uiPalette.mutedText }}>
-                --font-heading: <span className="font-mono">{cssFont(headingFontFamily)}</span>
+              <div
+                className="mt-2 text-[11px]"
+                style={{ color: uiPalette.mutedText }}
+              >
+                --font-heading:{" "}
+                <span className="font-mono">{cssFont(headingFontFamily)}</span>
               </div>
             </div>
 
-            <div className="md:col-span-6 rounded-xl border p-4" style={cardPreviewStyle}>
+            <div
+              className="md:col-span-6 rounded-xl border p-4"
+              style={cardPreviewStyle}
+            >
               <div className="text-xs font-semibold">Core Sizes</div>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-[11px]" style={{ color: uiPalette.mutedText }}>
+              <div
+                className="mt-2 grid grid-cols-2 gap-2 text-[11px]"
+                style={{ color: uiPalette.mutedText }}
+              >
                 <div className="font-mono">--h1: {headingPx("h1")}px</div>
                 <div className="font-mono">--h2: {headingPx("h2")}px</div>
                 <div className="font-mono">--h3: {headingPx("h3")}px</div>
@@ -1361,7 +1712,10 @@ export default function TypographyPage() {
       <PreviewHeader />
 
       <div className="mt-6">
-        <div className="text-sm font-semibold" style={{ color: uiPalette.text }}>
+        <div
+          className="text-sm font-semibold"
+          style={{ color: uiPalette.text }}
+        >
           Typography Preview
         </div>
         <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
@@ -1382,11 +1736,18 @@ export default function TypographyPage() {
               return (
                 <div key={k} className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono" style={{ color: uiPalette.mutedText }}>
+                    <span
+                      className="text-xs font-mono"
+                      style={{ color: uiPalette.mutedText }}
+                    >
                       {k.toUpperCase()} / {headingPx(k)}px
                     </span>
-                    <span className="text-[11px]" style={{ color: uiPalette.mutedText }}>
-                      w:{s.weight} · lh:{s.lineHeight.toFixed(2)} · ls:{s.letterSpacingEm.toFixed(2)}em
+                    <span
+                      className="text-[11px]"
+                      style={{ color: uiPalette.mutedText }}
+                    >
+                      w:{s.weight} · lh:{s.lineHeight.toFixed(2)} · ls:
+                      {s.letterSpacingEm.toFixed(2)}em
                     </span>
                   </div>
 
@@ -1421,9 +1782,15 @@ export default function TypographyPage() {
 
       <div
         className="mt-6 rounded-2xl border p-5"
-        style={{ ...cardPreviewStyle, background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15) }}
+        style={{
+          ...cardPreviewStyle,
+          background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+        }}
       >
-        <div className="text-sm font-semibold" style={{ color: uiPalette.text }}>
+        <div
+          className="text-sm font-semibold"
+          style={{ color: uiPalette.text }}
+        >
           Body Preview
         </div>
         <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
@@ -1431,8 +1798,13 @@ export default function TypographyPage() {
         </div>
 
         <div className="mt-4" style={{ maxWidth: `${body.maxWidthCh}ch` }}>
-          <div className="text-xs font-mono" style={{ color: uiPalette.mutedText }}>
-            Body / {body.sizePx}px · w:{body.weight} · lh:{body.lineHeight.toFixed(2)} · ls:{body.letterSpacingEm.toFixed(2)}em
+          <div
+            className="text-xs font-mono"
+            style={{ color: uiPalette.mutedText }}
+          >
+            Body / {body.sizePx}px · w:{body.weight} · lh:
+            {body.lineHeight.toFixed(2)} · ls:{body.letterSpacingEm.toFixed(2)}
+            em
           </div>
 
           <div
@@ -1446,11 +1818,18 @@ export default function TypographyPage() {
               fontFamily: globalFontFamily,
             }}
           >
-            <p style={{ marginBottom: body.paragraphGapPx, color: uiPalette.mutedText }}>
-              Tokens-based system: aap jo left side change karte ho (colors / fonts / sizes), woh instantly is preview me reflect hota hai.
+            <p
+              style={{
+                marginBottom: body.paragraphGapPx,
+                color: uiPalette.mutedText,
+              }}
+            >
+              Tokens-based system: aap jo left side change karte ho (colors /
+              fonts / sizes), woh instantly is preview me reflect hota hai.
             </p>
             <p style={{ color: uiPalette.mutedText }}>
-              Isse user ko samajhne me asaani hoti hai ki actual website pages ka look & feel kaisa hoga.
+              Isse user ko samajhne me asaani hoti hai ki actual website pages
+              ka look & feel kaisa hoga.
             </p>
           </div>
         </div>
@@ -1464,9 +1843,15 @@ export default function TypographyPage() {
 
       <div
         className="mt-6 rounded-2xl border p-5"
-        style={{ ...cardPreviewStyle, background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15) }}
+        style={{
+          ...cardPreviewStyle,
+          background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+        }}
       >
-        <div className="text-sm font-semibold" style={{ color: uiPalette.text }}>
+        <div
+          className="text-sm font-semibold"
+          style={{ color: uiPalette.text }}
+        >
           Buttons Preview
         </div>
         <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
@@ -1475,7 +1860,12 @@ export default function TypographyPage() {
 
         <div className="mt-4 flex flex-wrap gap-3">
           {(["primary", "secondary", "outline"] as BtnKey[]).map((k) => {
-            const label = k === "primary" ? "Primary" : k === "secondary" ? "Secondary" : "Outline";
+            const label =
+              k === "primary"
+                ? "Primary"
+                : k === "secondary"
+                  ? "Secondary"
+                  : "Outline";
             const v = getBtnVisual(k);
             return (
               <button
@@ -1533,16 +1923,28 @@ export default function TypographyPage() {
       {/* TOP BAR */}
       <div className="flex justify-between items-center gap-3">
         <div className="grid grid-cols-4 gap-2">
-          <Button variant={leftTab === "colors" ? "default" : "outline"} onClick={() => onLeftTab("colors")}>
+          <Button
+            variant={leftTab === "colors" ? "default" : "outline"}
+            onClick={() => onLeftTab("colors")}
+          >
             Colors
           </Button>
-          <Button variant={leftTab === "headings" ? "default" : "outline"} onClick={() => onLeftTab("headings")}>
+          <Button
+            variant={leftTab === "headings" ? "default" : "outline"}
+            onClick={() => onLeftTab("headings")}
+          >
             Headings
           </Button>
-          <Button variant={leftTab === "body" ? "default" : "outline"} onClick={() => onLeftTab("body")}>
+          <Button
+            variant={leftTab === "body" ? "default" : "outline"}
+            onClick={() => onLeftTab("body")}
+          >
             Body
           </Button>
-          <Button variant={leftTab === "buttons" ? "default" : "outline"} onClick={() => onLeftTab("buttons")}>
+          <Button
+            variant={leftTab === "buttons" ? "default" : "outline"}
+            onClick={() => onLeftTab("buttons")}
+          >
             Buttons
           </Button>
         </div>
@@ -1556,7 +1958,11 @@ export default function TypographyPage() {
             className="gap-2"
             title="Toggle Light/Dark"
           >
-            {mode === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {mode === "light" ? (
+              <Sun className="h-4 w-4" />
+            ) : (
+              <Moon className="h-4 w-4" />
+            )}
             {mode === "light" ? "Light" : "Dark"}
           </Button>
 
@@ -1600,8 +2006,17 @@ export default function TypographyPage() {
           <Card className="h-full min-h-[580px] border-2 border-muted/40">
             <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
               {rightPanel === "root" && (
-                <Button size="sm" variant="outline" onClick={handleCopyRoot} className="gap-2">
-                  {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCopyRoot}
+                  className="gap-2"
+                >
+                  {copied ? (
+                    <Check className="h-4 w-4" />
+                  ) : (
+                    <Copy className="h-4 w-4" />
+                  )}
                   {copied ? "Copied" : "Copy"}
                 </Button>
               )}
@@ -1616,7 +2031,9 @@ export default function TypographyPage() {
                 <div className="mb-3">
                   <p className="text-sm font-semibold">Root File Code (LIVE)</p>
                   <p className="text-xs text-muted-foreground">
-                    Light/Dark have separate variables via <span className="font-mono">:root[data-theme="..."]</span>. Gradient removed (solid hero).
+                    Light/Dark have separate variables via{" "}
+                    <span className="font-mono">:root[data-theme="..."]</span>.
+                    Gradient removed (solid hero).
                   </p>
                 </div>
                 <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">

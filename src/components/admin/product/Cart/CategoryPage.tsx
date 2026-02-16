@@ -99,6 +99,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
   const isFilterSelected = (filterTitle: string, value: string) => {
     return dynamicFilters[filterTitle]?.includes(value) || false;
   };
+  
 
   // Get filtered products by category (same logic as first component)
   const getFilteredProducts = () => {
@@ -107,6 +108,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
         ? listCategory.find((d) => d.slug == category)
         : null;
 
+     
 
     let filtered = [...products].filter((d) =>
       slug ? d.allcategories.includes(slug?._id) : true,
@@ -144,7 +146,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
 
   const filteredProducts = useMemo(() => {
     return getFilteredProducts();
-  }, [products, category, minPrice, maxPrice, dynamicFilters]);
+  }, [products, category, minPrice, maxPrice, dynamicFilters, listCategory]);
 
   const handleProductClick = (product: any) => {
     router.push(`/product/${product._id}`);

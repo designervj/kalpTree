@@ -16,7 +16,11 @@ export async function GET(req: Request) {
         const page = Number(searchParams.get("page")) || 1;
 
         const tenantId = searchParams.get("tenantId");
+
+        console.log(tenantId)
+
         const type = searchParams.get("type") || "business";
+
         console.log(type)
         const ITEMS_PER_PAGE = Number(searchParams.get("itemsperpage") || 30);
 

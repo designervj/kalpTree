@@ -787,7 +787,6 @@ function FeatureRow({ label, enabled }: { label: string; enabled?: boolean }) {
 const ShowBussinesById = ({ business, user }: Props) => {
   const { websites } = useSelector((state: RootState) => state.websites);
   const { businessWebsite, allBusiness } = useSelector((state: RootState) => state.business);
-  const { allAgencies } = useSelector((state: RootState) => state.agency);
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
   const primary = business.branding?.primary_color || business.branding?.colors?.primary || "#111827";
@@ -799,6 +798,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
     setModal(modaltype);
     setOpen(true);
   };
+
 
   const bussinessWebsite: Website[] = useMemo(() => {
     return websites.filter(

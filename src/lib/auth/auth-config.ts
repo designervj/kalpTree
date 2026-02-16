@@ -40,7 +40,8 @@ export const authConfig: NextAuthConfig = {
           const tenantdetail = await tenantService.getTenantById(
             getWebsite?.tenantId?.toString() as string,
           );
-          console.log("tenantdetail====", tenantdetail);
+
+          // console.log("tenantdetail====", tenantdetail);
           const user = await userService.getUserByEmail(
             credentials.email as string,
           );
@@ -60,8 +61,8 @@ export const authConfig: NextAuthConfig = {
             user.role == "agency"
               ? tenantdetail?.tenantId?.toString()
               : tenantdetail?._id?.toString();
-          console.log("userTenatId====", user.tenantId?.toString());
-          console.log("getTenantId====", getTenantId);
+          // console.log("userTenatId====", user.tenantId?.toString());
+          // console.log("getTenantId====", getTenantId);
           if (
             !isMainDomain &&
             user.tenantId?.toString() !== getTenantId &&
@@ -75,7 +76,7 @@ export const authConfig: NextAuthConfig = {
             user,
             credentials.password as string,
           );
-          console.log("isValid=====", isValid);
+          // console.log("isValid=====", isValid);
           if (!isValid) {
             throw new Error("Invalid credentials");
           }
@@ -84,6 +85,10 @@ export const authConfig: NextAuthConfig = {
           userService.updateLastLogin(user._id).catch((err) => {
             console.error("Failed to update last login:", err);
           });
+
+          const finaltenant = await tenantService.getTenantById(
+            user.tenantId?.toString() as string,
+          );
 
           // Return user object
           return {
@@ -94,6 +99,10 @@ export const authConfig: NextAuthConfig = {
             role: user.role,
             permissions: user.permissions,
             createdById: user.createdById?.toString(), // Handle optional createdById
+            tenantdetail: {
+              _id: finaltenant?._id.toString(),
+              type: finaltenant?.type,
+            },
           };
         } catch (error) {
           console.error("Authorization error:", error);
@@ -113,6 +122,7 @@ export const authConfig: NextAuthConfig = {
         token.role = user.role;
         token.permissions = user.permissions;
         token.createdById = user.createdById; // Will be undefined if not present
+        token.tenantdetail = user.tenantdetail;
       }
 
       // Handle token refresh/update
@@ -133,6 +143,7 @@ export const authConfig: NextAuthConfig = {
         session.user.permissions = token.permissions;
         session.user.tenantId = token.tenantId;
         session.user.createdById = token.createdById; // Will be undefined if not present
+        session.user.tenantdetail = token.tenantdetail;
       }
       return session;
     },

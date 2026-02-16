@@ -24,40 +24,5 @@ type AppShellClientProps = {
 };
 
 export function AppShellClient({ children }: AppShellClientProps) {
-
-  const router = useRouter();
-
-  const params = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const query = useSearchParams();
-
-  const resetRedux = () => {
-    dispatch(clearAttributes());
-    dispatch(clearBrands());
-    dispatch(clearCategories());
-    dispatch(clearProducts());
-  };
-  const handleWebsiteChange = (websiteId: string) => {
-    //  dispatch(onWebSiteChange({ websiteId }));
-  };
-
-  const handleTenantChange = (tenantId: string | ObjectId) => {
-    //  dispatch(onBusinessChange({ tenantId }));
-  };
-
-  const handleAgencyChange = (agencyId: string) => {
- //   dispatch(onAgencyChange({ agencyId }));
-  };
-
-
-
-  return (
-    <AppShell
-      onWebsiteChange={handleWebsiteChange}
-      onTenantChange={handleTenantChange}
-      onAgencyChage={handleAgencyChange}
-    >
-      {children}
-    </AppShell>
-  );
+  return <AppShell>{children}</AppShell>;
 }

@@ -31,7 +31,7 @@ function SignInForm() {
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    if (hostname === "kalptree.xyz"||hostname === "localhost") {
+    if (hostname === "kalptree.xyz" || hostname === "localhost") {
       setIsMainDomain(true);
       setDomain("kalptree.xyz");
     } else {
@@ -54,15 +54,13 @@ function SignInForm() {
         domain,
         // tenantSlug,
       });
-       
+
       if (result && (result as any).error) {
-       
         throw new Error((result as any).error || "Sign-in failed");
       }
       const session = await getSession();
-       
-      if (session?.user) {
 
+      if (session?.user) {
         const mappedUser = {
           email: session.user.email,
           name: session.user.name,
@@ -72,7 +70,12 @@ function SignInForm() {
         dispatch(setUser(mappedUser));
       }
 
-      if (session && ["agency", "superadmin"].includes(session?.user?.role)) {
+      const { type } = session?.user.tenantdetail;
+
+      if (
+        (session && session.user.role == "superadmin") ||
+        (session && type == "agency")
+      ) {
         router.push("/admin");
       } else {
         router.push("/admin");

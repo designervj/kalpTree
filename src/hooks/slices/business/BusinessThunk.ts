@@ -80,6 +80,8 @@ export const fetchAllBusinesses = createAsyncThunk(
 
     { rejectWithValue }
   ) => {
+
+
     try {
       const response = await fetch(
         `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business&tenantId=${tenantId}`

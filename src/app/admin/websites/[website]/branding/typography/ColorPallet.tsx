@@ -4,16 +4,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Shuffle } from "lucide-react";
 
 type Combo = {
-  id: string;
+  _id: string;
   name: string;
-  subtitle: string;
-  colors: string[];
+  colors: any;
 };
 
 const CARD_W = 140;
 const GAP = 14;
 
-const ColorPallet = () => {
+const ColorPallet = ({handleColorPallet}:any) => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
@@ -21,35 +20,7 @@ const ColorPallet = () => {
   // NEW: which card is active (clicked)
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const combos: Combo[] = useMemo(
-    () => [
-      {
-        id: "hk",
-        name: "HK Grotesk B",
-        subtitle: "HK GROTESK BOLD",
-        colors: ["#B9BDC4", "#0A1A66", "#1333FF", "#5EB7FF", "#D8F0FF"],
-      },
-      {
-        id: "cardo",
-        name: "Cardo",
-        subtitle: "Didact Gothic",
-        colors: ["#0B0B0B", "#2B2B2B", "#FF2C2C", "#FF6A6A", "#FFFFFF"],
-      },
-      {
-        id: "arch",
-        name: "Arc",
-        subtitle: "ARCHI",
-        colors: ["#B9BDC4", "#9AA0A7", "#7C838B", "#E8EAED", "#FFFFFF"],
-      },
-      {
-        id: "arsenal",
-        name: "Arsenal",
-        subtitle: "Radley",
-        colors: ["#2F3438", "#1C5A74", "#0E6A7D", "#FF9C7A", "#DFF4FA"],
-      },
-    ],
-    []
-  );
+  const [combo, setCombo] = useState<Combo[]>([]);
 
   const updateArrows = () => {
     const el = scrollerRef.current;
@@ -81,6 +52,24 @@ const ColorPallet = () => {
     if (!el) return;
     el.scrollBy({ left: dir * (CARD_W + GAP), behavior: "smooth" });
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const req = await fetch("/api/admin/color-pallet");
+        const res = await req.json();
+
+        if (res.success) {
+          setCombo(res.data);
+        } else {
+          setCombo([]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+
 
   return (
     <section className="w-full bg-white">
@@ -146,33 +135,38 @@ const ColorPallet = () => {
             className="no-scrollbar flex gap-[14px] overflow-x-auto scroll-smooth pr-[58px] pl-[58px]"
             style={{ scrollSnapType: "x mandatory" }}
           >
-            {combos.map((c) => {
-              const isActive = activeId === c.id;
-
+            {combo.map((c) => {
+              const isActive = activeId === c._id;
+              const { brand } = c.colors;
+              const allColors = [...new Set([...Object.values(brand)])];
               return (
                 <div
-                  key={c.id}
+                  key={c._id}
                   className="shrink-0"
                   style={{ width: CARD_W, scrollSnapAlign: "start" }}
                 >
                   <button
                     type="button"
-                    onClick={() => setActiveId((prev) => (prev === c.id ? null : c.id))}
+                    onClick={() =>
+                      setActiveId((prev) => (prev === c._id ? null : c._id))
+                    }
                     className={[
                       "w-full rounded-2xl bg-[#F3F4F6] text-left shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:bg-[#EEF0F3] transition",
                       isActive ? "ring-2 ring-black/10" : "",
                     ].join(" ")}
                   >
                     {/* Palette frame */}
-                    <div className="relative rounded-2xl bg-[#F3F4F6] p-2">
+                    <div className="relative rounded-2xl bg-[#F3F4F6] p-2 group">
                       <div className="h-[92px] w-full overflow-hidden rounded-xl flex">
-                        {c.colors.map((col, idx) => (
-                          <div
-                            key={idx}
-                            className="flex-1"
-                            style={{ background: col }}
-                          />
-                        ))}
+                        {allColors.map((col: any, idx: number) => {
+                          return (
+                            <div
+                              key={idx}
+                              className="flex-1"
+                              style={{ background: col }}
+                            />
+                          );
+                        })}
                       </div>
 
                       {/* NEW: center shuffle icon (shows when clicked) */}
@@ -189,15 +183,33 @@ const ColorPallet = () => {
                           </div>
                         </div>
                       )}
+
+                      {/* Apply Palette button (shows on hover) */}
+                      <div
+                        className="absolute inset-0 grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{ pointerEvents: "none" }}
+                      >
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleColorPallet(c.colors);
+                          }}
+                          className="px-4 py-2 bg-slate-900 text-white text-[13px] font-medium rounded-lg shadow-lg hover:bg-slate-800 transition-colors"
+                          style={{ 
+                            pointerEvents: "auto",
+                            animation: "popIn 160ms ease-out"
+                          }}
+                        >
+                          Apply Palette
+                        </button>
+                      </div>
                     </div>
 
                     {/* Labels */}
                     <div className="mt-3 px-3 pb-3">
                       <div className="text-[14px] leading-tight font-semibold text-slate-900">
                         {c.name}
-                      </div>
-                      <div className="mt-1 text-[8px] tracking-[0.16em] uppercase text-slate-500">
-                        {c.subtitle}
                       </div>
                     </div>
                   </button>

@@ -413,7 +413,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                   >
                     <ChevronRight className="w-[18px] h-[18px]" />
                   </button>
-                </div>
+                </div>adgh3
               </div>
 
               {/* Main Image */}
@@ -608,11 +608,11 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                     onClick={handleAddToCart}
                     disabled={!matchedVariant || parseInt(matchedVariant?.stock || 0) === 0}
                     className="h-[46px] rounded-full flex items-center justify-center gap-2.5 px-4 text-xs font-black tracking-[0.14em] uppercase transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 border whitespace-nowrap"
-                    style={{
-                      backgroundColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
-                      color: theme === 'dark' ? '#06140c' : '#fff',
-                      borderColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
-                    }}
+                    // style={{
+                    //   backgroundColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
+                    //   color: theme === 'dark' ? '#06140c' : '#fff',
+                    //   borderColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
+                    // }}
                   >
                     <ShoppingBag className="w-[18px] h-[18px]" />
                     <span className="inline-block">Add to Cart</span>

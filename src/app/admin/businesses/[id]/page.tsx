@@ -15,7 +15,7 @@ export const BusinesswithID = () => {
     return businessWebsite;
   }, [businessWebsite]);
 
-  console.log(businessWebsite)
+  console.log(upadatedBusiness);
 
   // Handle null case
   if (!upadatedBusiness || !user) {
@@ -31,7 +31,10 @@ export const BusinesswithID = () => {
   return (
     <>
       {user && upadatedBusiness ? (
-        <ShowBussinesById user={user} business={upadatedBusiness} />
+        <>
+          <GetAllWebsites />
+          <ShowBussinesById user={user} business={upadatedBusiness} />
+        </>
       ) : (
         <h2>Loading ....</h2>
       )}

@@ -34,6 +34,7 @@ const GetDashBoardDetails = () => {
        agencyid && 
        businessid
       && user) {
+      
       dispatch(savedashboardDetailsThunk({agencyid,businessid, user}));
     }
   }, [agencies,hasfetched,agencyid,businessid, user]);

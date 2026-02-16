@@ -22,13 +22,8 @@ import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
 
 type SidebarProps = {
-  onTenantChange: (tenantId: string) => void;
-  onWebsiteChange: (websiteId: string) => void;
-
   collapsed?: boolean;
   onToggleCollapse?: () => void;
-
-  onAgencyChage: (agencyId: string) => void;
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;

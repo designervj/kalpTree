@@ -32,7 +32,6 @@ import {
   Calendar,
 } from "lucide-react";
 
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,24 +45,32 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { setBusinessWebsite, setCurrentBusiness, setEditBusiness } from "@/hooks/slices/business/BusinessSlice";
+import {
+  setBusinessWebsite,
+  setCurrentBusiness,
+  setEditBusiness,
+} from "@/hooks/slices/business/BusinessSlice";
 import { IBusiness } from "@/models/business";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { deleteBusiness } from "@/hooks/slices/business/BusinessThunk";
 import { toast } from "sonner";
 import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
-
-
 
 interface Pagination {
   page: number;
@@ -76,22 +83,21 @@ interface Pagination {
 
 const ShowBusiness = () => {
   const { allBusiness, pagination } = useSelector(
-    (state: RootState) => state.business
+    (state: RootState) => state.business,
   );
 
-  console.log("====>>",allBusiness)
   const params = useSearchParams();
   const itemsperpage = params.get("itemsperpage") || 30;
   const router = useRouter();
   const { websites } = useSelector((state: RootState) => state.websites);
-  const {user} = useSelector((state: RootState) => state.user);
-  const {allAgencies} = useSelector((state: RootState) => state.agency);
+  const { user } = useSelector((state: RootState) => state.user);
+  const { allAgencies } = useSelector((state: RootState) => state.agency);
   const dispatch = useDispatch<AppDispatch>();
-
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [status, setStatus] = useState("__all__");
   const [q, setQ] = useState("");
+
 
   const handlePageChange = (newPage: number) => {
     //   setPagination((prev) => ({
@@ -102,7 +108,7 @@ const ShowBusiness = () => {
     //   }));
     // Dispatch your Redux action here to fetch new data
     router.push(
-      `/admin/businesses?page=${newPage}&itemsperpage=${itemsperpage}`
+      `/admin/businesses?page=${newPage}&itemsperpage=${itemsperpage}`,
     );
   };
 
@@ -130,7 +136,7 @@ const ShowBusiness = () => {
           pagination.totalPages - 3,
           pagination.totalPages - 2,
           pagination.totalPages - 1,
-          pagination.totalPages
+          pagination.totalPages,
         );
       } else {
         pages.push(
@@ -140,7 +146,7 @@ const ShowBusiness = () => {
           pagination.page,
           pagination.page + 1,
           "...",
-          pagination.totalPages
+          pagination.totalPages,
         );
       }
     }
@@ -151,9 +157,8 @@ const ShowBusiness = () => {
   const startIndex = (pagination.page - 1) * pagination.itemsPerPage + 1;
   const endIndex = Math.min(
     pagination.page * pagination.itemsPerPage,
-    pagination.totalCount
+    pagination.totalCount,
   );
-
 
   const handleOpenDashboard = (business: IBusiness) => {
     dispatch(setBusinessWebsite(business));
@@ -161,26 +166,31 @@ const ShowBusiness = () => {
   };
 
   const handleDeleteBusiness = async (business: IBusiness) => {
-    const response = await dispatch(deleteBusiness(business?._id?.toString() || "")).unwrap();
+    const response = await dispatch(
+      deleteBusiness(business?._id?.toString() || ""),
+    ).unwrap();
     if (response) {
       toast.success("Business deleted successfully");
     }
   };
 
   const handleEditBusiness = (business: IBusiness) => {
-
-    const website = websites.find((website) => website.tenantId === business._id);
+    const website = websites.find(
+      (website) => website.tenantId === business._id,
+    );
     console.log("current Agency website", website);
-    if(!website){
+    if (!website) {
       toast.error("Website not found");
       return;
     }
 
-    const agency = allAgencies.find((agency) => agency._id === business.tenantId);
-      if(!agency){
-        toast.error("Agency not found");
-        return;
-      }
+    const agency = allAgencies.find(
+      (agency) => agency._id === business.tenantId,
+    );
+    if (!agency) {
+      toast.error("Agency not found");
+      return;
+    }
     console.log("current Agency", agency);
     dispatch(setCurretAgency(agency));
     dispatch(setCurrentWebsite(website));
@@ -237,7 +247,6 @@ const ShowBusiness = () => {
 
       {/* Items per page selector */}
 
-
       <Card className="rounded-xl border bg-white shadow-sm py-2">
         <CardContent className="p-4">
           <div className="flex items-center gap-3 a">
@@ -277,10 +286,10 @@ const ShowBusiness = () => {
                     <Label>Status</Label>
                     <Select
                       value={status}
-                    // onValueChange={(v) => {
-                    //   setStatus(v);
-                    //   setPage(1);
-                    // }}
+                      // onValueChange={(v) => {
+                      //   setStatus(v);
+                      //   setPage(1);
+                      // }}
                     >
                       <SelectTrigger className="h-11 w-full">
                         <SelectValue placeholder="All " />
@@ -318,7 +327,6 @@ const ShowBusiness = () => {
 
                   <div className="flex items-center gap-2">
                     <Button
-
                       className="flex-1"
                       onClick={() => setFiltersOpen(false)}
                     >
@@ -327,7 +335,7 @@ const ShowBusiness = () => {
                     <Button
                       variant="outline"
                       className="flex-1"
-                    // onClick={resetFilters}
+                      // onClick={resetFilters}
                     >
                       Reset
                     </Button>
@@ -344,7 +352,6 @@ const ShowBusiness = () => {
           </div>
         </CardContent>
       </Card>
-
 
       {/* Business List */}
       <div className="space-y-4">
@@ -387,7 +394,9 @@ const ShowBusiness = () => {
                         <span
                           className={[
                             "h-2 w-2 rounded-full",
-                            b.status === "active" ? "bg-emerald-500" : "bg-rose-500",
+                            b.status === "active"
+                              ? "bg-emerald-500"
+                              : "bg-rose-500",
                           ].join(" ")}
                         />
                         {b.status === "active" ? "Active" : "Inactive"}
@@ -429,7 +438,11 @@ const ShowBusiness = () => {
 
                     {/* action pills (like screenshot) */}
                     <div className="mt-4 flex flex-wrap items-center gap-2">
-                      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 rounded-xl px-5"
+                      >
                         <Link
                           href={`/admin/businesses/${b._id}/websites`}
                           className="flex items-center gap-2"
@@ -445,7 +458,10 @@ const ShowBusiness = () => {
                           variant="outline"
                           className="h-11 rounded-xl px-5"
                         >
-                          <a href={`mailto:${b.email}`} className="flex items-center gap-2">
+                          <a
+                            href={`mailto:${b.email}`}
+                            className="flex items-center gap-2"
+                          >
                             <Mail className="h-4 w-4" />
                             {b.email}
                           </a>
@@ -454,7 +470,11 @@ const ShowBusiness = () => {
 
                       {/* {b?.website ? ( */}
 
-                      <Button asChild variant="outline" className="h-11 rounded-xl px-5">
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="h-11 rounded-xl px-5"
+                      >
                         <Link
                           //  href={b.website.startsWith("http") ? b.website : `https://${b.website}`}
                           href="#"
@@ -494,7 +514,6 @@ const ShowBusiness = () => {
                   </div>
                 </div>
 
-
                 <div className="flex flex-wrap items-center gap-3 justify-start lg:justify-end">
                   <Button asChild variant="outline" className="rounded-xl">
                     <Link
@@ -506,34 +525,35 @@ const ShowBusiness = () => {
                     </Link>
                   </Button>
 
-                  <Button
-                    onClick={() => handleOpenDashboard(b)}
-                  >
+                  <Button onClick={() => handleOpenDashboard(b)}>
                     {/* <Link href={`/admin/businesses/${b._id}`}> */}
                     Open Dashboard
                     {/* </Link> */}
                   </Button>
 
-
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline"><HiDotsVertical /></Button>
+                      <Button variant="outline">
+                        <HiDotsVertical />
+                      </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-10 me-6" align="start">
-
                       <DropdownMenuGroup>
-                        <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
-                          onClick={() => handleEditBusiness(b)}>
+                        <DropdownMenuItem
+                          className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                          onClick={() => handleEditBusiness(b)}
+                        >
                           Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
-                          onClick={() => handleDeleteBusiness(b)}>
+                        <DropdownMenuItem
+                          className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                          onClick={() => handleDeleteBusiness(b)}
+                        >
                           Delete
                         </DropdownMenuItem>
                       </DropdownMenuGroup>
                     </DropdownMenuContent>
                   </DropdownMenu>
-
                 </div>
               </div>
             </CardContent>
@@ -541,16 +561,13 @@ const ShowBusiness = () => {
         ))}
       </div>
 
-
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Show</span>
           <Select
             value={String(itemsperpage)}
             onValueChange={handleItemsPerPageChange}
-
           >
-
             <SelectTrigger className="w-[80px] bg-white">
               <SelectValue />
             </SelectTrigger>
@@ -637,4 +654,3 @@ const ShowBusiness = () => {
 };
 
 export default ShowBusiness;
-

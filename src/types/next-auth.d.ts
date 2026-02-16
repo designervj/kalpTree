@@ -9,6 +9,7 @@ declare module "next-auth" {
     name?: string; // Made optional
     email: string;
     createdById?: string; // Made optional
+    tenantdetail?: any;
   }
 
   interface Session {
@@ -19,7 +20,8 @@ declare module "next-auth" {
       tenantId: string;
       role: string;
       permissions: string[];
-      createdById?: string; // Made optional
+      createdById?: string;
+      tenantdetail?: any; // Made optional
     };
   }
 }
@@ -33,5 +35,6 @@ declare module "next-auth/jwt" {
     permissions: string[];
     name?: string; // Made optional
     createdById?: string; // Made optional
+    tenantdetail?: any;
   }
 }

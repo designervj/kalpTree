@@ -53,7 +53,7 @@ const SlugPageHome = ({ user, currentWebsite, website, html, headerData, footerD
 
          // update the user
          useEffect(()=>{
-            debugger
+       
             if(user && userdata===null){
                 dispatch(setUser(user))
             }

@@ -155,6 +155,7 @@ export interface User extends BaseDocument {
     notes?: string;
   };
   managedServices?: any;
+  tenantdetail?: any
 }
 
 // Super Admin (platform-level access)

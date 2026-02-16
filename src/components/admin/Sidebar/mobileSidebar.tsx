@@ -1,9 +1,27 @@
 import { usePathname } from "next/navigation";
-import { currentWebsiteSections, sectionIconMap, useHasPermission, User, Website } from "../AppShell";
+import {
+  currentWebsiteSections,
+  sectionIconMap,
+  useHasPermission,
+  User,
+  Website,
+} from "../AppShell";
 import React from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@radix-ui/react-select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@radix-ui/react-select";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ChevronDown, ChevronRight, LayoutDashboard, LayoutGrid, Link } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  LayoutDashboard,
+  LayoutGrid,
+  Link,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -13,18 +31,14 @@ type MobileSidebarProps = {
   websites: Website[];
   currentWebsite: Website | null;
   user: User | IUser | null;
-  onWebsiteChange: (websiteId: string) => void;
 };
 
-
 const ease = [0.22, 1, 0.36, 1] as const;
-
 
 export function MobileSidebar({
   websites,
   currentWebsite,
   user,
-  onWebsiteChange,
 }: MobileSidebarProps) {
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
@@ -43,7 +57,7 @@ export function MobileSidebar({
       const init: Record<string, boolean> = {};
       filteredWebsiteSections.forEach((s, idx) => (init[s.id] = idx === 0));
       return init;
-    }
+    },
   );
 
   return (
@@ -52,14 +66,17 @@ export function MobileSidebar({
         <div className="p-3 border-b">
           <Select
             value={currentWebsite?._id?.toString() || ""}
-            onValueChange={onWebsiteChange}
+            // onValueChange={onWebsiteChange}
           >
             <SelectTrigger className="h-10 w-full rounded-md">
               <SelectValue placeholder="Select website" />
             </SelectTrigger>
             <SelectContent>
               {websites.map((site) => (
-                <SelectItem key={site._id?.toString()} value={site._id?.toString() || ""}>
+                <SelectItem
+                  key={site._id?.toString()}
+                  value={site._id?.toString() || ""}
+                >
                   <div className="flex flex-col">
                     <span className="text-xs font-medium">{site.name}</span>
                     <span className="text-[11px] text-muted-foreground">
@@ -145,7 +162,7 @@ export function MobileSidebar({
                                     "flex items-center gap-3 rounded-md px-3 py-2 text-sm",
                                     active
                                       ? "bg-background shadow-sm"
-                                      : "hover:bg-muted"
+                                      : "hover:bg-muted",
                                   )}
                                 >
                                   <Icon className="h-4 w-4 opacity-70" />
