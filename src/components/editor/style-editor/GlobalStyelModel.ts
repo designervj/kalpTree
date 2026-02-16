@@ -1,3 +1,4 @@
+import { BodyStyle, BrandColors, ButtonBaseStyle, ButtonColors, HeadingStyle } from "@/components/admin/settings/global-styles/GlobalStyleModal";
 
 
 export interface TypographyDetail {
@@ -79,6 +80,16 @@ export interface GlobalStyleModel {
     createdAt: Date;
     updatedAt: Date;
 }
+
+
+export interface RootStyleModal {
+    colors:BrandColors,
+    heading:HeadingStyle,
+    body:BodyStyle,
+    buttons:ButtonBaseStyle,
+    themes:ThemeColors,
+}
+
 
 const stripUnit = (val: string) => val ? val.replace(/[^\d.]/g, '') : '';
 const getNum = (val: string, fallback: number) => {

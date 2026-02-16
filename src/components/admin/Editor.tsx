@@ -39,6 +39,7 @@ import { createWebsitePage, updateWebsitePage } from "@/hooks/slices/website/web
 import { extractHeader } from "./website/websitePage/util/ExtractHeader";
 import { TemplateDocument } from "./templates/TemplateType";
 import { PAGE_TEMPLATES } from "./DemoTemplate";
+import { createHeader } from "@/hooks/slices/header/HeaderThunk";
 
 /* -----------------------------
   Types
@@ -606,7 +607,7 @@ startTransition(async () => {
   );
   const iframeDoc = useMemo(() => buildIframeDoc(renderableHtml), [renderableHtml]);
 
-  const focusKeyword = (formData?.focusKeyword || "").trim();
+  // const focusKeyword = (formData?.focusKeyword || "").trim();
   const seoTitleLen = String(formData?.seoTitle || "").trim().length;
 
   const pageText = useMemo(() => stripHtmlToText(renderableHtml), [renderableHtml]);

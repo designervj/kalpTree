@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { clearPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
-import { extractHtmlParts, extractStyles } from "@/lib/utils";
+import { extractHtmlParts, extractScripts, extractStyles, wrapScripts } from "@/lib/utils";
 import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
 import GetAllTemplate from "../admin/templates/GetAllTemplate";
 import EditForm from "./editForm/EditForm";
@@ -25,6 +25,7 @@ import GetAllProduct from "../admin/product/productList/GetAllProduct";
 import ProductShowcase from "../admin/product/Cart/Products";
 import { ProductShowcaseStyleConfig } from "./pages-builder/pages";
 import SingleProductShowcase from "../admin/product/Cart/SingleProduct";
+import { isHeaderPresent } from "./utils/htmlParser";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -70,35 +71,6 @@ export default function GrapesJSEditor() {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentStyle } = useSelector((state: RootState) => state.globalStyle);
 
-
-  function extractScriptsFromHtml(html: string): string {
-    const scripts = extractHtmlParts(html).scripts;
-    if (!scripts || scripts.length === 0) return "";
-
-    // The scripts from extractHtmlParts are already extracted as an array
-    // We just need to wrap them in IIFE if they aren't already
-    return scripts
-      .map((content: string) => {
-        const trimmed = content.trim();
-        if (!trimmed) return "";
-
-        // Remove comments at the beginning to accurately check for IIFE
-        const codeOnly = trimmed
-          .replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "")
-          .trim();
-
-        // Check if it already looks like an IIFE to prevent double-wrapping
-        if (
-          codeOnly.startsWith("(function") ||
-          codeOnly.startsWith("(async function")
-        ) {
-          return trimmed;
-        }
-        return `(function(){ ${trimmed} })();`;
-      })
-      .filter((s: string) => s.trim())
-      .join("\n");
-  }
 
   const lastPageIdRef = useRef<string | null>(null);
   const contentLoadedRef = useRef<boolean>(false);
@@ -175,32 +147,34 @@ export default function GrapesJSEditor() {
       try {
         const data = page.content?.replace(/\\n/g, "");
         const headerData = currentHeader?.content?.replace(/\\n/g, "").trim();
-
+        const isHeaderPresentInCurrentPage = isHeaderPresent(data ?? "");
         if (data) {
           const pageParts = extractHtmlParts(data);
           let body = pageParts.body;
           let styles = pageParts.styles;
-          let scripts = pageParts.scripts;
-
+          let scripts = extractScripts(data);
+      console.log("scripts===>",scripts)
           // If we are editing a normal page (not header/footer), prepend the site header
           if (type !== "header" && type !== "footer" && headerData) {
             const headerParts = extractHtmlParts(headerData);
-
+            const headerScripts = extractScripts(headerData);
             // Merge styles
             if (headerParts.styles) {
               styles = `${headerParts.styles}\n${styles}`;
             }
 
             // Merge scripts
-            if (headerParts.scripts && headerParts.scripts.length > 0) {
-              scripts = [...headerParts.scripts, ...scripts];
+            if (headerScripts && headerScripts.length > 0) {
+              scripts = [...headerScripts, ...scripts];
             }
 
             // Combine bodies with wrappers
             body = `
+              ${!isHeaderPresentInCurrentPage ? `
               <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
                 ${headerParts.body}
               </div>
+              ` : ""}
               <div data-gjs-type="page-body">
                 ${pageParts.body}
               </div>
@@ -221,10 +195,8 @@ export default function GrapesJSEditor() {
             setEditorCss(styles);
           }
 
-          const js = extractScriptsFromHtml(data); // Note: extractScriptsFromHtml might need update if combining scripts
-          // Better to join the scripts array and then wrap
-          const combinedScriptsHtml = scripts.join("\n");
-          const jsWrapped = extractScriptsFromHtml(combinedScriptsHtml);
+          // Wrap the combined scripts
+          const jsWrapped = wrapScripts(scripts);
 
           if (jsWrapped && typeof state.editor.setJs === "function") {
             state.editor.setJs(jsWrapped);
