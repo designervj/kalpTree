@@ -22,6 +22,9 @@ interface CodeEditorProps {
   onUpdateJs: (js: string) => void;
 }
 
+import HtmlCode from "./HtmlCode";
+import CssCode from "./CssCode";
+
 export function CodeEditor({
   html,
   css,
@@ -37,7 +40,7 @@ export function CodeEditor({
   const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState("html");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  
+
   useEffect(() => {
     setLocalHtml(html || "");
     setLocalCss(css || "");
@@ -166,14 +169,14 @@ export function CodeEditor({
           <DialogTitle>Code Editor</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col flex-1 gap-4 overflow-hidden md:flex-row">
-          <div className="flex flex-col md:w-1/2">
+        <div className="flex-1 flex flex-col gap-4 overflow-hidden md:flex-row min-h-0">
+          <div className="flex flex-col md:w-1/2 min-h-0">
             <Tabs
               value={activeTab}
               onValueChange={setActiveTab}
-              className="flex flex-col flex-1"
+              className="flex flex-col flex-1 min-h-0"
             >
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-3 shrink-0">
                 <TabsTrigger value="html">HTML</TabsTrigger>
                 <TabsTrigger value="css">CSS</TabsTrigger>
                 <TabsTrigger value="js">JavaScript</TabsTrigger>
@@ -182,41 +185,27 @@ export function CodeEditor({
               <TabsContent
                 value="html"
                 className={cn(
-                  "flex-1 flex flex-col",
+                  "flex-1 min-h-0 flex flex-col mt-2",
                   activeTab !== "html" && "hidden"
                 )}
               >
-                <div className="flex-1 h-full border rounded-md">
-                  <textarea
-                    className="w-full h-full p-4 font-mono text-sm text-gray-100 bg-gray-900 resize-none focus:outline-none"
-                    value={localHtml}
-                    onChange={(e) => setLocalHtml(e.target.value)}
-                    spellCheck={false}
-                  />
-                </div>
+                <HtmlCode localHtml={localHtml} setLocalHtml={setLocalHtml} />
               </TabsContent>
 
               <TabsContent
                 value="css"
                 className={cn(
-                  "flex-1 flex flex-col",
+                  "flex-1 min-h-0 flex flex-col mt-2",
                   activeTab !== "css" && "hidden"
                 )}
               >
-                <div className="flex-1 overflow-hidden border rounded-md">
-                  <textarea
-                    className="w-full h-full p-4 font-mono text-sm text-gray-100 bg-gray-900 resize-none focus:outline-none"
-                    value={localCss}
-                    onChange={(e) => setLocalCss(e.target.value)}
-                    spellCheck={false}
-                  />
-                </div>
+                <CssCode localCss={localCss} setLocalCss={setLocalCss} />
               </TabsContent>
 
               <TabsContent
                 value="js"
                 className={cn(
-                  "flex-1 flex flex-col",
+                  "flex-1 min-h-0 flex flex-col mt-2",
                   activeTab !== "js" && "hidden"
                 )}
               >
@@ -231,6 +220,8 @@ export function CodeEditor({
               </TabsContent>
             </Tabs>
           </div>
+
+
 
           <div className="flex flex-col md:w-1/2">
             <div className="flex items-center justify-between mb-2">
@@ -252,11 +243,21 @@ export function CodeEditor({
           </div>
         </div>
 
-        <div className="flex justify-end mt-4 space-x-2">
+        <div className="flex justify-end mt-4 space-x-2 shrink-0">
           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleApplyChanges}>Apply Changes</Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              onUpdateHtml(localHtml);
+              onUpdateCss(localCss);
+              onUpdateJs(localJs);
+            }}
+          >
+            Apply
+          </Button>
+          <Button onClick={handleApplyChanges}>Apply & Close</Button>
         </div>
       </DialogContent>
     </Dialog>

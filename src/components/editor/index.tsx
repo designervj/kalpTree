@@ -58,6 +58,7 @@ export default function GrapesJSEditor() {
   const [showSidebar, setShowSidebar] = useState(false);
   const [recentBlocks, setRecentBlocks] = useState<string[]>([]);
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const dispatch = require("react-redux").useDispatch();
   const {
@@ -153,7 +154,7 @@ export default function GrapesJSEditor() {
           let body = pageParts.body;
           let styles = pageParts.styles;
           let scripts = extractScripts(data);
-      console.log("scripts===>",scripts)
+          console.log("scripts===>", scripts)
           // If we are editing a normal page (not header/footer), prepend the site header
           if (type !== "header" && type !== "footer" && headerData) {
             const headerParts = extractHtmlParts(headerData);
@@ -197,7 +198,7 @@ export default function GrapesJSEditor() {
 
           // Wrap the combined scripts
           const jsWrapped = wrapScripts(scripts);
-
+          console.log("jsWrapped===>", jsWrapped)
           if (jsWrapped && typeof state.editor.setJs === "function") {
             state.editor.setJs(jsWrapped);
             setEditorJs(jsWrapped);
@@ -326,14 +327,28 @@ export default function GrapesJSEditor() {
   useEffect(() => {
     if (!state.editor) return;
     const updateHandler = () => {
-      const html = state.editor.getHtml();
+      // Debounce updates to the UI state to prevent excessive re-renders
+      if (timerRef.current) clearTimeout(timerRef.current);
 
-      setEditorHtml(html);
-      //  dispatch({ type: "pageEdit/setContent", payload: html });
+      timerRef.current = setTimeout(() => {
+        if (!state.editor) return;
+        const html = state.editor.getHtml();
+        const css = state.editor.getCss() || "";
+        const js = state.editor.getJs ? state.editor.getJs() : "";
+
+        setEditorHtml(html);
+        setEditorCss(css);
+        if (js) setEditorJs(js);
+      }, 500);
     };
     state.editor.on("component:update", updateHandler);
+    state.editor.on("style:update", updateHandler);
+    state.editor.on("storage:store", updateHandler);
     return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
       state.editor.off("component:update", updateHandler);
+      state.editor.off("style:update", updateHandler);
+      state.editor.off("storage:store", updateHandler);
     };
   }, [state.editor, dispatch]);
   // ─────────────────────────────
@@ -432,20 +447,22 @@ export default function GrapesJSEditor() {
   const handleSelectTemplate = (content: string, append = false) => {
     if (!state.editor) return;
 
-    if (append) {
-      // Extract scripts if present
-      // const { body, scripts } = extractHtmlParts(content);
-      const { body, scripts, styles } = extractHtmlParts(content);
+    const { body, scripts, styles } = extractHtmlParts(content);
+    // romovve the root style
+    const cleanedStyles = styles?.replace(/\.root(?=[\s{,])/g, "").trim();
 
+    if (append) {
       let contentToAdd = body;
-      if (styles) {
-        contentToAdd = `<style>${styles}</style>${body}`;
+      if (cleanedStyles) {
+        contentToAdd = `<style>${cleanedStyles}</style>${body}`;
       }
+
       if (insertionIndex !== null) {
         const wrapper = state.editor.Components.getWrapper();
         if (wrapper) {
           // Find page-body container if it exists (combined mode), otherwise use wrapper
           const container = wrapper.find('[data-gjs-type="page-body"]')[0] || wrapper;
+
           container.append(contentToAdd, { at: insertionIndex });
 
           setInsertionIndex(prev => prev !== null ? prev + 1 : null);
@@ -455,23 +472,49 @@ export default function GrapesJSEditor() {
       }
 
       if (scripts && scripts.length > 0) {
+        const currentJs = (state.editor as any).getJs
+          ? (state.editor as any).getJs()
+          : "";
+        let updatedJs = currentJs;
+
         scripts.forEach((scriptContent: string) => {
           if (scriptContent.trim()) {
-            const currentJs = (state.editor as any).getJs
-              ? (state.editor as any).getJs()
-              : "";
-            if (!currentJs.includes(scriptContent.trim())) {
-              const newJs = currentJs + "\n" + scriptContent.trim();
-              if (typeof (state.editor as any).setJs === "function") {
-                (state.editor as any).setJs(newJs);
-              }
+            const wrapped = wrapScripts([scriptContent]);
+            // Check if already present to avoid duplicates
+            if (!updatedJs.includes(scriptContent.trim()) && !updatedJs.includes(wrapped)) {
+              updatedJs += (updatedJs ? "\n\n" : "") + wrapped;
             }
           }
         });
+
+        if (updatedJs !== currentJs) {
+          if (typeof (state.editor as any).setJs === "function") {
+            (state.editor as any).setJs(updatedJs);
+            setEditorJs(updatedJs);
+          }
+        }
       }
-      return;
     } else {
-      state.editor.setComponents(content);
+      state.editor.setComponents(body);
+      if (cleanedStyles) {
+        state.editor.setStyle(cleanedStyles);
+      }
+
+      if (scripts && scripts.length > 0) {
+        const jsCode = wrapScripts(scripts);
+        if (typeof (state.editor as any).setJs === "function") {
+          (state.editor as any).setJs(jsCode);
+          setEditorJs(jsCode);
+        }
+      } else {
+        if (typeof (state.editor as any).setJs === "function") {
+          (state.editor as any).setJs("");
+          setEditorJs("");
+        }
+      }
+
+      setEditorHtml(body);
+      setEditorCss(cleanedStyles || "");
     }
   };
 
@@ -623,11 +666,11 @@ export default function GrapesJSEditor() {
       setEditorJs(newJs);
     }
 
-    state.editor.on("component:update", () => {
-      setEditorHtml(state.editor!.getHtml());
-      setEditorCss(state.editor!.getCss());
-      // setEditorJs(state.editor!.getJs ? state.editor!.getJs() || "" : "");
-    });
+    // state.editor.on("component:update", () => {
+    //   setEditorHtml(state.editor!.getHtml());
+    //   setEditorCss(state.editor!.getCss());
+    //   setEditorJs(state.editor!.getJs ? state.editor!.getJs() || "" : "");
+    // });
 
     state.editor.on("component:selected", (component: any) => {
       if (component?.get) {
@@ -738,7 +781,11 @@ export default function GrapesJSEditor() {
     Record<string, ProductShowcaseStyleConfig>
   >({});
 
-  console.log(categoryStyleConfigs);
+  useEffect(() => {
+    if (state.editorJs && state.editorJs !== editorJs) {
+      setEditorJs(state.editorJs);
+    }
+  }, [state.editorJs, editorJs]);
 
   return (
     <EditorProvider editorState={editorProps}>
