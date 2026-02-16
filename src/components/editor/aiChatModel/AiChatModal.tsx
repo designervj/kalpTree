@@ -23,6 +23,11 @@ interface AiChatModalProps {
 
 export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
   console.log("component ", component)
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const componentHtml = component?.html || "";
   const componentType = component?.type || "unknown";
   const componentTag = component?.tagName || "div";
@@ -117,7 +122,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
           <DialogHeader className="border-b border-gray-200 px-6 py-4 bg-white">
             <div className="flex items-center justify-between gap-4">
               <DialogTitle className="text-base md:text-lg font-semibold text-gray-900">
-                AI Component Editor - {componentTag} ({componentType})
+                AI Component Editor - {isMounted && componentTag} ({isMounted && componentType})
               </DialogTitle>
 
             </div>

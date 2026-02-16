@@ -38,6 +38,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { BsThreeDotsVertical } from "react-icons/bs";
+import ShowHTMLtemplate from "./ShowHTMLtemplate";
 
 function miniToast(msg: string) {
   const el = document.createElement("div");
@@ -143,54 +144,50 @@ const ShowTemplate = () => {
               const tid = getId(t);
 
               return (
-        
-         
-                <div key={tid} className="space-y-2">
-                  <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md hover:border-gray-300">
-                    {/* THUMB */}
-                    <div className="relative h-[230px] bg-gray-50">
+
+
+                <div key={tid} className="group relative">
+                  <div className={`overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg ${!thumb ? 'border-[#7C2D64]/30' : 'border-border'} hover:border-[#7C2D64]`}>
+                    {/* PREVIEW AREA */}
+                    <div className="relative h-[200px] bg-muted/10 overflow-hidden">
                       {thumb ? (
                         <img
                           src={thumb}
                           alt={t.label}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
-                        <div className="absolute inset-0 p-4">
-                          <div className="h-7 w-2/3 rounded bg-black/10" />
-                          <div className="mt-4 grid grid-cols-3 gap-3">
-                            <div className="h-14 rounded bg-black/10" />
-                            <div className="h-14 rounded bg-black/10" />
-                            <div className="h-14 rounded bg-black/10" />
-                          </div>
-                          <div className="mt-3 h-20 rounded bg-black/10" />
+                        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white">
+                          <ShowHTMLtemplate html={t?.content} />
                         </div>
                       )}
 
-                      {/* subtle border on image */}
-                      <div className="absolute inset-0 ring-1 ring-inset ring-black/5" />
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
+
+                      {/* Action buttons (always visible or on hover?) - let's keep them in the dropdown but make it nicer */}
                     </div>
 
-                    {/* FOOTER: LEFT title + RIGHT icons */}
-                    <div className="border-t bg-white px-2 py-3">
-                      <div className="flex items-center justify-between gap-3">
-                        {/* LEFT */}
+                    {/* FOOTER */}
+                    <div className="border-t bg-background p-3">
+                      <div className="flex items-center justify-between gap-2">
                         <div className="min-w-0">
-                          <h4 className="text-sm font-semibold text-gray-900 truncate">
+                          <h4 className="text-sm font-medium text-foreground truncate group-hover:text-[#7C2D64] transition-colors">
                             {t.label}
                           </h4>
-                          <p className="text-[11px] text-muted-foreground truncate">
-                            Template ID: {tid}
-                          </p>
+                          {/* <p className="text-[10px] text-muted-foreground font-mono opacity-70">
+                            ID: {tid.slice(-8)}...
+                          </p> */}
                         </div>
+
 
 
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="outline"
-                              className="cursor-pointer border-none bg-transparent hover:bg-transparent outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                              className="cursor-pointer border-none bg-transparent hover:bg-black/5 h-8 w-8 p-0 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
                             >
                               <BsThreeDotsVertical />
                             </Button>
@@ -206,7 +203,7 @@ const ShowTemplate = () => {
                               <DropdownMenuItem onClick={() => handlePreview(t)}>
                                 <div className="flex items-center  gap-2 cursor-pointer font-normal ">
                                   <Eye className="h-4 w-4" />
-                                   Preview
+                                  Preview
                                 </div>
                               </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -310,7 +307,7 @@ const ShowTemplate = () => {
                     </div>
                   </div>
                 </div>
-         
+
               );
             })}
           </div>

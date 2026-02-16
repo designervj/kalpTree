@@ -256,6 +256,7 @@ export function extractHtmlParts(html: string) {
 
 export const extractScripts = (html: string): string[] => {
   const { scripts } = extractHtmlParts(html);
+  console.log(" find script from htm,l scripts===>",scripts)
   return scripts;
 };
 
