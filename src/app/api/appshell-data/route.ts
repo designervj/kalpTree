@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
         name: 1,
         tenantId: 1,
         primaryDomain: 1,
+        globalStyle: 1,
       })
       .toArray();
   } else if (user?.role == "agency") {

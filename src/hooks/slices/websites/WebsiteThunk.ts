@@ -112,6 +112,7 @@ export const updateWebsite = createAsyncThunk<
         return rejectWithValue(error.error || "Failed to update website");
       }
       const data = await res.json();
+      console.log("update style ", data.item)
       return data.item as Website;
     } catch (err: any) {
       return rejectWithValue(err.message || "Failed to update website");

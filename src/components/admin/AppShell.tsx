@@ -1301,15 +1301,14 @@ export type Website = {
   _id?: string | ObjectId;
   tenantId?: string;
   websiteId?: string;
-  name: string;
+  name?: string;
   primaryDomain?: string[] | null;
   systemSubdomain?: string;
-  serviceType: "WEBSITE_ONLY" | "ECOMMERCE";
+  serviceType?: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
   lang?: [{ name: string; code: string }];
   isComingSoon?: boolean;
   globalStyle?: string;
-  globalStyles?: string;
 };
 
 export type User = {

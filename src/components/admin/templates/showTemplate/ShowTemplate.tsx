@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { BsThreeDotsVertical } from "react-icons/bs";
 import ShowHTMLtemplate from "./ShowHTMLtemplate";
+import ShowPallete from "./ShowPallete";
 
 function miniToast(msg: string) {
   const el = document.createElement("div");
@@ -158,8 +159,13 @@ const ShowTemplate = () => {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white">
-                          <ShowHTMLtemplate html={t?.content} />
+                        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white flex flex-col overflow-hidden">
+                          <div className="flex-1 relative overflow-hidden">
+                            <ShowHTMLtemplate html={t?.content} />
+                          </div>
+                          <div className="h-2.5 w-full flex">
+                            <ShowPallete html={t?.content} />
+                          </div>
                         </div>
                       )}
 

@@ -5,10 +5,7 @@ import { ColorPicker } from '../color-picker/color-picker';
 import { Input } from '@/components/ui/input';
 import { useEditorContext } from '../EditorContext';
 
-type SectionProps = {
 
-  onStyleChange: (property: string, value: string) => void;
-}
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +18,10 @@ import HeadingControl from '@/components/admin/settings/global-styles/showStyle/
 import BodyControl from '@/components/admin/settings/global-styles/showStyle/BodyControl';
 import ButtonControl from '@/components/admin/settings/global-styles/showStyle/ButtonControl';
 
+type SectionProps = {
+
+  onStyleChange: (property: string, value: string) => void;
+}
 const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   const { state } = useEditorContext();
   const [currentStyle, setCurrentStyle] = React.useState<GlobalStyleModel | null>(null);
@@ -74,49 +75,12 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   }, [mode, currentStyle]);
 
 
-  const stripUnit = (val: string | number) => {
-    const strVal = val?.toString() || "";
-    return strVal.replace(/[^\d.]/g, '');
-  };
-
   const onLeftTab = (tab: LeftTab) => {
     setLeftTab(tab);
     // setRightPanel("preview");
   };
 
-  const ColorInput = ({ label, property, value }: { label: string, property: string, value: string }) => (
-    <div className="space-y-1.5 px-1">
-      <Label className="text-[11px] font-medium text-slate-400">{label}</Label>
-      <div className="flex items-center gap-2">
-        <ColorPicker
-          color={value}
-          onChange={(color) => onStyleChange(property, color)}
-        />
-        <Input
-          value={value}
-          onChange={(e) => onStyleChange(property, e.target.value)}
-          className="flex-1 text-[11px] h-7 dark:bg-slate-800/50 dark:border-slate-700/50 font-mono"
-        />
-      </div>
-      <div className="text-[9px] text-indigo-400/70 font-medium ml-1">editable</div>
-    </div>
-  );
 
-  const StyleInput = ({ label, property, value, type = "text", unit = "" }: { label: string, property: string, value: string | number, type?: string, unit?: string }) => (
-    <div className="space-y-1.5 px-1">
-      <Label className="text-[11px] font-medium text-slate-400">{label}</Label>
-      <div className="flex items-center gap-2">
-        <Input
-          value={type === "number" ? stripUnit(value.toString()) : value}
-          onChange={(e) => onStyleChange(property, type === "number" ? `${e.target.value}${unit}` : e.target.value)}
-          className="flex-1 text-[11px] h-7 dark:bg-slate-800/50 dark:border-slate-700/50"
-          type={type}
-        />
-        {unit && <span className="text-[10px] text-slate-500 w-4">{unit}</span>}
-      </div>
-      <div className="text-[9px] text-indigo-400/70 font-medium ml-1">editable</div>
-    </div>
-  );
 
   if (!currentStyle) return null;
 

@@ -68,7 +68,7 @@ const BodyPreview = ({
 
                 <div className="mt-4" style={{ maxWidth: `${body.maxWidthCh}ch` }}>
                     <div className="text-xs font-mono" style={{ color: uiPalette.mutedText }}>
-                        Body / {body.sizePx}px · w:{body.weight} · lh:{body.lineHeight.toFixed(2)} · ls:{body.letterSpacingEm.toFixed(2)}em
+                        Body / {body.sizePx}px · w:{body.weight} · lh:{body?.lineHeight?.toFixed(2)} · ls:{body?.letterSpacingEm?.toFixed(2)}em
                     </div>
 
                     <div
