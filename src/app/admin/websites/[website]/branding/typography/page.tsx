@@ -79,10 +79,6 @@ type ButtonColors = {
   hoverBorder: string;
 };
 
-/**
- * ✅ Background + Surface REMOVED from user editable controls.
- * They will be derived in mode blocks (light/dark).
- */
 type BrandColors = {
   primary: string;
   secondary: string;
@@ -92,6 +88,14 @@ type BrandColors = {
   mutedText: string;
   border: string;
   ring: string;
+};
+
+/** Font entry returned from /api/admin/typography */
+type FontEntry = {
+  _id: string;
+  name: string;
+  url: string;
+  fontType: string;
 };
 
 const WEIGHTS = [300, 400, 500, 600, 700, 800, 900];
@@ -112,11 +116,10 @@ function shadowToCss(s: ButtonBaseStyle["shadow"]) {
   return "none";
 }
 function cssFont(f: string) {
-  if (!f)
-    return "Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+  if (!f) return "Inter, system-ui, -apple-system, Segoe UI, sans-serif";
   if (f.includes(" "))
-    return `"${f}", system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
-  return `${f}, system-ui, -apple-system, Segoe UI, Roboto, sans-serif`;
+    return `"${f}", system-ui, -apple-system, Segoe UI, sans-serif`;
+  return `${f}, system-ui, -apple-system, Segoe UI, sans-serif`;
 }
 
 /* ---- color helpers ---- */
@@ -150,7 +153,7 @@ function rgba(hex: string, alpha: number) {
 }
 
 /* -----------------------------
-  ✅ Input Focus Fix (Hex)
+  HexInput (stable, focus-safe)
 ------------------------------ */
 function HexInput({
   label,
@@ -229,17 +232,18 @@ export default function TypographyPage() {
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
 
-  const [allHeading, setAllHeading] = useState([]);
+  /** All custom fonts loaded from the API */
+  const [allFonts, setAllFonts] = useState<FontEntry[]>([]);
 
   /* RIGHT tabs */
   const [rightPanel, setRightPanel] = useState<RightPanelTab>("preview");
 
-  /* ✅ Light / Dark Mode */
+  /* Light / Dark Mode */
   const [mode, setMode] = useState<Mode>("light");
 
   const [copied, setCopied] = useState(false);
 
-  /* ✅ brand tokens editable (NO background/surface) */
+  /* Brand tokens */
   const [brand, setBrand] = useState<BrandColors>({
     primary: "#1F6F43",
     secondary: "#2EA76A",
@@ -251,11 +255,18 @@ export default function TypographyPage() {
     ring: "#2EA76A",
   });
 
-  /* Typography */
-  const [globalFontFamily, setGlobalFontFamily] = useState("Inter");
+  /* ─────────────────────────────────────────
+     Font state
+     • bodyFontFamily  → used for body text
+     • headingFontFamily → used for headings
+     • buttonBase.fontFamily → used for buttons
+     These are INDEPENDENT of each other.
+  ───────────────────────────────────────── */
+  const [bodyFontFamily, setBodyFontFamily] = useState("Inter");
   const [headingFontFamily, setHeadingFontFamily] = useState("Inter");
-  const [headingBaseSize, setHeadingBaseSize] = useState(17);
 
+  /* Heading settings */
+  const [headingBaseSize, setHeadingBaseSize] = useState(17);
   const [selectedHeading, setSelectedHeading] = useState<HeadingKey>("h1");
   const [headings, setHeadings] = useState<Record<HeadingKey, HeadingStyle>>({
     h1: { scale: 2.5, weight: 800, lineHeight: 1.05, letterSpacingEm: -0.03 },
@@ -266,6 +277,7 @@ export default function TypographyPage() {
     h6: { scale: 1.0, weight: 600, lineHeight: 1.3, letterSpacingEm: 0.01 },
   });
 
+  /* Body settings */
   const [body, setBody] = useState<BodyStyle>({
     sizePx: 17,
     weight: 400,
@@ -275,20 +287,7 @@ export default function TypographyPage() {
     paragraphGapPx: 14,
   });
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const req = await fetch("/api/admin/typography");
-        const res = await req.json();
-        setAllHeading(res.data);
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, []);
-
-  console.log(allHeading);
-
+  /* Button settings */
   const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
   const [hoveredBtn, setHoveredBtn] = useState<BtnKey | null>(null);
 
@@ -341,17 +340,76 @@ export default function TypographyPage() {
   const headingPx = (k: HeadingKey) =>
     Math.round(headingBaseSize * headings[k].scale);
 
-  /* -----------------------------------------
-    ✅ Apply theme to HTML (robust global usage)
-    - This makes your global CSS usable across pages:
-      :root {} + :root[data-theme="dark"] {}
-  ------------------------------------------ */
+  /* ─────────────────────────────────────────
+     Inject a custom font @font-face once
+  ───────────────────────────────────────── */
+  function ensureFontLoaded(font: FontEntry) {
+    const id = `font-face-${font.name.replace(/\s+/g, "-")}`;
+    if (document.getElementById(id)) return;
+
+    const style = document.createElement("style");
+    style.id = id;
+    style.innerHTML = `
+      @font-face {
+        font-family: '${font.name}';
+        src: url('${font.url}') format('truetype');
+        font-display: swap;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  /* ─────────────────────────────────────────
+     Font change handlers — SEPARATE per target
+  ───────────────────────────────────────── */
+
+  /** Called when the HEADING font selector changes */
+  const handleHeadingFontChange = (value: string) => {
+    if (!value) return;
+    setHeadingFontFamily(value);
+
+    // If it's a custom uploaded font, inject the @font-face
+    const found = allFonts.find((f) => f.name === value);
+    if (found) ensureFontLoaded(found);
+  };
+
+  /** Called when the BODY font selector changes */
+  const handleBodyFontChange = (value: string) => {
+    if (!value) return;
+    setBodyFontFamily(value);
+
+    const found = allFonts.find((f) => f.name === value);
+    if (found) ensureFontLoaded(found);
+  };
+
+  /** Called when the BUTTON font selector changes */
+  const handleButtonFontChange = (value: string) => {
+    if (!value) return;
+    setButtonBase((p) => ({ ...p, fontFamily: value }));
+
+    const found = allFonts.find((f) => f.name === value);
+    if (found) ensureFontLoaded(found);
+  };
+
+  /* Fetch custom fonts from API on mount */
   useEffect(() => {
-    const el = document.documentElement;
-    el.setAttribute("data-theme", mode);
+    (async () => {
+      try {
+        const req = await fetch("/api/admin/typography");
+        const res = await req.json();
+        setAllFonts(res.data ?? []);
+      } catch (error) {
+        console.error("Failed to load fonts:", error);
+      }
+    })();
+  }, []);
+
+  /* Sync data-theme attribute to <html> */
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", mode);
   }, [mode]);
 
-  /* ✅ computed palette for this preview (not user editable) */
+  /* ── Computed palette for preview (not user-editable) ── */
   const uiPalette = useMemo(() => {
     const light = {
       bg: "#F4F6F5",
@@ -375,14 +433,9 @@ export default function TypographyPage() {
     setRightPanel("preview");
   };
 
-  /* -----------------------------
-    ✅ Global Brand Guideline CSS (ROBUST)
-    - Produces:
-      1) :root  (base tokens)
-      2) :root[data-theme="light"] (light mode tokens)
-      3) :root[data-theme="dark"]  (dark mode tokens)
-    - This can be pasted into globals.css and will work on all pages
-  ------------------------------ */
+  /* ─────────────────────────────────────────
+     ROOT CSS output
+  ───────────────────────────────────────── */
   const ROOT_CSS = useMemo(() => {
     const h = headings;
 
@@ -399,19 +452,12 @@ export default function TypographyPage() {
     const secondary = clampHexOrFallback(brand.secondary, "#2EA76A");
     const accent = clampHexOrFallback(brand.accent, "#B9F3D5");
     const dark = clampHexOrFallback(brand.dark, "#0B3A2A");
-
     const ring = clampHexOrFallback(brand.ring, secondary);
 
-    // mode-specific derived values (stable defaults)
-    const lightBg = "#F4F6F5";
-    const lightSurface = "#FFFFFF";
     const lightText = clampHexOrFallback(brand.text, "#0B2A1F");
     const lightMuted = clampHexOrFallback(brand.mutedText, "#5E6E65");
     const lightBorder = clampHexOrFallback(brand.border, "#DDE6E1");
 
-    const darkBg = "#071B14";
-    const darkSurface = "#0B2A1F";
-    const darkText = "#EAF7F0";
     const darkMuted = mixHex("#EAF7F0", "#000000", 0.35);
     const darkBorder = rgba(accent, 0.22);
 
@@ -427,7 +473,76 @@ export default function TypographyPage() {
     );
     lines.push(``);
 
-    // 1) BASE TOKENS (shared across modes)
+    // ── @font-face declarations for every uploaded custom font ──
+    const bodyFont = allFonts.find((d) => d.name == bodyFontFamily);
+    const headingFont = allFonts.find((d) => d.name == headingFontFamily);
+
+    if (bodyFont) {
+      const ext =
+        bodyFont.url.split("?")[0].split(".").pop()?.toLowerCase() ??
+        "truetype";
+      const formatMap: Record<string, string> = {
+        ttf: "truetype",
+        otf: "opentype",
+        woff: "woff",
+        woff2: "woff2",
+        eot: "embedded-opentype",
+      };
+      const format = formatMap[ext] ?? "truetype";
+
+      lines.push(`@font-face {`);
+      lines.push(`  font-family: '${bodyFont.name}';`);
+      lines.push(`  src: url('${bodyFont.url}') format('${format}');`);
+      lines.push(`  font-display: swap;`);
+      lines.push(`}`);
+      lines.push(``);
+    }
+
+    if (headingFont) {
+      const ext =
+        headingFont.url.split("?")[0].split(".").pop()?.toLowerCase() ??
+        "truetype";
+      const formatMap: Record<string, string> = {
+        ttf: "truetype",
+        otf: "opentype",
+        woff: "woff",
+        woff2: "woff2",
+        eot: "embedded-opentype",
+      };
+      const format = formatMap[ext] ?? "truetype";
+
+      lines.push(`@font-face {`);
+      lines.push(`  font-family: '${headingFont.name}';`);
+      lines.push(`  src: url('${headingFont.url}') format('${format}');`);
+      lines.push(`  font-display: swap;`);
+      lines.push(`}`);
+      lines.push(``);
+    }
+
+    // if (allFonts.length > 0) {
+    //   lines.push(`/* Custom Fonts */`);
+    //   allFonts.forEach((font) => {
+    //     // Detect format from URL extension
+    //     const ext =
+    //       font.url.split("?")[0].split(".").pop()?.toLowerCase() ?? "truetype";
+    //     const formatMap: Record<string, string> = {
+    //       ttf: "truetype",
+    //       otf: "opentype",
+    //       woff: "woff",
+    //       woff2: "woff2",
+    //       eot: "embedded-opentype",
+    //     };
+    //     const format = formatMap[ext] ?? "truetype";
+
+    //     lines.push(`@font-face {`);
+    //     lines.push(`  font-family: '${font.name}';`);
+    //     lines.push(`  src: url('${font.url}') format('${format}');`);
+    //     lines.push(`  font-display: swap;`);
+    //     lines.push(`}`);
+    //     lines.push(``);
+    //   });
+    // }
+
     lines.push(`:root {`);
     lines.push(`  /* Brand Core */`);
     lines.push(`  --primary: ${primary};`);
@@ -437,11 +552,11 @@ export default function TypographyPage() {
     lines.push(`  --ring: ${ring};`);
     lines.push(``);
     lines.push(`  /* Fonts */`);
-    lines.push(`  --font-body: ${cssFont(globalFontFamily)};`);
+    lines.push(`  --font-body: ${cssFont(bodyFontFamily)};`);
     lines.push(`  --font-heading: ${cssFont(headingFontFamily)};`);
     lines.push(`  --font-button: ${cssFont(buttonBase.fontFamily)};`);
     lines.push(``);
-    lines.push(`  /* Headings (PX only) */`);
+    lines.push(`  /* Headings */`);
     (["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).forEach((k) => {
       const s = h[k];
       lines.push(`  --${k}-size: ${hPx[k]}px;`);
@@ -483,59 +598,50 @@ export default function TypographyPage() {
     lines.push(`}`);
     lines.push(``);
 
-    // 2) LIGHT MODE TOKENS
     lines.push(`:root[data-theme="light"] {`);
     lines.push(`  --mode: light;`);
-    lines.push(`  --bg: ${lightBg};`);
-    lines.push(`  --surface: ${lightSurface};`);
+    lines.push(`  --bg: #F4F6F5;`);
+    lines.push(`  --surface: #FFFFFF;`);
     lines.push(`  --text: ${lightText};`);
     lines.push(`  --muted-text: ${lightMuted};`);
     lines.push(`  --border: ${lightBorder};`);
     lines.push(`}`);
     lines.push(``);
 
-    // 3) DARK MODE TOKENS
     lines.push(`:root[data-theme="dark"] {`);
     lines.push(`  --mode: dark;`);
-    lines.push(`  --bg: ${darkBg};`);
-    lines.push(`  --surface: ${darkSurface};`);
-    lines.push(`  --text: ${darkText};`);
+    lines.push(`  --bg: #071B14;`);
+    lines.push(`  --surface: #0B2A1F;`);
+    lines.push(`  --text: #EAF7F0;`);
     lines.push(`  --muted-text: ${darkMuted};`);
     lines.push(`  --border: ${darkBorder};`);
     lines.push(`}`);
     lines.push(``);
 
-    // Optional helpers (usable across new pages)
-    lines.push(`/* Optional: Base application styles (recommended) */`);
+    lines.push(`/* Optional: Base application styles */`);
     lines.push(`html, body {`);
     lines.push(`  background: var(--bg);`);
     lines.push(`  color: var(--text);`);
     lines.push(`  font-family: var(--font-body);`);
+    lines.push(`  font-size: var(--body-size);`);
+    lines.push(`  font-weight: var(--body-weight);`);
+    lines.push(`  line-height: var(--body-lh);`);
+    lines.push(`  letter-spacing: var(--body-ls);`);
     lines.push(`}`);
-    lines.push(
-      `h1{font-family:var(--font-heading);font-size:var(--h1-size);font-weight:var(--h1-weight);line-height:var(--h1-lh);letter-spacing:var(--h1-ls);}`,
-    );
-    lines.push(
-      `h2{font-family:var(--font-heading);font-size:var(--h2-size);font-weight:var(--h2-weight);line-height:var(--h2-lh);letter-spacing:var(--h2-ls);}`,
-    );
-    lines.push(
-      `h3{font-family:var(--font-heading);font-size:var(--h3-size);font-weight:var(--h3-weight);line-height:var(--h3-lh);letter-spacing:var(--h3-ls);}`,
-    );
-    lines.push(
-      `h4{font-family:var(--font-heading);font-size:var(--h4-size);font-weight:var(--h4-weight);line-height:var(--h4-lh);letter-spacing:var(--h4-ls);}`,
-    );
-    lines.push(
-      `h5{font-family:var(--font-heading);font-size:var(--h5-size);font-weight:var(--h5-weight);line-height:var(--h5-lh);letter-spacing:var(--h5-ls);}`,
-    );
-    lines.push(
-      `h6{font-family:var(--font-heading);font-size:var(--h6-size);font-weight:var(--h6-weight);line-height:var(--h6-lh);letter-spacing:var(--h6-ls);}`,
-    );
+    lines.push(``);
+
+    (["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).forEach((k) => {
+      lines.push(
+        `${k}{font-family:var(--font-heading);font-size:var(--${k}-size);font-weight:var(--${k}-weight);line-height:var(--${k}-lh);letter-spacing:var(--${k}-ls);}`,
+      );
+    });
     lines.push(``);
 
     return lines.join("\n");
   }, [
     brand,
-    globalFontFamily,
+    allFonts,
+    bodyFontFamily,
     headingFontFamily,
     headingBaseSize,
     headings,
@@ -554,18 +660,19 @@ export default function TypographyPage() {
     }
   };
 
-  /* -----------------------------
-    Preview styling (NO gradient)
-    ✅ ensure typography is always readable in both modes
-  ------------------------------ */
+  /* ── Preview styles ── */
   const outerPreviewStyle = useMemo(
     () =>
       ({
         background: uiPalette.bg,
         color: uiPalette.text,
-        fontFamily: globalFontFamily,
+        fontFamily: bodyFontFamily, // body font drives outer preview text
+        fontSize: `${body.sizePx}px`,
+        fontWeight: body.weight,
+        lineHeight: body.lineHeight,
+        letterSpacing: `${body.letterSpacingEm}em`,
       }) as React.CSSProperties,
-    [uiPalette, globalFontFamily],
+    [uiPalette, bodyFontFamily, body],
   );
 
   const cardPreviewStyle = useMemo(
@@ -620,17 +727,36 @@ export default function TypographyPage() {
     };
   };
 
-  /* -----------------------------
-    LEFT Controls
-  ------------------------------ */
+  const FontOptions = ({ type }: { type?: string[] }) => {
+    const finalOptions =
+      type != undefined
+        ? allFonts.filter((d) => type.includes(d.fontType))
+        : allFonts;
+    return (
+      <>
+        <SelectItem value="Inter">Inter</SelectItem>
+        <SelectItem value="Merriweather">Merriweather (Serif)</SelectItem>
+        <SelectItem value="Space Mono">Space Mono (Monospace)</SelectItem>
+        {finalOptions.map((f) => (
+          <SelectItem key={f._id} value={f.name}>
+            {f.name}
+          </SelectItem>
+        ))}
+      </>
+    );
+  };
+
+  /* ─────────────────────────────────────────
+     LEFT CONTROL PANELS
+  ───────────────────────────────────────── */
   const colorsControls = useMemo(() => {
     const setC = (patch: Partial<BrandColors>) =>
       setBrand((p) => ({ ...p, ...patch }));
 
     const handleColorPallet = (allcolors: any) => {
       if (!allcolors) return;
-      const { brand, buttons } = allcolors;
-      setBrand(brand);
+      const { brand: b, buttons } = allcolors;
+      setBrand(b);
       setButtonColors(buttons);
     };
 
@@ -643,7 +769,7 @@ export default function TypographyPage() {
               <div>
                 <p className="text-sm font-semibold">Theme Colors</p>
                 <p className="text-xs text-muted-foreground">
-                  Left side change → right preview same time update.
+                  Left side change → right preview updates in real time.
                   (Background/Surface are mode-driven)
                 </p>
               </div>
@@ -729,6 +855,7 @@ export default function TypographyPage() {
 
     return (
       <Card>
+        {/* FontUploader lets users upload new fonts to S3 */}
         <FontUploader
           s3Config={{
             bucketName: process.env.NEXT_PUBLIC_AWS_S3_BUCKET!,
@@ -737,6 +864,7 @@ export default function TypographyPage() {
             secretAccessKey: process.env.NEXT_PUBLIC_AWS_SECRET_ACCESS_KEY!,
           }}
         />
+
         <CardContent className="pt-6 space-y-5">
           <div className="rounded-lg border bg-muted/20 p-4 space-y-4">
             <div className="flex items-center gap-2">
@@ -744,38 +872,36 @@ export default function TypographyPage() {
               <div>
                 <p className="text-sm font-semibold">Heading Settings</p>
                 <p className="text-xs text-muted-foreground">
-                  Font family change will reflect in preview “Typography” card.
+                  Font family only affects headings — body font is separate.
                 </p>
               </div>
             </div>
 
+            {/* ── Heading font selector ── */}
             <div className="space-y-2">
               <Label>Heading Font Family</Label>
               <Select
                 value={headingFontFamily}
-                onValueChange={setHeadingFontFamily}
+                onValueChange={handleHeadingFontChange}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Inter">Inter</SelectItem>
-                  <SelectItem value="Merriweather">
-                    Merriweather (Serif)
-                  </SelectItem>
-                  <SelectItem value="Space Mono">
-                    Space Mono (Monospace)
-                  </SelectItem>
-                  {allHeading.length > 0 &&
-                    allHeading.map((d: any) => {
-                      return (
-                        <SelectItem key={d._id} value={d.name}>
-                          {d.name}
-                        </SelectItem>
-                      );
-                    })}
+                  <FontOptions type={["heading", "general"]} />
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Preview badge showing active heading font */}
+            <div
+              className="rounded-md border px-3 py-2 text-sm"
+              style={{ fontFamily: headingFontFamily }}
+            >
+              <span className="text-xs text-muted-foreground mr-2">
+                Heading preview:
+              </span>
+              <span className="font-bold">{headingFontFamily}</span>
             </div>
 
             <div className="space-y-3">
@@ -892,6 +1018,7 @@ export default function TypographyPage() {
     headingBaseSize,
     headingFontFamily,
     headings,
+    allFonts,
   ]);
 
   const bodyControls = useMemo(() => {
@@ -901,26 +1028,28 @@ export default function TypographyPage() {
     return (
       <Card>
         <CardContent className="pt-6 space-y-5">
+          {/* ── Body font selector ── */}
           <div className="space-y-2">
             <Label>Body Font Family</Label>
-            <Select
-              value={globalFontFamily}
-              onValueChange={setGlobalFontFamily}
-            >
+            <Select value={bodyFontFamily} onValueChange={handleBodyFontChange}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Inter">Inter</SelectItem>
-                <SelectItem value="Roboto">Roboto</SelectItem>
-                <SelectItem value="Merriweather">
-                  Merriweather (Serif)
-                </SelectItem>
-                <SelectItem value="Space Mono">
-                  Space Mono (Monospace)
-                </SelectItem>
+                <FontOptions type={["body", "general"]} />
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Preview badge showing active body font */}
+          <div
+            className="rounded-md border px-3 py-2 text-sm"
+            style={{ fontFamily: bodyFontFamily }}
+          >
+            <span className="text-xs text-muted-foreground mr-2">
+              Body preview:
+            </span>
+            {bodyFontFamily} — The quick brown fox
           </div>
 
           <div className="space-y-3">
@@ -1025,7 +1154,7 @@ export default function TypographyPage() {
         </CardContent>
       </Card>
     );
-  }, [body, globalFontFamily]);
+  }, [body, bodyFontFamily, allFonts]);
 
   const buttonControls = useMemo(() => {
     const setBase = (patch: Partial<ButtonBaseStyle>) =>
@@ -1062,36 +1191,37 @@ export default function TypographyPage() {
                   variant={selectedBtn === k ? "default" : "outline"}
                   onClick={() => setSelectedBtn(k)}
                 >
-                  {k === "primary"
-                    ? "Primary"
-                    : k === "secondary"
-                      ? "Secondary"
-                      : "Outline"}
+                  {k.charAt(0).toUpperCase() + k.slice(1)}
                 </Button>
               ))}
             </div>
           </div>
 
+          {/* ── Button font selector ── */}
           <div className="space-y-2">
             <Label>Button Font Family</Label>
             <Select
               value={buttonBase.fontFamily}
-              onValueChange={(v) => setBase({ fontFamily: v })}
+              onValueChange={handleButtonFontChange}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Inter">Inter</SelectItem>
-                <SelectItem value="Roboto">Roboto</SelectItem>
-                <SelectItem value="Merriweather">
-                  Merriweather (Serif)
-                </SelectItem>
-                <SelectItem value="Space Mono">
-                  Space Mono (Monospace)
-                </SelectItem>
+                <FontOptions />
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Preview badge showing active button font */}
+          <div
+            className="rounded-md border px-3 py-2 text-sm"
+            style={{ fontFamily: buttonBase.fontFamily }}
+          >
+            <span className="text-xs text-muted-foreground mr-2">
+              Button font:
+            </span>
+            <span className="font-semibold">{buttonBase.fontFamily}</span>
           </div>
 
           <div className="space-y-3">
@@ -1185,14 +1315,12 @@ export default function TypographyPage() {
     buttonBase.sizePx,
     buttonBase.weight,
     selectedBtn,
+    allFonts,
   ]);
 
-  /* -----------------------------
-    Preview Blocks (NO gradient)
-    ✅ 4 buttons in hero
-    ✅ clicking those switches left tab
-    ✅ Typography card shows live font name
-  ------------------------------ */
+  /* ─────────────────────────────────────────
+     PREVIEW BLOCKS
+  ───────────────────────────────────────── */
   const Pill = ({ text }: { text: string }) => (
     <span
       className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-semibold border"
@@ -1225,7 +1353,6 @@ export default function TypographyPage() {
           boxShadow: "0 16px 36px rgba(0,0,0,0.08)",
         }}
       >
-        {/* ✅ solid background (gradient removed) */}
         <div
           className="p-6 md:p-7"
           style={{
@@ -1248,10 +1375,12 @@ export default function TypographyPage() {
             </div>
 
             <div className="text-[11px] opacity-75">
-              font: <b>{headingFontFamily}</b> • token-driven
+              heading: <b>{headingFontFamily}</b> • body:{" "}
+              <b>{bodyFontFamily}</b>
             </div>
           </div>
 
+          {/* Heading text — uses headingFontFamily */}
           <div className="mt-4" style={{ fontFamily: headingFontFamily }}>
             <div
               style={{
@@ -1263,20 +1392,19 @@ export default function TypographyPage() {
             >
               Brand Guidelines for Web
             </div>
-            {/* <div className="mt-2 text-sm opacity-85" style={{ maxWidth: 740 }}>
-              Is page ka goal: user ko clearly dikhaana chahiye ki kaunse colors, fonts, aur font sizes use ho rahe hain.
-              Sab kuch root tokens se control hota hai.
-            </div> */}
-
-            <p className="borderColor">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard dummy text
-              ever since the 1500s, when an unknown printer took a galley of
-              type and scrambled it to make a type specimen book
-            </p>
           </div>
 
-          {/* ✅ 4 buttons (clickable) */}
+          {/* Body paragraph — uses bodyFontFamily */}
+          <p
+            className="mt-2 text-sm opacity-85"
+            style={{ maxWidth: 740, fontFamily: bodyFontFamily }}
+          >
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry. Lorem Ipsum has been the industry's standard dummy text
+            ever since the 1500s.
+          </p>
+
+          {/* Tab pills */}
           <div className="mt-5 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const isActive = leftTab === t.key;
@@ -1287,6 +1415,8 @@ export default function TypographyPage() {
                   onClick={() => onLeftTab(t.key)}
                   className="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold"
                   style={{
+                    // button font family applied here
+                    fontFamily: buttonBase.fontFamily,
                     background: isActive
                       ? rgba("#ffffff", 0.16)
                       : rgba("#ffffff", 0.1),
@@ -1304,6 +1434,7 @@ export default function TypographyPage() {
     );
   };
 
+  /* ── Brand Gallery ── */
   const BrandGalleryPreview = (
     <div className="space-y-6">
       <PreviewHeader />
@@ -1313,16 +1444,15 @@ export default function TypographyPage() {
           <div>
             <div
               className="text-sm font-semibold"
-              style={{ color: uiPalette.text }}
+              style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
             >
               Brand Preview Gallery
             </div>
             <div
               className="text-xs mt-1"
-              style={{ color: uiPalette.mutedText }}
+              style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
             >
-              Task/goal: user ko ek glance me brand pages ka look feel samajh
-              aata hai.
+              Live token-driven preview across all brand elements.
             </div>
           </div>
           <Pill text="Templates" />
@@ -1353,7 +1483,6 @@ export default function TypographyPage() {
                 </div>
               </div>
 
-              {/* ✅ solid hero (gradient removed) */}
               <div
                 className="p-6"
                 style={{
@@ -1366,6 +1495,7 @@ export default function TypographyPage() {
                   position: "relative",
                 }}
               >
+                {/* Heading font */}
                 <div style={{ fontFamily: headingFontFamily }}>
                   <div className="text-2xl font-extrabold leading-tight">
                     KalpTree
@@ -1374,9 +1504,10 @@ export default function TypographyPage() {
                     Brand Guidelines.
                   </div>
                 </div>
+                {/* Body font */}
                 <div
                   className="mt-2 text-xs opacity-85"
-                  style={{ maxWidth: 360 }}
+                  style={{ maxWidth: 360, fontFamily: bodyFontFamily }}
                 >
                   Premium layout, consistent spacing, and token-driven design.
                 </div>
@@ -1385,6 +1516,7 @@ export default function TypographyPage() {
                   <span
                     className="inline-flex items-center rounded-lg px-3 py-1 text-[11px] font-semibold"
                     style={{
+                      fontFamily: buttonBase.fontFamily,
                       background: rgba("#ffffff", 0.14),
                       border: `1px solid ${rgba("#ffffff", 0.22)}`,
                     }}
@@ -1398,12 +1530,12 @@ export default function TypographyPage() {
                 </div>
               </div>
 
-              {/* inside cards */}
+              {/* Inside cards */}
               <div
                 className="p-4 grid grid-cols-1 gap-3"
                 style={{ background: softBg }}
               >
-                {/* Typography */}
+                {/* Typography card */}
                 <div className="rounded-xl border p-4" style={cardPreviewStyle}>
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-semibold">Typography</div>
@@ -1419,9 +1551,19 @@ export default function TypographyPage() {
                     </div>
                     <div
                       className="text-[11px] mt-1"
-                      style={{ color: uiPalette.mutedText }}
+                      style={{
+                        color: uiPalette.mutedText,
+                        fontFamily: bodyFontFamily,
+                      }}
                     >
-                      Headings + Body scale
+                      Headings:{" "}
+                      <b style={{ fontFamily: headingFontFamily }}>
+                        {headingFontFamily}
+                      </b>
+                      &nbsp;• Body:{" "}
+                      <b style={{ fontFamily: bodyFontFamily }}>
+                        {bodyFontFamily}
+                      </b>
                     </div>
 
                     <div
@@ -1444,7 +1586,7 @@ export default function TypographyPage() {
                   </div>
                 </div>
 
-                {/* Palette */}
+                {/* Palette card */}
                 <div className="rounded-xl border p-4" style={cardPreviewStyle}>
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-semibold">Color Palette</div>
@@ -1466,7 +1608,10 @@ export default function TypographyPage() {
                         <div className="p-2">
                           <div
                             className="text-[11px] font-semibold"
-                            style={{ color: uiPalette.text }}
+                            style={{
+                              color: uiPalette.text,
+                              fontFamily: bodyFontFamily,
+                            }}
                           >
                             {c.name}
                           </div>
@@ -1482,7 +1627,7 @@ export default function TypographyPage() {
                   </div>
                 </div>
 
-                {/* ✅ Buttons (4 samples) */}
+                {/* Buttons card */}
                 <div className="rounded-xl border p-4" style={cardPreviewStyle}>
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-semibold">Buttons</div>
@@ -1513,10 +1658,10 @@ export default function TypographyPage() {
                       },
                     )}
 
-                    {/* 4th button (Ghost) */}
+                    {/* Ghost button */}
                     <button
                       type="button"
-                      className="inline-flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-offset-background"
+                      className="inline-flex items-center justify-center select-none outline-none"
                       style={{
                         fontFamily: buttonBase.fontFamily,
                         fontSize: `${buttonBase.sizePx}px`,
@@ -1544,7 +1689,12 @@ export default function TypographyPage() {
           <div className="md:col-span-5 space-y-4">
             <div className="rounded-2xl border p-4" style={cardPreviewStyle}>
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold">Brand Overview</div>
+                <div
+                  className="text-xs font-semibold"
+                  style={{ fontFamily: bodyFontFamily }}
+                >
+                  Brand Overview
+                </div>
                 <Pill text="About" />
               </div>
               <div className="mt-3 space-y-2">
@@ -1579,7 +1729,10 @@ export default function TypographyPage() {
 
             <div className="rounded-2xl border p-4" style={cardPreviewStyle}>
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold">
+                <div
+                  className="text-xs font-semibold"
+                  style={{ fontFamily: bodyFontFamily }}
+                >
                   Brand story + values
                 </div>
                 <Pill text="Layout A" />
@@ -1592,7 +1745,12 @@ export default function TypographyPage() {
 
             <div className="rounded-2xl border p-4" style={cardPreviewStyle}>
               <div className="flex items-center justify-between">
-                <div className="text-xs font-semibold">Instagram Post</div>
+                <div
+                  className="text-xs font-semibold"
+                  style={{ fontFamily: bodyFontFamily }}
+                >
+                  Instagram Post
+                </div>
                 <Pill text="Social" />
               </div>
               <div
@@ -1609,13 +1767,19 @@ export default function TypographyPage() {
                 <div className="p-4">
                   <div
                     className="text-sm font-bold"
-                    style={{ color: uiPalette.text }}
+                    style={{
+                      color: uiPalette.text,
+                      fontFamily: headingFontFamily,
+                    }}
                   >
                     Build clean pages
                   </div>
                   <div
                     className="text-[11px] mt-1"
-                    style={{ color: uiPalette.mutedText }}
+                    style={{
+                      color: uiPalette.mutedText,
+                      fontFamily: bodyFontFamily,
+                    }}
                   >
                     Consistent tokens • premium spacing • strong CTA
                   </div>
@@ -1639,7 +1803,7 @@ export default function TypographyPage() {
           </div>
         </div>
 
-        {/* Tokens block */}
+        {/* Design Tokens block */}
         <div
           className="mt-6 rounded-2xl border p-5"
           style={{
@@ -1649,14 +1813,20 @@ export default function TypographyPage() {
         >
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold">
-                Design Tokens (What is being used)
+              <div
+                className="text-sm font-semibold"
+                style={{ fontFamily: bodyFontFamily }}
+              >
+                Design Tokens
               </div>
               <div
                 className="text-xs mt-1"
-                style={{ color: uiPalette.mutedText }}
+                style={{
+                  color: uiPalette.mutedText,
+                  fontFamily: bodyFontFamily,
+                }}
               >
-                Colors + fonts + sizes + radius + shadow (same page me clear).
+                Colors + fonts + sizes + radius + shadow — all token-driven.
               </div>
             </div>
             <Pill text="Tokens" />
@@ -1667,20 +1837,43 @@ export default function TypographyPage() {
               className="md:col-span-6 rounded-xl border p-4"
               style={cardPreviewStyle}
             >
-              <div className="text-xs font-semibold">Font Family</div>
               <div
-                className="mt-2 text-[11px]"
-                style={{ color: uiPalette.mutedText }}
+                className="text-xs font-semibold"
+                style={{ fontFamily: bodyFontFamily }}
               >
-                --font-body:{" "}
-                <span className="font-mono">{cssFont(globalFontFamily)}</span>
+                Font Families
               </div>
               <div
                 className="mt-2 text-[11px]"
                 style={{ color: uiPalette.mutedText }}
               >
-                --font-heading:{" "}
-                <span className="font-mono">{cssFont(headingFontFamily)}</span>
+                <div>
+                  --font-body:{" "}
+                  <span
+                    className="font-mono"
+                    style={{ fontFamily: bodyFontFamily }}
+                  >
+                    {bodyFontFamily}
+                  </span>
+                </div>
+                <div className="mt-1">
+                  --font-heading:{" "}
+                  <span
+                    className="font-mono"
+                    style={{ fontFamily: headingFontFamily }}
+                  >
+                    {headingFontFamily}
+                  </span>
+                </div>
+                <div className="mt-1">
+                  --font-button:{" "}
+                  <span
+                    className="font-mono"
+                    style={{ fontFamily: buttonBase.fontFamily }}
+                  >
+                    {buttonBase.fontFamily}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -1688,7 +1881,12 @@ export default function TypographyPage() {
               className="md:col-span-6 rounded-xl border p-4"
               style={cardPreviewStyle}
             >
-              <div className="text-xs font-semibold">Core Sizes</div>
+              <div
+                className="text-xs font-semibold"
+                style={{ fontFamily: bodyFontFamily }}
+              >
+                Core Sizes
+              </div>
               <div
                 className="mt-2 grid grid-cols-2 gap-2 text-[11px]"
                 style={{ color: uiPalette.mutedText }}
@@ -1707,6 +1905,7 @@ export default function TypographyPage() {
     </div>
   );
 
+  /* ── Headings Preview ── */
   const HeadingsPreview = (
     <div className="space-y-6">
       <PreviewHeader />
@@ -1714,12 +1913,18 @@ export default function TypographyPage() {
       <div className="mt-6">
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text }}
+          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
         >
           Typography Preview
         </div>
-        <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
-          Change font family / sliders → yahan live update.
+        <div
+          className="text-xs mt-1"
+          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+        >
+          Headings use{" "}
+          <b style={{ fontFamily: headingFontFamily }}>{headingFontFamily}</b> •
+          Body uses{" "}
+          <b style={{ fontFamily: bodyFontFamily }}>{bodyFontFamily}</b>
         </div>
 
         <div
@@ -1729,7 +1934,7 @@ export default function TypographyPage() {
             background: mode === "light" ? "#FFFFFF" : uiPalette.surface,
           }}
         >
-          <div className="space-y-5" style={{ fontFamily: headingFontFamily }}>
+          <div className="space-y-5">
             {(["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).map((k) => {
               const s = headings[k];
               const Tag = k as any;
@@ -1753,11 +1958,12 @@ export default function TypographyPage() {
 
                   <Tag
                     style={{
+                      fontFamily: headingFontFamily,
                       fontSize: `${headingBaseSize * s.scale}px`,
                       fontWeight: s.weight,
                       lineHeight: s.lineHeight,
                       letterSpacing: `${s.letterSpacingEm}em`,
-                      color: uiPalette.text, // ✅ FIX: always readable (was looking washed in screenshot)
+                      color: uiPalette.text,
                     }}
                   >
                     {k === "h1" && "Brand typography that feels premium"}
@@ -1776,6 +1982,7 @@ export default function TypographyPage() {
     </div>
   );
 
+  /* ── Body Preview ── */
   const BodyPreview = (
     <div className="space-y-6">
       <PreviewHeader />
@@ -1789,11 +1996,14 @@ export default function TypographyPage() {
       >
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text }}
+          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
         >
           Body Preview
         </div>
-        <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
+        <div
+          className="text-xs mt-1"
+          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+        >
           Paragraph spacing + max-width live.
         </div>
 
@@ -1804,7 +2014,7 @@ export default function TypographyPage() {
           >
             Body / {body.sizePx}px · w:{body.weight} · lh:
             {body.lineHeight.toFixed(2)} · ls:{body.letterSpacingEm.toFixed(2)}
-            em
+            em · font: {bodyFontFamily}
           </div>
 
           <div
@@ -1815,7 +2025,7 @@ export default function TypographyPage() {
               lineHeight: body.lineHeight,
               letterSpacing: `${body.letterSpacingEm}em`,
               color: uiPalette.text,
-              fontFamily: globalFontFamily,
+              fontFamily: bodyFontFamily,
             }}
           >
             <p
@@ -1824,12 +2034,15 @@ export default function TypographyPage() {
                 color: uiPalette.mutedText,
               }}
             >
-              Tokens-based system: aap jo left side change karte ho (colors /
-              fonts / sizes), woh instantly is preview me reflect hota hai.
+              Tokens-based system: all changes on the left (colors, fonts,
+              sizes) instantly reflect in this preview. This gives you a clear
+              picture of what your website pages will look and feel like.
             </p>
             <p style={{ color: uiPalette.mutedText }}>
-              Isse user ko samajhne me asaani hoti hai ki actual website pages
-              ka look & feel kaisa hoga.
+              Good typography isn't just about choosing a font — it's about
+              establishing a rhythm. Line-height, letter-spacing, paragraph
+              gaps, and max-width all work together to create readable,
+              comfortable prose.
             </p>
           </div>
         </div>
@@ -1837,6 +2050,7 @@ export default function TypographyPage() {
     </div>
   );
 
+  /* ── Buttons Preview ── */
   const ButtonsPreview = (
     <div className="space-y-6">
       <PreviewHeader />
@@ -1850,12 +2064,18 @@ export default function TypographyPage() {
       >
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text }}
+          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
         >
           Buttons Preview
         </div>
-        <div className="text-xs mt-1" style={{ color: uiPalette.mutedText }}>
-          Hover to see hover colors/border.
+        <div
+          className="text-xs mt-1"
+          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+        >
+          Hover to see hover colors/border • Font:{" "}
+          <b style={{ fontFamily: buttonBase.fontFamily }}>
+            {buttonBase.fontFamily}
+          </b>
         </div>
 
         <div className="mt-4 flex flex-wrap gap-3">
@@ -1881,10 +2101,10 @@ export default function TypographyPage() {
             );
           })}
 
-          {/* 4th button */}
+          {/* Ghost */}
           <button
             type="button"
-            className="inline-flex items-center justify-center select-none outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ring-offset-background"
+            className="inline-flex items-center justify-center select-none outline-none"
             style={{
               fontFamily: buttonBase.fontFamily,
               fontSize: `${buttonBase.sizePx}px`,
@@ -1907,50 +2127,35 @@ export default function TypographyPage() {
     </div>
   );
 
-  const ColorsPreview = BrandGalleryPreview;
-
   const RightPreviewContent =
     leftTab === "colors"
-      ? ColorsPreview
+      ? BrandGalleryPreview
       : leftTab === "headings"
         ? HeadingsPreview
         : leftTab === "body"
           ? BodyPreview
           : ButtonsPreview;
 
+  /* ─────────────────────────────────────────
+     RENDER
+  ───────────────────────────────────────── */
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-10">
       {/* TOP BAR */}
       <div className="flex justify-between items-center gap-3">
         <div className="grid grid-cols-4 gap-2">
-          <Button
-            variant={leftTab === "colors" ? "default" : "outline"}
-            onClick={() => onLeftTab("colors")}
-          >
-            Colors
-          </Button>
-          <Button
-            variant={leftTab === "headings" ? "default" : "outline"}
-            onClick={() => onLeftTab("headings")}
-          >
-            Headings
-          </Button>
-          <Button
-            variant={leftTab === "body" ? "default" : "outline"}
-            onClick={() => onLeftTab("body")}
-          >
-            Body
-          </Button>
-          <Button
-            variant={leftTab === "buttons" ? "default" : "outline"}
-            onClick={() => onLeftTab("buttons")}
-          >
-            Buttons
-          </Button>
+          {(["colors", "headings", "body", "buttons"] as LeftTab[]).map((t) => (
+            <Button
+              key={t}
+              variant={leftTab === t ? "default" : "outline"}
+              onClick={() => onLeftTab(t)}
+            >
+              {t.charAt(0).toUpperCase() + t.slice(1)}
+            </Button>
+          ))}
         </div>
 
         <div className="flex items-center gap-2">
-          {/* ✅ Light/Dark mode toggle */}
           <Button
             size="sm"
             variant="outline"
@@ -1971,7 +2176,6 @@ export default function TypographyPage() {
             variant={rightPanel === "preview" ? "secondary" : "ghost"}
             onClick={() => {
               setRightPanel("preview");
-              // ✅ requested: preview click -> typography show
               setLeftTab("headings");
             }}
             className="gap-2"
@@ -2033,7 +2237,7 @@ export default function TypographyPage() {
                   <p className="text-xs text-muted-foreground">
                     Light/Dark have separate variables via{" "}
                     <span className="font-mono">:root[data-theme="..."]</span>.
-                    Gradient removed (solid hero).
+                    Body, Heading, and Button fonts are tracked independently.
                   </p>
                 </div>
                 <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">

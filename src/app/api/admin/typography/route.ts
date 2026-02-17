@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
 
-    const { name, key, url } = body;
+    const { name, key, url, fontType } = body;
 
     const typographycoll = await getCollection("typography");
 
@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
       name,
       url,
       key,
+      fontType,
     });
 
     const typographies = await typographycoll.find().toArray();
