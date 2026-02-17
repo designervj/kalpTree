@@ -31,14 +31,7 @@ const ShowStyle = () => {
   const [brand, setBrand] = useState<BrandColors>();
   const [headings, setHeadings] = useState<Record<HeadingKey, HeadingStyle>>()
 
-  const [body, setBody] = useState<BodyStyle>({
-    sizePx: 17,
-    weight: 400,
-    lineHeight: 1.7,
-    letterSpacingEm: 0,
-    maxWidthCh: 62,
-    paragraphGapPx: 14,
-  });
+  const [body, setBody] = useState<BodyStyle>();
 
   const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
 
@@ -56,32 +49,7 @@ const ShowStyle = () => {
     transitionMs: 160,
   });
 
-  const [buttonColors, setButtonColors] = useState<Record<BtnKey, ButtonColors>>({
-    primary: {
-      bg: "#1F6F43",
-      text: "#FFFFFF",
-      border: "#1F6F43",
-      hoverBg: "#185A37",
-      hoverText: "#FFFFFF",
-      hoverBorder: "#185A37",
-    },
-    secondary: {
-      bg: "#EAF7F0",
-      text: "#0B2A1F",
-      border: "#DDE6E1",
-      hoverBg: "#DAF2E6",
-      hoverText: "#0B2A1F",
-      hoverBorder: "#CFE4DA",
-    },
-    outline: {
-      bg: "transparent",
-      text: "#0B2A1F",
-      border: "#CFE4DA",
-      hoverBg: "#F4FBF7",
-      hoverText: "#0B2A1F",
-      hoverBorder: "#9ED7C0",
-    },
-  });
+  const [buttonColors, setButtonColors] = useState<Record<BtnKey, ButtonColors>>();
 
 
   useEffect(() => {
@@ -143,14 +111,14 @@ const ShowStyle = () => {
       }));
       setHeadingFontFamily(getVal("font-heading"));
 
-      setBody({
-        sizePx: parseInt(getVal("body-size")),
-        weight: parseInt(getVal("body-weight")),
-        lineHeight: parseFloat(getVal("body-lh")),
-        letterSpacingEm: parseFloat(getVal("body-ls")),
-        maxWidthCh: parseInt(getVal("body-maxw")),
-        paragraphGapPx: parseInt(getVal("body-paragraph-gap")),
-      });
+      // setBody({
+      //   sizePx: parseInt(getVal("body-size")),
+      //   weight: parseInt(getVal("body-weight")),
+      //   lineHeight: parseFloat(getVal("body-lh")),
+      //   letterSpacingEm: parseFloat(getVal("body-ls")),
+      //   maxWidthCh: parseInt(getVal("body-maxw")),
+      //   paragraphGapPx: parseInt(getVal("body-paragraph-gap")),
+      // });
 
       setButtonBase({
         fontFamily: getVal("font-button"),
@@ -166,32 +134,32 @@ const ShowStyle = () => {
         transitionMs: parseInt(getVal("btn-transition")),
       });
 
-      setButtonColors({
-        primary: {
-          bg: getVal("btn-primary-bg"),
-          text: getVal("btn-primary-text"),
-          border: getVal("btn-primary-border"),
-          hoverBg: getVal("btn-primary-hover-bg"),
-          hoverText: getVal("btn-primary-hover-text"),
-          hoverBorder: getVal("btn-primary-hover-border"),
-        },
-        secondary: {
-          bg: getVal("btn-secondary-bg"),
-          text: getVal("btn-secondary-text"),
-          border: getVal("btn-secondary-border"),
-          hoverBg: getVal("btn-secondary-hover-bg"),
-          hoverText: getVal("btn-secondary-hover-text"),
-          hoverBorder: getVal("btn-secondary-hover-border"),
-        },
-        outline: {
-          bg: getVal("btn-outline-bg"),
-          text: getVal("btn-outline-text"),
-          border: getVal("btn-outline-border"),
-          hoverBg: getVal("btn-outline-hover-bg"),
-          hoverText: getVal("btn-outline-hover-text"),
-          hoverBorder: getVal("btn-outline-hover-border"),
-        },
-      });
+      // setButtonColors({
+      //   primary: {
+      //     bg: getVal("btn-primary-bg"),
+      //     text: getVal("btn-primary-text"),
+      //     border: getVal("btn-primary-border"),
+      //     hoverBg: getVal("btn-primary-hover-bg"),
+      //     hoverText: getVal("btn-primary-hover-text"),
+      //     hoverBorder: getVal("btn-primary-hover-border"),
+      //   },
+      //   secondary: {
+      //     bg: getVal("btn-secondary-bg"),
+      //     text: getVal("btn-secondary-text"),
+      //     border: getVal("btn-secondary-border"),
+      //     hoverBg: getVal("btn-secondary-hover-bg"),
+      //     hoverText: getVal("btn-secondary-hover-text"),
+      //     hoverBorder: getVal("btn-secondary-hover-border"),
+      //   },
+      //   outline: {
+      //     bg: getVal("btn-outline-bg"),
+      //     text: getVal("btn-outline-text"),
+      //     border: getVal("btn-outline-border"),
+      //     hoverBg: getVal("btn-outline-hover-bg"),
+      //     hoverText: getVal("btn-outline-hover-text"),
+      //     hoverBorder: getVal("btn-outline-hover-border"),
+      //   },
+      // });
 
       setGlobalFontFamily(getVal("font-body"));
     }
@@ -220,10 +188,13 @@ const ShowStyle = () => {
     // setRightPanel("preview");
   };
   const handleSectionColorChange = (v: Partial<BrandColors>) => {
-    // setBrand((prev) => ({
-    //   ...prev,
-    //   ...v,
-    // }));
+    setBrand((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        ...v,
+      };
+    });
   };
 
   console.log("headings", headings)
@@ -313,6 +284,7 @@ const ShowStyle = () => {
               setBrand={setBrand}
               uiPalette={uiPalette}
               setC={(v) => handleSectionColorChange(v)}
+              setButtonColors={setButtonColors}
             />
 
           }
@@ -324,20 +296,20 @@ const ShowStyle = () => {
             selectedHeading={selectedHeading}
             setSelectedHeading={setSelectedHeading}
           />}
-          {leftTab === "body" && <BodyControl
+          {/* {leftTab === "body" && <BodyControl
             body={body}
             setBody={(patch) => setBody((p) => ({ ...p, ...patch }))}
             globalFontFamily={globalFontFamily}
             setGlobalFontFamily={setGlobalFontFamily}
-          />}
-          {leftTab === "buttons" && <ButtonControl
+          />} */}
+          {/* {leftTab === "buttons" && <ButtonControl
             buttonBase={buttonBase}
             setButtonBase={(patch) => setButtonBase((p) => ({ ...p, ...patch }))}
             buttonColors={buttonColors}
             setButtonColors={setButtonColors}
             selectedBtn={selectedBtn}
             setSelectedBtn={setSelectedBtn}
-          />}
+          />} */}
         </div>
 
         {/* RIGHT */}

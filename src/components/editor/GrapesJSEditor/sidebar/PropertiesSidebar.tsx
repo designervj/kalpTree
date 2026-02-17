@@ -111,7 +111,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   categoryStyleConfigs,
   setCategoryStyleConfigs,
 }) => {
-  const [tab, setTab] = React.useState<TabKey>("style");
+  const [tab, setTab] = React.useState<TabKey>("global");
 
   // ✅ Hooks must be called BEFORE any early returns
   const { editForm } = useEditorContext();

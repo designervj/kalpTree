@@ -43,9 +43,9 @@ const BodyControl = ({
                 <div className="space-y-3">
                     <div className="flex justify-between">
                         <Label>Body Size</Label>
-                        <span className="text-xs text-muted-foreground">{body.sizePx}px</span>
+                        <span className="text-xs text-muted-foreground">{body.sizePx ?? 16}px</span>
                     </div>
-                    <Slider value={[body.sizePx]} min={12} max={24} step={1} onValueChange={(v) => setBody({ sizePx: v[0] })} />
+                    <Slider value={[body.sizePx ?? 16]} min={12} max={24} step={1} onValueChange={(v) => setBody({ sizePx: v[0] })} />
                 </div>
 
                 <div className="space-y-3">
@@ -69,9 +69,9 @@ const BodyControl = ({
                         <Label className="flex items-center gap-2">
                             <MoveVertical className="w-3 h-3" /> Line Height
                         </Label>
-                        <span className="text-xs text-muted-foreground">{body.lineHeight.toFixed(2)}</span>
+                        <span className="text-xs text-muted-foreground">{(body?.lineHeight ?? 1.5).toFixed(2)}</span>
                     </div>
-                    <Slider value={[body.lineHeight]} min={1.1} max={2.2} step={0.05} onValueChange={(v) => setBody({ lineHeight: v[0] })} />
+                    <Slider value={[body?.lineHeight ?? 1.5]} min={1.1} max={2.2} step={0.05} onValueChange={(v) => setBody({ lineHeight: v[0] })} />
                 </div>
 
                 <div className="space-y-3">
@@ -79,10 +79,10 @@ const BodyControl = ({
                         <Label className="flex items-center gap-2">
                             <AlignLeft className="w-3 h-3" /> Letter Spacing
                         </Label>
-                        <span className="text-xs text-muted-foreground">{body.letterSpacingEm.toFixed(2)}em</span>
+                        <span className="text-xs text-muted-foreground">{(body?.letterSpacingEm ?? 0).toFixed(2)}em</span>
                     </div>
                     <Slider
-                        value={[body.letterSpacingEm * 100]}
+                        value={[(body?.letterSpacingEm ?? 0) * 100]}
                         min={-5}
                         max={20}
                         step={1}
@@ -93,17 +93,17 @@ const BodyControl = ({
                 <div className="space-y-3">
                     <div className="flex justify-between">
                         <Label>Paragraph Max Width</Label>
-                        <span className="text-xs text-muted-foreground">{body.maxWidthCh}ch</span>
+                        <span className="text-xs text-muted-foreground">{body.maxWidthCh ?? 70}ch</span>
                     </div>
-                    <Slider value={[body.maxWidthCh]} min={40} max={90} step={1} onValueChange={(v) => setBody({ maxWidthCh: v[0] })} />
+                    {/* <Slider value={[body.maxWidthCh ?? 70]} min={40} max={90} step={1} onValueChange={(v) => setBody({ maxWidthCh: v[0] })} /> */}
                 </div>
 
                 <div className="space-y-3">
                     <div className="flex justify-between">
                         <Label>Paragraph Gap</Label>
-                        <span className="text-xs text-muted-foreground">{body.paragraphGapPx}px</span>
+                        <span className="text-xs text-muted-foreground">{body.paragraphGapPx ?? 16}px</span>
                     </div>
-                    <Slider value={[body.paragraphGapPx]} min={0} max={32} step={1} onValueChange={(v) => setBody({ paragraphGapPx: v[0] })} />
+                    {/* <Slider value={[body.paragraphGapPx ?? 16]} min={0} max={32} step={1} onValueChange={(v) => setBody({ paragraphGapPx: v[0] })} /> */}
                 </div>
             </CardContent>
         </Card>
