@@ -73,7 +73,7 @@ const ButtonControl = ({
 
                 <div className="space-y-2">
                     <Label>Button Font Family</Label>
-                    <Select value={buttonBase.fontFamily} onValueChange={(v) => setBase({ fontFamily: v })}>
+                    <Select value={buttonBase.fontFamily ?? "Inter"} onValueChange={(v) => setBase({ fontFamily: v })}>
                         <SelectTrigger>
                             <SelectValue />
                         </SelectTrigger>
@@ -89,9 +89,9 @@ const ButtonControl = ({
                 <div className="space-y-3">
                     <div className="flex justify-between">
                         <Label>Font Size</Label>
-                        <span className="text-xs text-muted-foreground">{buttonBase.sizePx}px</span>
+                        <span className="text-xs text-muted-foreground">{buttonBase.sizePx ?? 14}px</span>
                     </div>
-                    <Slider value={[buttonBase.sizePx]} min={12} max={20} step={1} onValueChange={(v) => setBase({ sizePx: v[0] })} />
+                    <Slider value={[buttonBase.sizePx ?? 14]} min={12} max={20} step={1} onValueChange={(v) => setBase({ sizePx: v[0] })} />
                 </div>
 
                 <div className="space-y-3">

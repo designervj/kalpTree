@@ -2200,7 +2200,7 @@ export function useEditor(containerId: string) {
             if (canvasHead) {
               // Find or create the global styles element
               let globalStyleEl = canvasDoc.querySelector('[data-global-styles="true"]');
-
+              console.log("globalStyleEl--->", globalStyleEl)
               if (!globalStyleEl) {
                 globalStyleEl = canvasDoc.createElement('style');
                 globalStyleEl.setAttribute('data-global-styles', 'true');
@@ -2210,9 +2210,11 @@ export function useEditor(containerId: string) {
               // Get existing global styles
               const existingStyles = globalStyleEl.innerHTML;
 
+              console.log("existingStyles--->", existingStyles)
               // Standard CSS variable regex
               const cssVars: Record<string, string> = {};
 
+              console.log("cssVars--->", cssVars)
               // Parse all variables from the content
               const declRegex = /(--[\w-]+)\s*:\s*([^;]+)/g;
               let match;

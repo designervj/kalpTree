@@ -1,19 +1,28 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Palette } from 'lucide-react'
 import React from 'react'
-import { BrandColors } from '../GlobalStyleModal';
+import { BrandColors, BtnKey, ButtonColors } from '../GlobalStyleModal';
 import { Separator } from "@/components/ui/separator";
 import HexInput from './HexInput';
+import ColorPallet from '@/app/admin/websites/[website]/branding/typography/ColorPallet';
 
 type ColorControlProps = {
     brand: BrandColors;
     setBrand: (v: BrandColors) => void;
     uiPalette: { bg: string; surface: string };
     setC: (v: Partial<BrandColors>) => void;
+    setButtonColors: (v: Record<BtnKey, ButtonColors>) => void;
 }
 
 
-const ColorControl = ({ brand, setBrand, uiPalette, setC }: ColorControlProps) => {
+const ColorControl = ({ brand, setBrand, uiPalette, setC, setButtonColors }: ColorControlProps) => {
+
+    const handleColorPallet = (allcolors: any) => {
+        if (!allcolors) return;
+        const { brand, buttons } = allcolors;
+        if (brand) setBrand(brand);
+        if (buttons) setButtonColors(buttons);
+    };
     return (
         <Card>
             <CardContent className="pt-6 space-y-5">
@@ -28,18 +37,18 @@ const ColorControl = ({ brand, setBrand, uiPalette, setC }: ColorControlProps) =
                         </div>
                     </div>
                 </div>
-
-                <HexInput label="Primary" value={brand.primary} fallback="#1F6F43" onCommit={(v) => setC({ primary: v })} />
-                <HexInput label="Secondary" value={brand.secondary} fallback="#2EA76A" onCommit={(v) => setC({ secondary: v })} />
-                <HexInput label="Accent" value={brand.accent} fallback="#B9F3D5" onCommit={(v) => setC({ accent: v })} />
-                <HexInput label="Dark" value={brand.dark} fallback="#0B3A2A" onCommit={(v) => setC({ dark: v })} />
+                {/* <ColorPallet handleColorPallet={handleColorPallet} /> */}
+                <HexInput label="Primary" value={!brand?.primary ? '#1F6F43' : brand?.primary} fallback="#1F6F43" onCommit={(v) => setC({ primary: v })} />
+                <HexInput label="Secondary" value={!brand?.secondary ? '#2EA76A' : brand?.secondary} fallback="#2EA76A" onCommit={(v) => setC({ secondary: v })} />
+                <HexInput label="Accent" value={!brand?.accent ? '#B9F3D5' : brand?.accent} fallback="#B9F3D5" onCommit={(v) => setC({ accent: v })} />
+                <HexInput label="Dark" value={!brand?.dark ? '#0B3A2A' : brand?.dark} fallback="#0B3A2A" onCommit={(v) => setC({ dark: v })} />
 
                 <Separator />
 
-                <HexInput label="Text (Light Mode)" value={brand.text} fallback="#0B2A1F" onCommit={(v) => setC({ text: v })} />
-                <HexInput label="Muted Text (Light Mode)" value={brand.mutedText} fallback="#5E6E65" onCommit={(v) => setC({ mutedText: v })} />
-                <HexInput label="Border (Light Mode)" value={brand.border} fallback="#DDE6E1" onCommit={(v) => setC({ border: v })} />
-                <HexInput label="Ring" value={brand.ring} fallback="#2EA76A" onCommit={(v) => setC({ ring: v })} />
+                <HexInput label="Text (Light Mode)" value={!brand?.text ? '#0B2A1F' : brand?.text} fallback="#0B2A1F" onCommit={(v) => setC({ text: v })} />
+                <HexInput label="Muted Text (Light Mode)" value={!brand?.mutedText ? '#5E6E65' : brand?.mutedText} fallback="#5E6E65" onCommit={(v) => setC({ mutedText: v })} />
+                <HexInput label="Border (Light Mode)" value={!brand?.border ? '#DDE6E1' : brand?.border} fallback="#DDE6E1" onCommit={(v) => setC({ border: v })} />
+                <HexInput label="Ring" value={!brand?.ring ? '#2EA76A' : brand?.ring} fallback="#2EA76A" onCommit={(v) => setC({ ring: v })} />
 
                 <div className="rounded-lg border p-3 text-xs text-muted-foreground">
                     <div className="flex items-center justify-between">
