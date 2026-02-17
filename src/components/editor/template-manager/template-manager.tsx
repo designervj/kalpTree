@@ -36,6 +36,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 import ShowHTMLtemplate from "@/components/admin/templates/showTemplate/ShowHTMLtemplate";
+import ShowPallete from "@/components/admin/templates/showTemplate/ShowPallete";
 
 interface TemplateManagerProps {
   onSelectTemplate: (content: string, append?: boolean) => void;
@@ -372,11 +373,14 @@ export function TemplateManager({
                                 <CardContent className="p-4">
                                   <div className="relative">
                                     <div className="aspect-[16/10] rounded-xl overflow-hidden bg-slate-100 border border-slate-200">
-                                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white">
-                                        <ShowHTMLtemplate 
-                                        html={template?.content || ""} 
-                                        />
+                                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white flex flex-col overflow-hidden">
+                                        <div className="flex-1 relative overflow-hidden">
+                                          <ShowHTMLtemplate html={template?.content || ""} />
+                                        </div>
+                                      
                                       </div>
+
+
                                       {/* <img
                                         src={
                                           template.thumbnail ||
@@ -401,6 +405,9 @@ export function TemplateManager({
                                       <div className="text-sm font-semibold text-slate-900 truncate">
                                         {template.label}
                                       </div>
+                                        <div className="h-2 w-full">
+                                          <ShowPallete html={template?.content || ""} />
+                                        </div>
                                       {/* <div className="text-xs text-slate-500 truncate">
                                         {componentCategories.find((c) => c.id === template.category)
                                           ?.label || template.category}

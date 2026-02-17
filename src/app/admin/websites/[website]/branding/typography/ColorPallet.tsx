@@ -12,7 +12,7 @@ type Combo = {
 const CARD_W = 140;
 const GAP = 14;
 
-const ColorPallet = ({handleColorPallet}:any) => {
+const ColorPallet = ({ handleColorPallet }: any) => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
@@ -145,13 +145,12 @@ const ColorPallet = ({handleColorPallet}:any) => {
                   className="shrink-0"
                   style={{ width: CARD_W, scrollSnapAlign: "start" }}
                 >
-                  <button
-                    type="button"
+                  <div
                     onClick={() =>
                       setActiveId((prev) => (prev === c._id ? null : c._id))
                     }
                     className={[
-                      "w-full rounded-2xl bg-[#F3F4F6] text-left shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:bg-[#EEF0F3] transition",
+                      "w-full rounded-2xl bg-[#F3F4F6] text-left shadow-[0_1px_0_rgba(0,0,0,0.04)] hover:bg-[#EEF0F3] transition cursor-pointer",
                       isActive ? "ring-2 ring-black/10" : "",
                     ].join(" ")}
                   >
@@ -196,7 +195,7 @@ const ColorPallet = ({handleColorPallet}:any) => {
                             handleColorPallet(c.colors);
                           }}
                           className="px-4 py-2 bg-slate-900 text-white text-[13px] font-medium rounded-lg shadow-lg hover:bg-slate-800 transition-colors"
-                          style={{ 
+                          style={{
                             pointerEvents: "auto",
                             animation: "popIn 160ms ease-out"
                           }}
@@ -212,7 +211,7 @@ const ColorPallet = ({handleColorPallet}:any) => {
                         {c.name}
                       </div>
                     </div>
-                  </button>
+                  </div>
                 </div>
               );
             })}

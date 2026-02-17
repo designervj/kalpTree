@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 // Adjust the import path for Website if needed
 import { Website } from "@/components/admin/AppShell";
 import { savedashboardDetailsThunk } from "../dashboardSlice/dashBoardSlice";
-import { getAllWebsites, getCurrentWebsites } from "./WebsiteThunk";
+import { getAllWebsites, getCurrentWebsites, updateWebsite } from "./WebsiteThunk";
 
 interface WebsitesState {
   websites: Website[];
@@ -96,6 +96,16 @@ const websitesSlice = createSlice({
       .addCase(getCurrentWebsites.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentWebsite = action.payload[0]
+      })
+
+      // upadate website
+      .addCase(updateWebsite.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.currentWebsite = action.payload
+
+        // update website in websites array
+        state.websites = state.websites.map((item: Website) => item._id === action.payload._id ? action.payload : item)
+        state.selectedWebsites = state.selectedWebsites.map((item: Website) => item._id === action.payload._id ? action.payload : item) 
       })
       ;
   },

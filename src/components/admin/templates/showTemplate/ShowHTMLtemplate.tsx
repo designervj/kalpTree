@@ -1,9 +1,13 @@
 import React, { useMemo } from 'react'
+import { extractColors, extractFontsAndSizesFromHTML,} from './util/ExtractColorFont'
 
 type htmlProps = {
     html: string
 }
 const ShowHTMLtemplate = ({ html }: htmlProps) => {
+
+
+
     const srcDoc = useMemo(() => `
     <!DOCTYPE html>
     <html style="overflow: hidden; pointer-events: none; width: 100%; height: 100%;">
@@ -36,6 +40,7 @@ const ShowHTMLtemplate = ({ html }: htmlProps) => {
                     scrolling="no"
                 />
             </div>
+            
             {/* Overlay to catch any stray interactions */}
             <div className="absolute inset-0 z-10" />
         </div>

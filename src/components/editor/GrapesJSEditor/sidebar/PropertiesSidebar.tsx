@@ -273,8 +273,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       case "seo":
         return renderPlaceholder(<SeobuilderPage />);
 
-      case "seo":
-        return renderPlaceholder(<SeobuilderPage />);
+      // case "seo":
+      //   return renderPlaceholder(<SeobuilderPage />);
 
       case "more":
         return renderPlaceholder(<AllBuilderPage />);

@@ -38,15 +38,5 @@ export async function POST(req: Request) {
   if (!cookie)
     return NextResponse.json({ error: 'Missing tenantId' }, { status: 400 });
 
-  console.log("cookies", cookies)
-  const created = await websiteService.create({
-    tenantId: cookie,
-    // tenantSlug: "asf",
-    name: parsed.data.name,
-    serviceType: parsed.data.serviceType,
-    ...(parsed.data.primaryDomain && parsed.data.primaryDomain.length > 0
-      ? { primaryDomain: parsed.data.primaryDomain }
-      : {}),
-  });
-  return NextResponse.json(created, { status: 201 });
+  return NextResponse.json({status:200});
 }
