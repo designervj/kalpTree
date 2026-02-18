@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TemplateDocument } from '../templates/TemplateType';
 import { setPageEdit } from '@/hooks/slices/pageEditSlice';
 import { useRouter } from 'next/navigation';
+import ShowHeaderHtml from './ShowHeaderHtml';
 
 const ShowCurrentHeader = () => {
     const { websiteHeader, hasFetched } = useSelector((state: RootState) => state.header);
@@ -90,11 +91,9 @@ const ShowCurrentHeader = () => {
                         </div>
                         <div
                             key={header?._id?.toString() || index}
-                            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+                            className="border rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow h-[150px] overflow-hidden"
                         >
-                            <div
-                                dangerouslySetInnerHTML={{ __html: header?.content?.replace(/\\n/g, '') || '' }}
-                            />
+                            <ShowHeaderHtml html={header?.content || ''} />
                         </div>
                     </div>
                 ))
