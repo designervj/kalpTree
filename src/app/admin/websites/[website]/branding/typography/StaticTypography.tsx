@@ -32,6 +32,7 @@ import ColorPallet from "./ColorPallet";
 import { FontUploader } from "./Fontuploader";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor/GlobalStyelModel";
 
 /* -----------------------------
   Types
@@ -236,7 +237,145 @@ export default function TypographyPage() {
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
-  console.log("===>>", currentWebsite);
+  const data = transformRawToGlobalStyleModel(currentWebsite?.globalStyle);
+
+  console.log(data);
+
+  // Add this useEffect:
+  useEffect(() => {
+    if (!data) return;
+
+    // Brand colors
+    if (data.brand) {
+      setBrand({
+        primary: data.brand.primary ?? "#1F6F43",
+        secondary: data.brand.secondary ?? "#2EA76A",
+        accent: data.brand.accent ?? "#B9F3D5",
+        dark: data.brand.dark ?? "#0B3A2A",
+        text: data.brand.text ?? "#0B2A1F",
+        mutedText: data.brand.mutedText ?? "#5E6E65",
+        border: data.brand.border ?? "#DDE6E1",
+        ring: data.brand.ring ?? "#2EA76A",
+      });
+    }
+
+    // Fonts
+    if (data.fonts) {
+      // Extract just the font name (before the first comma)
+      const extractFontName = (fontStr: string) =>
+        fontStr?.split(",")[0].trim().replace(/^"|"$/g, "") ?? "Inter";
+
+      setBodyFontFamily(extractFontName(data.fonts.body));
+      setHeadingFontFamily(extractFontName(data.fonts.heading));
+      setButtonBase((prev) => ({
+        ...prev,
+        fontFamily: extractFontName(data.fonts.button),
+      }));
+    }
+
+    // Headings
+    if (data.headings) {
+      setHeadings({
+        h1: {
+          scale: data.headings.h1?.scale ?? 2.5,
+          weight: data.headings.h1?.weight ?? 800,
+          lineHeight: data.headings.h1?.lineHeight ?? 1.05,
+          letterSpacingEm: data.headings.h1?.letterSpacingEm ?? -0.03,
+        },
+        h2: {
+          scale: data.headings.h2?.scale ?? 2.0,
+          weight: data.headings.h2?.weight ?? 800,
+          lineHeight: data.headings.h2?.lineHeight ?? 1.1,
+          letterSpacingEm: data.headings.h2?.letterSpacingEm ?? -0.02,
+        },
+        h3: {
+          scale: data.headings.h3?.scale ?? 1.5,
+          weight: data.headings.h3?.weight ?? 700,
+          lineHeight: data.headings.h3?.lineHeight ?? 1.15,
+          letterSpacingEm: data.headings.h3?.letterSpacingEm ?? -0.01,
+        },
+        h4: {
+          scale: data.headings.h4?.scale ?? 1.25,
+          weight: data.headings.h4?.weight ?? 700,
+          lineHeight: data.headings.h4?.lineHeight ?? 1.2,
+          letterSpacingEm: data.headings.h4?.letterSpacingEm ?? 0,
+        },
+        h5: {
+          scale: data.headings.h5?.scale ?? 1.1,
+          weight: data.headings.h5?.weight ?? 600,
+          lineHeight: data.headings.h5?.lineHeight ?? 1.25,
+          letterSpacingEm: data.headings.h5?.letterSpacingEm ?? 0,
+        },
+        h6: {
+          scale: data.headings.h6?.scale ?? 1.0,
+          weight: data.headings.h6?.weight ?? 600,
+          lineHeight: data.headings.h6?.lineHeight ?? 1.3,
+          letterSpacingEm: data.headings.h6?.letterSpacingEm ?? 0.01,
+        },
+      });
+    }
+
+    // Body
+    if (data.body) {
+      setBody({
+        sizePx: data.body.sizePx ?? 17,
+        weight: data.body.weight ?? 400,
+        lineHeight: data.body.lineHeight ?? 1.7,
+        letterSpacingEm: data.body.letterSpacingEm ?? 0,
+        maxWidthCh: data.body.maxWidthCh ?? 62,
+        paragraphGapPx: data.body.paragraphGapPx ?? 14,
+      });
+    }
+
+    // Button base
+    if (data.buttonBase ?? data.buttons?.base) {
+      const base = data.buttonBase ?? data.buttons.base;
+      setButtonBase((prev) => ({
+        ...prev,
+        sizePx: base.sizePx ?? 14,
+        weight: base.weight ?? 600,
+        letterSpacingEm: base.letterSpacingEm ?? 0,
+        transform: base.transform ?? "none",
+        radiusPx: base.radiusPx ?? 12,
+        heightPx: base.heightPx ?? 40,
+        paddingXPx: base.paddingXPx ?? 16,
+        borderWidthPx: base.borderWidthPx ?? 1,
+        shadow: base.shadow ?? "none",
+        transitionMs: base.transitionMs ?? 160,
+      }));
+    }
+
+    // Button colors
+    const btnColors = data.buttonColors ?? data.buttons;
+    if (btnColors) {
+      setButtonColors({
+        primary: {
+          bg: btnColors.primary?.bg ?? "#1F6F43",
+          text: btnColors.primary?.text ?? "#FFFFFF",
+          border: btnColors.primary?.border ?? "#1F6F43",
+          hoverBg: btnColors.primary?.hoverBg ?? "#185A37",
+          hoverText: btnColors.primary?.hoverText ?? "#FFFFFF",
+          hoverBorder: btnColors.primary?.hoverBorder ?? "#185A37",
+        },
+        secondary: {
+          bg: btnColors.secondary?.bg ?? "#EAF7F0",
+          text: btnColors.secondary?.text ?? "#0B2A1F",
+          border: btnColors.secondary?.border ?? "#DDE6E1",
+          hoverBg: btnColors.secondary?.hoverBg ?? "#DAF2E6",
+          hoverText: btnColors.secondary?.hoverText ?? "#0B2A1F",
+          hoverBorder: btnColors.secondary?.hoverBorder ?? "#CFE4DA",
+        },
+        outline: {
+          bg: btnColors.outline?.bg ?? "transparent",
+          text: btnColors.outline?.text ?? "#0B2A1F",
+          border: btnColors.outline?.border ?? "#CFE4DA",
+          hoverBg: btnColors.outline?.hoverBg ?? "#F4FBF7",
+          hoverText: btnColors.outline?.hoverText ?? "#0B2A1F",
+          hoverBorder: btnColors.outline?.hoverBorder ?? "#9ED7C0",
+        },
+      });
+    }
+  }, [currentWebsite?.globalStyle]);
 
   /** All custom fonts loaded from the API */
   const [allFonts, setAllFonts] = useState<FontEntry[]>([]);
