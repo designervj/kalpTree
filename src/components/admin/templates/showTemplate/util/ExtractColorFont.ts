@@ -1,46 +1,22 @@
 export function extractColors(cssString: string) {
     const colorRegex =
-        /#(?:[0-9a-fA-F]{3}){1,2}\b|rgba?\([^)]+\)|var\(--[^)]+\)|\b(?:white|black|gray|grey|blue|red|green|yellow|orange|purple|pink)\b/gi;
+        /#(?:[0-9a-fA-F]{3}){1,2}\b|rgba?\([^)]+\)|\b(?:white|black|gray|grey|blue|red|green|yellow|orange|purple|pink)\b/gi;
 
     const matches = cssString.match(colorRegex) || [];
-
-    // Patterns that are definitely NOT colors (structural properties)
-    const nonColorIndicators = [
-        "-size", "-weight", "-lh", "-ls", "-h", "-w", "-pad", "-radius",
-        "-border-w", "-transform", "-transition", "-height", "-width", "-gap",
-        "-index", "-duration", "-delay", "-opacity", "-shadow"
-    ];
-
-    // Specific variables to exclude as they represent functional/abstract concepts rather than palette colors
-    const excludedVariables = [
-        "var(--border)", "var(--bg)", "var(--link)", "var(--link-hover)",
-        "var(--announce-h)", "var(--nav-h)", "var(--font-heading)", "var(--font-body)",
-        "var(--input-focus-border)", "var(--input-focus-shadow)", "var(--btn-height)"
-    ];
 
     const filteredMatches = matches.filter((color) => {
         const low = color.toLowerCase();
 
-        // Exclude explicit names marked by the user
-        if (excludedVariables.includes(low)) return false;
-
-        // Filter out CSS variables that represent non-color properties
-        if (low.startsWith("var(--")) {
-            if (nonColorIndicators.some((indicator) => low.includes(indicator))) {
-                return false;
-            }
-            // Exclude generic font/spacing variables
-            if (low.includes("font-") || low.includes("spacing-")) {
-                return false;
-            }
+        // Filter out any colors that might start with 'var'
+        if (low.startsWith("var")) {
+            return false;
         }
 
         return true;
     });
 
-    // Normalize colors to prevent duplicates (e.g., #fff vs #ffffff)
-    const seenNormalized = new Set<string>();
-    const uniqueColors: string[] = [];
+    // Normalize colors and count occurrences
+    const colorCounts = new Map<string, { color: string; count: number }>();
 
     for (const color of filteredMatches) {
         let normalized = color.toLowerCase();
@@ -50,13 +26,16 @@ export function extractColors(cssString: string) {
             normalized = "#" + normalized[1] + normalized[1] + normalized[2] + normalized[2] + normalized[3] + normalized[3];
         }
 
-        if (!seenNormalized.has(normalized)) {
-            seenNormalized.add(normalized);
-            uniqueColors.push(color);
+        const existing = colorCounts.get(normalized);
+        if (existing) {
+            existing.count++;
+        } else {
+            colorCounts.set(normalized, { color, count: 1 });
         }
     }
 
-    return uniqueColors;
+    // Convert Map to array and sort by count descending
+    return Array.from(colorCounts.values()).sort((a, b) => b.count - a.count);
 }
 
 

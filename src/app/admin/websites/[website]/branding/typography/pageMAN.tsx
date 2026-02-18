@@ -3,10 +3,10 @@ import TropgraphyHome from '@/components/admin/branding/tropography/TropgraphyHo
 
 import React from 'react'
 
-const page = () => {
+const PageMan = () => {
   return (
     <TropgraphyHome/>
   )
 }
 
-export default page
+export default PageMan
