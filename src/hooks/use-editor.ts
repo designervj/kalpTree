@@ -279,10 +279,10 @@ export function useEditor(containerId: string) {
       doc.querySelector('[data-tailwind="true"]')?.remove();
 
       // Inject Lucide Icons for icon hydration - avoid redundant reloads
-      if (!doc.querySelector('[data-lucide="true"]')) {
+      if (!doc.querySelector('[data-lucide-script="true"]')) {
         const lucideScript = doc.createElement("script");
         lucideScript.src = "https://unpkg.com/lucide@latest";
-        lucideScript.setAttribute("data-lucide", "true");
+        lucideScript.setAttribute("data-lucide-script", "true");
         doc.head.appendChild(lucideScript);
         lucideScript.onload = () => {
           if ((doc.defaultView as any).lucide) {
@@ -1232,6 +1232,10 @@ export function useEditor(containerId: string) {
         //editForm
         setEditForm(componentHtml)
 
+      } else if (component?.attributes?.tagName === 'header') {
+        console.log("header selected")
+        // const componentHtml = component.toHTML();
+        // setEditForm(componentHtml)
       } else {
         setEditForm(null)
       }

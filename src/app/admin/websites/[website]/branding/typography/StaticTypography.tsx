@@ -237,7 +237,7 @@ export default function TypographyPage() {
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
-  const data = transformRawToGlobalStyleModel(currentWebsite?.globalStyle);
+  const data = transformRawToGlobalStyleModel(currentWebsite?.globalStyle||"");
 
   console.log(data);
 
@@ -483,7 +483,7 @@ export default function TypographyPage() {
   const activeBtnColors = buttonColors[selectedBtn];
 
   const headingPx = (k: HeadingKey) =>
-    Math.round(headingBaseSize * headings[k].scale);
+    Math.round(102);
 
   /* ─────────────────────────────────────────
      Inject a custom font @font-face once

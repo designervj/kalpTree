@@ -75,7 +75,7 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
   const [search, setSearch] = useState("");
   const [demo, setDemo] = useState<string>("all");
   const [view, setView] = useState<ViewTab>("all");
-   const {currentWebsite}= useSelector((state:RootState)=>state.websites)
+  const { currentWebsite } = useSelector((state: RootState) => state.websites)
   /** ✅ Prevent infinite loop (selectedTemplate identity changes in parent) */
   const selectedTemplateRef = useRef(selectedTemplate);
   useEffect(() => {
@@ -119,8 +119,8 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
 
   /** ✅ dropdown categories */
   const demoOptions = useMemo(() => {
-  
-    
+
+
     const set = new Set<string>();
 
     (allTemplate || []).forEach((t: any) => {
@@ -134,13 +134,11 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
     });
 
     return ["all", ...Array.from(set)];
-  }, [allTemplate, getCategory,currentWebsite]);
+  }, [allTemplate, getCategory, currentWebsite]);
 
-  const myTemplate= useMemo(()=>{
-    return allTemplate.filter(item=>item?.websiteId===currentWebsite?._id?.toString())
-  },[allTemplate,currentWebsite])
-
-  console.log("myTemplate",myTemplate)
+  const myTemplate = useMemo(() => {
+    return allTemplate.filter(item => item?.websiteId === currentWebsite?._id?.toString())
+  }, [allTemplate, currentWebsite])
   /** ✅ My templates list (static + (isMy==true from API)) */
   // const myTemplates = useMemo(() => {
   //   const realMy = (allTemplate || []).filter((t: any) => t?.isMy === true);
