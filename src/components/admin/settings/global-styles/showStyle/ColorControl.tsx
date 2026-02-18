@@ -37,7 +37,7 @@ const ColorControl = ({ brand, setBrand, uiPalette, setC, setButtonColors }: Col
                         </div>
                     </div>
                 </div>
-                <ColorPallet handleColorPallet={handleColorPallet} />
+                {/* <ColorPallet handleColorPallet={handleColorPallet} /> */}
                 <HexInput label="Primary" value={!brand?.primary ? '#1F6F43' : brand?.primary} fallback="#1F6F43" onCommit={(v) => setC({ primary: v })} />
                 <HexInput label="Secondary" value={!brand?.secondary ? '#2EA76A' : brand?.secondary} fallback="#2EA76A" onCommit={(v) => setC({ secondary: v })} />
                 <HexInput label="Accent" value={!brand?.accent ? '#B9F3D5' : brand?.accent} fallback="#B9F3D5" onCommit={(v) => setC({ accent: v })} />

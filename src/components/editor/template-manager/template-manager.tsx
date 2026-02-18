@@ -402,11 +402,11 @@ export function TemplateManager({
 
                                   <div className="mt-3 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
-                                      <div className="text-sm font-semibold text-slate-900 truncate">
+                                      {/* <div className="text-sm font-semibold text-slate-900 truncate">
                                         {template.label}
-                                      </div>
+                                      </div> */}
                                         <div className="h-2 w-full">
-                                          <ShowPallete html={template?.content || ""} />
+                                          <ShowPallete html={template} />
                                         </div>
                                       {/* <div className="text-xs text-slate-500 truncate">
                                         {componentCategories.find((c) => c.id === template.category)

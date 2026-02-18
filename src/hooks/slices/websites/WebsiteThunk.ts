@@ -36,7 +36,11 @@ export const getAllWebsites = createAsyncThunk<
   "websites/getAllWebsites",
   async ({ tenantId }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/domain/website?tenantId=${tenantId}`);
+      let url = "/api/domain/website";
+      if (tenantId && tenantId !== "null" && tenantId !== "undefined") {
+        url += `?tenantId=${tenantId}`;
+      }
+      const res = await fetch(url);
       if (!res.ok) {
         const error = await res.json();
         return rejectWithValue(error.error || "Failed to fetch websites");

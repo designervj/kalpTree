@@ -37,17 +37,27 @@ export async function GET(req: NextRequest) {
 
   // If tenantId is provided, filter by it; otherwise fetch all websites
   let websites;
-  if (tenantIdParam !== "" && tenantIdParam !== null) {
-    const tenantId = new ObjectId(tenantIdParam);
-    websites = await collection.find({ tenantId: tenantId }).toArray();
-  } else if (websiteIdParam !== "" && websiteIdParam !== null) {
-    const websiteId = new ObjectId(websiteIdParam);
-    websites = await collection.find({ _id: websiteId }).toArray();
-  } else if (idParam !== "" && idParam !== null) {
-    const id = new ObjectId(idParam);
-    websites = await collection.find({ _id: id }).toArray();
-  } else {
-    websites = await collection.find({}).toArray();
+  try {
+    if (tenantIdParam && ObjectId.isValid(tenantIdParam)) {
+      const tenantId = new ObjectId(tenantIdParam);
+      websites = await collection.find({ tenantId: tenantId }).toArray();
+    } else if (websiteIdParam && ObjectId.isValid(websiteIdParam)) {
+      const websiteId = new ObjectId(websiteIdParam);
+      websites = await collection.find({ _id: websiteId }).toArray();
+    } else if (idParam && ObjectId.isValid(idParam)) {
+      const id = new ObjectId(idParam);
+      websites = await collection.find({ _id: id }).toArray();
+    } else {
+      // If a param was provided but was invalid, we might want to return 400 or empty
+      if ((tenantIdParam || websiteIdParam || idParam) &&
+        (tenantIdParam !== "" && websiteIdParam !== "" && idParam !== "")) {
+        return NextResponse.json({ item: [] }); // Or return an error
+      }
+      websites = await collection.find({}).toArray();
+    }
+  } catch (error) {
+    console.error("Error fetching websites:", error);
+    return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
   }
 
   // Serialize the documents before returning
