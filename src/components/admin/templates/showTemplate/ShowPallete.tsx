@@ -26,7 +26,7 @@ const ShowPallete = ({ html }: htmlProps) => {
                 className="text-sm font-semibold text-slate-900 truncate"
                 style={{ fontFamily: fontFamilies[0], fontSize: fontSizes[0] }}
             >
-                {html.label}
+                {html?.label}
             </div>
         </>
     )
