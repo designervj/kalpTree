@@ -325,7 +325,8 @@ export function useEditor(containerId: string) {
         // Inject CSS variables
         const style = doc.createElement("style");
         style.setAttribute("data-root-vars", "true");
-        style.innerHTML = createCanvasStyleString(pageContent);
+        const styleString = createCanvasStyleString(pageContent);
+        style.innerHTML = globalStyle ? styleString.replace(/:root\s*{[\s\S]*?}/g, '') : styleString;
         doc.head.appendChild(style);
 
         // Inject font links

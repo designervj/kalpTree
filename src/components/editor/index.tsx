@@ -450,7 +450,7 @@ export default function GrapesJSEditor() {
     // romovve the root style
     console.log("editorJs--", editorJs);
 
-    const cleanedStyles = styles?.replace(/\.root(?=[\s{,])/g, "").trim();
+    const cleanedStyles = styles?.replace(/:root\s*{[\s\S]*?}/g, "").trim();
 
     if (append) {
       let contentToAdd = body;
@@ -495,7 +495,7 @@ export default function GrapesJSEditor() {
             (state.editor as any).setJs(updatedJs);
             setEditorJs(updatedJs);
           }
-        } 
+        }
       }
     } else {
       state.editor.setComponents(body);
