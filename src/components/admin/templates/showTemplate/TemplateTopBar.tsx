@@ -1,19 +1,11 @@
 "use client";
 
 import { RootState } from "@/store/store";
-import { Plus, Search, X } from "lucide-react";
+import { Search, X, BookOpen, Globe, Receipt, FileText } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { TemplateDocument } from "../TemplateType";
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 
@@ -68,14 +60,41 @@ function mergeUnique(a: TemplateDocument[], b: TemplateDocument[]) {
   return out;
 }
 
+/** ✅ SHOW ONLY THESE 3 BOXES */
+const ONLY_CATEGORIES = ["website", "brochure", "invoice"] as const;
+
+const CATEGORY_META: Record<
+  string,
+  { label: string; Icon: any; bg: string; ring: string }
+> = {
+  website: {
+    label: "Website",
+    Icon: Globe,
+    bg: "bg-sky-50",
+    ring: "ring-sky-200",
+  },
+  brochure: {
+    label: "Brochure",
+    Icon: BookOpen,
+    bg: "bg-amber-50",
+    ring: "ring-amber-200",
+  },
+  invoice: {
+    label: "Invoice",
+    Icon: Receipt,
+    bg: "bg-emerald-50",
+    ring: "ring-emerald-200",
+  },
+};
+
 const TemplateTopBar = ({ selectedTemplate }: Props) => {
   const router = useRouter();
   const { allTemplate } = useSelector((state: RootState) => state.template);
 
   const [search, setSearch] = useState("");
-  const [demo, setDemo] = useState<string>("all");
+  const [demo, setDemo] = useState<string>("website"); // ✅ default: Website
   const [view, setView] = useState<ViewTab>("all");
-  const { currentWebsite } = useSelector((state: RootState) => state.websites)
+
   /** ✅ Prevent infinite loop (selectedTemplate identity changes in parent) */
   const selectedTemplateRef = useRef(selectedTemplate);
   useEffect(() => {
@@ -117,57 +136,56 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
     [getCategory]
   );
 
-  /** ✅ dropdown categories */
-  const demoOptions = useMemo(() => {
-
-
-    const set = new Set<string>();
-
-    (allTemplate || []).forEach((t: any) => {
-      const c = getCategory(t);
-      if (c) set.add(c);
-    });
-
-    STATIC_MY_TEMPLATES.forEach((t: any) => {
-      const c = getCategory(t);
-      if (c) set.add(c);
-    });
-
-    return ["all", ...Array.from(set)];
-  }, [allTemplate, getCategory, currentWebsite]);
-
-  const myTemplate = useMemo(() => {
-    return allTemplate.filter(item => item?.websiteId === currentWebsite?._id?.toString())
-  }, [allTemplate, currentWebsite])
   /** ✅ My templates list (static + (isMy==true from API)) */
-  // const myTemplates = useMemo(() => {
-  //   const realMy = (allTemplate || []).filter((t: any) => t?.isMy === true);
-  //   return mergeUnique(STATIC_MY_TEMPLATES, realMy);
-  // }, [allTemplate]);
+  const myTemplates = useMemo(() => {
+    const realMy = (allTemplate || []).filter((t: any) => t?.isMy === true);
+    return mergeUnique(STATIC_MY_TEMPLATES, realMy);
+  }, [allTemplate]);
 
-  /** ✅ FINAL filtered list (no setState here) */
+  /** ✅ Base list per view */
+  const baseListForView = useMemo(() => {
+    return view === "my" ? myTemplates : (allTemplate || []);
+  }, [view, myTemplates, allTemplate]);
+
+  /** ✅ Category counts (based on current view list) */
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    baseListForView.forEach((t: any) => {
+      const c = getCategory(t);
+      if (!c) return;
+      counts[c] = (counts[c] || 0) + 1;
+    });
+    return counts;
+  }, [baseListForView, getCategory]);
+
+  /**
+   * ✅ FINAL filtered list
+   * - Website tab: show ALL templates (no category filter)
+   * - Brochure/Invoice: show ONLY 1 template (single single)
+   */
   const filteredTemplates = useMemo(() => {
-    let list: TemplateDocument[] =
-      view === "my" ? myTemplate : (allTemplate || []);
+    let list: TemplateDocument[] = baseListForView;
 
-    // demo filter
-    if (demo !== "all") {
-      const d = demo.toLowerCase();
-      list = list.filter((t: any) => getCategory(t) === d);
-    }
-
-    // search filter (ALL + MY)
     const q = search.trim().toLowerCase();
-    if (q) {
-      list = list.filter((t: any) => getSearchText(t).includes(q));
+
+    if (demo.toLowerCase() === "website") {
+      // ✅ Website = show ALL templates (search applies)
+      if (q) list = list.filter((t: any) => getSearchText(t).includes(q));
+      return [ADD_TEMPLATE_CARD, ...list];
     }
 
-    // ✅ Always show Add Template card as FIRST item
+    // ✅ Brochure / Invoice = filter category + search + take ONLY 1
+    const d = demo.toLowerCase();
+    list = list.filter((t: any) => getCategory(t) === d);
+
+    if (q) list = list.filter((t: any) => getSearchText(t).includes(q));
+
+    // ✅ single single
+    if (list.length > 1) list = list.slice(0, 1);
+
     return [ADD_TEMPLATE_CARD, ...list];
   }, [
-    allTemplate,
-    myTemplate,
-    view,
+    baseListForView,
     demo,
     search,
     getCategory,
@@ -180,11 +198,62 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
     selectedTemplateRef.current(filteredTemplates);
   }, [filteredTemplates]);
 
+  const renderCategoryCard = (cat: string) => {
+    const meta = CATEGORY_META[cat] || {
+      label: cat,
+      Icon: FileText,
+      bg: "bg-slate-50",
+      ring: "ring-slate-200",
+    };
+
+    const active = demo === cat;
+    const count = categoryCounts[cat] ?? 0;
+
+    return (
+      <button
+        key={cat}
+        type="button"
+        onClick={() => setDemo(cat)}
+        className={[
+          "group relative flex items-center gap-3 rounded-xl border px-4 py-3",
+          "min-w-[220px] sm:min-w-[260px] transition",
+          meta.bg,
+          active
+            ? "border-slate-900 shadow-sm"
+            : "border-slate-200 hover:border-slate-300",
+        ].join(" ")}
+        aria-pressed={active}
+      >
+        <span
+          className={[
+            "inline-flex h-10 w-10 items-center justify-center rounded-lg ring-1",
+            meta.ring,
+            "bg-white/70",
+          ].join(" ")}
+        >
+          <meta.Icon className="h-5 w-5 text-slate-700" />
+        </span>
+
+        <span className="flex flex-col items-start">
+          <span className="text-sm font-semibold text-slate-900">
+            {meta.label}
+          </span>
+          <span className="text-xs text-slate-500">{count} templates</span>
+        </span>
+
+        {active && (
+          <span className="absolute right-3 top-3 inline-flex h-2.5 w-2.5 rounded-full bg-slate-900" />
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="border-b bg-white">
+      {/* Top controls */}
       <div className="flex flex-col gap-3 px-4 py-2 sm:flex-row sm:items-center">
         {/* Search */}
-        <div className="relative w-full sm:w-[220px]">
+        <div className="relative w-full sm:w-[240px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             value={search}
@@ -204,45 +273,15 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
           )}
         </div>
 
-        {/* Filter by Demos */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-600">
-            Filter by Demos
-          </span>
-
-          <Select value={demo} onValueChange={setDemo}>
-            <SelectTrigger className="h-9 w-[180px]">
-              <SelectValue placeholder="Select demo" />
-            </SelectTrigger>
-
-            <SelectContent>
-              {demoOptions.map((d) => (
-                <SelectItem key={d} value={d}>
-                  {d}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* ✅ Right Actions */}
+        {/* Right Actions */}
         <div className="sm:ml-auto flex items-center gap-2">
-          {/* <Button
-            type="button"
-            className="h-9 px-4"
-            onClick={() => router.push(ADD_TEMPLATE_ROUTE)}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Template
-          </Button> */}
-
           <Button
             type="button"
             variant={view === "my" ? "default" : "outline"}
             className="h-9 px-4"
             onClick={() => setView("my")}
           >
-            My Templates ({myTemplate?.length})
+            My Templates ({myTemplates.length})
           </Button>
 
           <Button
@@ -253,6 +292,19 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
           >
             All ({(allTemplate || []).length})
           </Button>
+        </div>
+      </div>
+
+      {/* ✅ ONLY 3 BOXES: Website / Brochure / Invoice */}
+      <div className="px-4 pb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-slate-900">
+            Explore templates
+          </span>
+        </div>
+
+        <div className="mt-3 flex gap-3 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {ONLY_CATEGORIES.map((c) => renderCategoryCard(c))}
         </div>
       </div>
     </div>

@@ -3,6 +3,7 @@ import StaticTypography from './StaticTypography'
 import TypographyPage from '@/app/admin/branding/typography/page'
 import PageMan from './PageMAN'
 
+
 const page = () => {
   return (
     <>

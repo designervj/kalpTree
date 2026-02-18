@@ -70,10 +70,10 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse 
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col  h-full" style={{marginTop:"20px", marginBottom:"15px"}}>
       {/* Textarea for AI prompt */}
-      <div className="flex-1 flex flex-col gap-2">
-        <label className="text-sm font-medium text-gray-700">
+      <div className="flex-1 flex flex-col gap-2 mt-2">
+        <label className="text-sm font-medium text-gray-700 ">
           Ask AI to modify this component
         </label>
         <textarea
@@ -81,18 +81,20 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse 
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="e.g., Make the text blue and add a shadow, Change the layout to flex..."
-          className="flex-1 min-h-[120px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="flex-1 min-h-[140px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          style={{padding:"10px", margin:"4px"}}
           disabled={isProcessing}
         />
       </div>
 
       {/* Send Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-end" style={{marginRight:"10px", marginTop:"10px"}}>
         <Button
           onClick={handleSend}
           variant="secondary"
           disabled={!prompt.trim() || isProcessing}
-          // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10"
+          // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10"]
+          style={{padding:"10px"}}
         >
           <Send className="h-4 w-4 " />
           {isProcessing ? 'Processing...' : 'Send'}

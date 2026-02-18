@@ -1414,12 +1414,12 @@ export const currentWebsiteSections: NavSection[] = [
         icon: ImageIcon,
         permission: ["media:update", "media:read", "media:delete"],
       },
-      {
-        label: "Templates",
-        href: "/admin/website/templates",
-        icon: ImageIcon,
-        permission: ["media:update", "media:read", "media:delete"],
-      },
+      // {
+      //   label: "Templates",
+      //   href: "/admin/website/templates",
+      //   icon: ImageIcon,
+      //   permission: ["media:update", "media:read", "media:delete"],
+      // },
       {
         label: "Header",
         href: "/admin/website/header",
@@ -1916,18 +1916,27 @@ export const currentWebsiteSections: NavSection[] = [
       },
     ],
   },
+
   {
     id: "block-manager",
-    label: "Block Manager",
+    label: "Templates Manager",
     items: [
       {
-        label: "Blocks",
-        href: "/admin/block-manager/blocks",
+        label: "Templates",
+        href: "/admin/website/templates",
         icon: Blocks,
-        permission: ["content:read", "content:update", "content:delete"],
+        permission: ["media:update", "media:read", "media:delete"],
       },
     ],
   },
+
+  //  {
+  //       label: "Templates",
+  //       href: "/admin/website/templates",
+  //       icon: ImageIcon,
+  //       permission: ["media:update", "media:read", "media:delete"],
+  //     },
+  
 
   {
     id: "domains",

@@ -110,7 +110,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
         <div className="absolute right-0 top-0 h-full w-px bg-black/10 " />
 
         {/* ✅ Collapse button (purple circle) */}
-        <div className="absolute right-0 top-[78px] z-[80] translate-x-1/2">
+        <div className="absolute right-0 bottom-[78px] z-[1] translate-x-1/2">
           <button
             type="button"
             onClick={toggleCollapse}
