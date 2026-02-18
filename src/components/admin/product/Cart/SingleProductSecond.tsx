@@ -70,6 +70,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
     localStorage.setItem("theme", newTheme);
   };
 
+  console.log("====>>", products)
   // Load product from URL params on mount
   useEffect(() => {
     if (productId && products.length > 0) {

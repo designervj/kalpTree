@@ -30,6 +30,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import ColorPallet from "./ColorPallet";
 import { FontUploader } from "./Fontuploader";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 /* -----------------------------
   Types
@@ -231,6 +233,10 @@ function HexInput({
 export default function TypographyPage() {
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
+
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+  console.log("===>>", currentWebsite);
 
   /** All custom fonts loaded from the API */
   const [allFonts, setAllFonts] = useState<FontEntry[]>([]);
@@ -518,30 +524,6 @@ export default function TypographyPage() {
       lines.push(`}`);
       lines.push(``);
     }
-
-    // if (allFonts.length > 0) {
-    //   lines.push(`/* Custom Fonts */`);
-    //   allFonts.forEach((font) => {
-    //     // Detect format from URL extension
-    //     const ext =
-    //       font.url.split("?")[0].split(".").pop()?.toLowerCase() ?? "truetype";
-    //     const formatMap: Record<string, string> = {
-    //       ttf: "truetype",
-    //       otf: "opentype",
-    //       woff: "woff",
-    //       woff2: "woff2",
-    //       eot: "embedded-opentype",
-    //     };
-    //     const format = formatMap[ext] ?? "truetype";
-
-    //     lines.push(`@font-face {`);
-    //     lines.push(`  font-family: '${font.name}';`);
-    //     lines.push(`  src: url('${font.url}') format('${format}');`);
-    //     lines.push(`  font-display: swap;`);
-    //     lines.push(`}`);
-    //     lines.push(``);
-    //   });
-    // }
 
     lines.push(`:root {`);
     lines.push(`  /* Brand Core */`);

@@ -1,4 +1,3 @@
-
 // "use client";
 // import * as React from "react";
 // import {
@@ -1161,7 +1160,6 @@
 //   );
 // }
 
-
 "use client";
 import * as React from "react";
 import {
@@ -1293,6 +1291,7 @@ import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
 import { clearUser } from "@/hooks/slices/user/userSlice";
+import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -1309,6 +1308,10 @@ export type Website = {
   lang?: [{ name: string; code: string }];
   isComingSoon?: boolean;
   globalStyle?: string;
+  branding?: {
+    colors: Combo[];
+    typography: any[];
+  };
 };
 
 export type User = {
@@ -2260,93 +2263,93 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       ) : (
         <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-        {user && user.role != "business" && !isHighLevelCollapsed && (
-          <HighLevelSidebar
-            user={user}
-            collapsed={collapsed}
-            setCollapsed={setCollapsed}
-            showSidebar={showSidebar}
-            setShowSidebar={setShowSidebar}
-          />
-        )}
+          {user && user.role != "business" && !isHighLevelCollapsed && (
+            <HighLevelSidebar
+              user={user}
+              collapsed={collapsed}
+              setCollapsed={setCollapsed}
+              showSidebar={showSidebar}
+              setShowSidebar={setShowSidebar}
+            />
+          )}
 
-        {isHighLevelCollapsed && (
-          <Sidebar
-            collapsed={false}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          />
-        )}
+          {isHighLevelCollapsed && (
+            <Sidebar
+              collapsed={false}
+              onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            />
+          )}
 
-        <div className="flex  flex-col w-full">
-          <div className="px-3 py-4 md:px-6 md:py-6 overflow-auto ">
-            <div className="mx-auto">{children}</div>
+          <div className="flex  flex-col w-full">
+            <div className="px-3 py-4 md:px-6 md:py-6 overflow-auto ">
+              <div className="mx-auto">{children}</div>
+            </div>
           </div>
-        </div>
 
-        <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
-          <SheetContent side="left" className="p-0 w-[320px] sm:w-80">
-            {/* Off-canvas header */}
-            <div className="h-16 border-b px-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/kalptree-favicon.svg"
-                  alt="KalpTree"
-                  className="h-9 w-9"
-                />
-                <div className="leading-tight">
-                  <div className="text-sm font-semibold">KalpTree</div>
-                  <div className="text-[11px] text-muted-foreground">
-                    Navigation
+          <Sheet open={mobileSidebarOpen} onOpenChange={setMobileSidebarOpen}>
+            <SheetContent side="left" className="p-0 w-[320px] sm:w-80">
+              {/* Off-canvas header */}
+              <div className="h-16 border-b px-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src="/kalptree-favicon.svg"
+                    alt="KalpTree"
+                    className="h-9 w-9"
+                  />
+                  <div className="leading-tight">
+                    <div className="text-sm font-semibold">KalpTree</div>
+                    <div className="text-[11px] text-muted-foreground">
+                      Navigation
+                    </div>
                   </div>
                 </div>
+                <Button
+                  variant="ghost"
+                  // size="icon"
+                  className="bg-white flex itms-center justify-center rounded-md p-2 hover:bg-gray-100 shadow z-50 absolute top-4 right-4 z-50"
+                  onClick={() => setMobileSidebarOpen(false)}
+                  aria-label="Close"
+                >
+                  <IoMdClose className="w-[28px]" />
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                // size="icon"
-                className="bg-white flex itms-center justify-center rounded-md p-2 hover:bg-gray-100 shadow z-50 absolute top-4 right-4 z-50"
-                onClick={() => setMobileSidebarOpen(false)}
-                aria-label="Close"
-              >
-                <IoMdClose className="w-[28px]" />
-              </Button>
-            </div>
 
-            {/* Main navigation (High-level sidebar) */}
-            <div className="h-[calc(100vh-64px)] flex flex-col">
-              <HighLevelSidebar
-                user={user}
-                collapsed={false}
-                setCollapsed={noopSetCollapsed as any}
-                showSidebar={showSidebar}
-                setShowSidebar={setShowSidebar}
-                variant="mobile"
-                onNavigate={() => setMobileSidebarOpen(false)}
-              />
+              {/* Main navigation (High-level sidebar) */}
+              <div className="h-[calc(100vh-64px)] flex flex-col">
+                <HighLevelSidebar
+                  user={user}
+                  collapsed={false}
+                  setCollapsed={noopSetCollapsed as any}
+                  showSidebar={showSidebar}
+                  setShowSidebar={setShowSidebar}
+                  variant="mobile"
+                  onNavigate={() => setMobileSidebarOpen(false)}
+                />
 
-              {/* Optional: website-specific menu (existing mobile sidebar) */}
-              <div className="border-t">
-                <SheetHeader className="px-4 py-3">
-                  <SheetTitle className="text-sm font-semibold">
-                    Website
-                  </SheetTitle>
-                </SheetHeader>
+                {/* Optional: website-specific menu (existing mobile sidebar) */}
+                <div className="border-t">
+                  <SheetHeader className="px-4 py-3">
+                    <SheetTitle className="text-sm font-semibold">
+                      Website
+                    </SheetTitle>
+                  </SheetHeader>
 
-                {isHighLevelCollapsed && (
-                  <MobileSidebar
-                    websites={websites}
-                    currentWebsite={currentWebsite}
-                    user={user}
-                    // onWebsiteChange={(websiteId) => {
-                    //   onWebsiteChange(websiteId);
-                    //   setMobileSidebarOpen(false);
-                    // }}
-                  />
-                )}
+                  {isHighLevelCollapsed && (
+                    <MobileSidebar
+                      websites={websites}
+                      currentWebsite={currentWebsite}
+                      user={user}
+                      // onWebsiteChange={(websiteId) => {
+                      //   onWebsiteChange(websiteId);
+                      //   setMobileSidebarOpen(false);
+                      // }}
+                    />
+                  )}
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       )}
     </>
   );

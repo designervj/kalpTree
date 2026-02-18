@@ -102,7 +102,6 @@ const websitesSlice = createSlice({
       .addCase(updateWebsite.fulfilled, (state, action) => {
         state.isLoading = false;
         state.currentWebsite = action.payload
-
         // update website in websites array
         state.websites = state.websites.map((item: Website) => item._id === action.payload._id ? action.payload : item)
         state.selectedWebsites = state.selectedWebsites.map((item: Website) => item._id === action.payload._id ? action.payload : item) 

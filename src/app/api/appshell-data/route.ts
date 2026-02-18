@@ -39,15 +39,15 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   const user = session?.user
     ? {
-      id: session.user.id || "",
-      email: session.user.email || "",
-      role: session.user.role || "",
-      permissions: Array.isArray((session.user as any).permissions)
-        ? (session.user as any).permissions
-        : undefined,
-      createdById: session.user.createdById || "",
-      tenantId: session.user.tenantId || "",
-    }
+        id: session.user.id || "",
+        email: session.user.email || "",
+        role: session.user.role || "",
+        permissions: Array.isArray((session.user as any).permissions)
+          ? (session.user as any).permissions
+          : undefined,
+        createdById: session.user.createdById || "",
+        tenantId: session.user.tenantId || "",
+      }
     : null;
   let agencies: any[] = [];
   let business: any[] = [];
@@ -77,16 +77,7 @@ export async function GET(req: NextRequest) {
       // })
       .toArray();
 
-    websites = await websiteColl
-      .find()
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-        primaryDomain: 1,
-        globalStyle: 1,
-      })
-      .toArray();
+    websites = await websiteColl.find().toArray();
   } else if (user?.role == "agency") {
     agencies = await agencyColl
       .find({ type: "agency", _id: new ObjectId(user.tenantId) })
@@ -97,7 +88,6 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
 
-
     business = await agencyColl
       .find({ tenantId: new ObjectId(user.tenantId) })
       .project({
@@ -107,25 +97,15 @@ export async function GET(req: NextRequest) {
       })
       .toArray();
 
-    console.log("allbusiness", business)
+    console.log("allbusiness", business);
     websites = await websiteColl
       .find({
         tenantId: {
           $in: business.map((d) => d._id),
         },
       })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-        primaryDomain: 1,
-      })
       .toArray();
   } else if (user?.role == "business") {
-
-
-
-
     business = await agencyColl
       .find({ _id: new ObjectId(user.tenantId) })
       .project({
@@ -135,7 +115,6 @@ export async function GET(req: NextRequest) {
         email: 1,
       })
       .toArray();
-
 
     agencies = await agencyColl
       .find({ type: "agency", _id: new ObjectId(business[0].tenantId) })
@@ -150,12 +129,6 @@ export async function GET(req: NextRequest) {
     websites = await websiteColl
       .find({
         tenantId: new ObjectId(user.tenantId),
-      })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-        primaryDomain: 1,
       })
       .toArray();
   }
