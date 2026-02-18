@@ -4,6 +4,7 @@ import TypographyPage from '@/app/admin/branding/typography/page'
 import PageMan from './PageMan'
 
 
+
 const page = () => {
   return (
     <>
