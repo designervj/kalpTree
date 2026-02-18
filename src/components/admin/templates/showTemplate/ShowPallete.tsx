@@ -8,9 +8,7 @@ type htmlProps = {
 const ShowPallete = ({ html }: htmlProps) => {
     const colors = extractColors(html?.content || "");
     const { fontFamilies, fontSizes } = extractFontsAndSizesFromHTML(html?.content || "");
-    console.log("colors", colors)
-    console.log("fontFamilies", fontFamilies)
-    console.log("fontSizes", fontSizes)
+
 
     return (
         <>

@@ -653,7 +653,7 @@ export default function TemplateForm({
                   variant="secondary"
                   className="flex-1"
                   disabled={isPending}
-                  onClick={() => router.push("/admin/templates")}
+                  onClick={() => router.back()}
                 >
                   Cancel
                 </Button>

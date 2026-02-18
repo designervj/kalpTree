@@ -22,24 +22,10 @@ import {
 import { useRouter } from "next/navigation";
 import { deleteTemplate } from "@/hooks/slices/templates/TemplateThunk";
 
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { BsThreeDotsVertical } from "react-icons/bs";
 import ShowHTMLtemplate from "./ShowHTMLtemplate";
 import ShowPallete from "./ShowPallete";
+import TemplateAction from "./TemplateAction";
+import { set } from "zod";
 
 function miniToast(msg: string) {
   const el = document.createElement("div");
@@ -56,7 +42,7 @@ const ShowTemplate = () => {
   const router = useRouter();
   const [template, setTemplate] = useState<TemplateDocument[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
-
+   const [isUseBrandColor, setIsUseBrandColor] = useState(false);
   useEffect(() => {
     const sorted = [...allTemplate].sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -83,16 +69,19 @@ const ShowTemplate = () => {
   const handlePreview = (data: TemplateDocument) => {
     dispatch(setCurrentTemplate(data));
     setPreviewOpen(true);
+     setIsUseBrandColor(false);
   };
 
   const handleClosePreview = () => {
     setPreviewOpen(false);
     dispatch(setCurrentTemplate(null));
+    setIsUseBrandColor(false);
   };
 
-  const handleImport = (data: TemplateDocument) => {
-    // dispatch(importTemplateThunk(getId(data)))
-    miniToast(`Imported: ${data.label}`);
+const handlePreviewBrand = (data: TemplateDocument) => {
+    dispatch(setCurrentTemplate(data));
+    setPreviewOpen(true);
+     setIsUseBrandColor(true);
   };
 
   const handleDelete = async (data: TemplateDocument) => {
@@ -151,14 +140,14 @@ const ShowTemplate = () => {
                   <div className={`overflow-hidden rounded-xl border transition-all duration-300 hover:shadow-lg ${!thumb ? 'border-[#7C2D64]/30' : 'border-border'} hover:border-[#7C2D64]`}>
                     {/* PREVIEW AREA */}
                     <div className="relative h-[200px] bg-muted/10 overflow-hidden">
-                      {thumb ? (
+                      {/* {thumb ? (
                         <img
                           src={thumb}
                           alt={t.label}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                           loading="lazy"
                         />
-                      ) : (
+                      ) : ( */}
                         <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white flex flex-col overflow-hidden">
                           <div className="flex-1 relative overflow-hidden">
                             <ShowHTMLtemplate html={t?.content} />
@@ -167,7 +156,7 @@ const ShowTemplate = () => {
                             <ShowPallete html={t?.content} />
                           </div>
                         </div>
-                      )}
+                      {/* )} */}
 
                       {/* Overlay on hover */}
                       <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/5" />
@@ -187,53 +176,13 @@ const ShowTemplate = () => {
                           </p> */}
                         </div>
 
-
-
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="outline"
-                              className="cursor-pointer border-none bg-transparent hover:bg-black/5 h-8 w-8 p-0 outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
-                            >
-                              <BsThreeDotsVertical />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-40" align="start">
-                            <DropdownMenuGroup>
-                              <DropdownMenuLabel onClick={() => handleEdit(t)}>
-                                <div className="flex items-center gap-2 cursor-pointer font-normal">
-                                  <Edit2 className="h-4 w-4" />
-                                  Edit
-                                </div>
-                              </DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => handlePreview(t)}>
-                                <div className="flex items-center  gap-2 cursor-pointer font-normal ">
-                                  <Eye className="h-4 w-4" />
-                                  Preview
-                                </div>
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem onClick={() => handleImport(t)}>
-                                <div className="flex items-center gap-2 font-normal">
-                                  <Download className="h-4 w-4" />
-                                  Import
-                                </div>
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                            <DropdownMenuSeparator />
-
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem onClick={() => handleDelete(t)}>
-                                <div className="flex items-center  gap-2 font-normal">
-                                  <Trash2 className="h-4 w-4 text-red-600" />
-                                  Delete
-                                </div>
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                           {/* action template */}
+                            <TemplateAction data={t} 
+                            onEdit={handleEdit}
+                            onPreview={handlePreview}
+                            onPreviewBrand={handlePreviewBrand}
+                            onDelete={handleDelete}
+                            />
 
                         {/* RIGHT icons */}
                         {/* <div className="flex items-center gap-2">
@@ -320,7 +269,10 @@ const ShowTemplate = () => {
         </TooltipProvider>
       </div>
 
-      {previewOpen && <PreviewTemplate onClose={handleClosePreview} />}
+      {previewOpen &&
+       <PreviewTemplate 
+       isUseBrandColor={isUseBrandColor}
+       onClose={handleClosePreview} />}
     </div>
   );
 };
