@@ -90,6 +90,7 @@ export async function POST(req: NextRequest) {
             templateId: body.slug || `template-${Date.now()}`,
             label: body.label,
             category: body.category,
+            websiteId: body.websiteId,
             content: body.content,
             attributes: {
                 templateType: body.templateType,

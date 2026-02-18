@@ -1,10 +1,8 @@
-import { ObjectId } from 'mongodb';
-
 /**
  * Template document schema for MongoDB "templates" collection
  */
 export interface TemplateDocument {
-    _id?: ObjectId | string;
+    _id?: any;
     id?: string;
     slug?: string;
     templateId?: string;
@@ -19,16 +17,16 @@ export interface TemplateDocument {
     thumbnail?: string | null;
     version?: string;
     // Multi-tenant fields
-    tenantId?: ObjectId | string;
-    websiteId?: ObjectId | string;
-    createdBy?: ObjectId | string;
+    tenantId?: any;
+    websiteId?: any;
+    createdBy?: any;
     // Metadata
     status?: 'active' | 'inactive' | 'draft';
     isPublic?: boolean;
     isPremium?: boolean;
     tags?: string[];
     notes?: string;
-    pageSlug?:string[]
+    pageSlug?: string[]
     // Timestamps
     createdAt?: Date;
     updatedAt?: Date;
@@ -60,6 +58,7 @@ export interface CreateTemplateInput {
     templateId: string;
     label: string;
     category: string;
+    websiteId: string;
     content: string;
     attributes?: Record<string, any>;
     thumbnail?: string | null;

@@ -260,6 +260,20 @@ export default function TemplateForm({
     mode: "onChange",
   });
 
+  const [debouncedContent, setDebouncedContent] = React.useState(form.getValues("content"));
+
+  React.useEffect(() => {
+    const subscription = form.watch((value, { name }) => {
+      if (name === "content") {
+        const timer = setTimeout(() => {
+          setDebouncedContent(value.content || "");
+        }, 500);
+        return () => clearTimeout(timer);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   React.useEffect(() => {
     if (initialData) {
       form.reset({
@@ -560,6 +574,7 @@ export default function TemplateForm({
                               <html>
                                 <head>
                                   <style>
+                                    ${currentWebsite?.globalStyle || ""}
                                     body { 
                                       margin: 0; 
                                       padding: 20px;
@@ -569,7 +584,7 @@ export default function TemplateForm({
                                   </style>
                                 </head>
                                 <body>
-                                  ${form.watch("content") || ""}
+                                  ${(debouncedContent || "").replace(/:root\s*{[\s\S]*?}/g, '')}
                                 </body>
                               </html>
                             `}

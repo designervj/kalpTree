@@ -68,9 +68,12 @@ export default async function PageTemplate({
           $in: [host],
         },
       });
-      //console.log("websitedata-->", websitedata);
-      let page;
 
+      if (!websitedata) {
+        return <NotFound />;
+      }
+
+      let page;
       if (!slug) {
         page = await pagecoll.findOne({
           websiteId: websitedata._id,
@@ -82,8 +85,7 @@ export default async function PageTemplate({
           slug: slug,
         });
       }
-      //console.log("page--->", page);
-      // console.log("page--->", page);
+
       if (!lang && websitedata.lang) {
         lang = websitedata.lang.find((d: any) => d.default == true)?.name;
       }

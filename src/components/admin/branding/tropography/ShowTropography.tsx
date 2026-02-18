@@ -20,13 +20,7 @@ import { clampHexOrFallback, cssFont, mixHex, rgba, shadowToCss } from '../../se
 import { toast } from 'sonner'
 import { Website } from '../../AppShell'
 import { updateWebsite } from '@/hooks/slices/websites/WebsiteThunk'
-export interface UiPaletteModel{
-     bg: string;
-        surface: string;
-        text: string;
-        mutedText: string;
-        border: string;
-}
+
 
 const ShowTropography = () => {
 
@@ -57,7 +51,8 @@ const ShowTropography = () => {
     const dispatch = useDispatch<AppDispatch>();
     const headingPx = (k: HeadingKey) => {
         if (!headings) return 0;
-        return Math.round(headingBaseSize * (headings[k]?.scale || 1));
+        return 102;
+        // return Math.round(headingBaseSize * (headings[k]?.scale || 1));
     };
 
     const ROOT_CSS = useMemo(() => {
@@ -245,7 +240,7 @@ const ShowTropography = () => {
         }
     }, [currentWebsite]);
 
-    const uiPalette:UiPaletteModel = useMemo(() => {
+    const uiPalette = useMemo(() => {
         const light = {
             bg: currentStyle?.themes?.light?.bg || '#F4F6F5',
             surface: currentStyle?.themes?.light?.surface || '#FFFFFF',
@@ -264,8 +259,8 @@ const ShowTropography = () => {
     }, [mode, currentStyle, brand?.accent]);
 
     const outerPreviewStyle = useMemo(() => ({
-        backgroundColor: uiPalette?.bg,
-        color: uiPalette?.text,
+        backgroundColor: uiPalette.bg,
+        color: uiPalette.text,
         transition: 'all 0.2s ease',
     }), [uiPalette]);
 
@@ -387,36 +382,36 @@ const ShowTropography = () => {
 
 
 
-    // const ColorsPreview = BrandGalleryPreview;
+    const ColorsPreview = BrandGalleryPreview;
 
-    // const RightPreviewContent =
-    //     leftTab === "colors"
-    //         ? ColorsPreview
-    //         : leftTab === "headings"
-    //             ? HeadingsPreview
-    //             : leftTab === "body"
-    //                 ? BodyPreview
-    //                 : ButtonsPreview;
+    const RightPreviewContent =
+        leftTab === "colors"
+            ? ColorsPreview
+            : leftTab === "headings"
+                ? HeadingsPreview
+                : leftTab === "body"
+                    ? BodyPreview
+                    : ButtonsPreview;
 
-    // const previewProps = {
-    //     uiPalette,
-    //     mode,
-    //     brand: brand || {},
-    //     headingFontFamily,
-    //     headings: headings || {} as any,
-    //     headingPx,
-    //     leftTab,
-    //     onLeftTab,
-    //     cardPreviewStyle: outerPreviewStyle,
-    //     headingBaseSize,
-    //     body: body || {} as any,
-    //     globalFontFamily,
-    //     buttonBase: buttonBase || {} as any,
-    //     buttonColors: buttonColors || {} as any,
-    //     softBg,
-    //     hoveredBtn,
-    //     setHoveredBtn,
-    // };
+    const previewProps = {
+        uiPalette,
+        mode,
+        brand: brand || {},
+        headingFontFamily,
+        headings: headings || {} as any,
+        headingPx,
+        leftTab,
+        onLeftTab,
+        cardPreviewStyle: outerPreviewStyle,
+        headingBaseSize,
+        body: body || {} as any,
+        globalFontFamily,
+        buttonBase: buttonBase || {} as any,
+        buttonColors: buttonColors || {} as any,
+        softBg,
+        hoveredBtn,
+        setHoveredBtn,
+    };
 
 
     const handleSave = async () => {
@@ -597,21 +592,7 @@ const ShowTropography = () => {
 
                         {rightPanel === "preview" ? (
                             <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
-                                {/* <RightPreviewContent
-                                uiPalette={uiPalette}
-                                mode={mode}
-                                brand={brand}
-                                headingFontFamily={headingFontFamily}
-                                body={body}
-                                buttonBase={buttonBase}
-                                buttonColors={buttonColors}
-                                selectedBtn={selectedBtn}
-                                selectedHeading={selectedHeading}
-                                selectedBody={selectedBody}
-                                selectedColor={selectedColor}
-                                
-                                
-                                /> */}
+                                <RightPreviewContent {...previewProps} />
                             </CardContent>
                         ) : (
                             <CardContent className="p-6">
