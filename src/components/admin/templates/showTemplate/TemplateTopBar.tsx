@@ -75,7 +75,7 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
   const [search, setSearch] = useState("");
   const [demo, setDemo] = useState<string>("all");
   const [view, setView] = useState<ViewTab>("all");
-
+   const {currentWebsite}= useSelector((state:RootState)=>state.websites)
   /** ✅ Prevent infinite loop (selectedTemplate identity changes in parent) */
   const selectedTemplateRef = useRef(selectedTemplate);
   useEffect(() => {
@@ -119,6 +119,8 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
 
   /** ✅ dropdown categories */
   const demoOptions = useMemo(() => {
+  
+    
     const set = new Set<string>();
 
     (allTemplate || []).forEach((t: any) => {
@@ -132,18 +134,23 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
     });
 
     return ["all", ...Array.from(set)];
-  }, [allTemplate, getCategory]);
+  }, [allTemplate, getCategory,currentWebsite]);
 
+  const myTemplate= useMemo(()=>{
+    return allTemplate.filter(item=>item?.websiteId===currentWebsite?._id?.toString())
+  },[allTemplate,currentWebsite])
+
+  console.log("myTemplate",myTemplate)
   /** ✅ My templates list (static + (isMy==true from API)) */
-  const myTemplates = useMemo(() => {
-    const realMy = (allTemplate || []).filter((t: any) => t?.isMy === true);
-    return mergeUnique(STATIC_MY_TEMPLATES, realMy);
-  }, [allTemplate]);
+  // const myTemplates = useMemo(() => {
+  //   const realMy = (allTemplate || []).filter((t: any) => t?.isMy === true);
+  //   return mergeUnique(STATIC_MY_TEMPLATES, realMy);
+  // }, [allTemplate]);
 
   /** ✅ FINAL filtered list (no setState here) */
   const filteredTemplates = useMemo(() => {
     let list: TemplateDocument[] =
-      view === "my" ? myTemplates : (allTemplate || []);
+      view === "my" ? myTemplate : (allTemplate || []);
 
     // demo filter
     if (demo !== "all") {
@@ -161,7 +168,7 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
     return [ADD_TEMPLATE_CARD, ...list];
   }, [
     allTemplate,
-    myTemplates,
+    myTemplate,
     view,
     demo,
     search,
@@ -237,7 +244,7 @@ const TemplateTopBar = ({ selectedTemplate }: Props) => {
             className="h-9 px-4"
             onClick={() => setView("my")}
           >
-            My Templates ({myTemplates.length})
+            My Templates ({myTemplate?.length})
           </Button>
 
           <Button

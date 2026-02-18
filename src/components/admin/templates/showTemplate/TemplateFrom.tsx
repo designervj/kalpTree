@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -39,8 +39,8 @@ import {
 
 import { Upload, X, Wand2, Image as ImageIcon } from "lucide-react";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { createTemplate, updateTemplate } from "@/hooks/slices/templates/TemplateThunk";
 import { TemplateDocument } from "../TemplateType";
 
@@ -112,6 +112,7 @@ const PostSchema = z.object({
   version: z.string(),
   isPublic: z.boolean(),
   notes: z.string(),
+  websiteId: z.string(),
 });
 
 export type TemplateFormData = z.infer<typeof PostSchema>;
@@ -237,7 +238,7 @@ export default function TemplateForm({
   const [isPending, startTransition] = useTransition();
   const dispatch = useDispatch<AppDispatch>();
   const [imgPreview, setImgPreview] = React.useState<string>("");
-
+  const { currentWebsite } = useSelector((state: RootState) => state.websites)
   const form = useForm<TemplateFormData>({
     resolver: zodResolver(PostSchema),
     defaultValues: {
@@ -253,6 +254,8 @@ export default function TemplateForm({
       version: initialData?.version || "1.0.0",
       isPublic: initialData?.isPublic ?? true,
       notes: initialData?.notes || "",
+      websiteId: initialData?.websiteId?.toString() || "",
+      demo: "",
     },
     mode: "onChange",
   });
@@ -272,6 +275,8 @@ export default function TemplateForm({
         version: initialData.version || "1.0.0",
         isPublic: initialData.isPublic ?? true,
         notes: initialData.notes || "",
+        websiteId: initialData.websiteId?.toString() || "",
+        demo: "",
       });
     }
   }, [initialData, form]);
@@ -317,10 +322,11 @@ export default function TemplateForm({
     toast.message("Image removed");
   };
 
-  const onSubmit = async (values: TemplateFormData) => {
+  const onSubmit: SubmitHandler<TemplateFormData> = async (values) => {
     const data = {
       ...values,
       category: values.templateType,
+      websiteId: currentWebsite?._id?.toString(),
       tags:
         typeof values.tags === "string"
           ? values.tags.split(",").map((t: string) => t.trim()).filter(Boolean)
@@ -483,9 +489,9 @@ export default function TemplateForm({
                     Array.isArray(form.watch("tags"))
                       ? (form.watch("tags") as string[])
                       : String(form.watch("tags") || "")
-                          .split(",")
-                          .map((t) => t.trim())
-                          .filter(Boolean)
+                        .split(",")
+                        .map((t) => t.trim())
+                        .filter(Boolean)
                   }
                   onChange={(next) =>
                     form.setValue("tags", next as any, { shouldDirty: true, shouldValidate: true })
@@ -641,6 +647,11 @@ export default function TemplateForm({
                 <div className="space-y-2">
                   <Label>Version (optional)</Label>
                   <Input placeholder="1.0.0" {...form.register("version")} />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Website Id (optional)</Label>
+                  <Input placeholder="website name" value={currentWebsite?.name} disabled />
                 </div>
               </div>
 

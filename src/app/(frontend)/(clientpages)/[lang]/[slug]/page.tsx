@@ -96,13 +96,13 @@ export default async function PageTemplate({
     }
 
     if (
-      (lang!.length > 2 && lang === "product-category") ||
-      (lang!.length == 2 && slug == "product-category")
+      (lang && lang.length > 2 && lang === "product-category") ||
+      (lang && lang.length == 2 && slug == "product-category")
     ) {
       return <ProductCategoryPage params={params} />;
     } else if (
-      (lang!.length > 2 && lang === "product") ||
-      (lang!.length == 2 && slug == "product")
+      (lang && lang.length > 2 && lang === "product") ||
+      (lang && lang.length == 2 && slug == "product")
     ) {
       return <SingleProductPage params={params} />;
     }
@@ -123,15 +123,15 @@ export default async function PageTemplate({
       ),
     };
 
-    if (slug! in obj) {
-      return obj[slug!];
+    if (slug && slug in obj) {
+      return obj[slug];
     }
 
     if (!website) {
       return <NotFound />;
     }
 
-    const html = website?.content2 ? website.content2[lang!] : website.content;
+    const html = (website?.content2 && lang) ? website.content2[lang] : website.content;
 
     if (!html) {
       return <ComingSoonPage />;
