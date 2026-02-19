@@ -18,6 +18,7 @@ import HeadingControl from '@/components/admin/settings/global-styles/showStyle/
 import BodyControl from '@/components/admin/settings/global-styles/showStyle/BodyControl';
 import ButtonControl from '@/components/admin/settings/global-styles/showStyle/ButtonControl';
 import RootFileControl from './RootFileControl';
+import GetAlColorPallet from '@/components/admin/branding/color_pallet/GetAlColorPallet';
 
 type SectionProps = {
 
@@ -48,15 +49,14 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
 
   useEffect(() => {
     // const updatedStyle = transformRawToGlobalStyleModel(globalStylesRaw);
-
-
     if (updatedStyle) {
+      const primaryFont = updatedStyle.fonts.heading.split(",")[0].trim();
       setBrand(updatedStyle.brand);
       setHeadings(updatedStyle.headings);
       setBody(updatedStyle.body);
       setButtonColors(updatedStyle.buttonColors);
       setButtonBase(updatedStyle.buttonBase);
-      setHeadingFontFamily(updatedStyle.fonts.heading);
+      setHeadingFontFamily(primaryFont);
       setGlobalFontFamily(updatedStyle.fonts.body);
     }
     setCurrentStyle(updatedStyle);
@@ -187,6 +187,8 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
     });
   };
   return (
+    <>
+      <GetAlColorPallet/>
     <ScrollArea className="h-[calc(100vh-140px)] -mx-3 px-3">
       <div className="flex justify-between items-center gap-3">
         <div className="grid grid-cols-4 gap-2">
@@ -267,6 +269,7 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
         />}
       </div>
     </ScrollArea>
+    </>
   );
 }
 
