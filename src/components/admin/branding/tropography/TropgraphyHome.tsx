@@ -1,5 +1,6 @@
 import React from 'react'
 import ShowTropography from './ShowTropography'
+import GetAlColorPallet from '../color_pallet/GetAlColorPallet'
 
 const TropgraphyHome = () => {
 
@@ -7,6 +8,7 @@ const TropgraphyHome = () => {
     <>
  
       <ShowTropography/>
+      <GetAlColorPallet/>
     </>
 
   )

@@ -41,6 +41,7 @@ import { Website } from "@/components/admin/AppShell";
 import CurrentForm from "../sectionEdit/CurrentForm";
 import { updateWebsite } from "@/hooks/slices/websites/WebsiteThunk";
 import { toast } from "sonner";
+import { CardConfigModal, FilterConfigModal, HeroConfigModal, LayoutConfigModal, PaginationConfigModal, StyleConfigModal } from "@/components/admin/product/Cart/CartModal";
 
 export type PageItem = {
   id: string;
@@ -55,54 +56,12 @@ export type PageItem = {
 
 // Styling configuration type for ProductShowcase
 export type ProductShowcaseStyleConfig = {
-  layoutConfig?: {
-    filterPosition?: "sidebar" | "top";
-    gridColumns?: {
-      mobile?: number;
-      tablet?: number;
-      desktop?: number;
-    };
-    showHeroSection?: boolean;
-    heroHeight?: string;
-  };
-  styleConfig?: {
-    primaryColor?: string;
-    secondaryColor?: string;
-    accentColor?: string;
-    fontFamily?: string;
-    buttonStyle?: "rounded" | "square" | "pill";
-    cardStyle?: "elevated" | "flat" | "bordered";
-  };
-  heroConfig?: {
-    backgroundImage?: string;
-    title?: string;
-    subtitle?: string;
-    overlayOpacity?: number;
-    titleColor?: string;
-    titleSize?: string;
-    titleTracking?: string;
-  };
-  paginationConfig?: {
-    enabled?: boolean;
-    position?: "top" | "bottom" | "both";
-    style?: "numbers" | "simple" | "compact";
-    buttonShape?: "square" | "rounded" | "circular";
-    itemsPerPage?: number;
-    showPageInfo?: boolean;
-  };
-  filterConfig?: {
-    showCategoryFilter?: boolean;
-    showColorPalette?: boolean;
-    enableDynamicFilters?: boolean;
-    filterStyle?: "checkbox" | "button" | "chip";
-  };
-  cardConfig?: {
-    showRating?: boolean;
-    showSaleBadge?: boolean;
-    imageAspectRatio?: string;
-    hoverEffect?: "scale" | "lift" | "none";
-    placeholderIcon?: string;
-  };
+  layoutConfig?: LayoutConfigModal
+  styleConfig?: StyleConfigModal
+  heroConfig?: HeroConfigModal
+  paginationConfig?: PaginationConfigModal
+  filterConfig?: FilterConfigModal
+  cardConfig?: CardConfigModal
 };
 
 const cx = (...classes: Array<string | false | null | undefined>) =>
@@ -884,9 +843,11 @@ export default function Pages({
   };
 
   const handleCategoryClick = (categorySlug: string) => {
+  
     handlePageType(categorySlug);
     if (!categoryStyleConfigs[categorySlug]) {
       const category = listCategory.find((c) => c.slug === categorySlug);
+   
       const defaultConfig = getDefaultStyleConfig();
 
       // Optionally customize the title based on category name

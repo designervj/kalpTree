@@ -22,8 +22,10 @@ export interface ProductModel {
   material_segment_id?: string | ObjectId;
   // segment?:MaterialSegmentModel
   variants?: ProductVariant[];
+  options?: any[];
   gallery?: string[];
   websiteId?: string;
   tenantId?: string;
+
   basePrice?: string;
 }

@@ -19,124 +19,11 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { groupAttributesByTitle } from "@/lib/utils";
+import ProductCart from "./ProductCart";
+import { ProductVariant } from "@/modules/ecommerce/types";
+import { DEFAULT_CARD_CONFIG, DEFAULT_FILTER_CONFIG, DEFAULT_HERO_CONFIG, DEFAULT_LAYOUT_CONFIG, DEFAULT_PAGINATION_CONFIG, DEFAULT_STYLE_CONFIG } from "./util/Config";
+import { ProductShowcaseProps } from "./CartModal";
 
-// Type definitions for component props
-interface ProductShowcaseProps {
-  category?: string;
-
-  // Layout Configuration
-  layoutConfig?: {
-    filterPosition?: "sidebar" | "top"; // Filter as sidebar or top dropdowns
-    gridColumns?: {
-      mobile?: number;
-      tablet?: number;
-      desktop?: number;
-    };
-    showHeroSection?: boolean;
-    heroHeight?: string; // e.g., "40vh", "300px"
-  };
-
-  // Styling Configuration
-  styleConfig?: {
-    primaryColor?: string;
-    secondaryColor?: string;
-    accentColor?: string;
-    fontFamily?: string;
-    buttonStyle?: "rounded" | "square" | "pill";
-    cardStyle?: "elevated" | "flat" | "bordered";
-  };
-
-  // Hero Section Configuration
-  heroConfig?: {
-    backgroundImage?: string;
-    title?: string;
-    subtitle?: string;
-    overlayOpacity?: number; // 0-1
-    titleColor?: string;
-    titleSize?: string;
-    titleTracking?: string;
-  };
-
-  // Pagination Configuration
-  paginationConfig?: {
-    enabled?: boolean;
-    position?: "top" | "bottom" | "both";
-    style?: "numbers" | "simple" | "compact";
-    buttonShape?: "square" | "rounded" | "circular";
-    itemsPerPage?: number;
-    showPageInfo?: boolean;
-  };
-
-  // Filter Configuration
-  filterConfig?: {
-    showCategoryFilter?: boolean;
-    showColorPalette?: boolean;
-    enableDynamicFilters?: boolean;
-    filterStyle?: "checkbox" | "button" | "chip";
-  };
-
-  // Product Card Configuration
-  cardConfig?: {
-    showRating?: boolean;
-    showSaleBadge?: boolean;
-    imageAspectRatio?: string; // e.g., "3/4", "1/1", "16/9"
-    hoverEffect?: "scale" | "lift" | "none";
-    placeholderIcon?: string; // emoji or text
-  };
-}
-
-// ================= DEFAULT CONFIGS =================
-
-const DEFAULT_LAYOUT_CONFIG = {
-  filterPosition: "sidebar" as const,
-  gridColumns: { mobile: 1, tablet: 2, desktop: 3 },
-  showHeroSection: true,
-  heroHeight: "40vh",
-};
-
-const DEFAULT_STYLE_CONFIG = {
-  primaryColor: "#000000",
-  secondaryColor: "#666666",
-  accentColor: "#2563eb",
-  fontFamily: "Montserrat",
-  buttonStyle: "square" as const,
-  cardStyle: "flat" as const,
-};
-
-const DEFAULT_HERO_CONFIG = {
-  backgroundImage:
-    "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop",
-  title: "",
-  subtitle: "",
-  overlayOpacity: 0.1,
-  titleColor: "#ffffff",
-  titleSize: "4xl md:text-5xl",
-  titleTracking: "10px",
-};
-
-const DEFAULT_PAGINATION_CONFIG = {
-  enabled: true,
-  position: "bottom" as const,
-  style: "numbers" as const,
-  buttonShape: "square" as const,
-  itemsPerPage: 9,
-  showPageInfo: true,
-};
-
-const DEFAULT_FILTER_CONFIG = {
-  showCategoryFilter: true,
-  showColorPalette: true,
-  enableDynamicFilters: true,
-  filterStyle: "checkbox" as const,
-};
-
-const DEFAULT_CARD_CONFIG = {
-  showRating: true,
-  showSaleBadge: true,
-  imageAspectRatio: "3/4",
-  hoverEffect: "scale" as const,
-  placeholderIcon: "👕",
-};
 
 const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   category = "All Products",
@@ -192,7 +79,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     [filterConfig],
   );
 
-  const mergedCardConfig = useMemo(
+   const mergedCardConfig = useMemo(
     () => ({
       ...DEFAULT_CARD_CONFIG,
       ...cardConfig,
@@ -294,10 +181,10 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => {
-      const product = products.find((d) => d._id == item.productId);
-      const variant = product?.variants.find((d) => d._id == item.variantId);
+      const product = products?.find((d) => d._id == item?.productId);
+      const variant = product?.variants.find((d) => d._id == item?.variantId);
       const price = parseFloat(variant?.price || "0");
-      return total + price * item.quantity;
+      return total + price * item?.quantity;
     }, 0);
   };
 
@@ -355,17 +242,17 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     }
 
     let filtered = [...products].filter((d) =>
-      slug ? d.allcategories.includes(slug?._id) : true,
+      slug ? d?.allcategories?.includes(slug?._id) : true,
     );
 
     Object.entries(dynamicFilters).forEach(([filterTitle, selectedValues]) => {
       if (selectedValues.length > 0) {
         filtered = filtered.filter((product) =>
-          product.variants.some((variant) =>
-            variant.attributes.some(
+          product?.variants?.some((variant) =>
+            variant?.attributes?.some(
               (attr) =>
-                attr.attributeName === filterTitle &&
-                selectedValues.includes(attr.value.trim()),
+                attr?.attributeName === filterTitle &&
+                selectedValues.includes(attr?.value?.trim()),
             ),
           ),
         );
@@ -380,14 +267,14 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
     if (sortBy === "price-low") {
       filtered.sort((a, b) => {
-        const priceA = Math.min(...a.variants.map((v) => parseFloat(v.price)));
-        const priceB = Math.min(...b.variants.map((v) => parseFloat(v.price)));
+        const priceA = Math.min(...a?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
+        const priceB = Math.min(...b?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
         return priceA - priceB;
       });
     } else if (sortBy === "price-high") {
       filtered.sort((a, b) => {
-        const priceA = Math.min(...a.variants.map((v) => parseFloat(v.price)));
-        const priceB = Math.min(...b.variants.map((v) => parseFloat(v.price)));
+        const priceA = Math.min(...a?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
+        const priceB = Math.min(...b?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
         return priceB - priceA;
       });
     }
@@ -401,7 +288,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedProducts = allProducts.slice(startIndex, endIndex);
-
+   console.log("paginatedProducts",paginatedProducts)
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
@@ -467,88 +354,77 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     }
   };
 
-  // Get card style classes
-  const getCardStyleClasses = () => {
-    switch (cardStyle) {
-      case "elevated":
-        return "shadow-lg hover:shadow-xl";
-      case "bordered":
-        return "border border-gray-200";
-      case "flat":
-      default:
-        return "";
-    }
-  };
+
 
   // Product Card Component
-  const ProductCard = ({ product }: { product: any }) => {
-    const minPrice = Math.min(
-      ...product.variants.map((v) => parseFloat(v.price)),
-    );
-    const hasDiscount = parseFloat(product.basePrice) > minPrice;
+  // const ProductCard = ({ product }: { product: any }) => {
+  //   const minPrice = Math.min(
+  //     ...product.variants.map((v) => parseFloat(v.price)),
+  //   );
+  //   const hasDiscount = parseFloat(product.basePrice) > minPrice;
 
-    const hoverClasses = {
-      scale: "group-hover:scale-105",
-      lift: "group-hover:-translate-y-2",
-      none: "",
-    };
+  //   const hoverClasses = {
+  //     scale: "group-hover:scale-105",
+  //     lift: "group-hover:-translate-y-2",
+  //     none: "",
+  //   };
 
-    return (
-      <div
-        className={`group cursor-pointer transition-all duration-300 ${getCardStyleClasses()}`}
-        onClick={() => handleProductClick(product)}
-      >
-        <div
-          className="relative bg-gray-100 overflow-hidden mb-4"
-          style={{ aspectRatio: imageAspectRatio }}
-        >
-          {placeholderIcon && (
-            <div
-              className={`absolute inset-0 flex items-center justify-center text-8xl opacity-20 transition-transform duration-600 ${hoverClasses[hoverEffect]}`}
-            >
-              {placeholderIcon}
-            </div>
-          )}
-          {hasDiscount && showSaleBadge && (
-            <div
-              className="absolute top-3 left-3 text-white px-2.5 py-1 text-[10px] font-bold"
-              style={{ backgroundColor: primaryColor }}
-            >
-              Sale
-            </div>
-          )}
-        </div>
+  //   return (
+  //     <div
+  //       className={`group cursor-pointer transition-all duration-300 ${getCardStyleClasses()}`}
+  //       onClick={() => handleProductClick(product)}
+  //     >
+  //       <div
+  //         className="relative bg-gray-100 overflow-hidden mb-4"
+  //         style={{ aspectRatio: imageAspectRatio }}
+  //       >
+  //         {placeholderIcon && (
+  //           <div
+  //             className={`absolute inset-0 flex items-center justify-center text-8xl opacity-20 transition-transform duration-600 ${hoverClasses[hoverEffect]}`}
+  //           >
+  //             {placeholderIcon}
+  //           </div>
+  //         )}
+  //         {hasDiscount && showSaleBadge && (
+  //           <div
+  //             className="absolute top-3 left-3 text-white px-2.5 py-1 text-[10px] font-bold"
+  //             style={{ backgroundColor: primaryColor }}
+  //           >
+  //             Sale
+  //           </div>
+  //         )}
+  //       </div>
 
-        {showRating && (
-          <div
-            className="stars text-[11px] mb-1.5"
-            style={{ color: "#fbbf24" }}
-          >
-            ★★★★★
-          </div>
-        )}
-        <div
-          className="title text-sm font-medium mb-1.5"
-          style={{ color: primaryColor }}
-        >
-          {product.title}
-        </div>
-        <div className="price text-[13px]">
-          {hasDiscount && (
-            <span
-              className="old-price line-through mr-2"
-              style={{ color: secondaryColor }}
-            >
-              ₹{product.basePrice}
-            </span>
-          )}
-          <span className="new-price font-bold" style={{ color: primaryColor }}>
-            ₹{minPrice}
-          </span>
-        </div>
-      </div>
-    );
-  };
+  //       {showRating && (
+  //         <div
+  //           className="stars text-[11px] mb-1.5"
+  //           style={{ color: "#fbbf24" }}
+  //         >
+  //           ★★★★★
+  //         </div>
+  //       )}
+  //       <div
+  //         className="title text-sm font-medium mb-1.5"
+  //         style={{ color: primaryColor }}
+  //       >
+  //         {product.title}
+  //       </div>
+  //       <div className="price text-[13px]">
+  //         {hasDiscount && (
+  //           <span
+  //             className="old-price line-through mr-2"
+  //             style={{ color: secondaryColor }}
+  //           >
+  //             ₹{product.basePrice}
+  //           </span>
+  //         )}
+  //         <span className="new-price font-bold" style={{ color: primaryColor }}>
+  //           ₹{minPrice}
+  //         </span>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   // Pagination Component
   const PaginationComponent = () => {
@@ -911,11 +787,16 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* Product Grid */}
           <div className="flex-1">
-            <main className={`grid gap-x-6 gap-y-10 ${getGridClass()}`}>
+            <ProductCart 
+            product={paginatedProducts}
+            cardConfig={mergedCardConfig}
+            mergedStyleConfig={mergedStyleConfig}
+            />
+            {/* <main className={`grid gap-x-6 gap-y-10 ${getGridClass()}`}>
               {paginatedProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </main>
+                <ProductCart key={product._id} product={product} />
+              ))} */}
+            {/* </main> */}
 
             {/* Pagination Bottom */}
             {paginationEnabled &&

@@ -68,9 +68,9 @@ const PreviewHeader = ({
                     <div
                         style={{
                             fontSize: `${headingPx("h2")}px`,
-                            fontWeight: headings.h2.weight,
-                            lineHeight: headings.h2.lineHeight,
-                            letterSpacing: `${headings.h2.letterSpacingEm}em`,
+                            fontWeight: headings?.h2?.weight,
+                            lineHeight: headings?.h2?.lineHeight,
+                            letterSpacing: `${headings?.h2?.letterSpacingEm}em`,
                         }}
                     >
                         Brand Guidelines for Web

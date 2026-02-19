@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Globe, Shuffle, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { ColorPalletModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 
 export type Combo = {
   _id: string;
@@ -21,13 +22,13 @@ const ColorPallet = ({ handleColorPallet }: any) => {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
-  const [loading, setLoading] = useState(true);
+
 
   // NEW: which card is active (clicked)
   const [activeId, setActiveId] = useState<string | null>(null);
 
-  const [combo, setCombo] = useState<Combo[]>([]);
-
+  const [combo, setCombo] = useState<ColorPalletModal[]>([]);
+  const { colorPallets, isFetched } = useSelector((state: RootState) => state.colorPallet)
   const updateArrows = () => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -59,47 +60,53 @@ const ColorPallet = ({ handleColorPallet }: any) => {
     el.scrollBy({ left: dir * (CARD_W + GAP), behavior: "smooth" });
   };
 
+  // useEffect(() => {
+  //   if (!currentWebsite?._id) return;
+
+  //   const fetchPalettes = async () => {
+  //     try {
+  //       // setLoading(true);
+
+  //       const req = await fetch("/api/admin/color-pallet");
+  //       const res = await req.json();
+
+  //       if (!res?.success) {
+  //         setCombo([]);
+  //         return;
+  //       }
+
+  //       const brandingColors = Array.isArray(currentWebsite?.branding?.colors)
+  //         ? currentWebsite.branding.colors.map((d) => {
+  //             return { ...d, usertype: true };
+  //           })
+  //         : [];
+
+  //       setCombo([
+  //         ...brandingColors,
+  //         ...res.data.map((d: any) => {
+  //           return {
+  //             ...d,
+  //             usertype: false,
+  //           };
+  //         }),
+  //       ]);
+  //     } catch (error) {
+  //       console.error("Color pallet fetch error:", error);
+  //       setCombo([]);
+  //     } finally {
+  //      // setLoading(false);
+  //     }
+  //   };
+
+  //   fetchPalettes();
+  // }, [currentWebsite?._id]);
   useEffect(() => {
-    if (!currentWebsite?._id) return;
+    if (colorPallets && colorPallets.length) {
+ setCombo(colorPallets)
+    }
+  }, [colorPallets])
 
-    const fetchPalettes = async () => {
-      try {
-        setLoading(true);
-
-        const req = await fetch("/api/admin/color-pallet");
-        const res = await req.json();
-
-        if (!res?.success) {
-          setCombo([]);
-          return;
-        }
-
-        const brandingColors = Array.isArray(currentWebsite?.branding?.colors)
-          ? currentWebsite.branding.colors.map((d) => {
-              return { ...d, usertype: true };
-            })
-          : [];
-
-        setCombo([
-          ...brandingColors,
-          ...res.data.map((d: any) => {
-            return {
-              ...d,
-              usertype: false,
-            };
-          }),
-        ]);
-      } catch (error) {
-        console.error("Color pallet fetch error:", error);
-        setCombo([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPalettes();
-  }, [currentWebsite?._id]);
-
+  console.log("combo-->",combo)
   return (
     <section className="w-full bg-white">
       <style>{`
@@ -124,7 +131,7 @@ const ColorPallet = ({ handleColorPallet }: any) => {
           </button>
         </div>
 
-        {loading ? (
+        {!isFetched ? (
           <section className="w-full bg-white">
             <div className="px-2 py-6 flex items-center justify-center">
               <div className="h-8 w-8 rounded-full border-2 border-slate-300 border-t-slate-900 animate-spin" />
@@ -172,8 +179,8 @@ const ColorPallet = ({ handleColorPallet }: any) => {
             >
               {combo.map((c) => {
                 const isActive = activeId === c._id;
-                const { brand } = c.colors;
-                const allColors = [...new Set([...Object.values(brand)])];
+                const brand = c?.colors?.brand || {};
+                const allColors = [...new Set(Object.values(brand).filter(Boolean))];
                 return (
                   <div
                     key={c._id}
@@ -244,11 +251,11 @@ const ColorPallet = ({ handleColorPallet }: any) => {
                       <div className="mt-3 px-3 pb-3">
                         <div className="text-[14px] flex gap-1 items-center justify-between leading-tight font-semibold text-slate-900">
                           {c.name}{" "}
-                          {c.usertype ? (
+                          {/* {c.usertype ? (
                             <User size={14} />
                           ) : (
                             <Globe size={14} />
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>

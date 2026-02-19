@@ -13,9 +13,9 @@ const GetBtnVisual = ({ buttonColors, hoveredBtn, buttonBase, k }: GetBtnVisualP
     const c = buttonColors[k];
     const hovering = hoveredBtn === k;
 
-    const bg = hovering ? c.hoverBg : c.bg;
-    const text = hovering ? c.hoverText : c.text;
-    const border = hovering ? c.hoverBorder : c.border;
+    const bg = hovering ? c?.hoverBg : c?.bg;
+    const text = hovering ? c?.hoverText : c?.text;
+    const border = hovering ? c?.hoverBorder : c?.border;
 
     return {
         style: {

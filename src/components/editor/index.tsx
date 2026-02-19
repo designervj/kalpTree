@@ -414,6 +414,7 @@ export default function GrapesJSEditor() {
   const [pagetype, setPageType] = useState("normal");
 
   const handlePageType = (type: string) => {
+    console.log("page type", type);
     setPageType(type);
   };
 
@@ -554,9 +555,7 @@ export default function GrapesJSEditor() {
   };
 
   const handleSaveTemplate = (name: string, content: string) => {
-    // later connect to backend
-    console.log(`Saving template: ${name}`);
-    console.log(content);
+  
   };
 
   // ─────────────────────────────

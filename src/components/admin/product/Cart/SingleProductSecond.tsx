@@ -30,11 +30,13 @@ import {
 } from "@/hooks/slices/product/ProductSlice";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ProductModel } from "../type/ProductModel";
+import { ProductVariant } from "@/modules/ecommerce/types";
 
 const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [matchedVariant, setMatchedVariant] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState<ProductModel | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, any>>({});
+  const [matchedVariant, setMatchedVariant] = useState<ProductVariant | null>(null);
   const [showCart, setShowCart] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
@@ -87,12 +89,12 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
   useEffect(() => {
     if (!selectedProduct) return;
 
-    const variantOptions = selectedProduct.options.filter(
-      (opt) => opt.useForVariants
+    const variantOptions = (selectedProduct?.options || []).filter(
+      (opt: any) => opt.useForVariants
     );
     const selectedKeys = Object.keys(selectedOptions);
 
-    const allVariantOptionsSelected = variantOptions.every((opt) =>
+    const allVariantOptionsSelected = variantOptions.every((opt: any) =>
       selectedKeys.includes(opt.id)
     );
 
@@ -101,9 +103,9 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
       return;
     }
 
-    const variant = selectedProduct.variants.find((v) => {
-      return variantOptions.every((option) => {
-        const attr = v.attributes.find((a) => a.attributeId === option.id);
+    const variant = (selectedProduct?.variants || []).find((v: ProductVariant) => {
+      return variantOptions.every((option: any) => {
+        const attr = (v.attributes || []).find((a: any) => a.attributeId === option.id);
         return attr && attr.value === selectedOptions[option.id];
       });
     });
@@ -111,22 +113,22 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
     setMatchedVariant(variant || null);
   }, [selectedOptions, selectedProduct]);
 
-  const addToCart = (product, variant) => {
+  const addToCart = (product: ProductModel, variant: ProductVariant) => {
     dispatch(
       addProductInCart({ productId: product._id, variantId: variant._id })
     );
   };
 
-  const removeFromCart = (index) => {
+  const removeFromCart = (index: number) => {
     dispatch(removeProductInCart(index));
   };
 
-  const updateQuantity = (index, delta) => {
+  const updateQuantity = (index: number, delta: number) => {
     dispatch(updateProductQtyInCart({ index, delta }));
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => {
+    return cart.reduce((total: number, item: any) => {
       const product = products.find((d) => d._id == item.productId);
       const variant = product?.variants.find((d) => d._id == item.variantId);
       const price = parseFloat(variant?.price || 0);
@@ -144,7 +146,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
     router.push(`/checkout?data=${href}`);
   };
 
-  const handleOptionChange = (optionId, value) => {
+  const handleOptionChange = (optionId: string, value: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
       [optionId]: value,
@@ -157,24 +159,26 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
       return;
     }
 
-    if (parseInt(matchedVariant.stock) <= 0) {
+    if ((matchedVariant.stock || 0) <= 0) {
       toast.error("This configuration is out of stock");
       return;
     }
 
-    addToCart(selectedProduct, matchedVariant);
+    if (selectedProduct && matchedVariant) {
+      addToCart(selectedProduct, matchedVariant);
+    }
     toast.success("Added to cart successfully!");
     setShowCart(true);
   };
 
-  const getOptionValues = (option) => {
+  const getOptionValues = (option: any) => {
     if (option.useForVariants) {
-      const values = new Set();
-      selectedProduct.variants.forEach((variant) => {
-        const attr = variant.attributes.find(
-          (a) => a.attributeId === option.id
+      const values = new Set<string>();
+      (selectedProduct?.variants || []).forEach((variant: ProductVariant) => {
+        const attr = (variant.attributes || []).find(
+          (a: any) => a.attributeId === option.id
         );
-        if (attr) {
+        if (attr && attr.value) {
           values.add(attr.value);
         }
       });
@@ -183,14 +187,14 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
     return option.values;
   };
 
-  const calculateDiscount = (basePrice, variantPrice) => {
-    const base = parseFloat(basePrice);
-    const variant = parseFloat(variantPrice);
+  const calculateDiscount = (basePrice: string | number, variantPrice: string | number) => {
+    const base = typeof basePrice === 'string' ? parseFloat(basePrice) : basePrice;
+    const variant = typeof variantPrice === 'string' ? parseFloat(variantPrice) : variantPrice;
     if (base <= variant) return 0;
     return Math.round(((base - variant) / base) * 100);
   };
 
-  const changeQuantity = (delta) => {
+  const changeQuantity = (delta: number) => {
     const newQty = quantity + delta;
     if (newQty >= 1 && newQty <= 99) {
       setQuantity(newQty);
@@ -214,8 +218,8 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
     const displayOptions = product.options.filter((opt) => !opt.useForVariants);
 
     const currentPrice = matchedVariant
-      ? parseFloat(matchedVariant.price)
-      : Math.min(...product.variants.map((v) => parseFloat(v.price)));
+      ? parseFloat(matchedVariant.price || "0")
+      : Math.min(...product.variants.map((v) => parseFloat(v.price || "0")));
 
     const discount = calculateDiscount(
       product.basePrice,
@@ -375,7 +379,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                 backgroundColor: 'color-mix(in srgb, var(--surface) 76%, transparent)',
               }}>
                 <div className="flex gap-2.5 items-center flex-wrap">
-                  {matchedVariant && parseInt(matchedVariant.stock) > 0 && (
+                  {matchedVariant && (matchedVariant.stock || 0) > 0 && (
                     <span className="inline-flex items-center gap-2 px-3 py-2 rounded-full border text-[10px] font-black tracking-[0.16em] uppercase" style={{
                       backgroundColor: 'var(--chip-bg)',
                       borderColor: 'var(--chip-border)',
@@ -414,7 +418,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                   >
                     <ChevronRight className="w-[18px] h-[18px]" />
                   </button>
-                </div>adgh3
+                </div>
               </div>
 
               {/* Main Image */}
@@ -438,9 +442,8 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                   <div
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
-                    className={`h-20 rounded-2xl overflow-hidden border cursor-pointer transition-all hover:-translate-y-0.5 ${
-                      activeImageIndex === idx ? 'ring-4' : ''
-                    }`}
+                    className={`h-20 rounded-2xl overflow-hidden border cursor-pointer transition-all hover:-translate-y-0.5 ${activeImageIndex === idx ? 'ring-4' : ''
+                      }`}
                     style={{
                       borderColor: activeImageIndex === idx ? 'color-mix(in srgb, var(--secondary) 70%, var(--border))' : 'var(--border)',
                       backgroundColor: '#eee',
@@ -489,7 +492,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                   {product.description}
                 </p>
 
-                {matchedVariant && parseInt(matchedVariant.stock) === 0 && (
+                {matchedVariant && (matchedVariant.stock || 0) === 0 && (
                   <div className="mt-2 inline-block px-3 py-1.5 rounded-xl text-xs font-black tracking-[0.14em] uppercase" style={{
                     backgroundColor: '#fee',
                     color: '#dc2626',
@@ -527,9 +530,8 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                             <button
                               key={value}
                               onClick={() => handleOptionChange(option.id, value)}
-                              className={`w-[38px] h-[38px] rounded-full border cursor-pointer transition-all ${
-                                selectedValue === value ? 'ring-4' : ''
-                              }`}
+                              className={`w-[38px] h-[38px] rounded-full border cursor-pointer transition-all ${selectedValue === value ? 'ring-4' : ''
+                                }`}
                               style={{
                                 backgroundColor: colorMap[value] || "#cccccc",
                                 borderColor: selectedValue === value
@@ -549,9 +551,8 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                             <button
                               key={value}
                               onClick={() => handleOptionChange(option.id, value)}
-                              className={`h-10 px-3.5 rounded-full border transition-all hover:-translate-y-0.5 text-xs font-black tracking-[0.14em] uppercase ${
-                                selectedValue === value ? 'ring-4' : ''
-                              }`}
+                              className={`h-10 px-3.5 rounded-full border transition-all hover:-translate-y-0.5 text-xs font-black tracking-[0.14em] uppercase ${selectedValue === value ? 'ring-4' : ''
+                                }`}
                               style={{
                                 borderColor: selectedValue === value
                                   ? 'color-mix(in srgb, var(--secondary) 75%, var(--border))'
@@ -607,13 +608,13 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                   <button
                     type="button"
                     onClick={handleAddToCart}
-                    disabled={!matchedVariant || parseInt(matchedVariant?.stock || 0) === 0}
+                    disabled={!matchedVariant || (matchedVariant?.stock || 0) === 0}
                     className="h-[46px] rounded-full flex items-center justify-center gap-2.5 px-4 text-xs font-black tracking-[0.14em] uppercase transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 border whitespace-nowrap"
-                    // style={{
-                    //   backgroundColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
-                    //   color: theme === 'dark' ? '#06140c' : '#fff',
-                    //   borderColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
-                    // }}
+                  // style={{
+                  //   backgroundColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
+                  //   color: theme === 'dark' ? '#06140c' : '#fff',
+                  //   borderColor: theme === 'dark' ? 'var(--secondary)' : 'var(--primary)',
+                  // }}
                   >
                     <ShoppingBag className="w-[18px] h-[18px]" />
                     <span className="inline-block">Add to Cart</span>
@@ -673,9 +674,8 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`pb-4 text-xs font-black tracking-[0.16em] uppercase relative transition-colors ${
-                    activeTab === tab ? '' : 'opacity-50'
-                  }`}
+                  className={`pb-4 text-xs font-black tracking-[0.16em] uppercase relative transition-colors ${activeTab === tab ? '' : 'opacity-50'
+                    }`}
                   style={{ color: 'var(--text)' }}
                 >
                   {tab === "description" && "Description"}
@@ -767,16 +767,14 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
 
         {/* Cart Sidebar */}
         <div
-          className={`fixed inset-0 bg-black/50 z-[1999] transition-opacity ${
-            showCart ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}
+          className={`fixed inset-0 bg-black/50 z-[1999] transition-opacity ${showCart ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
           onClick={() => setShowCart(false)}
         />
 
         <div
-          className={`fixed top-0 right-0 h-full w-full max-w-[450px] z-[2000] flex flex-col transition-transform ${
-            showCart ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={`fixed top-0 right-0 h-full w-full max-w-[450px] z-[2000] flex flex-col transition-transform ${showCart ? "translate-x-0" : "translate-x-full"
+            }`}
           style={{
             backgroundColor: 'var(--surface)',
             boxShadow: '-10px 0 30px rgba(0, 0, 0, 0.2)',
@@ -807,7 +805,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                 const variant = product?.variants.find((d) => d._id == item.variantId);
                 if (!product || !variant) return null;
 
-                const itemTotal = parseFloat(variant.price) * item.quantity;
+                const itemTotal = parseFloat(variant.price || "0") * item.quantity;
 
                 return (
                   <div key={index} className="p-4 border rounded-[18px] mb-4" style={{ borderColor: 'var(--border)' }}>
