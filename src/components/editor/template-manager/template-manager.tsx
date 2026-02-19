@@ -363,7 +363,7 @@ export function TemplateManager({
                               <Card
                                 key={cardKey}
                                 className={cn(
-                                  "group cursor-pointer rounded-2xl border bg-white transition",
+                                  "group relative cursor-pointer rounded-2xl border bg-white transition pb-10",
                                   "border-slate-200 hover:border-slate-300 hover:shadow-sm",
                                   isSelected && "ring-2 ring-violet-500 border-violet-300"
                                 )}

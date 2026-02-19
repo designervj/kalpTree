@@ -7,10 +7,11 @@ import PageMan from "./PageMan";
 const page = () => {
   return (
     <>
-      <StaticTypography />
-      {/* <PageMan /> */}
+    {/* <StaticTypography /> */}
+   <PageMan/>
     </>
-  );
-};
 
-export default page;
+  )
+}
+
+export default page
