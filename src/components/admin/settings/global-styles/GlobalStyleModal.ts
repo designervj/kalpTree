@@ -15,7 +15,7 @@ export interface GlobalStyleSettings {
 }
 
 export type Mode = "light" | "dark";
-export type LeftTab = "colors" | "headings" | "body" | "buttons";
+export type LeftTab = "colors" | "headings" | "body" | "buttons" | "root-file";
 export type HeadingKey = "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 export type BtnKey = "primary" | "secondary" | "outline" | "ghost" | "link";
 export type RightPanelTab = "preview" | "root";

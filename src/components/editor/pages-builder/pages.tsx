@@ -578,7 +578,7 @@ const StyleSidebar = ({
 
             {activeGroup === group.id && (
               <div className="px-4 pb-4 space-y-4 bg-slate-50 dark:bg-slate-800/30">
-                {group.sections.map((section, idx) => (
+                {group.sections.map((section: any, idx) => (
                   <div key={idx} className="space-y-2">
                     <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                       {section.label}
@@ -630,7 +630,7 @@ const StyleSidebar = ({
                         onChange={(e) => section.onChange(e.target.value)}
                         className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100"
                       >
-                        {section.options?.map((opt) => (
+                        {section.options?.map((opt: any) => (
                           <option key={opt.value} value={opt.value}>
                             {opt.label}
                           </option>
@@ -926,7 +926,7 @@ export default function Pages({
       <div className="h-full">
         <div
           className={cx(
-            "rounded-none overflow-hidden p-1",
+            "rounded-none overflow-x-auto p-1",
             "bg-white ",
             "dark:bg-[#0b1220] dark:border-slate-800",
           )}
@@ -940,7 +940,7 @@ export default function Pages({
                 <h6 className="text-sm font-semibold mb-2">Main navigation</h6>
               </div>
 
-              <div className="rounded-none dark:border-slate-800 overflow-hidden">
+              <div className="rounded-none dark:border-slate-800 overflow-x-auto">
                 <div className="px-0 border-b border-slate-200">
                   {allPages.length > 0 &&
                     allPages.map((p) => {
@@ -1026,7 +1026,7 @@ export default function Pages({
                 <h6 className="text-sm font-semibold"> Other pages</h6>
               </div>
 
-              <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-x-auto">
                 <div className="px-3">
                   <div
                     className={cx(
@@ -1139,15 +1139,15 @@ export default function Pages({
                     {categoryPageExpanded && (
                       <div className="pb-2 pl-10 space-y-2">
                         {listCategory && listCategory.length > 0 ? (
-                          listCategory.map((category) => (
+                          listCategory.map((category, idx) => (
                             <div
-                              key={category._id}
+                              key={category._id?.toString() || idx}
                               className="flex items-center justify-between group py-1.5 px-2 rounded hover:bg-slate-100 dark:hover:bg-white/5"
                             >
                               <div
                                 className="flex-1 text-sm text-slate-700 dark:text-slate-300 cursor-pointer"
                                 onClick={() =>
-                                  handleCategoryClick(category.slug)
+                                  handleCategoryClick(category.slug || "")
                                 }
                               >
                                 {category.name}
@@ -1155,7 +1155,7 @@ export default function Pages({
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleEditStyle(category.slug);
+                                  handleEditStyle(category.slug || "");
                                 }}
                                 className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-slate-200 dark:hover:bg-white/10 rounded transition-opacity"
                                 title="Edit style"
@@ -1189,7 +1189,7 @@ export default function Pages({
                 do not appear in your navigation.
               </p>
 
-              <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div className="rounded-md border border-slate-200 dark:border-slate-800 overflow-x-auto">
                 <div className="px-3">
                   {hiddenNav.map((p) => (
                     <div

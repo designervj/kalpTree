@@ -240,6 +240,8 @@ const ShowTropography = () => {
         }
     }, [currentWebsite]);
 
+
+    console.log("currentStyle--->", currentStyle)
     const uiPalette = useMemo(() => {
         const light = {
             bg: currentStyle?.themes?.light?.bg || '#F4F6F5',

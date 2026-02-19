@@ -2,7 +2,9 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+
 
 // Types and Interfaces
 interface AttributesEditorProps {
@@ -16,6 +18,27 @@ export function AttributesEditor({
 }: AttributesEditorProps) {
   const [attributes, setAttributes] = useState<Record<string, string>>({});
   const [traits, setTraits] = useState<any[]>([]);
+  const [htmlContent, setHtmlContent] = useState<string>("");
+  useEffect(() => {
+    if (selectedElement) {
+      setHtmlContent(selectedElement.getEl().innerHTML);
+
+      const handleChange = () => {
+        setHtmlContent(selectedElement.getEl().innerHTML);
+      };
+
+      selectedElement.on("change:components", handleChange);
+      selectedElement.on("change:content", handleChange);
+
+      return () => {
+        selectedElement.off("change:components", handleChange);
+        selectedElement.off("change:content", handleChange);
+      };
+    } else {
+      setHtmlContent("");
+    }
+  }, [selectedElement]);
+
 
   useEffect(() => {
     if (!selectedElement) {
@@ -24,9 +47,16 @@ export function AttributesEditor({
       return;
     }
 
-    console.log(selectedElement);
+    // Log various ways to view the "content"
+    // console.group("Selected Element Details");
+    // console.log("Model Object:", selectedElement);
+    // console.log("HTML String:", selectedElement.to`HTML?.());`
+    // console.log("JSON Model:", selectedElement.toJSON?.());
+    // console.log("Text Content (if applicable):", selectedElement.get?.("content"));
+    // console.log("Live DOM innerHTML:", htmlContent);
+    // console.groupEnd();
+
     const currentAttrs = selectedElement.getAttributes?.() || {};
-    console.log(currentAttrs);
     setAttributes(currentAttrs);
 
     const componentTraits = selectedElement.get?.("traits");
@@ -59,6 +89,14 @@ export function AttributesEditor({
     onAttributeChange(traitName, value);
   };
 
+  const handleHTMLContentChange = (value: string) => {
+    setHtmlContent(value);
+    if (selectedElement) {
+      selectedElement.components(value);
+    }
+  };
+
+
   if (!selectedElement) {
     return (
       <div className="p-4 text-sm text-slate-600 dark:text-slate-400">
@@ -72,6 +110,7 @@ export function AttributesEditor({
     { name: "id", label: "ID", type: "text" },
     { name: "class", label: "Class", type: "text" },
     { name: "title", label: "Title", type: "text" },
+    // { name: "htmlContent", label: "HTML", type: "textarea" },
   ];
 
   // Element-specific attributes
@@ -224,6 +263,14 @@ export function AttributesEditor({
             />
           </div>
         ))}
+        <Label className={labelCls}>{"HTML content"}</Label>
+        <Textarea
+          value={htmlContent ?? ""}
+          onChange={(e) => handleHTMLContentChange(e.target.value)}
+          className={`${inputCls} min-h-[150px] font-mono text-xs`}
+          placeholder={`Enter HTML content`}
+        />
+
       </div>
 
       {/* Element-specific attributes */}

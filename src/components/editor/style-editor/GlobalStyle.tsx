@@ -17,6 +17,7 @@ import ColorControl from '@/components/admin/settings/global-styles/showStyle/Co
 import HeadingControl from '@/components/admin/settings/global-styles/showStyle/HeadingControl';
 import BodyControl from '@/components/admin/settings/global-styles/showStyle/BodyControl';
 import ButtonControl from '@/components/admin/settings/global-styles/showStyle/ButtonControl';
+import RootFileControl from './RootFileControl';
 
 type SectionProps = {
 
@@ -190,20 +191,29 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
       <div className="flex justify-between items-center gap-3">
         <div className="grid grid-cols-4 gap-2">
           <Button variant={leftTab === "colors" ? "default" : "outline"}
+            className="shrink-0"
             onClick={() => onLeftTab("colors")}>
             Colors
           </Button>
           <Button variant={leftTab === "headings" ? "default" : "outline"}
+            className="shrink-0"
             onClick={() => onLeftTab("headings")}>
             Headings
           </Button>
           <Button variant={leftTab === "body" ? "default" : "outline"}
+            className="shrink-0"
             onClick={() => onLeftTab("body")}>
             Body
           </Button>
           <Button variant={leftTab === "buttons" ? "default" : "outline"}
+            className="shrink-0"
             onClick={() => onLeftTab("buttons")}>
             Buttons
+          </Button>
+          <Button variant={leftTab === "root-file" ? "default" : "outline"}
+            className="shrink-0"
+            onClick={() => onLeftTab("root-file")}>
+            Root File
           </Button>
         </div>
 
@@ -251,6 +261,9 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
           setButtonColors={handleButtonColorChange as any}
           selectedBtn={selectedBtn}
           setSelectedBtn={setSelectedBtn}
+        />}
+        {leftTab === "root-file" && <RootFileControl
+
         />}
       </div>
     </ScrollArea>

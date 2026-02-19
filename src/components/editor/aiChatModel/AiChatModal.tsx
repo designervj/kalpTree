@@ -150,21 +150,34 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
 
                   >
                     {componentHtml ? (
-                      <>
-                        <style>{componentCss}</style>
-                        <div
-                          dangerouslySetInnerHTML={{ __html: componentHtml }}
-                          className="rendered-html min-h-[160px]"
-                          style={{
-                            padding: "10px",
-                            overflow: "auto",
-                            border: "1px solid #e5e7eb",
-                            borderRadius: "8px",
-                            background: "#fff"
-                          }}
-                        />
-
-                      </>
+                      <iframe
+                        title="Component Preview"
+                        srcDoc={`
+                          <!DOCTYPE html>
+                          <html>
+                            <head>
+                              <style>
+                                ${componentCss}
+                                body { 
+                                  margin: 0; 
+                                  padding: 10px; 
+                                  background: white; 
+                                  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+                                }
+                              </style>
+                            </head>
+                            <body>
+                              ${componentHtml}
+                            </body>
+                          </html>
+                        `}
+                        className="w-full min-h-[160px]"
+                        style={{
+                          border: "1px solid #e5e7eb",
+                          borderRadius: "8px",
+                          background: "#fff"
+                        }}
+                      />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-400">
                         No HTML content to display
@@ -192,7 +205,7 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
               {/* Bottom Section - API Response and HTML Preview */}
               <div className="min-h-[200px] overflow-auto bg-gray-50 p-4 md:p-6 pt-0 pb-0">
                 <div className="mb-3">
-                  <h3 className="text-sm font-semibold text-gray-800" style={{ fontSize: "18px", marginBottom: "10px",marginTop:"10px" }}>AI Response</h3>
+                  <h3 className="text-sm font-semibold text-gray-800" style={{ fontSize: "18px", marginBottom: "10px", marginTop: "10px" }}>AI Response</h3>
                 </div>
 
                 <div className="space-y-4">
@@ -206,24 +219,24 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
                   "
                     style={{ padding: "10px", margin: "4px", width: "98%" }}
                   /> */}
-                <div className="border border-gray-200 h-auto rounded-sm bg-white" style={{padding:"10px"}}>
-                  <h1>Hello World</h1>
-                 
-                </div>
+                  <div className="border border-gray-200 h-auto rounded-sm bg-white" style={{ padding: "10px" }}>
+                    <h1>Hello World</h1>
 
-              <div className="flex gap-3 flex-wrap" style={{marginTop:"10px"}}>
-  <button className="px-4 py-2 rounded-sm bg-blue-600 text-white cursor-pointer font-medium hover:bg-blue-700 transition" style={{paddingLeft:"10px", paddingRight:"10px", fontSize:"14px"}}>
-    Keep design
-  </button>
+                  </div>
 
-  <button className="px-4 py-2 rounded-sm border border-gray-300 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 transition" style={{paddingLeft:"10px", paddingRight:"10px", fontSize:"14px"}}>
-    Discard design
-  </button>
+                  <div className="flex gap-3 flex-wrap" style={{ marginTop: "10px" }}>
+                    <button className="px-4 py-2 rounded-sm bg-blue-600 text-white cursor-pointer font-medium hover:bg-blue-700 transition" style={{ paddingLeft: "10px", paddingRight: "10px", fontSize: "14px" }}>
+                      Keep design
+                    </button>
 
-  <button className="px-4 py-2 rounded-sm bg-purple-600 text-white cursor-pointer font-medium hover:bg-purple-700 transition" style={{paddingLeft:"10px", paddingRight:"10px", fontSize:"14px", paddingTop:"6px", paddingBottom:"6px"}}>
-    Redesign
-  </button>
-</div>
+                    <button className="px-4 py-2 rounded-sm border border-gray-300 cursor-pointer text-gray-700 font-medium hover:bg-gray-100 transition" style={{ paddingLeft: "10px", paddingRight: "10px", fontSize: "14px" }}>
+                      Discard design
+                    </button>
+
+                    <button className="px-4 py-2 rounded-sm bg-purple-600 text-white cursor-pointer font-medium hover:bg-purple-700 transition" style={{ paddingLeft: "10px", paddingRight: "10px", fontSize: "14px", paddingTop: "6px", paddingBottom: "6px" }}>
+                      Redesign
+                    </button>
+                  </div>
 
 
 
@@ -232,8 +245,30 @@ export function AiChatModal({ isOpen, onClose, component }: AiChatModalProps) {
                       <h4 className="text-xs font-semibold text-gray-700 mb-2">
                         Extracted HTML Preview
                       </h4>
-                      <div className="border border-dashed border-blue-300 rounded-xl bg-blue-50 p-4 overflow-auto">
-                        <div dangerouslySetInnerHTML={{ __html: extractedHtml }} />
+                      <div className="border border-dashed border-blue-300 rounded-xl bg-blue-50 p-4 overflow-auto min-h-[160px]">
+                        <iframe
+                          title="Extracted HTML Preview"
+                          srcDoc={`
+                            <!DOCTYPE html>
+                            <html>
+                              <head>
+                                <style>
+                                  ${componentCss}
+                                  body { 
+                                    margin: 0; 
+                                    padding: 10px; 
+                                    background: transparent; 
+                                    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+                                  }
+                                </style>
+                              </head>
+                              <body>
+                                ${extractedHtml}
+                              </body>
+                            </html>
+                          `}
+                          className="w-full h-full border-none"
+                        />
                       </div>
                       <Button onClick={handleReplaceComponent}>
                         Replace Component

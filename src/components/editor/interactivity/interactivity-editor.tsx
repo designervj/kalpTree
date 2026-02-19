@@ -70,12 +70,12 @@ export function InteractivityEditor({
   }, [selectedElement]);
 
   const loadInteractionsFromElement = () => {
-    // if (selectedElement) {
-    //   const elementInteractions = selectedElement.get("interactions") || [];
-    //   setInteractions(elementInteractions);
-    // } else {
-    //   setInteractions([]);
-    // }
+    if (selectedElement) {
+      const elementInteractions = selectedElement.get("interactions") || [];
+      setInteractions(elementInteractions);
+    } else {
+      setInteractions([]);
+    }
   };
 
   const validateInteraction = () => {
@@ -104,12 +104,12 @@ export function InteractivityEditor({
       id: `interaction-${Date.now()}`,
       event: newEvent,
       action: newAction,
-      target: newTarget || undefined,
+      target: newAction === "redirect" ? (newOptions.newTab ? "_blank" : "_self") : (newTarget || undefined),
       options: newOptions,
       componentId: selectedElement.cid || selectedElement.get("ccid") || selectedElement.get("id") || `component-${Date.now()}`,
     };
 
-    console.log("newInteraction", newInteraction);
+
 
     const updatedInteractions = [...interactions, newInteraction];
     updateElementInteractions(updatedInteractions);
@@ -488,7 +488,9 @@ function RedirectOptions({ options, setOptions }: { options: any; setOptions: (o
       <div className="flex items-center space-x-2">
         <Switch
           checked={options.newTab === true}
-          onCheckedChange={(checked) => setOptions({ ...options, newTab: checked })}
+          onCheckedChange={(checked) => {
+            setOptions({ ...options, newTab: checked });
+          }}
           id="new-tab"
         />
         <Label htmlFor="new-tab" className="text-xs text-slate-700 dark:text-slate-300">
@@ -776,7 +778,10 @@ function InteractionActionOptions({
           <div className="flex items-center space-x-2 mt-2">
             <Switch
               checked={interaction.options?.newTab === true}
-              onCheckedChange={(checked) => onUpdate(interaction.id, "options", { newTab: checked })}
+              onCheckedChange={(checked) => {
+                onUpdate(interaction.id, "options", { newTab: checked });
+                onUpdate(interaction.id, "target", checked ? "_blank" : "_self");
+              }}
               id={`new-tab-${interaction.id}`}
             />
             <Label htmlFor={`new-tab-${interaction.id}`} className="text-xs text-slate-700 dark:text-slate-300">
