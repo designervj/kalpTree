@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Shuffle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Globe, Shuffle, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -10,6 +10,7 @@ export type Combo = {
   name: string;
   colors: any;
   seed?: string;
+  usertype?: boolean;
 };
 
 const CARD_W = 140;
@@ -74,10 +75,20 @@ const ColorPallet = ({ handleColorPallet }: any) => {
         }
 
         const brandingColors = Array.isArray(currentWebsite?.branding?.colors)
-          ? currentWebsite.branding.colors
+          ? currentWebsite.branding.colors.map((d) => {
+              return { ...d, usertype: true };
+            })
           : [];
 
-        setCombo([...brandingColors, ...res.data]);
+        setCombo([
+          ...brandingColors,
+          ...res.data.map((d: any) => {
+            return {
+              ...d,
+              usertype: false,
+            };
+          }),
+        ]);
       } catch (error) {
         console.error("Color pallet fetch error:", error);
         setCombo([]);
@@ -231,8 +242,13 @@ const ColorPallet = ({ handleColorPallet }: any) => {
 
                       {/* Labels */}
                       <div className="mt-3 px-3 pb-3">
-                        <div className="text-[14px] leading-tight font-semibold text-slate-900">
-                          {c.name}
+                        <div className="text-[14px] flex gap-1 items-center justify-between leading-tight font-semibold text-slate-900">
+                          {c.name}{" "}
+                          {c.usertype ? (
+                            <User size={14} />
+                          ) : (
+                            <Globe size={14} />
+                          )}
                         </div>
                       </div>
                     </div>

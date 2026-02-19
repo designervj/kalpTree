@@ -243,6 +243,8 @@ export default function TypographyPage() {
     currentWebsite?.globalStyle || "",
   );
 
+  console.log(data);
+
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
   // Add this useEffect:
 
@@ -816,6 +818,22 @@ export default function TypographyPage() {
       });
     }
   }, [currentWebsite?.globalStyle]);
+
+  useEffect(() => {
+    if (!allFonts.length || !data?.fonts) return;
+
+    const extractFontName = (fontStr: string) =>
+      fontStr?.split(",")[0].trim().replace(/^"|"$/g, "") ?? "Inter";
+
+    const bodyName = extractFontName(data.fonts.body);
+    const headingName = extractFontName(data.fonts.heading);
+    const buttonName = extractFontName(data.fonts.button);
+
+    [bodyName, headingName, buttonName].forEach((name) => {
+      const found = allFonts.find((f) => f.name === name);
+      if (found) ensureFontLoaded(found);
+    });
+  }, [allFonts, currentWebsite?.globalStyle]);
 
   const handleCopyRoot = async () => {
     try {
