@@ -26,6 +26,7 @@ import ProductShowcase from "../admin/product/Cart/Products";
 import { ProductShowcaseStyleConfig } from "./pages-builder/pages";
 import SingleProductShowcase from "../admin/product/Cart/SingleProduct";
 import { isHeaderPresent } from "./utils/htmlParser";
+import CommentsModal from "./commentModal/CommentModal";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -47,6 +48,8 @@ export default function GrapesJSEditor() {
     setIsAiChatOpen,
     selectedComponentForAi,
     editForm,
+    isCommentsOpen,
+    setIsCommentsOpen
   } = editorProps;
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
@@ -337,7 +340,7 @@ export default function GrapesJSEditor() {
 
         setEditorHtml(html);
         setEditorCss(css);
-        if (js) setEditorJs(js);
+        setEditorJs(js || "");
       }, 500);
     };
     state.editor.on("component:update", updateHandler);
@@ -665,9 +668,7 @@ export default function GrapesJSEditor() {
     setEditorHtml(state.editor.getHtml());
     setEditorCss(state.editor.getCss());
     const newJs = state.editor!.getJs ? state.editor!.getJs() || "" : "";
-    if (newJs) {
-      setEditorJs(newJs);
-    }
+    setEditorJs(newJs || "");
 
     // state.editor.on("component:update", () => {
     //   setEditorHtml(state.editor!.getHtml());
@@ -921,6 +922,13 @@ export default function GrapesJSEditor() {
         <AiChatModal
           isOpen={isAiChatOpen}
           onClose={() => setIsAiChatOpen(false)}
+          component={selectedComponentForAi}
+        />
+
+        {/* Comments Modal */}
+        <CommentsModal
+          isOpen={isCommentsOpen}
+          onClose={() => setIsCommentsOpen(false)}
           component={selectedComponentForAi}
         />
 

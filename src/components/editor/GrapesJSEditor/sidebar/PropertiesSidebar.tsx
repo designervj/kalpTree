@@ -201,14 +201,14 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
               />
             </TabsContent>
             <TabsContent value="reports">
-  
+
 
               <InteractivityEditor
                 selectedElement={selectedElement}
                 onInteractivityChange={onInteractivityChange}
               />
             </TabsContent>
-        
+
           </Tabs>
         );
 
@@ -398,7 +398,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           </div>
 
           {/* content */}
-          <div className="flex-1 min-h-0 overflow-y-auto p-4 pt-1">
+          <div className="flex-1 min-h-0 overflow-auto p-4 pt-1">
             {renderRightContent()}
           </div>
         </div>

@@ -12,675 +12,324 @@ export interface InteractivityOptions {
   options?: any;
 }
 
+/**
+ * Returns a single, unified script that handles all interactivity types.
+ * It includes helper functions and a section for generated component handlers.
+ */
+export function getGlobalInteractivityScript(dynamicHandlers = "") {
+  return `
+  // Ensure we don't double-register the global listener
+  if (window.__interactivityEngineLoaded) {
+    console.log('🔄 KalpTree Interactivity Engine Already Shared');
+    return;
+  }
+  window.__interactivityEngineLoaded = true;
+
+  console.log('🚀 KalpTree Interactivity Engine Loaded');
+
+  // --- HELPER FUNCTIONS ---
+  function smoothScroll(targetId) {
+    var targetEl = document.getElementById(targetId) || document.querySelector(targetId);
+    if (!targetEl) return;
+    var offset = 80;
+    var y = targetEl.getBoundingClientRect().top + window.pageYOffset - offset;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }
+
+  function handleVisibility(selector, action, anim, dur) {
+    var targetEl = document.querySelector(selector);
+    if (!targetEl) return;
+    
+    var isShowing = action === 'show' || (action === 'toggle' && (targetEl.style.display === 'none' || getComputedStyle(targetEl).display === 'none'));
+
+    if (isShowing) {
+      if (anim === 'fade') {
+        targetEl.style.opacity = '0';
+        targetEl.style.display = 'block';
+        setTimeout(function() { 
+          targetEl.style.transition = 'opacity ' + dur + 'ms';
+          targetEl.style.opacity = '1'; 
+        }, 10);
+      } else {
+        targetEl.style.display = 'block';
+      }
+    } else {
+      if (anim === 'fade') {
+        targetEl.style.transition = 'opacity ' + dur + 'ms';
+        targetEl.style.opacity = '0';
+        setTimeout(function() { targetEl.style.display = 'none'; }, dur);
+      } else {
+        targetEl.style.display = 'none';
+      }
+    }
+  }
+
+  // --- COMPONENT HANDLERS ---
+  /* INTERACTION_HANDLERS_START */
+${dynamicHandlers}
+  /* INTERACTION_HANDLERS_END */
+
+  // --- GLOBAL DELEGATION (Fallback for attributes) ---
+  document.addEventListener('click', function(e) {
+    var target = e.target;
+    
+    // Check if there is already a specific handler that called preventDefault
+    if (e.defaultPrevented) return;
+
+    // REDIRECT
+    var redirectTrigger = target.closest('[data-redirect-url]');
+    if (redirectTrigger) {
+      var url = redirectTrigger.getAttribute('data-redirect-url');
+      var newTab = redirectTrigger.getAttribute('data-redirect-newtab') === 'true';
+      
+      if (url) {
+        console.log('🔗 Interactivity: Redirecting to', url, 'in', newTab ? 'new tab' : 'same tab');
+        
+        // Fix for hash URLs in new tabs: prepend current path
+        if (newTab && url.startsWith('#')) {
+          url = window.location.pathname + url;
+        }
+
+        e.preventDefault();
+        if (newTab) {
+          var win = window.open(url, '_blank');
+          if (win) {
+            win.focus();
+          } else {
+            window.location.href = url; // Fallback
+          }
+        } else {
+          window.location.href = url;
+        }
+      }
+      return;
+    }
+
+    // SCROLL TO
+    var scrollTrigger = target.closest('[data-scroll-to]');
+    if (scrollTrigger) {
+      e.preventDefault();
+      smoothScroll(scrollTrigger.getAttribute('data-scroll-to'));
+      return;
+    }
+
+    // TOGGLE/ADD/REMOVE CLASS
+    var classTrigger = target.closest('[data-toggle-class], [data-add-class], [data-remove-class]');
+    if (classTrigger) {
+      e.preventDefault();
+      var action = classTrigger.hasAttribute('data-toggle-class') ? 'toggle' : 
+                   (classTrigger.hasAttribute('data-add-class') ? 'add' : 'remove');
+      var className = classTrigger.getAttribute('data-' + action + '-class');
+      var selector = classTrigger.getAttribute('data-' + action + '-target');
+      var targetEl = selector === 'self' ? classTrigger : document.querySelector(selector);
+      if (targetEl && className) targetEl.classList[action](className);
+      return;
+    }
+
+    // VISIBILITY
+    var visibilityTrigger = target.closest('[data-show-target], [data-hide-target], [data-toggle-visibility]');
+    if (visibilityTrigger) {
+      e.preventDefault();
+      var action = visibilityTrigger.hasAttribute('data-show-target') ? 'show' :
+                   (visibilityTrigger.hasAttribute('data-hide-target') ? 'hide' : 'toggle');
+      var selector = visibilityTrigger.getAttribute('data-' + action + (action === 'toggle' ? '-visibility' : '-target'));
+      var anim = visibilityTrigger.getAttribute('data-' + action + '-animation') || 'none';
+      var dur = parseInt(visibilityTrigger.getAttribute('data-' + action + '-duration') || '300');
+      handleVisibility(selector, action, anim, dur);
+      return;
+    }
+  });
+
+  // --- SCROLL OBSERVER ---
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !entry.target.classList.contains('scroll-triggered')) {
+          entry.target.classList.add('scroll-triggered');
+          var action = entry.target.getAttribute('data-scroll-action');
+          if (action === 'show') {
+            entry.target.style.opacity = '1';
+            entry.target.style.display = 'block';
+          } else if (action === 'add-class') {
+            var cls = entry.target.getAttribute('data-scroll-class');
+            if (cls) entry.target.classList.add(cls);
+          }
+        }
+      });
+    }, { threshold: 0.1 });
+
+    function initObservers() {
+      document.querySelectorAll('[data-scroll-action]').forEach(function(el) {
+        observer.observe(el);
+      });
+    }
+    
+    initObservers();
+    setTimeout(initObservers, 1000);
+  }
+})();
+  `;
+}
+
+/**
+ * Scans the entire document for components with interactivity attributes
+ * and ensures the global script is present.
+ */
+export function syncInteractivityScript(editor: any) {
+  if (!editor || !editor.getJs || !editor.setJs) return;
+
+  const wrapper = editor.Components.getWrapper();
+  if (!wrapper) return;
+
+
+  let dynamicHandlers = "";
+
+
+
+  // Update the global script
+  const fullScript = getGlobalInteractivityScript(dynamicHandlers);
+
+  // Apply to editor
+  if (editor.setJs) {
+    editor.setJs(fullScript);
+  }
+
+  // Also inject directly into the canvas document for immediate effect in editor
+  if (editor.Canvas) {
+    const frame = editor.Canvas.getFrameEl();
+    const doc = frame?.contentDocument;
+    if (doc) {
+      // Remove old script if exists
+      doc.getElementById('kalptree-interactivity-runtime')?.remove();
+
+      const script = doc.createElement('script');
+      script.id = 'kalptree-interactivity-runtime';
+      // Remove the guard from the runtime version to ensure it refreshes handlers if needed
+      // (Though since we moved to delegation, the code itself is static)
+      script.innerHTML = fullScript;
+      doc.body.appendChild(script);
+      console.log('✅ Injected interactivity runtime into canvas');
+    }
+  }
+}
+
 export function handleInteractivityChange(
   component: any,
-  { type, event, action, target, options }: InteractivityOptions
+  { type, event, action, target, options }: InteractivityOptions,
+  editor?: any // Added editor to support script sync
 ) {
+  console.log("component", component);
+  console.log("type", type);
+  console.log("event", event);
+  console.log("action", action);
+  console.log("target", target);
+  console.log("options", options);
   if (!component) return;
 
-  const editor = component.em.get("Editor");
-  const wrapper = editor.getWrapper();
+  // REMOVE ACTIONS
+  if (type === "remove") {
+    if (action === "scroll-to") component.removeAttributes("data-scroll-to");
+    if (action === "toggle-class") component.removeAttributes(["data-toggle-class", "data-toggle-target"]);
+    if (action === "add-class") component.removeAttributes(["data-add-class", "data-add-target"]);
+    if (action === "remove-class") component.removeAttributes(["data-remove-class", "data-remove-target"]);
+    if (action === "show") component.removeAttributes(["data-show-target", "data-show-animation", "data-show-duration"]);
+    if (action === "hide") component.removeAttributes(["data-hide-target", "data-hide-animation", "data-hide-duration"]);
+    if (action === "toggle") component.removeAttributes(["data-toggle-visibility", "data-toggle-animation", "data-toggle-duration"]);
+    if (action === "redirect") component.removeAttributes(["data-redirect-url", "data-redirect-newtab"]);
+    if (event === "scroll") component.removeAttributes(["data-scroll-action", "data-scroll-offset", "data-scroll-class"]);
+  }
 
-  // ===============================
-  // ADD CLICK → SCROLL
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "scroll-to" &&
-    target
-  ) {
-    const SCRIPT_ID = "smooth-scroll-script";
+  // ADD ACTIONS - Manage attributes
+  if (type === "add" || type === "update") {
+    // Ensure component has an ID if it's going to have a script handler
+    if (!component.getId()) {
+      component.setId(`comp-${Date.now()}`);
+    }
 
-    // Add data-scroll-to attribute
-    component.addAttributes({
-      "data-scroll-to": target,
-    });
+    if (event === "click") {
+      if (action === "scroll-to" && target) {
+        component.addAttributes({ "data-scroll-to": target });
+      }
 
-    // Inject script once
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-      function initScroll() {
-        var triggers = document.querySelectorAll('[data-scroll-to]');
-
-        triggers.forEach(function (el) {
-          el.onclick = function () {
-            var targetId = el.getAttribute('data-scroll-to');
-            var targetEl = document.getElementById(targetId);
-
-            if (!targetEl) return;
-
-            var offset = 80; // height of fixed navbar
-            var y =
-              targetEl.getBoundingClientRect().top +
-              window.pageYOffset -
-              offset;
-
-            window.scrollTo({
-              top: y,
-              behavior: 'smooth'
-            });
-          };
+      if (action === "toggle-class") {
+        component.addAttributes({
+          "data-toggle-class": options?.class || "active",
+          "data-toggle-target": target || "self",
         });
       }
 
-      // Run immediately (important for GrapesJS)
-      initScroll();
+      if (action === "add-class") {
+        component.addAttributes({
+          "data-add-class": options?.class || "active",
+          "data-add-target": target || "self",
+        });
+      }
 
-      // Re-run after GrapesJS renders components
-      setTimeout(initScroll, 500);
-      setTimeout(initScroll, 1500);
-    })();
-        `,
-        layerable: true,
+      if (action === "remove-class") {
+        component.addAttributes({
+          "data-remove-class": options?.class || "active",
+          "data-remove-target": target || "self",
+        });
+      }
+
+      if (action === "show" && target) {
+        component.addAttributes({
+          "data-show-target": target,
+          "data-show-animation": options?.animation || "none",
+          "data-show-duration": options?.duration || "300",
+        });
+      }
+
+      if (action === "hide" && target) {
+        component.addAttributes({
+          "data-hide-target": target,
+          "data-hide-animation": options?.animation || "none",
+          "data-hide-duration": options?.duration || "300",
+        });
+      }
+
+      if (action === "toggle" && target) {
+        component.addAttributes({
+          "data-toggle-visibility": target,
+          "data-toggle-animation": options?.animation || "none",
+          "data-toggle-duration": options?.duration || "300",
+        });
+      }
+
+      if (action === "redirect") {
+        const url = options?.url || "";
+        const isNewTab = (options?.newTab || target === "_blank");
+        component.addAttributes({
+          "data-redirect-url": url,
+          "data-redirect-newtab": isNewTab ? "true" : "false",
+        });
+
+        // If it's a link component, sync native attributes too
+        if (component.get('tagName') === 'a') {
+          component.addAttributes({
+            href: url || "#",
+            target: isNewTab ? "_blank" : "_self"
+          });
+        }
+      }
+    }
+
+    if (event === "scroll") {
+      component.addAttributes({
+        "data-scroll-action": action,
+        "data-scroll-offset": options?.offset || "0",
+        ...(action === "add-class" && { "data-scroll-class": options?.class || "active" }),
       });
+      if (action === "show") {
+        component.addStyle({ display: "none", opacity: "0", transition: "opacity 0.3s ease" });
+      }
     }
   }
 
-  // ===============================
-  // REMOVE CLICK → SCROLL
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "scroll-to"
-  ) {
-    const SCRIPT_ID = "smooth-scroll-script";
-
-    // Remove data-scroll-to attributes
-    component.removeAttributes("data-scroll-to");
-    component.removeAttributes("data-scroll-offset");
-    component.removeAttributes("data-scroll-duration");
-
-    // Check if any element still uses data-scroll-to
-    const stillUsed = wrapper.find("[data-scroll-to]").length > 0;
-
-    // Remove script if unused
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
+  // Sync the global script if editor is provided
+  if (editor) {
+    syncInteractivityScript(editor);
   }
 
-  // ===============================
-  // ADD CLICK → TOGGLE CLASS
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "toggle-class"
-  ) {
-    const SCRIPT_ID = "toggle-class-script";
-    const targetSelector = target || "self";
-    const className = options?.class || "active";
-
-    component.addAttributes({
-      "data-toggle-class": className,
-      "data-toggle-target": targetSelector,
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-toggle-class]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var className = trigger.getAttribute("data-toggle-class");
-              var targetSelector = trigger.getAttribute("data-toggle-target");
-              var targetEl = targetSelector === "self" ? trigger : document.querySelector(targetSelector);
-              
-              if (targetEl) {
-                targetEl.classList.toggle(className);
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → TOGGLE CLASS
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "toggle-class"
-  ) {
-    const SCRIPT_ID = "toggle-class-script";
-
-    component.removeAttributes("data-toggle-class");
-    component.removeAttributes("data-toggle-target");
-
-    const stillUsed = wrapper.find("[data-toggle-class]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → ADD CLASS
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "add-class"
-  ) {
-    const SCRIPT_ID = "add-class-script";
-    const targetSelector = target || "self";
-    const className = options?.class || "active";
-
-    component.addAttributes({
-      "data-add-class": className,
-      "data-add-target": targetSelector,
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-add-class]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var className = trigger.getAttribute("data-add-class");
-              var targetSelector = trigger.getAttribute("data-add-target");
-              var targetEl = targetSelector === "self" ? trigger : document.querySelector(targetSelector);
-              
-              if (targetEl) {
-                targetEl.classList.add(className);
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → ADD CLASS
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "add-class"
-  ) {
-    const SCRIPT_ID = "add-class-script";
-
-    component.removeAttributes("data-add-class");
-    component.removeAttributes("data-add-target");
-
-    const stillUsed = wrapper.find("[data-add-class]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → REMOVE CLASS
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "remove-class"
-  ) {
-    const SCRIPT_ID = "remove-class-script";
-    const targetSelector = target || "self";
-    const className = options?.class || "active";
-
-    component.addAttributes({
-      "data-remove-class": className,
-      "data-remove-target": targetSelector,
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-remove-class]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var className = trigger.getAttribute("data-remove-class");
-              var targetSelector = trigger.getAttribute("data-remove-target");
-              var targetEl = targetSelector === "self" ? trigger : document.querySelector(targetSelector);
-              
-              if (targetEl) {
-                targetEl.classList.remove(className);
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → REMOVE CLASS
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "remove-class"
-  ) {
-    const SCRIPT_ID = "remove-class-script";
-
-    component.removeAttributes("data-remove-class");
-    component.removeAttributes("data-remove-target");
-
-    const stillUsed = wrapper.find("[data-remove-class]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → SHOW
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "show" &&
-    target
-  ) {
-    const SCRIPT_ID = "show-element-script";
-
-    component.addAttributes({
-      "data-show-target": target,
-      "data-show-animation": options?.animation || "none",
-      "data-show-duration": options?.duration || "300",
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-show-target]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var targetSelector = trigger.getAttribute("data-show-target");
-              var animation = trigger.getAttribute("data-show-animation");
-              var duration = parseInt(trigger.getAttribute("data-show-duration") || "300");
-              var targetEl = document.querySelector(targetSelector);
-              
-              if (!targetEl) return;
-
-              if (animation === "fade") {
-                targetEl.style.opacity = "0";
-                targetEl.style.display = "block";
-                targetEl.style.transition = "opacity " + duration + "ms";
-                setTimeout(function() { targetEl.style.opacity = "1"; }, 10);
-              } else {
-                targetEl.style.display = "block";
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → SHOW
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "show"
-  ) {
-    const SCRIPT_ID = "show-element-script";
-
-    component.removeAttributes("data-show-target");
-    component.removeAttributes("data-show-animation");
-    component.removeAttributes("data-show-duration");
-
-    const stillUsed = wrapper.find("[data-show-target]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → HIDE
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "hide" &&
-    target
-  ) {
-    const SCRIPT_ID = "hide-element-script";
-
-    component.addAttributes({
-      "data-hide-target": target,
-      "data-hide-animation": options?.animation || "none",
-      "data-hide-duration": options?.duration || "300",
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-hide-target]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var targetSelector = trigger.getAttribute("data-hide-target");
-              var animation = trigger.getAttribute("data-hide-animation");
-              var duration = parseInt(trigger.getAttribute("data-hide-duration") || "300");
-              var targetEl = document.querySelector(targetSelector);
-              
-              if (!targetEl) return;
-
-              if (animation === "fade") {
-                targetEl.style.transition = "opacity " + duration + "ms";
-                targetEl.style.opacity = "0";
-                setTimeout(function() { targetEl.style.display = "none"; }, duration);
-              } else {
-                targetEl.style.display = "none";
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → HIDE
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "hide"
-  ) {
-    const SCRIPT_ID = "hide-element-script";
-
-    component.removeAttributes("data-hide-target");
-    component.removeAttributes("data-hide-animation");
-    component.removeAttributes("data-hide-duration");
-
-    const stillUsed = wrapper.find("[data-hide-target]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → TOGGLE VISIBILITY
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "toggle" &&
-    target
-  ) {
-    const SCRIPT_ID = "toggle-visibility-script";
-
-    component.addAttributes({
-      "data-toggle-visibility": target,
-      "data-toggle-animation": options?.animation || "none",
-      "data-toggle-duration": options?.duration || "300",
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-toggle-visibility]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var targetSelector = trigger.getAttribute("data-toggle-visibility");
-              var animation = trigger.getAttribute("data-toggle-animation");
-              var duration = parseInt(trigger.getAttribute("data-toggle-duration") || "300");
-              var targetEl = document.querySelector(targetSelector);
-              
-              if (!targetEl) return;
-
-              var isVisible = targetEl.style.display !== "none" && window.getComputedStyle(targetEl).display !== "none";
-
-              if (isVisible) {
-                if (animation === "fade") {
-                  targetEl.style.transition = "opacity " + duration + "ms";
-                  targetEl.style.opacity = "0";
-                  setTimeout(function() { targetEl.style.display = "none"; }, duration);
-                } else {
-                  targetEl.style.display = "none";
-                }
-              } else {
-                if (animation === "fade") {
-                  targetEl.style.opacity = "0";
-                  targetEl.style.display = "block";
-                  targetEl.style.transition = "opacity " + duration + "ms";
-                  setTimeout(function() { targetEl.style.opacity = "1"; }, 10);
-                } else {
-                  targetEl.style.display = "block";
-                }
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → TOGGLE VISIBILITY
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "toggle"
-  ) {
-    const SCRIPT_ID = "toggle-visibility-script";
-
-    component.removeAttributes("data-toggle-visibility");
-    component.removeAttributes("data-toggle-animation");
-    component.removeAttributes("data-toggle-duration");
-
-    const stillUsed = wrapper.find("[data-toggle-visibility]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD CLICK → REDIRECT
-  // ===============================
-  if (
-    type === "add" &&
-    event === "click" &&
-    action === "redirect"
-  ) {
-    const SCRIPT_ID = "redirect-script";
-    const url = options?.url || "";
-    const newTab = options?.newTab || false;
-
-    component.addAttributes({
-      "data-redirect-url": url,
-      "data-redirect-newtab": newTab ? "true" : "false",
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            document.addEventListener("click", function (e) {
-              var trigger = e.target.closest("[data-redirect-url]");
-              if (!trigger) return;
-
-              e.preventDefault();
-
-              var url = trigger.getAttribute("data-redirect-url");
-              var newTab = trigger.getAttribute("data-redirect-newtab") === "true";
-              
-              if (url) {
-                if (newTab) {
-                  window.open(url, "_blank");
-                } else {
-                  window.location.href = url;
-                }
-              }
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE CLICK → REDIRECT
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "click" &&
-    action === "redirect"
-  ) {
-    const SCRIPT_ID = "redirect-script";
-
-    component.removeAttributes("data-redirect-url");
-    component.removeAttributes("data-redirect-newtab");
-
-    const stillUsed = wrapper.find("[data-redirect-url]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  // ===============================
-  // ADD SCROLL → SHOW/HIDE/ADD-CLASS
-  // ===============================
-  if (
-    type === "add" &&
-    event === "scroll" &&
-    (action === "show" || action === "hide" || action === "add-class")
-  ) {
-    const SCRIPT_ID = "scroll-observer-script";
-    const offset = options?.offset || "0";
-
-    component.addAttributes({
-      "data-scroll-action": action,
-      "data-scroll-offset": offset,
-      ...(action === "add-class" && { "data-scroll-class": options?.class || "active" }),
-    });
-
-    if (!wrapper.find(`#${SCRIPT_ID}`).length) {
-      editor.addComponents({
-        tagName: 'script',
-        attributes: { id: SCRIPT_ID },
-        content: `
-          (function () {
-            if (!('IntersectionObserver' in window)) return;
-
-            var observerCallback = function(entries) {
-              entries.forEach(function(entry) {
-                if (entry.isIntersecting && !entry.target.classList.contains('scroll-triggered')) {
-                  entry.target.classList.add('scroll-triggered');
-                  var action = entry.target.getAttribute('data-scroll-action');
-                  
-                  if (action === 'show') {
-                    entry.target.style.display = 'block';
-                    setTimeout(function() { entry.target.style.opacity = '1'; }, 10);
-                  } else if (action === 'add-class') {
-                    var className = entry.target.getAttribute('data-scroll-class');
-                    if (className) entry.target.classList.add(className);
-                  }
-                }
-              });
-            };
-
-            var observer = new IntersectionObserver(observerCallback, {
-              threshold: 0.1,
-              rootMargin: '0px'
-            });
-
-            document.querySelectorAll('[data-scroll-action]').forEach(function(el) {
-              observer.observe(el);
-            });
-          })();
-        `,
-        layerable: true,
-      });
-    }
-
-    // Set initial state for "show" action
-    if (action === "show") {
-      component.addStyle({
-        display: "none",
-        opacity: "0",
-        transition: "opacity 0.3s ease",
-      });
-    }
-  }
-
-  // ===============================
-  // REMOVE SCROLL → ACTIONS
-  // ===============================
-  if (
-    type === "remove" &&
-    event === "scroll"
-  ) {
-    const SCRIPT_ID = "scroll-observer-script";
-
-    component.removeAttributes("data-scroll-action");
-    component.removeAttributes("data-scroll-offset");
-    component.removeAttributes("data-scroll-class");
-    component.removeClass("scroll-triggered");
-
-    const stillUsed = wrapper.find("[data-scroll-action]").length > 0;
-    if (!stillUsed) {
-      const script = wrapper.find(`#${SCRIPT_ID}`)[0];
-      script && script.remove();
-    }
-  }
-
-  console.log(`✅ Interactivity ${type}: ${event} → ${action}`);
+  console.log(`✅ Interactivity updated and synced: ${event} → ${action}`);
 }
