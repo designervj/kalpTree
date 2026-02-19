@@ -1,25 +1,24 @@
 "use client";
-import { Button } from "@/components/ui/button";
+
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEditor } from "@/hooks/use-editor";
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-
 import { DeviceConfig } from "../../../types/editor";
-
 import TopToolbar from "./GrapesJSEditor/toolbars/TopToolbar";
 import BottomToolbar from "./GrapesJSEditor/toolbars/BottomToolbar";
-
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { clearPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
+import { setPageLoading } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
-import { extractHtmlParts, extractScripts, extractStyles, wrapScripts } from "@/lib/utils";
+import {
+  extractHtmlParts,
+  extractScripts,
+  extractStyles,
+  wrapScripts,
+} from "@/lib/utils";
 import PropertiesSidebar from "./GrapesJSEditor/sidebar/PropertiesSidebar";
 import GetAllTemplate from "../admin/templates/GetAllTemplate";
-import EditForm from "./editForm/EditForm";
 import { EditorProvider } from "./EditorContext";
-import { registerProductGalleryComponent } from "./productgallery/updateProductGalleryProducts";
 import { addComponentAboveFooter } from "./utils/InsertionUtils";
 import GetAllProduct from "../admin/product/productList/GetAllProduct";
 import ProductShowcase from "../admin/product/Cart/Products";
@@ -49,7 +48,7 @@ export default function GrapesJSEditor() {
     selectedComponentForAi,
     editForm,
     isCommentsOpen,
-    setIsCommentsOpen
+    setIsCommentsOpen,
   } = editorProps;
 
   const [showResponsivePanel, setShowResponsivePanel] = useState(false);
@@ -75,15 +74,18 @@ export default function GrapesJSEditor() {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentStyle } = useSelector((state: RootState) => state.globalStyle);
 
-
   const lastPageIdRef = useRef<string | null>(null);
   const contentLoadedRef = useRef<boolean>(false);
 
   // Reactive global style updates
   useEffect(() => {
-    if (state.editor && (currentWebsite?.globalStyle || currentStyle?.globalStyle)) {
+    if (
+      state.editor &&
+      (currentWebsite?.globalStyle || currentStyle?.globalStyle)
+    ) {
       console.log("🎨 Reactively updating global styles...");
-      const globalStyle = currentWebsite?.globalStyle || currentStyle?.globalStyle;
+      const globalStyle =
+        currentWebsite?.globalStyle || currentStyle?.globalStyle;
       actions.setGlobalStyles(globalStyle);
     }
   }, [state.editor, currentWebsite?.globalStyle]);
@@ -94,7 +96,6 @@ export default function GrapesJSEditor() {
       page?.content &&
       !contentLoadedRef.current &&
       (currentWebsite?.globalStyle || currentStyle?.globalStyle)
-
     ) {
       dispatch(setPageLoading(true));
     }
@@ -114,10 +115,9 @@ export default function GrapesJSEditor() {
       !page?.content
       // !currentHeader?.content
     ) {
-      console.log("not getting header, page.content")
-      return
+      console.log("not getting header, page.content");
+      return;
     }
-
 
     // Reset the content loaded flag ONLY when page ID changes
     const currentPageId = page?._id?.toString() || null;
@@ -157,7 +157,7 @@ export default function GrapesJSEditor() {
           let body = pageParts.body;
           let styles = pageParts.styles;
           let scripts = extractScripts(data);
-          console.log("scripts===>", scripts)
+          console.log("scripts===>", scripts);
           // If we are editing a normal page (not header/footer), prepend the site header
           if (type !== "header" && type !== "footer" && headerData) {
             const headerParts = extractHtmlParts(headerData);
@@ -174,11 +174,15 @@ export default function GrapesJSEditor() {
 
             // Combine bodies with wrappers
             body = `
-              ${!isHeaderPresentInCurrentPage ? `
+              ${
+                !isHeaderPresentInCurrentPage
+                  ? `
               <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
                 ${headerParts.body}
               </div>
-              ` : ""}
+              `
+                  : ""
+              }
               <div data-gjs-type="page-body">
                 ${pageParts.body}
               </div>
@@ -465,7 +469,8 @@ export default function GrapesJSEditor() {
         const wrapper = state.editor.Components.getWrapper();
         if (wrapper) {
           // Find page-body container if it exists (combined mode), otherwise use wrapper
-          const container = wrapper.find('[data-gjs-type="page-body"]')[0] || wrapper;
+          const container =
+            wrapper.find('[data-gjs-type="page-body"]')[0] || wrapper;
 
           container.append(contentToAdd, { at: insertionIndex });
 
@@ -791,6 +796,7 @@ export default function GrapesJSEditor() {
     }
   }, [state.editorJs, editorJs]);
 
+
   return (
     <EditorProvider editorState={editorProps}>
       <div className="h-screen bg-[#0F172A] text-white overflow-hidden flex flex-col">
@@ -828,8 +834,9 @@ export default function GrapesJSEditor() {
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
-                }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
+                pagetype !== "normal" ? "hidden" : ""
+              }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
@@ -901,6 +908,8 @@ export default function GrapesJSEditor() {
               pagetype={pagetype}
               categoryStyleConfigs={categoryStyleConfigs}
               setCategoryStyleConfigs={setCategoryStyleConfigs}
+              editorHtml={editorHtml}
+              handleUpdateHtml={handleUpdateHtml}
             />
           </div>
 

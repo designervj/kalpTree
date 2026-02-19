@@ -1305,7 +1305,7 @@ export type Website = {
   systemSubdomain?: string;
   serviceType?: "WEBSITE_ONLY" | "ECOMMERCE";
   status?: "active" | "paused" | "error";
-  lang?: [{ name: string; code: string }];
+  lang?: { name: string; default: boolean }[];
   isComingSoon?: boolean;
   globalStyle?: string;
   branding?: {
@@ -1936,7 +1936,6 @@ export const currentWebsiteSections: NavSection[] = [
   //       icon: ImageIcon,
   //       permission: ["media:update", "media:read", "media:delete"],
   //     },
-  
 
   {
     id: "domains",

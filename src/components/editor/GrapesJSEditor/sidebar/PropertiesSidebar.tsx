@@ -20,6 +20,7 @@ import {
   Search,
   ShoppingCart,
   Sparkles,
+  LanguagesIcon,
 } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -57,6 +58,8 @@ type PropertiesSidebarProps = {
   pagetype: string;
   categoryStyleConfigs: any;
   setCategoryStyleConfigs: any;
+  editorHtml?: any;
+  handleUpdateHtml:any
 };
 
 type TabKey =
@@ -70,7 +73,8 @@ type TabKey =
   | "seo"
   | "more"
   | "layer"
-  | "productgallery";
+  | "productgallery"
+  | "translation";
 
 const TAB_TITLES: Record<TabKey, string> = {
   style: "Styles & Attributes ",
@@ -88,6 +92,7 @@ const TAB_TITLES: Record<TabKey, string> = {
   seo: "SEO",
   productgallery: "Products",
   more: "More",
+  translation: "Translation",
 };
 
 import { useEditorContext } from "../../EditorContext";
@@ -95,6 +100,7 @@ import ProductGalleryPage from "../../productgallery/ProductGalleryPage";
 import GlobalStylesSection from "../../style-editor/GlobalStyle";
 import GetAllcategory from "@/components/admin/category/listCategory/GetAllcategory";
 import GetAllProduct from "@/components/admin/product/productList/GetAllProduct";
+import TranslationPage from "../../translation/TranslationPage";
 
 const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   showSidebar,
@@ -110,6 +116,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   pagetype,
   categoryStyleConfigs,
   setCategoryStyleConfigs,
+  editorHtml,
+  handleUpdateHtml
 }) => {
   const [tab, setTab] = React.useState<TabKey>("global");
 
@@ -201,14 +209,11 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
               />
             </TabsContent>
             <TabsContent value="reports">
-
-
               <InteractivityEditor
                 selectedElement={selectedElement}
                 onInteractivityChange={onInteractivityChange}
               />
             </TabsContent>
-
           </Tabs>
         );
 
@@ -281,6 +286,9 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
       case "productgallery":
         return <ProductGalleryPage />;
+
+      case "translation":
+        return <TranslationPage editorHtml={editorHtml} handleUpdateHtml={handleUpdateHtml} />;
 
       // case "more":
       //   return renderPlaceholder(
@@ -379,6 +387,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
             label="Product Gallery"
             onClick={() => setTab("productgallery")}
             icon={<LayoutGrid className="w-5 h-5" />}
+          />
+          <IconTab
+            active={tab === "translation"}
+            label="Translation"
+            onClick={() => setTab("translation")}
+            icon={<LanguagesIcon className="w-5 h-5" />}
           />
           <IconTab
             active={tab === "more"}
