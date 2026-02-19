@@ -28,6 +28,7 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
   // Get global styles from canvas document
   const canvasDoc = state.editor?.Canvas?.getDocument();
+  console.log(canvasDoc)
   const globalStylesRaw = canvasDoc?.querySelector('[data-global-styles="true"]')?.innerHTML || "";
   const [mode, setMode] = useState<"light" | "dark">("light");
 
@@ -42,8 +43,12 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   const [selectedHeading, setSelectedHeading] = useState<HeadingKey>("h1");
   const [globalFontFamily, setGlobalFontFamily] = useState<string>("");
   const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
+  const updatedStyle = transformRawToGlobalStyleModel(globalStylesRaw);
+
   useEffect(() => {
-    const updatedStyle = transformRawToGlobalStyleModel(globalStylesRaw);
+    // const updatedStyle = transformRawToGlobalStyleModel(globalStylesRaw);
+
+
     if (updatedStyle) {
       setBrand(updatedStyle.brand);
       setHeadings(updatedStyle.headings);

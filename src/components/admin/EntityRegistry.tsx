@@ -9,7 +9,7 @@ import IndustryTypeHome from "./product-type-category/IndustryTypeHome";
 
 // Entity component registry
 export const entityComponents: Record<string, React.ComponentType> = {
-  category: CategoryHome,
+  // category: CategoryHome,
   brand: BrandHome,
   attribute: AttributeHome,
   products: ProductHome,

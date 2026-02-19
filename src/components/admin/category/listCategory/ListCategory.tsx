@@ -8,7 +8,7 @@ import {
   removeCategory,
 } from "@/hooks/slices/category/CategorySlice";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { MaterialCategory } from "../types/CategoryModel";
 import {
   Dialog,
@@ -18,101 +18,33 @@ import {
 } from "@/components/ui/dialog";
 import CategoryForm from "../forms/CategoryForm";
 import { Button } from "@/components/ui/button";
+import { buildWebsiteHref } from "@/lib/utils";
 
 const ListCategory = () => {
   const { listCategory, isCategoryLoading } = useSelector(
     (state: RootState) => state.category,
   );
 
- 
-  const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
   const router = useRouter();
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<MaterialCategory | null>(null);
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newCategory, setNewCategory] = useState<MaterialCategory | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
+  const searchParams = useSearchParams();
+  const params = useParams();
+  const searchparams = Object.fromEntries(searchParams.entries());
   const handleAdd = () => {
-    setNewCategory({
-      name: "",
-      icon: "",
-      sort_order: 0,
-      websiteId: currentWebsite?._id,
-      tenantId: user?.tenantId,
-      parentCategoryId: "",
-    });
-    setFieldErrors({});
-    setIsAddDialogOpen(true);
+    const href = buildWebsiteHref(
+      "/admin/category/create",
+      params.website!,
+      searchparams,
+    );
+    router.push(href);
   };
-
-  const handleSaveAdd = async () => {
-    if (!newCategory) return;
-    setFieldErrors({});
-    const errors: Record<string, string> = {};
-    if (!newCategory.name?.trim()) {
-      errors.name = "Name is required";
-    }
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-    setIsSaving(true);
-    try {
-      const res = await fetch(`/api/admin/category`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCategory),
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        const msg =
-          data?.error ??
-          data?.message ??
-          (typeof data === "string" ? data : undefined) ??
-          "Failed to create";
-        throw new Error(msg);
-      }
-      const created = data?.item ?? data;
-      toast({
-        title: "Created",
-        description: `Category ${newCategory.name} created successfully`,
-      });
-      setIsAddDialogOpen(false);
-      setNewCategory(null);
-      dispatch(addCategory(created));
-      // window.location.reload();
-    } catch (err: any) {
-      console.error("Failed to create category", err);
-      toast({
-        title: "Create failed",
-        description: String(err?.message || err),
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // const product_categories = useMemo(() => {
-  //   if (
-  //     currentWebsite &&
-  //     currentWebsite._id &&
-  //     listCategory &&
-  //     listCategory.length > 0
-  //   ) {
-  //     const list = listCategory.filter(
-  //       (item) => item.websiteId === currentWebsite._id,
-  //     );
-
-  //     return list.length > 0 ? list : listCategory;
-  //   }
-  //   return [];
-  // }, [currentWebsite, listCategory]);
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
@@ -223,44 +155,6 @@ const ListCategory = () => {
         onView={(row) => handleView(row)}
         opentab={() => {}}
       />
-      {/* Add Category Dialog */}
-      <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Category</DialogTitle>
-          </DialogHeader>
-          {newCategory && (
-            <div className="space-y-4">
-              <CategoryForm
-                category={newCategory}
-                setCategory={(value) => {
-                  if (typeof value === "function") {
-                    setNewCategory((prev) => (prev ? value(prev) : prev));
-                  } else {
-                    setNewCategory(value);
-                  }
-                }}
-                fieldErrors={fieldErrors}
-              />
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsAddDialogOpen(false);
-                    setNewCategory(null);
-                  }}
-                  disabled={isSaving}
-                >
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveAdd} disabled={isSaving}>
-                  {isSaving ? "Saving..." : "Add Category"}
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
 
       {/* Edit Category Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -268,7 +162,6 @@ const ListCategory = () => {
           <DialogHeader>
             <DialogTitle>Edit Category</DialogTitle>
           </DialogHeader>
-
           {editingCategory && (
             <div className="space-y-4">
               <CategoryForm
@@ -282,7 +175,6 @@ const ListCategory = () => {
                 }}
                 fieldErrors={fieldErrors}
               />
-
               <div className="flex justify-end gap-2 pt-4">
                 <Button
                   variant="outline"
