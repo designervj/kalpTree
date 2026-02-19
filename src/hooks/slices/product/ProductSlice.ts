@@ -2,12 +2,18 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProductModel } from "@/components/admin/product/type/ProductModel";
 import { toast } from "sonner";
 
+export type CartItem = {
+  productId: string;
+  variantId: string;
+  quantity: number;
+};
+
 export type ProductState = {
   listProduct: ProductModel[];
   isProductLoading: boolean;
   hasFetched: boolean;
   lastFetchedWebsiteId?: string;
-  cart: [];
+  cart: CartItem[];
   isCartLoading: boolean;
 };
 
@@ -184,9 +190,9 @@ const productSlice = createSlice({
           (d) => d._id == variantId,
         );
 
-        if (newQuantity > Number(variant.stock)) {
+        if (variant && newQuantity > Number(variant.stock)) {
           toast.error("Item out of Stock");
-        } else {
+        } else if (variant) {
           state.cart[findIndex].quantity = newQuantity;
         }
       } else {
@@ -213,7 +219,7 @@ const productSlice = createSlice({
       const variant = productVariant?.variants?.find(
         (d) => d._id == mainVariant.variantId,
       );
-      if (newQuantity > Number(variant.stock)) {
+      if (variant && newQuantity > Number(variant.stock)) {
         toast.error("Item out of Stock");
       } else if (newQuantity < 1) {
         state.cart = state.cart.filter((d, idx) => idx != index);

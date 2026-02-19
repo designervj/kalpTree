@@ -14,6 +14,7 @@ import {
   User,
   Share2,
   Minus,
+  Leaf,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
@@ -24,18 +25,20 @@ import {
 } from "@/hooks/slices/product/ProductSlice";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { ProductModel } from "../type/ProductModel";
+import { ProductVariant } from "@/modules/ecommerce/types";
 
-const SingleProductShowcase = ({slug}:{slug?:any}) => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedOptions, setSelectedOptions] = useState({});
-  const [matchedVariant, setMatchedVariant] = useState(null);
+const SingleProductShowcase = ({ slug }: { slug?: any }) => {
+  const [selectedProduct, setSelectedProduct] = useState<ProductModel | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, any>>({});
+  const [matchedVariant, setMatchedVariant] = useState<ProductVariant | null>(null);
   const [showCart, setShowCart] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
 
   const params = useParams();
-  const productId = slug? slug : params.slug;
+  const productId = slug ? slug : params.slug;
 
   const {
     listProduct: products,
@@ -63,12 +66,12 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
   useEffect(() => {
     if (!selectedProduct) return;
 
-    const variantOptions = selectedProduct.options.filter(
+    const variantOptions = selectedProduct?.options?.filter(
       (opt) => opt.useForVariants,
     );
     const selectedKeys = Object.keys(selectedOptions);
 
-    const allVariantOptionsSelected = variantOptions.every((opt) =>
+    const allVariantOptionsSelected = variantOptions?.every((opt) =>
       selectedKeys.includes(opt.id),
     );
 
@@ -77,9 +80,9 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
       return;
     }
 
-    const variant = selectedProduct.variants.find((v) => {
-      return variantOptions.every((option) => {
-        const attr = v.attributes.find((a) => a.attributeId === option.id);
+    const variant = (selectedProduct?.variants || []).find((v: ProductVariant) => {
+      return (variantOptions || []).every((option: any) => {
+        const attr = (v.attributes || []).find((a: any) => a.attributeId === option.id);
         return attr && attr.value === selectedOptions[option.id];
       });
     });
@@ -87,26 +90,26 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
     setMatchedVariant(variant || null);
   }, [selectedOptions, selectedProduct]);
 
-  const addToCart = (product, variant) => {
+  const addToCart = (product: ProductModel, variant: ProductVariant) => {
     dispatch(
       addProductInCart({ productId: product._id, variantId: variant._id }),
     );
   };
 
-  const removeFromCart = (index) => {
+  const removeFromCart = (index: number) => {
     dispatch(removeProductInCart(index));
   };
 
-  const updateQuantity = (index, delta) => {
+  const updateQuantity = (index: number, delta: number) => {
     dispatch(updateProductQtyInCart({ index, delta }));
   };
 
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => {
-      const product = products.find((d) => d._id == item.productId);
-      const variant = product.variants.find((d) => d._id == item.variantId);
-      const price = parseFloat(variant.price);
-      return total + price * item.quantity;
+    return cart.reduce((total: number, item: any) => {
+      const product = products.find((d) => d._id == item?.productId);
+      const variant = product?.variants?.find((d) => d._id == item?.variantId);
+      const price = parseFloat(variant?.price || "0");
+      return total + price * item?.quantity;
     }, 0);
   };
 
@@ -120,7 +123,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
     router.push(`/checkout?data=${href}`);
   };
 
-  const handleProductClick = (product) => {
+  const handleProductClick = (product: ProductModel) => {
     router.push(`/product/${product._id}`);
   };
 
@@ -131,7 +134,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
     setMatchedVariant(null);
   };
 
-  const handleOptionChange = (optionId, value) => {
+  const handleOptionChange = (optionId: string, value: string) => {
     setSelectedOptions((prev) => ({
       ...prev,
       [optionId]: value,
@@ -144,52 +147,51 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
       return;
     }
 
-    if (parseInt(matchedVariant.stock) <= 0) {
-      toast.error("This configuration is out of stock");
-      return;
+    if (selectedProduct && matchedVariant) {
+      addToCart(selectedProduct, matchedVariant);
+      toast.success("Added to cart successfully!");
     }
-
-    addToCart(selectedProduct, matchedVariant);
-    toast.success("Added to cart successfully!");
   };
 
-  const getOptionValues = (option) => {
+  const getOptionValues = (option: any) => {
     if (option.useForVariants) {
-      const values = new Set();
-      selectedProduct.variants.forEach((variant) => {
-        const attr = variant.attributes.find(
-          (a) => a.attributeId === option.id,
-        );
-        if (attr) {
-          values.add(attr.value);
-        }
-      });
+      const values = new Set<string>();
+      if (selectedProduct) {
+        (selectedProduct.variants || []).forEach((variant: ProductVariant) => {
+          const attr = (variant.attributes || []).find(
+            (a: any) => a.attributeId === option.id,
+          );
+          if (attr && attr.value) {
+            values.add(attr.value);
+          }
+        });
+      }
       return Array.from(values);
     }
     return option.values;
   };
 
-  const calculateDiscount = (basePrice, variantPrice) => {
-    const base = parseFloat(basePrice);
-    const variant = parseFloat(variantPrice);
+  const calculateDiscount = (basePrice: string | number, variantPrice: string | number) => {
+    const base = typeof basePrice === 'string' ? parseFloat(basePrice) : basePrice;
+    const variant = typeof variantPrice === 'string' ? parseFloat(variantPrice) : variantPrice;
     if (base <= variant) return 0;
     return Math.round(((base - variant) / base) * 100);
   };
 
-  const changeQuantity = (delta) => {
+  const changeQuantity = (delta: number) => {
     const newQty = quantity + delta;
     if (newQty >= 1) {
       setQuantity(newQty);
     }
   };
 
-  const ProductCard = ({ product }) => {
+  const ProductCard = ({ product }: { product: ProductModel }) => {
     const minPrice = Math.min(
-      ...product.variants.map((v) => parseFloat(v.price)),
+      ... (product.variants || []).map((v: ProductVariant) => parseFloat(v.price || "0")),
     );
     const maxDiscount = Math.max(
-      ...product.variants.map((v) =>
-        calculateDiscount(product.basePrice, v.price),
+      ... (product.variants || []).map((v: ProductVariant) =>
+        calculateDiscount(product.basePrice || "0", v.price || "0"),
       ),
     );
 
@@ -226,20 +228,20 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
     );
   };
 
-  const SingleProductPage = ({ product }) => {
-    const variantOptions = product.options.filter((opt) => opt.useForVariants);
-    const displayOptions = product.options.filter((opt) => !opt.useForVariants);
+  const SingleProductPage = ({ product }: { product: ProductModel }) => {
+    const variantOptions = (product.options || []).filter((opt: any) => opt.useForVariants);
+    const displayOptions = (product.options || []).filter((opt: any) => !opt.useForVariants);
 
-    const allVariantOptionsSelected = variantOptions.every((opt) =>
+    const allVariantOptionsSelected = variantOptions.every((opt: any) =>
       Object.keys(selectedOptions).includes(opt.id),
     );
 
     const currentPrice = matchedVariant
-      ? parseFloat(matchedVariant.price)
-      : Math.min(...product.variants.map((v) => parseFloat(v.price)));
+      ? parseFloat(matchedVariant.price || "0")
+      : Math.min(...(product.variants || []).map((v: ProductVariant) => parseFloat(v.price || "0")));
 
     const discount = calculateDiscount(
-      product.basePrice,
+      product.basePrice || "0",
       currentPrice.toString(),
     );
 
@@ -295,8 +297,8 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                     key={idx}
                     onClick={() => setActiveImageIndex(idx)}
                     className={`aspect-[3/4] cursor-pointer border transition-all ${activeImageIndex === idx
-                        ? "border-gray-900 opacity-100"
-                        : "border-transparent opacity-60 hover:opacity-80"
+                      ? "border-gray-900 opacity-100"
+                      : "border-transparent opacity-60 hover:opacity-80"
                       }`}
                   >
                     <img
@@ -321,7 +323,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
             {/* Product Info */}
             <div className="sticky top-24 h-fit">
               <span className="text-xs font-bold text-gray-500 uppercase block mb-3">
-                {product.brands || "Limited Edition Series"}
+                {product.brand?.name || "Limited Edition Series"}
               </span>
 
               <h1 className="text-3xl font-extrabold leading-tight mb-3">
@@ -337,7 +339,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                 <div className="flex items-center gap-2 text-sm">
                   <span className="font-bold text-gray-900">SKU:</span>
                   <span className="text-gray-600">
-                    {matchedVariant?.sku || product.variants[0]?.sku || "N/A"}
+                    {matchedVariant?.sku || product.variants?.[0]?.sku || "N/A"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
@@ -346,13 +348,13 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                     <a href="#" className="hover:underline">
                       Products
                     </a>
-                    {product.brands && (
-                      <>
-                        ,{" "}
-                        <a href="#" className="hover:underline">
-                          {product.brands}
-                        </a>
-                      </>
+                    {product.brand?.name && (
+                      <div className="flex items-center gap-1">
+                        <Leaf size={14} className="text-green-600" />
+                        <span className="text-xs text-green-700 font-bold">
+                          {product.brand?.name}
+                        </span>
+                      </div>
                     )}
                   </span>
                 </div>
@@ -365,7 +367,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
               {/* Variant Options */}
               {variantOptions.length > 0 && (
                 <div className="mb-9">
-                  {variantOptions.map((option) => {
+                  {variantOptions.map((option: any) => {
                     const values = getOptionValues(option);
                     const selectedValue = selectedOptions[option.id];
 
@@ -375,7 +377,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                           Select {option.title}:
                         </span>
                         <div className="flex flex-wrap gap-2">
-                          {values.map((value) => {
+                          {values.map((value: any) => {
                             const isSelected = selectedValue === value;
                             return (
                               <button
@@ -384,8 +386,8 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                                   handleOptionChange(option.id, value)
                                 }
                                 className={`border px-4 py-2.5 min-w-[65px] text-center text-sm cursor-pointer rounded-md transition-all font-medium ${isSelected
-                                    ? "border-[#967249] bg-[#fdf8f2]"
-                                    : "border-[#d4bda2] bg-white hover:border-[#967249] hover:bg-[#fdf8f2]"
+                                  ? "border-[#967249] bg-[#fdf8f2]"
+                                  : "border-[#d4bda2] bg-white hover:border-[#967249] hover:bg-[#fdf8f2]"
                                   }`}
                               >
                                 {value}
@@ -428,12 +430,12 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                   onClick={handleAddToCart}
                   disabled={
                     !matchedVariant ||
-                    parseInt(matchedVariant?.stock || 0) === 0
+                    (matchedVariant?.stock || 0) === 0
                   }
                   className={`flex-1 flex items-center justify-center gap-3 py-4 px-6 font-bold uppercase text-sm transition-all ${!matchedVariant ||
-                      parseInt(matchedVariant?.stock || 0) === 0
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-gray-900 text-white hover:bg-gray-800"
+                    (matchedVariant?.stock || 0) === 0
+                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
                     }`}
                 >
                   <ShoppingCart size={18} />
@@ -466,8 +468,8 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`pb-5 font-bold text-xs uppercase relative transition-colors ${activeTab === tab
-                      ? "text-gray-900"
-                      : "text-gray-400 hover:text-gray-600"
+                    ? "text-gray-900"
+                    : "text-gray-400 hover:text-gray-600"
                     }`}
                 >
                   {tab === "description" && "Description"}
@@ -493,7 +495,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                       Overview:
                     </p>
                     <ul className="space-y-2 ml-5">
-                      {displayOptions.map((option, idx) => (
+                      {displayOptions.map((option: any, idx: number) => (
                         <li key={idx} className="relative pl-5">
                           <span className="absolute left-0 text-gray-500">
                             •
@@ -723,13 +725,15 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                       Your cart is empty
                     </p>
                   ) : (
-                    cart.map((item, index) => {
+                    cart.map((item: any, index: number) => {
                       const product = products.find(
                         (d) => d._id == item.productId,
                       );
-                      const variant = product.variants.find(
+                      const variant = (product?.variants || []).find(
                         (d) => d._id == item.variantId,
                       );
+
+                      if (!product || !variant) return null;
 
                       return (
                         <div key={index} className="mb-4 p-4 border rounded-lg">
@@ -737,7 +741,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                             <div className="flex-1">
                               <h3 className="font-semibold">{product.title}</h3>
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {variant.attributes.map((attr, idx) => (
+                                {(variant.attributes || []).map((attr: any, idx: number) => (
                                   <span
                                     key={idx}
                                     className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded"
@@ -776,7 +780,7 @@ const SingleProductShowcase = ({slug}:{slug?:any}) => {
                               </button>
                             </div>
                             <span className="font-bold text-gray-900">
-                              ₹{parseFloat(variant.price) * item.quantity}
+                              ₹{(parseFloat(variant.price || "0") * item.quantity).toFixed(2)}
                             </span>
                           </div>
                         </div>

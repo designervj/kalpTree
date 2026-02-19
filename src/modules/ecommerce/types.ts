@@ -1,4 +1,5 @@
 import { BaseDocument } from '@/types';
+import { ObjectId } from 'mongodb';
 
 // Universal Product Type
 export interface Product extends BaseDocument {
@@ -116,24 +117,43 @@ export interface BookingSlot {
   price?: number; // Override base price
 }
 
+
+export interface NewProductAttribute{
+  attributeId:string|ObjectId,
+  attributeName?:string,
+  value?:string,
+  weight?:number,
+
+}
 // Product Variant (for products with options like Size/Color)
-export interface ProductVariant extends BaseDocument {
-  productId: string;
-  sku?: string;
-  name: string; // "Large / Red"
-  options: {
-    [key: string]: string; // { Size: "Large", Color: "Red" }
-  };
-  pricing: {
-    basePrice: number;
-    salePrice?: number;
-  };
-  inventory?: {
-    stockQuantity: number;
-    lowStockThreshold?: number;
-  };
-  images?: string[];
-  isDefault: boolean;
+export interface ProductVariant  {
+  _id:string,
+  id?:number,
+  sku?:string,
+  stock?:number,
+  price?:string,
+  weight?:number,
+  productId?:string|ObjectId,
+  attributes?:NewProductAttribute[],
+createdAt?:Date,
+updatedAt?:Date,
+  
+  // productId: string;
+  // sku?: string;
+  // name: string; // "Large / Red"
+  // options: {
+  //   [key: string]: string; // { Size: "Large", Color: "Red" }
+  // };
+  // pricing: {
+  //   basePrice: number;
+  //   salePrice?: number;
+  // };
+  // inventory?: {
+  //   stockQuantity: number;
+  //   lowStockThreshold?: number;
+  // };
+  // images?: string[];
+  // isDefault: boolean;
 }
 
 // Category

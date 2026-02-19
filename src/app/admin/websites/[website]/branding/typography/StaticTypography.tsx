@@ -35,6 +35,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor/GlobalStyelModel";
 import { toast } from "sonner";
+import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColorPallet";
 
 /* -----------------------------
   Types
@@ -243,7 +244,7 @@ export default function TypographyPage() {
     currentWebsite?.globalStyle || "",
   );
 
-  console.log(data);
+
 
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
   // Add this useEffect:
@@ -941,8 +942,8 @@ export default function TypographyPage() {
     const handleColorPallet = (allcolors: any) => {
       if (!allcolors) return;
       const { brand: b, buttons } = allcolors;
-      setBrand(b);
-      setButtonColors(buttons);
+      if (b) setBrand(b);
+      if (buttons) setButtonColors(buttons);
     };
 
     return (
@@ -2325,6 +2326,9 @@ export default function TypographyPage() {
      RENDER
   ───────────────────────────────────────── */
   return (
+    <>
+    <GetAlColorPallet/>
+    
     <div className="space-y-6 max-w-6xl mx-auto pb-10">
       {/* TOP BAR */}
       <div className="flex justify-between items-center gap-3">
@@ -2444,5 +2448,6 @@ export default function TypographyPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

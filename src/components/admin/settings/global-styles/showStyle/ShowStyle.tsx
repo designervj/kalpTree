@@ -1,353 +1,576 @@
 import { Button } from '@/components/ui/button';
 import React, { useEffect, useMemo, useState } from 'react'
-import { Code2, Eye, Moon, Sun } from 'lucide-react';
+import { Check, Code2, Copy, Eye, Moon, Save, Sun } from 'lucide-react';
 import ColorControl from './ColorControl';
 import { Card, CardContent } from '@/components/ui/card';
-import { mixHex, rgba } from '../util/ColorFunction';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
+import { clampHexOrFallback, cssFont, mixHex, rgba, shadowToCss } from '../util/ColorFunction';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/store/store';
 import HeadingControl from './HeadingControl';
-import { BodyStyle, BrandColors, BtnKey, ButtonBaseStyle, ButtonColors, HeadingKey, HeadingStyle, LeftTab } from '../GlobalStyleModal';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
+import { BodyStyle, BrandColors, BtnKey, ButtonBaseStyle, ButtonColors, HeadingKey, HeadingStyle, LeftTab, RightPanelTab } from '../GlobalStyleModal';
 import BodyControl from './BodyControl';
 import ButtonControl from './ButtonControl';
+import { GlobalStyleModel, transformRawToGlobalStyleModel } from '@/components/editor/style-editor/GlobalStyelModel';
+import { toast } from 'sonner';
+import BrandGalleryPreview from './BrandGalleryPreview';
+import HeadingsPreview from './HeadingsPreview';
+import BodyPreview from './BodyPreview';
+import ButtonsPreview from './ButtonsPreview';
+import { Website } from '@/components/admin/AppShell';
+import { updateWebsite } from '@/hooks/slices/websites/WebsiteThunk';
 
 function isHexColor(v: string) {
   return /^#([0-9a-fA-F]{6})$/.test(v.trim());
 }
 
 const ShowStyle = () => {
-  const [mode, setMode] = useState<"light" | "dark">("light");
-  const [leftTab, setLeftTab] = useState<LeftTab>("colors");
-  const [rightPanel, setRightPanel] = useState<"preview" | "root">("preview");
 
-  const { currentStyle } = useSelector((state: RootState) => state.globalStyle)
-  const [globalFontFamily, setGlobalFontFamily] = useState("Inter");
-  const [headingFontFamily, setHeadingFontFamily] = useState("Inter");
-  const [brand, setBrand] = useState<BrandColors>();
-  const [headings, setHeadings] = useState<Record<HeadingKey, HeadingStyle>>()
+   const {currentStyle} = useSelector((state:RootState) => state.globalStyle)
+    const [currentStyles, setCurrentStyles] = React.useState<GlobalStyleModel | null>(null);
+    const [leftTab, setLeftTab] = useState<LeftTab>("colors");
+    const [copied, setCopied] = useState(false);
+    /* RIGHT tabs */
+    const [rightPanel, setRightPanel] = useState<RightPanelTab>("preview");
 
-  const [body, setBody] = useState<BodyStyle>();
+    const [mode, setMode] = useState<"light" | "dark">("light");
 
-  const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
+    const [brand, setBrand] = useState<BrandColors>();
+    const [headings, setHeadings] = useState<Record<HeadingKey, HeadingStyle>>()
+    const [body, setBody] = useState<BodyStyle>();
 
-  const [buttonBase, setButtonBase] = useState<ButtonBaseStyle>({
-    fontFamily: "Inter",
-    sizePx: 14,
-    weight: 600,
-    letterSpacingEm: 0,
-    transform: "none",
-    radiusPx: 12,
-    heightPx: 40,
-    paddingXPx: 16,
-    borderWidthPx: 1,
-    shadow: "none",
-    transitionMs: 160,
-  });
+    const [buttonColors, setButtonColors] = useState<Record<BtnKey, ButtonColors>>();
+    const [buttonBase, setButtonBase] = useState<ButtonBaseStyle>();
 
-  const [buttonColors, setButtonColors] = useState<Record<BtnKey, ButtonColors>>();
+    const [headingFontFamily, setHeadingFontFamily] = useState<string>("");
+    const [selectedHeading, setSelectedHeading] = useState<HeadingKey>("h1");
+    const [globalFontFamily, setGlobalFontFamily] = useState<string>("");
+    const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
+    const [hoveredBtn, setHoveredBtn] = useState<BtnKey | null>(null);
+    const [headingBaseSize, setHeadingBaseSize] = useState(17);
+
+    const dispatch = useDispatch<AppDispatch>();
+    const headingPx = (k: HeadingKey) => {
+        if (!headings) return 0;
+        return 102;
+        // return Math.round(headingBaseSize * (headings[k]?.scale || 1));
+    };
+
+    const ROOT_CSS = useMemo(() => {
+        const h = headings;
+        if (!h) return "";
+
+        const hPx: Record<HeadingKey, number> = {
+            h1: Math.round(headingBaseSize * (h.h1?.scale || 1)),
+            h2: Math.round(headingBaseSize * (h.h2?.scale || 1)),
+            h3: Math.round(headingBaseSize * (h.h3?.scale || 1)),
+            h4: Math.round(headingBaseSize * (h.h4?.scale || 1)),
+            h5: Math.round(headingBaseSize * (h.h5?.scale || 1)),
+            h6: Math.round(headingBaseSize * (h.h6?.scale || 1)),
+        };
+
+        const primary = clampHexOrFallback(brand?.primary ?? "", "#1F6F43");
+        const secondary = clampHexOrFallback(brand?.secondary ?? "", "#2EA76A");
+        const accent = clampHexOrFallback(brand?.accent ?? "", "#B9F3D5");
+        const dark = clampHexOrFallback(brand?.dark ?? "", "#0B3A2A");
+
+        const ring = clampHexOrFallback(brand?.ring ?? "", secondary);
+
+        // mode-specific derived values (stable defaults)
+        const lightBg = "#F4F6F5";
+        const lightSurface = "#FFFFFF";
+        const lightText = clampHexOrFallback(brand?.text ?? "", "#0B2A1F");
+        const lightMuted = clampHexOrFallback(brand?.mutedText ?? "", "#5E6E65");
+        const lightBorder = clampHexOrFallback(brand?.border ?? "", "#DDE6E1");
+
+        const darkBg = "#071B14";
+        const darkSurface = "#0B2A1F";
+        const darkText = "#EAF7F0";
+        const darkMuted = mixHex("#EAF7F0", "#000000", 0.35);
+        const darkBorder = rgba(accent, 0.22);
+
+        const lines: string[] = [];
+
+        lines.push(`/* =========================================================`);
+        lines.push(`   BRAND GUIDELINES • GLOBAL TOKENS (COPY TO globals.css)`);
+        lines.push(
+            `   Usage: documentElement.setAttribute("data-theme","light|dark")`,
+        );
+        lines.push(
+            `   ========================================================= */`,
+        );
+        lines.push(``);
+
+        // 1) BASE TOKENS (shared across modes)
+        lines.push(`:root {`);
+        lines.push(`  /* Brand Core */`);
+        lines.push(`  --primary: ${primary};`);
+        lines.push(`  --secondary: ${secondary};`);
+        lines.push(`  --accent: ${accent};`);
+        lines.push(`  --dark: ${dark};`);
+        lines.push(`  --ring: ${ring};`);
+        lines.push(``);
+        lines.push(`  /* Fonts */`);
+        lines.push(`  --font-body: ${cssFont(globalFontFamily)};`);
+        lines.push(`  --font-heading: ${cssFont(headingFontFamily)};`);
+        lines.push(`  --font-button: ${cssFont(buttonBase?.fontFamily ?? "")};`);
+        lines.push(``);
+        lines.push(`  /* Headings (PX only) */`);
+        (["h1", "h2", "h3", "h4", "h5", "h6"] as HeadingKey[]).forEach((k) => {
+            const s = h[k];
+            if (!s) return;
+            lines.push(`  --${k}-size: ${hPx[k]}px;`);
+            lines.push(`  --${k}-weight: ${s.weight};`);
+            lines.push(`  --${k}-lh: ${s.lineHeight};`);
+            lines.push(`  --${k}-ls: ${s.letterSpacingEm}em;`);
+        });
+        lines.push(``);
+        lines.push(`  /* Body */`);
+        lines.push(`  --body-size: ${body?.sizePx}px;`);
+        lines.push(`  --body-weight: ${body?.weight};`);
+        lines.push(`  --body-lh: ${body?.lineHeight};`);
+        lines.push(`  --body-ls: ${body?.letterSpacingEm}em;`);
+        lines.push(`  --body-maxw: ${body?.maxWidthCh}ch;`);
+        lines.push(`  --body-paragraph-gap: ${body?.paragraphGapPx}px;`);
+        lines.push(``);
+        lines.push(`  /* Buttons (base) */`);
+        lines.push(`  --btn-size: ${buttonBase?.sizePx}px;`);
+        lines.push(`  --btn-weight: ${buttonBase?.weight};`);
+        lines.push(`  --btn-ls: ${buttonBase?.letterSpacingEm}em;`);
+        lines.push(`  --btn-transform: ${buttonBase?.transform};`);
+        lines.push(`  --btn-radius: ${buttonBase?.radiusPx}px;`);
+        lines.push(`  --btn-height: ${buttonBase?.heightPx}px;`);
+        lines.push(`  --btn-pad-x: ${buttonBase?.paddingXPx}px;`);
+        lines.push(`  --btn-border-w: ${buttonBase?.borderWidthPx}px;`);
+        lines.push(`  --btn-shadow: ${shadowToCss(buttonBase?.shadow)};`);
+        lines.push(`  --btn-transition: ${buttonBase?.transitionMs}ms;`);
+        lines.push(``);
+        (["primary", "secondary", "outline"] as BtnKey[]).forEach((k) => {
+            const c = buttonColors?.[k];
+            lines.push(`  /* Button: ${k.toUpperCase()} */`);
+            lines.push(`  --btn-${k}-bg: ${c?.bg};`);
+            lines.push(`  --btn-${k}-text: ${c?.text};`);
+            lines.push(`  --btn-${k}-border: ${c?.border};`);
+            lines.push(`  --btn-${k}-hover-bg: ${c?.hoverBg};`);
+            lines.push(`  --btn-${k}-hover-text: ${c?.hoverText};`);
+            lines.push(`  --btn-${k}-hover-border: ${c?.hoverBorder};`);
+        });
+        lines.push(`}`);
+        lines.push(``);
+
+        // 2) LIGHT MODE TOKENS
+        lines.push(`:root[data-theme="light"] {`);
+        lines.push(`  --mode: light;`);
+        lines.push(`  --bg: ${lightBg};`);
+        lines.push(`  --surface: ${lightSurface};`);
+        lines.push(`  --text: ${lightText};`);
+        lines.push(`  --muted-text: ${lightMuted};`);
+        lines.push(`  --border: ${lightBorder};`);
+        lines.push(`}`);
+        lines.push(``);
+
+        // 3) DARK MODE TOKENS
+        lines.push(`:root[data-theme="dark"] {`);
+        lines.push(`  --mode: dark;`);
+        lines.push(`  --bg: ${darkBg};`);
+        lines.push(`  --surface: ${darkSurface};`);
+        lines.push(`  --text: ${darkText};`);
+        lines.push(`  --muted-text: ${darkMuted};`);
+        lines.push(`  --border: ${darkBorder};`);
+        lines.push(`}`);
+        lines.push(``);
+
+        // Optional helpers (usable across new pages)
+        lines.push(`/* Optional: Base application styles (recommended) */`);
+        lines.push(`html, body {`);
+        lines.push(`  background: var(--bg);`);
+        lines.push(`  color: var(--text);`);
+        lines.push(`  font-family: var(--font-body);`);
+        lines.push(`}`);
+        lines.push(
+            `h1{font-family:var(--font-heading);font-size:var(--h1-size);font-weight:var(--h1-weight);line-height:var(--h1-lh);letter-spacing:var(--h1-ls);}`,
+        );
+        lines.push(
+            `h2{font-family:var(--font-heading);font-size:var(--h2-size);font-weight:var(--h2-weight);line-height:var(--h2-lh);letter-spacing:var(--h2-ls);}`,
+        );
+        lines.push(
+            `h3{font-family:var(--font-heading);font-size:var(--h3-size);font-weight:var(--h3-weight);line-height:var(--h3-lh);letter-spacing:var(--h3-ls);}`,
+        );
+        lines.push(
+            `h4{font-family:var(--font-heading);font-size:var(--h4-size);font-weight:var(--h4-weight);line-height:var(--h4-lh);letter-spacing:var(--h4-ls);}`,
+        );
+        lines.push(
+            `h5{font-family:var(--font-heading);font-size:var(--h5-size);font-weight:var(--h5-weight);line-height:var(--h5-lh);letter-spacing:var(--h5-ls);}`,
+        );
+        lines.push(
+            `h6{font-family:var(--font-heading);font-size:var(--h6-size);font-weight:var(--h6-weight);line-height:var(--h6-lh);letter-spacing:var(--h6-ls);}`,
+        );
+        lines.push(``);
+
+        return lines.join("\n");
+    }, [
+        brand,
+        globalFontFamily,
+        headingFontFamily,
+        headingBaseSize,
+        headings,
+        body,
+        buttonBase,
+        buttonColors,
+    ]);
+    const softBg = useMemo(() => {
+        if (mode === "light") return rgba(brand?.accent || "#B9F3D5", 0.08);
+        return rgba(brand?.accent || "#B9F3D5", 0.04);
+    }, [mode, brand?.accent]);
+
+    useEffect(() => {
+        if (currentStyle && currentStyle?.globalStyle) {
+            const updatedStyle = transformRawToGlobalStyleModel(currentStyle?.globalStyle);
+
+            console.log("upddate style", updatedStyle)
+            if (updatedStyle) {
+                setBrand(updatedStyle.brand);
+                setHeadings(updatedStyle.headings);
+                setBody(updatedStyle.body);
+                setButtonColors(updatedStyle.buttonColors);
+                setButtonBase(updatedStyle.buttonBase);
+                setHeadingFontFamily(updatedStyle.fonts.heading);
+                setGlobalFontFamily(updatedStyle.fonts.body);
+            }
+            setCurrentStyles(updatedStyle);
+        }
+    }, [currentStyle]);
+
+    const uiPalette = useMemo(() => {
+        const light = {
+            bg: currentStyles?.themes?.light?.bg || '#F4F6F5',
+            surface: currentStyles?.themes?.light?.surface || '#FFFFFF',
+            text: currentStyles?.themes?.light?.text || '#0B2A1F',
+            mutedText: currentStyles?.themes?.light?.mutedText || '#5E6E65',
+            border: currentStyles?.themes?.light?.border || '#DDE6E1',
+        };
+        const dark = {
+            bg: currentStyles?.themes?.dark?.bg || '#071B14',
+            surface: currentStyles?.themes?.dark?.surface || '#0B2A1F',
+            text: currentStyles?.themes?.dark?.text || '#EAF7F0',
+            mutedText: currentStyles?.themes?.dark?.mutedText || mixHex("#EAF7F0", "#000000", 0.35),
+            border: currentStyles?.themes?.dark?.border || rgba(brand?.accent ?? "#B9F3D5", 0.22),
+        };
+        return mode === "light" ? light : dark;
+    }, [mode, currentStyles, brand?.accent]);
+
+    const outerPreviewStyle = useMemo(() => ({
+        backgroundColor: uiPalette.bg,
+        color: uiPalette.text,
+        transition: 'all 0.2s ease',
+    }), [uiPalette]);
 
 
-  useEffect(() => {
-    if (currentStyle && currentStyle.globalStyle) {
-      const getVal = (prop: string) => {
-        const regex = new RegExp(`--${prop}:\\s*([^;]+);`);
-        const match = currentStyle?.globalStyle?.match(regex);
-        return match ? match[1].trim() : "";
-      };
+    const onLeftTab = (tab: LeftTab) => {
+        setLeftTab(tab);
+        // setRightPanel("preview");
+    };
 
-      setBrand((prev) => ({
-        primary: getVal("primary"),
-        secondary: getVal("secondary"),
-        accent: getVal("accent"),
-        dark: getVal("dark"),
-        text: getVal("text"),
-        mutedText: getVal("muted-text"),
-        border: getVal("border"),
-        ring: getVal("ring"),
-      }));
+    if (!currentStyle) return null;
 
-      setHeadings((prev) => ({
-        h1: {
-          scale: parseFloat(getVal("h1-scale")),
-          weight: parseInt(getVal("h1-weight")),
-          lineHeight: parseFloat(getVal("h1-lh")),
-          letterSpacingEm: parseFloat(getVal("h1-ls")),
-        },
-        h2: {
-          scale: parseFloat(getVal("h2-scale")),
-          weight: parseInt(getVal("h2-weight")),
-          lineHeight: parseFloat(getVal("h2-lh")),
-          letterSpacingEm: parseFloat(getVal("h2-ls")),
-        },
-        h3: {
-          scale: parseFloat(getVal("h3-scale")),
-          weight: parseInt(getVal("h3-weight")),
-          lineHeight: parseFloat(getVal("h3-lh")),
-          letterSpacingEm: parseFloat(getVal("h3-ls")),
-        },
-        h4: {
-          scale: parseFloat(getVal("h4-scale")),
-          weight: parseInt(getVal("h4-weight")),
-          lineHeight: parseFloat(getVal("h4-lh")),
-          letterSpacingEm: parseFloat(getVal("h4-ls")),
-        },
-        h5: {
-          scale: parseFloat(getVal("h5-scale")),
-          weight: parseInt(getVal("h5-weight")),
-          lineHeight: parseFloat(getVal("h5-lh")),
-          letterSpacingEm: parseFloat(getVal("h5-ls")),
-        },
-        h6: {
-          scale: parseFloat(getVal("h6-scale")),
-          weight: parseInt(getVal("h6-weight")),
-          lineHeight: parseFloat(getVal("h6-lh")),
-          letterSpacingEm: parseFloat(getVal("h6-ls")),
-        },
-      }));
-      setHeadingFontFamily(getVal("font-heading"));
 
-      // setBody({
-      //   sizePx: parseInt(getVal("body-size")),
-      //   weight: parseInt(getVal("body-weight")),
-      //   lineHeight: parseFloat(getVal("body-lh")),
-      //   letterSpacingEm: parseFloat(getVal("body-ls")),
-      //   maxWidthCh: parseInt(getVal("body-maxw")),
-      //   paragraphGapPx: parseInt(getVal("body-paragraph-gap")),
-      // });
+    const handleSectionColorChange = (v: Partial<BrandColors>) => {
+        setBrand((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                ...v,
+            };
+        });
 
-      setButtonBase({
-        fontFamily: getVal("font-button"),
-        sizePx: parseInt(getVal("btn-size")),
-        weight: parseInt(getVal("btn-weight")),
-        letterSpacingEm: parseFloat(getVal("btn-ls")),
-        transform: getVal("btn-transform") as any,
-        radiusPx: parseInt(getVal("btn-radius")),
-        heightPx: parseInt(getVal("btn-height")),
-        paddingXPx: parseInt(getVal("btn-pad-x")),
-        borderWidthPx: parseInt(getVal("btn-border-w")),
-        shadow: (getVal("btn-shadow") === "none" ? "none" : "sm") as any, // Simple mapping for now
-        transitionMs: parseInt(getVal("btn-transition")),
-      });
+        //    Object.entries(v).forEach(([key, value]) => {
+        //      if (value) {
+        //        const prop = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+        //        console.log("prop--->", prop)
+        //        console.log("value--->", value)
+        //        onStyleChange(prop, value);
+        //      }
+        //    });
+    };
 
-      // setButtonColors({
-      //   primary: {
-      //     bg: getVal("btn-primary-bg"),
-      //     text: getVal("btn-primary-text"),
-      //     border: getVal("btn-primary-border"),
-      //     hoverBg: getVal("btn-primary-hover-bg"),
-      //     hoverText: getVal("btn-primary-hover-text"),
-      //     hoverBorder: getVal("btn-primary-hover-border"),
-      //   },
-      //   secondary: {
-      //     bg: getVal("btn-secondary-bg"),
-      //     text: getVal("btn-secondary-text"),
-      //     border: getVal("btn-secondary-border"),
-      //     hoverBg: getVal("btn-secondary-hover-bg"),
-      //     hoverText: getVal("btn-secondary-hover-text"),
-      //     hoverBorder: getVal("btn-secondary-hover-border"),
-      //   },
-      //   outline: {
-      //     bg: getVal("btn-outline-bg"),
-      //     text: getVal("btn-outline-text"),
-      //     border: getVal("btn-outline-border"),
-      //     hoverBg: getVal("btn-outline-hover-bg"),
-      //     hoverText: getVal("btn-outline-hover-text"),
-      //     hoverBorder: getVal("btn-outline-hover-border"),
-      //   },
-      // });
+    const handleHeadingChange = (patch: Partial<HeadingStyle>) => {
+        setHeadings((prev) => {
+            if (!prev) return prev;
+            return {
+                ...prev,
+                [selectedHeading]: { ...prev[selectedHeading], ...patch },
+            };
+        });
 
-      setGlobalFontFamily(getVal("font-body"));
+       
+    };
+
+    const handleBodyChange = (patch: Partial<BodyStyle>) => {
+        setBody((prev) => {
+            if (!prev) return prev;
+            return { ...prev, ...patch } as BodyStyle;
+        });
+
+      
+    };
+
+    const handleButtonBaseChange = (patch: Partial<ButtonBaseStyle>) => {
+        setButtonBase((prev) => {
+            if (!prev) return prev;
+            return { ...prev, ...patch };
+        });
+
+       
+    };
+
+    const handleButtonColorChange = (patch: any) => {
+        // Check if patch is from setButtonColors((prev) => ...) pattern
+        if (typeof patch === 'function') {
+            setButtonColors((prev) => {
+                const next = patch(prev);
+                // This is a generic setter, usually we prefer direct patches for canvas sync
+                // But we'll apply the next state to local state
+                return next;
+            });
+            return;
+        }
+
+        setButtonColors((prev) => {
+            if (!prev) return prev;
+            const next = { ...prev, [selectedBtn]: { ...prev[selectedBtn], ...patch } };
+
+            // Push each color to canvas
+            //  Object.entries(patch).forEach(([key, value]) => {
+            //    if (value) {
+            //      const prop = `--btn-${selectedBtn}-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
+            //      onStyleChange(prop, value as string);
+            //    }
+            //  });
+
+            return next;
+        });
+    };
+
+    const handleCopyRoot = async () => {
+        try {
+            await navigator.clipboard.writeText(ROOT_CSS);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1200);
+        } catch {
+            toast.error("Failed to copy CSS");
+            // ignore
+        }
+    };
+
+
+
+    const ColorsPreview = BrandGalleryPreview;
+
+    const RightPreviewContent =
+        leftTab === "colors"
+            ? ColorsPreview
+            : leftTab === "headings"
+                ? HeadingsPreview
+                : leftTab === "body"
+                    ? BodyPreview
+                    : ButtonsPreview;
+
+    const previewProps = {
+        uiPalette,
+        mode,
+        brand: brand || {},
+        headingFontFamily,
+        headings: headings || {} as any,
+        headingPx,
+        leftTab,
+        onLeftTab,
+        cardPreviewStyle: outerPreviewStyle,
+        headingBaseSize,
+        body: body || {} as any,
+        globalFontFamily,
+        buttonBase: buttonBase || {} as any,
+        buttonColors: buttonColors || {} as any,
+        softBg,
+        hoveredBtn,
+        setHoveredBtn,
+    };
+
+
+    const handleSave = async () => {
+    
     }
-  }, [currentStyle]);
-  /* ✅ computed palette for this preview (not user editable) */
-  const uiPalette = useMemo(() => {
-    const light = {
-      bg: "#F4F6F5",
-      surface: "#FFFFFF",
-      text: brand?.text,
-      mutedText: brand?.mutedText,
-      border: brand?.border,
-    };
-    const dark = {
-      bg: "#071B14",
-      surface: "#0B2A1F",
-      text: "#EAF7F0",
-      mutedText: mixHex("#EAF7F0", "#000000", 0.35),
-      border: rgba("#B9F3D5", 0.22),
-    };
-    return mode === "light" ? light : dark;
-  }, [mode, brand?.text, brand?.mutedText, brand?.border]);
 
-  const onLeftTab = (tab: LeftTab) => {
-    setLeftTab(tab);
-    // setRightPanel("preview");
-  };
-  const handleSectionColorChange = (v: Partial<BrandColors>) => {
-    setBrand((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        ...v,
-      };
-    });
-  };
+ 
+    return (
+        <div className="space-y-6 max-w-6xl mx-auto pb-10">
+            {/* TOP BAR */}
+            <div className="flex justify-between items-center gap-3">
+                <div className="grid grid-cols-4 gap-2">
+                    <Button variant={leftTab === "colors" ? "default" : "outline"}
+                        onClick={() => onLeftTab("colors")}>
+                        Colors
+                    </Button>
+                    <Button variant={leftTab === "headings" ? "default" : "outline"}
+                        onClick={() => onLeftTab("headings")}>
+                        Headings
+                    </Button>
+                    <Button variant={leftTab === "body" ? "default" : "outline"}
+                        onClick={() => onLeftTab("body")}>
+                        Body
+                    </Button>
+                    <Button variant={leftTab === "buttons" ? "default" : "outline"}
+                        onClick={() => onLeftTab("buttons")}>
+                        Buttons
+                    </Button>
+                </div>
 
-  console.log("headings", headings)
+                <div className="flex items-center gap-2">
+                    {/* ✅ Light/Dark mode toggle */}
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
+                        className="gap-2"
+                        title="Toggle Light/Dark"
+                    >
+                        {mode === "light" ? (
+                            <Sun className="h-4 w-4" />
+                        ) : (
+                            <Moon className="h-4 w-4" />
+                        )}
+                        {mode === "light" ? "Light" : "Dark"}
+                    </Button>
 
-  const [selectedHeading, setSelectedHeading] = useState<HeadingKey>("h1");
+                    <Button
+                        size="sm"
+                        variant={rightPanel === "preview" ? "secondary" : "ghost"}
+                        onClick={() => {
+                            setRightPanel("preview");
+                            // ✅ requested: preview click -> typography show
+                            setLeftTab("headings");
+                        }}
+                        className="gap-2"
+                    >
+                        <Eye className="h-4 w-4" />
+                        Preview
+                    </Button>
 
-  const handleHeadingChange = (patch: Partial<HeadingStyle>) => {
-    setHeadings((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        [selectedHeading]: { ...prev[selectedHeading], ...patch },
-      };
-    });
-  };
-
-  /* ❌ Removed bodyControls and buttonControls useMemo blocks as they are now separate components */
-  return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-10">
-      {/* TOP BAR */}
-      <div className="flex justify-between items-center gap-3">
-        <div className="grid grid-cols-4 gap-2">
-          <Button variant={leftTab === "colors" ? "default" : "outline"}
-            onClick={() => onLeftTab("colors")}>
-            Colors
-          </Button>
-          <Button variant={leftTab === "headings" ? "default" : "outline"}
-            onClick={() => onLeftTab("headings")}>
-            Headings
-          </Button>
-          <Button variant={leftTab === "body" ? "default" : "outline"}
-            onClick={() => onLeftTab("body")}>
-            Body
-          </Button>
-          <Button variant={leftTab === "buttons" ? "default" : "outline"}
-            onClick={() => onLeftTab("buttons")}>
-            Buttons
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {/* ✅ Light/Dark mode toggle */}
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
-            className="gap-2"
-            title="Toggle Light/Dark"
-          >
-            {mode === "light" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            {mode === "light" ? "Light" : "Dark"}
-          </Button>
-
-          <Button
-            size="sm"
-            variant={rightPanel === "preview" ? "secondary" : "ghost"}
-            onClick={() => {
-              setRightPanel("preview");
-              // ✅ requested: preview click -> typography show
-              setLeftTab("headings");
-            }}
-            className="gap-2"
-          >
-            <Eye className="h-4 w-4" />
-            Preview
-          </Button>
-
-          <Button
-            size="sm"
-            variant={rightPanel === "root" ? "secondary" : "ghost"}
-            onClick={() => setRightPanel("root")}
-            className="gap-2"
-          >
-            <Code2 className="h-4 w-4" />
-            Root File
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT */}
-        <div className="lg:col-span-4 space-y-6">
-          {leftTab === "colors" &&
-            brand &&
-            <ColorControl
-              brand={brand}
-              setBrand={setBrand}
-              uiPalette={uiPalette}
-              setC={(v) => handleSectionColorChange(v)}
-              setButtonColors={setButtonColors}
-            />
-
-          }
-          {leftTab === "headings" && headings && <HeadingControl
-            headings={headings}
-            headingFontFamily={headingFontFamily ?? ""}
-            setHeadingFontFamily={(value) => setHeadingFontFamily(value)}
-            setH={(value) => handleHeadingChange(value)}
-            selectedHeading={selectedHeading}
-            setSelectedHeading={setSelectedHeading}
-          />}
-          {/* {leftTab === "body" && <BodyControl
-            body={body}
-            setBody={(patch) => setBody((p) => ({ ...p, ...patch }))}
-            globalFontFamily={globalFontFamily}
-            setGlobalFontFamily={setGlobalFontFamily}
-          />} */}
-          {/* {leftTab === "buttons" && <ButtonControl
-            buttonBase={buttonBase}
-            setButtonBase={(patch) => setButtonBase((p) => ({ ...p, ...patch }))}
-            buttonColors={buttonColors}
-            setButtonColors={setButtonColors}
-            selectedBtn={selectedBtn}
-            setSelectedBtn={setSelectedBtn}
-          />} */}
-        </div>
-
-        {/* RIGHT */}
-        <div className="lg:col-span-8">
-          <Card className="h-full min-h-[580px] border-2 border-muted/40">
-            <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
-              {rightPanel === "root" && (
-                null
-                // <Button size="sm" variant="outline" onClick={handleCopyRoot} className="gap-2">
-                //   {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                //   {copied ? "Copied" : "Copy"}
-                // </Button>
-              )}
+                    <Button
+                        size="sm"
+                        variant={rightPanel === "root" ? "secondary" : "ghost"}
+                        onClick={() => setRightPanel("root")}
+                        className="gap-2"
+                    >
+                        <Code2 className="h-4 w-4" />
+                        Root File
+                    </Button>
+                </div>
             </div>
 
-            {rightPanel === "preview" ? (
-              null
-              // <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
-              //   {RightPreviewContent}
-              // </CardContent>
-            ) : (
-              <CardContent className="p-6">
-                <div className="mb-3">
-                  <p className="text-sm font-semibold">Root File Code (LIVE)</p>
-                  <p className="text-xs text-muted-foreground">
-                    Light/Dark have separate variables via <span className="font-mono">:root[data-theme="..."]</span>. Gradient removed (solid hero).
-                  </p>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* LEFT */}
+                <div className="lg:col-span-4 space-y-6">
+                    {leftTab === "colors" &&
+                        brand &&
+                        <ColorControl
+                            brand={brand}
+                            setBrand={setBrand}
+                            uiPalette={uiPalette}
+                            setC={(v) => handleSectionColorChange(v)}
+                            setButtonColors={setButtonColors as any}
+                        />
+
+                    }
+                    {leftTab === "headings" && headings && <HeadingControl
+                        headings={headings}
+                        headingFontFamily={headingFontFamily ?? ""}
+                        setHeadingFontFamily={(value) => {
+                            setHeadingFontFamily(value);
+                            // onStyleChange("--font-heading", value);
+                        }}
+                        setH={(value) => handleHeadingChange(value)}
+                        selectedHeading={selectedHeading}
+                        setSelectedHeading={setSelectedHeading}
+                    />}
+                    {leftTab === "body" && body && <BodyControl
+                        body={body}
+                        setBody={(patch) => handleBodyChange(patch)}
+                        globalFontFamily={globalFontFamily}
+                        setGlobalFontFamily={(value) => {
+                            setGlobalFontFamily(value);
+                            // onStyleChange("--font-body", value);
+                        }}
+                    />}
+                    {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
+                        buttonBase={buttonBase}
+                        setButtonBase={(patch) => handleButtonBaseChange(patch)}
+                        buttonColors={buttonColors}
+                        setButtonColors={handleButtonColorChange as any}
+                        selectedBtn={selectedBtn}
+                        setSelectedBtn={setSelectedBtn}
+                    />}
                 </div>
-                <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
-                  <code>{currentStyle?.globalStyle}</code>
-                </pre>
-              </CardContent>
-            )}
-          </Card>
+
+                {/* RIGHT */}
+                <div className="lg:col-span-8">
+                    <Card className="h-full min-h-[580px] border-2 border-muted/40">
+                        <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
+                            {rightPanel === "root" && (
+                                <>
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleCopyRoot}
+                                        className="gap-2"
+                                    >
+                                        {copied ? (
+                                            <Check className="h-4 w-4" />
+                                        ) : (
+                                            <Copy className="h-4 w-4" />
+                                        )}
+                                        {copied ? "Copied" : "Copy"}
+                                    </Button>
+
+                                    <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={handleSave}
+                                        className="gap-2"
+                                    >
+                                        {copied ? (
+                                            <Check className="h-4 w-4" />
+                                        ) : (
+                                            <Save className="h-4 w-4" />
+                                        )}
+                                        {copied ? "Saved" : "Save"}
+                                    </Button>
+                                </>
+                            )}
+                        </div>
+
+                        {rightPanel === "preview" ? (
+                            <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
+                                <RightPreviewContent {...previewProps} />
+                            </CardContent>
+                        ) : (
+                            <CardContent className="p-6">
+                                <div className="mb-3">
+                                    <p className="text-sm font-semibold">Root File Code (LIVE)</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        Light/Dark have separate variables via{" "}
+                                        <span className="font-mono">:root[data-theme="..."]</span>.
+                                        Gradient removed (solid hero).
+                                    </p>
+                                </div>
+                                <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
+                                    <code>{ROOT_CSS}</code>
+                                </pre>
+                            </CardContent>
+                        )}
+                    </Card>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 export default ShowStyle
