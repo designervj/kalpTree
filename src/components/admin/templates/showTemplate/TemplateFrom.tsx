@@ -574,7 +574,7 @@ export default function TemplateForm({
                               <html>
                                 <head>
                                   <style>
-                                    ${currentWebsite?.globalStyle || ""}
+                             
                                     body { 
                                       margin: 0; 
                                       padding: 20px;
