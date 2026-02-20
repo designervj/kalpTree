@@ -28,8 +28,9 @@ import { createPortal } from "react-dom";
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { WebsitePageModel } from '@/components/admin/website/websitePage/WebsitePageType';
-import { updateWebsitePage } from '@/hooks/slices/website/websitePageSlice';
+
 import { toast } from 'sonner';
+import { updateWebsitePage } from '@/hooks/slices/website/WebsitePageThunk';
 const cx = (...classes: Array<string | false | null | undefined>) =>
   classes.filter(Boolean).join(" ");
 

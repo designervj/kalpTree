@@ -27,11 +27,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createWebsitePage } from "@/hooks/slices/website/websitePageSlice";
+
 import { PAGE_TEMPLATES } from "./DemoTemplate";
 import { TemplateDocument } from "./templates/TemplateType";
 import { extractHeader } from "./website/websitePage/util/ExtractHeader";
 import { createHeader } from "@/hooks/slices/header/HeaderThunk";
+import { createWebsitePage } from "@/hooks/slices/website/WebsitePageThunk";
 
 /* -----------------------------
   Types

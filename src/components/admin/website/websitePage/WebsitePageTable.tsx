@@ -7,11 +7,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   deleteWebsitePage,
-  updateCurrentPage,
-} from "@/hooks/slices/website/websitePageSlice";
+ 
+} from "@/hooks/slices/website/WebsitePageThunk";
 import { WebsitePageModel } from "./WebsitePageType";
 import { buildWebsiteHref } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { updateCurrentPage } from "@/hooks/slices/website/websitePageSlice";
 
 
 const WebsitePageTable = () => {
