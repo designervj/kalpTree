@@ -8,6 +8,7 @@ export interface ProductModel {
   id?: number;
   _id?: string;
   title?: string;
+  allcategories?: string[]
   brand_id?: string | ObjectId;
   brand?: MaterialBrandModel;
   product_category_id?: string | ObjectId;
@@ -24,8 +25,10 @@ export interface ProductModel {
   variants?: ProductVariant[];
   options?: any[];
   gallery?: string[];
+  /** Images uploaded via the admin product form are stored under this key in MongoDB */
+  imageUrls?: string[];
   websiteId?: string;
   tenantId?: string;
 
-  basePrice?: string;
+  basePrice?: string | number;
 }

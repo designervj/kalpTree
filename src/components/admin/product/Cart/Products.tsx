@@ -640,7 +640,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
               <span>▲</span>
             </div>
             <div className="space-y-3">
-              {filter.values.map((value, valueIndex) => (
+              {/* {filter.values.map((value, valueIndex) => (
                 <label
                   key={valueIndex}
                   className="flex items-center text-[13px] cursor-pointer"
@@ -655,7 +655,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                   />
                   {value}
                 </label>
-              ))}
+              ))} */}
             </div>
           </div>
         ))}
