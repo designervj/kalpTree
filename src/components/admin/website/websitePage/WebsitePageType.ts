@@ -1,10 +1,29 @@
+import { ObjectId } from "mongodb";
 
 // WebsitePageModel interface for a website page document
+
+export interface CommentModel {
+	_id: string|ObjectId; // MongoDB ObjectId as string
+	comment:string;
+	
+}
+
+export interface PageCommentModal {
+	_id?: string|ObjectId; // MongoDB ObjectId as string
+	component?:{
+		tagName:string;
+		content:string;		
+	}
+	allComments?:CommentModel[];
+	createdAt?:Date; // ISO date string
+	updatedAt?: Date; // ISO date string
+}
+
+
 export interface WebsitePageModel {
 	_id: string; // MongoDB ObjectId as string
 	tenantId: string;
 	websiteId?: string;
-	// MongoDB ObjectId as string
 	slug: string;
 	title: string;
 	content: string;
@@ -16,6 +35,7 @@ export interface WebsitePageModel {
 	isHomePage?: boolean
 	seoIssue?: boolean;
 	inNavigation?: boolean;
+	pageComments?:PageCommentModal[];
 }
 export interface SeoModel {
 	title?: string;

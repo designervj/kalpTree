@@ -1,130 +1,274 @@
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import React, { useEffect, useState } from 'react'
+import { RootState } from '@/store/store';
+import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux';
 
 type Props = {
     isOpen: boolean;
     onClose: () => void;
     component: any;
 }
+
 const CommentsModal = ({ isOpen, onClose, component }: Props) => {
-    const componentHtml = component?.html || "";
-    const componentCss = component?.css || "";
-    
-    const componentTag = component?.tagName || "div";
-    const [isMounted, setIsMounted] = useState(false);
+    const [commentText, setCommentText] = useState('');
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const { user } = useSelector((state: RootState) => state.user)
+    const componentHtml = component?.html || '';
+    const componentCss = component?.css || '';
+
+    // Auto-focus textarea when modal opens
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
+        if (isOpen && textareaRef.current) {
+            setTimeout(() => {
+                textareaRef.current?.focus();
+            }, 50);
+        }
+    }, [isOpen]);
+
+    // Clear text on close
+    useEffect(() => {
+        if (!isOpen) {
+            setCommentText('');
+        }
+    }, [isOpen]);
+
+    const handleComment = () => {
+        if (!commentText.trim()) return;
+        console.log('Comment submitted:', commentText, 'for component:', component);
+        setCommentText('');
+        onClose();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            handleComment();
+        }
+        if (e.key === 'Escape') {
+            onClose();
+        }
+    };
+
+    const iframeSrcDoc = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <style>
+              *, *::before, *::after { box-sizing: border-box; }
+              html, body {
+                margin: 0;
+                padding: 8px;
+                background: #f8fafc;
+                font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+                font-size: 13px;
+              }
+              ${componentCss}
+            </style>
+          </head>
+          <body>${componentHtml || '<p style="color:#94a3b8;text-align:center;margin-top:16px;">No preview available</p>'}</body>
+        </html>
+    `;
+
+    if (!isOpen) return null;
+
     return (
-        <Dialog
-            open={isOpen}
-            onOpenChange={(open) => {
-                if (!open) onClose();
-            }}
-        >
-            <DialogContent
-                className="
-          p-0 overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl
-          w-[95vw] md:w-[75vw] lg:w-[60vw]
-          max-w-[95vw] md:max-w-[75vw] lg:max-w-[60vw]
-          h-[94vh]
-          flex flex-col
-        "
+        <>
+            {/* Backdrop */}
+            <div
+                onClick={onClose}
+                style={{
+                    position: 'fixed',
+                    inset: 0,
+                    zIndex: 9998,
+                    background: 'transparent',
+                }}
+            />
 
+            {/* Comment Box */}
+            <div
+                style={{
+                    position: 'fixed',
+                    top: '50%',
+                    right: '24px',
+                    transform: 'translateY(-50%)',
+                    zIndex: 9999,
+                    width: '360px',
+                    background: '#ffffff',
+                    borderRadius: '10px',
+                    boxShadow: '0 4px 28px rgba(0,0,0,0.16), 0 1.5px 6px rgba(0,0,0,0.08)',
+                    border: '1.5px solid #e2e8f0',
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '12px',
+                    animation: 'commentBoxFadeIn 0.18s ease',
+                }}
             >
-                {/* Header */}
-                <DialogHeader className="border-b border-gray-200 px-6 py-6 bg-white">
-                    <div className="flex items-center justify-between gap-4 py-6" style={{
-                        marginTop: "0px", marginBottom: "0px", padding: "10px"
+                {/* ── User row ── */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div
+                        style={{
+                            width: '30px',
+                            height: '30px',
+                            borderRadius: '50%',
+                            background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: '#fff',
+                            fontWeight: 700,
+                            fontSize: '12px',
+                            flexShrink: 0,
+                            userSelect: 'none' as const,
+                        }}
+                    >
+                        {user?.name?.charAt(0).toUpperCase()}
+                    </div>
+                    <span style={{ fontSize: '13px', fontWeight: 600, color: '#1e293b' }}>
+                        {user?.name}
+                    </span>
+                </div>
+                {/* ── Component Preview ── */}
+                {/* <div>
+                    <p style={{
+                        margin: '0 0 6px 0',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        color: '#94a3b8',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.06em',
                     }}>
-                        <DialogTitle className="text-[28px] leading-8 font-semibold text-slate-900">
-                            <h4 className="font-sm py-3 ">AI Component Editor - {isMounted && componentTag}</h4>
-                        </DialogTitle>
-
+                        Component Preview
+                    </p>
+                    <div style={{
+                        border: '1.5px solid #e2e8f0',
+                        borderRadius: '7px',
+                        overflow: 'hidden',
+                        background: '#f8fafc',
+                    }}>
+                        <iframe
+                            title="Component Preview"
+                            srcDoc={iframeSrcDoc}
+                            sandbox="allow-same-origin"
+                            scrolling="no"
+                            style={{
+                                width: '100%',
+                                height: '130px',
+                                border: 'none',
+                                display: 'block',
+                                pointerEvents: 'none',
+                            }}
+                        />
                     </div>
-                </DialogHeader>
+                </div> */}
 
-                <div style={{ overflow: "auto", padding: "10px", }}>
-                    {/* Main Content */}
-                    <div className="flex-1 grid grid-rows-2" >
-                        {/* Top Section - Split View */}
-                        <div className=" border-b border-gray-200">
-
-                            <div className="min-h-0 overflow-auto p-4 md:p-6 bg-gray-50">
-                                <div className="mb-3" style={{ marginBottom: "6px" }}>
-                                    <h4 className="text-sm font-medium text-gray-800" style={{ fontSize: "16px" }}>Live Preview</h4>
-                                </div>
-
-                                <div className="border border-gray-200 rounded-xl bg-white overflow-auto p-4 min-h-[160px]"
-
-                                >
-                                    {componentHtml ? (
-                                        <iframe
-                                            title="Component Preview"
-                                            srcDoc={`
-                          <!DOCTYPE html>
-                          <html>
-                            <head>
-                              <style>
-                                ${componentCss}
-                                body { 
-                                  margin: 0; 
-                                  padding: 10px; 
-                                  background: white; 
-                                  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-                                }
-                              </style>
-                            </head>
-                            <body>
-                              ${componentHtml}
-                            </body>
-                          </html>
-                        `}
-                                            className="w-full min-h-[160px]"
-                                            style={{
-                                                border: "1px solid #e5e7eb",
-                                                borderRadius: "8px",
-                                                background: "#fff"
-                                            }}
-                                        />
-                                    ) : (
-                                        <div className="flex items-center justify-center h-full text-gray-400">
-                                            No HTML content to display
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                {/* ── Divider ── */}
+                <div style={{ height: '1px', background: '#f1f5f9', margin: '0 -16px' }} />
 
 
+                <textarea
+                    ref={textareaRef}
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Comment or add others with @"
+                    rows={3}
+                    style={{
+                        width: '100%',
+                        border: '1.5px solid #e2e8f0',
+                        borderRadius: '6px',
+                        padding: '9px 12px',
+                        fontSize: '13px',
+                        color: '#334155',
+                        resize: 'vertical',
+                        outline: 'none',
+                        fontFamily: 'inherit',
+                        lineHeight: '1.5',
+                        transition: 'border-color 0.15s',
+                        boxSizing: 'border-box',
+                        background: '#fafbfc',
+                    }}
+                    onFocus={(e) => { e.target.style.borderColor = '#6366f1'; e.target.style.background = '#fff'; }}
+                    onBlur={(e) => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#fafbfc'; }}
+                />
 
-                            {/* Right Side - HTML Preview */}
-
-                        </div>
-
-
-
-                    </div>
+                {/* ── Action buttons ── */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            padding: '6px 16px',
+                            borderRadius: '6px',
+                            border: '1.5px solid #e2e8f0',
+                            background: '#f8fafc',
+                            color: '#64748b',
+                            fontSize: '13px',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                            fontFamily: 'inherit',
+                        }}
+                        onMouseEnter={(e) => {
+                            (e.currentTarget).style.background = '#f1f5f9';
+                            (e.currentTarget).style.color = '#1e293b';
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget).style.background = '#f8fafc';
+                            (e.currentTarget).style.color = '#64748b';
+                        }}
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={handleComment}
+                        disabled={!commentText.trim()}
+                        style={{
+                            padding: '6px 16px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            background: commentText.trim()
+                                ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                                : '#e2e8f0',
+                            color: commentText.trim() ? '#fff' : '#94a3b8',
+                            fontSize: '13px',
+                            fontWeight: 600,
+                            cursor: commentText.trim() ? 'pointer' : 'not-allowed',
+                            transition: 'all 0.15s',
+                            fontFamily: 'inherit',
+                            boxShadow: commentText.trim() ? '0 2px 8px rgba(99,102,241,0.25)' : 'none',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (commentText.trim()) {
+                                (e.currentTarget).style.opacity = '0.9';
+                                (e.currentTarget).style.transform = 'translateY(-1px)';
+                            }
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget).style.opacity = '1';
+                            (e.currentTarget).style.transform = 'translateY(0)';
+                        }}
+                    >
+                        Comment
+                    </button>
                 </div>
 
-                <div className="border-t border-gray-200 px-6 py-4 bg-white" style={{ padding: "10px", marginLeft: "10px", marginTop: "10px" }}>
-                    <div className="flex items-center justify-between gap-4 ">
-                        <p className="text-sm text-gray-500">Modify component with AI assistance</p>
-                        <Button
-                            onClick={onClose}
-                            // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-9 text-sm font-medium rounded-xl"
-                            style={{ padding: "10px", marginLeft: "10px", }}
-                        >
-                            Close
-                        </Button>
-                    </div>
+                {/* ── Hint ── */}
+                <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8' }}>
+                    Press{' '}
+                    <kbd style={{ background: '#f1f5f9', padding: '1px 5px', borderRadius: '3px', fontFamily: 'monospace', fontSize: '10px' }}>
+                        Ctrl+Enter
+                    </kbd>{' '}
+                    to submit
+                </p>
+            </div>
 
-                </div>
-                {/* Footer */}
-
-            </DialogContent>
-        </Dialog>
-    )
+            <style>{`
+                @keyframes commentBoxFadeIn {
+                    from { opacity: 0; transform: translateY(calc(-50% - 10px)); }
+                    to   { opacity: 1; transform: translateY(-50%); }
+                }
+            `}</style>
+        </>
+    );
 }
 
 export default CommentsModal
