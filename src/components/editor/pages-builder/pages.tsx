@@ -41,7 +41,15 @@ import { Website } from "@/components/admin/AppShell";
 import CurrentForm from "../sectionEdit/CurrentForm";
 import { updateWebsite } from "@/hooks/slices/websites/WebsiteThunk";
 import { toast } from "sonner";
-import { CardConfigModal, FilterConfigModal, HeroConfigModal, LayoutConfigModal, PaginationConfigModal, StyleConfigModal } from "@/components/admin/product/Cart/CartModal";
+import {
+  CardConfigModal,
+  FilterConfigModal,
+  HeroConfigModal,
+  LayoutConfigModal,
+  PaginationConfigModal,
+  StyleConfigModal,
+} from "@/components/admin/product/Cart/CartModal";
+import { TranslationDictionary } from "../translation/TranslationPage";
 
 export type PageItem = {
   id: string;
@@ -52,16 +60,17 @@ export type PageItem = {
   isHomePage?: boolean;
   url?: string;
   seo?: WebsitePageModel["seo"];
+  dictionary?: TranslationDictionary;
 };
 
 // Styling configuration type for ProductShowcase
 export type ProductShowcaseStyleConfig = {
-  layoutConfig?: LayoutConfigModal
-  styleConfig?: StyleConfigModal
-  heroConfig?: HeroConfigModal
-  paginationConfig?: PaginationConfigModal
-  filterConfig?: FilterConfigModal
-  cardConfig?: CardConfigModal
+  layoutConfig?: LayoutConfigModal;
+  styleConfig?: StyleConfigModal;
+  heroConfig?: HeroConfigModal;
+  paginationConfig?: PaginationConfigModal;
+  filterConfig?: FilterConfigModal;
+  cardConfig?: CardConfigModal;
 };
 
 const cx = (...classes: Array<string | false | null | undefined>) =>
@@ -671,6 +680,7 @@ export default function Pages({
           inNavigation: true,
           isHomePage: page.isHomePage,
           url: `${primaryDomain}/${page.slug}`,
+          dictionary: page.dictionary ? page.dictionary : {},
         };
       });
     }
@@ -843,11 +853,10 @@ export default function Pages({
   };
 
   const handleCategoryClick = (categorySlug: string) => {
-  
     handlePageType(categorySlug);
     if (!categoryStyleConfigs[categorySlug]) {
       const category = listCategory.find((c) => c.slug === categorySlug);
-   
+
       const defaultConfig = getDefaultStyleConfig();
 
       // Optionally customize the title based on category name

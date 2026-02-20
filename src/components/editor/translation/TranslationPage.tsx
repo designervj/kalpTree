@@ -2,18 +2,13 @@
 
 import * as React from "react";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { ChevronDown, Undo2, Redo2, X } from "lucide-react";
+import { ChevronDown, Undo2, Redo2, Loader2 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { toast } from "sonner";
+import { sample_dictionary } from "@/utils/samples";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-interface WebsiteLang {
-  name: string;
-  default: boolean;
-}
-
-interface TranslationDictionary {
+export interface TranslationDictionary {
   [word: string]: { [lang: string]: string };
 }
 
@@ -39,27 +34,6 @@ const LANG_META: Record<string, { label: string; flag: string }> = {
   ko: { label: "Korean", flag: "🇰🇷" },
   hi: { label: "Hindi", flag: "🇮🇳" },
 };
-
-// ─── Storage ──────────────────────────────────────────────────────────────────
-
-const STORAGE_KEY = "kt_translation_dict_v3";
-
-function loadDictionary(): TranslationDictionary {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function saveDictionary(dict: TranslationDictionary) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dict));
-  } catch {}
-}
-
-// ─── Parse Page Texts ─────────────────────────────────────────────────────────
 
 function parsePageTexts(htmlString?: string): ParsedText[] {
   const results: ParsedText[] = [];
@@ -90,59 +64,15 @@ function parsePageTexts(htmlString?: string): ParsedText[] {
     }
   };
 
-  // Try iframe / canvas
   walk(
     document.querySelector("iframe")?.contentDocument ??
       (document.querySelector("[data-editor-canvas]") as HTMLElement) ??
       document,
   );
 
-  // Fallback: parse htmlString
   if (results.length === 0 && htmlString) {
     const parser = new DOMParser();
     walk(parser.parseFromString(htmlString, "text/html"));
-  }
-
-  // Demo fallback
-  if (results.length === 0) {
-    const demo = [
-      { text: "Home", element: "a" },
-      { text: "Explore Collection", element: "button" },
-      { text: "Sculpting Personal Spaces.", element: "h1" },
-      {
-        text: "Minimalist furniture designed for the modern home.",
-        element: "p",
-      },
-      { text: "The Archi Sofa", element: "h3" },
-      { text: "Starting at $1,200", element: "p" },
-      { text: "NEW ARRIVAL", element: "span" },
-      { text: "Fast Delivery", element: "strong" },
-      { text: "Doorstep shipping worldwide", element: "span" },
-      { text: "Easy Returns", element: "strong" },
-      { text: "14-day hassle-free policy", element: "span" },
-      { text: "Free Delivery", element: "strong" },
-      { text: "on orders over $999", element: "span" },
-      { text: "White-Glove", element: "strong" },
-      { text: "Assembly Available", element: "span" },
-      { text: "The Velvet Retreat Collection", element: "span" },
-      { text: "Our Bespoke Services", element: "h2" },
-      { text: "Interior Design", element: "h4" },
-      { text: "Custom Crafting", element: "h4" },
-      { text: "White-Glove Setup", element: "h4" },
-      { text: "Our Collections", element: "h2" },
-      { text: "NestCraft", element: "div" },
-      { text: "Shop", element: "button" },
-      { text: "Furniture", element: "span" },
-      { text: "Curated", element: "span" },
-      { text: "Design-led essentials for every room.", element: "h3" },
-      { text: "Living", element: "h3" },
-      { text: "Bedroom", element: "h3" },
-      { text: "Dining", element: "h3" },
-      { text: "Decor", element: "h3" },
-      { text: "Best Sellers", element: "p" },
-      { text: "New Essentials", element: "h2" },
-    ];
-    demo.forEach((d) => results.push({ ...d, context: d.element }));
   }
 
   return results;
@@ -155,13 +85,11 @@ function SimpleSelect({
   onChange,
   options,
   placeholder,
-  handleEditor,
 }: {
   value: string;
   onChange: (v: string) => void;
   options: { value: string; label: string }[];
   placeholder?: string;
-  handleEditor?: any;
 }) {
   const [open, setOpen] = useState(false);
   const selected = options.find((o) => o.value === value);
@@ -186,9 +114,6 @@ function SimpleSelect({
                 key={opt.value}
                 type="button"
                 onClick={() => {
-                  if (handleEditor != undefined) {
-                    handleEditor(opt.value);
-                  }
                   onChange(opt.value);
                   setOpen(false);
                 }}
@@ -219,49 +144,63 @@ export default function TranslationEditor({
   editorHtml,
   handleUpdateHtml,
 }: TranslationEditorProps) {
-  // ── Derive config from currentWebsite ──
-
   const originalHtmlRef = React.useRef<string>(editorHtml ?? "");
-
   const isOwnUpdate = React.useRef(false);
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const {
+    page,
+    type,
+    isLoading: isPageLoading,
+  } = useSelector((state: RootState) => state.pageEdit);
 
-  const websiteLangs = currentWebsite?.lang;
+  const { currentLLMSetting } = useSelector(
+    (state: RootState) => state.llmSetting,
+  );
 
+  const [isConverting, setIsConverting] = useState(false);
+
+  const websiteLangs = currentWebsite?.lang ?? [];
   const defaultLang =
-    websiteLangs!.find((l) => l.default)?.name ??
-    websiteLangs![0]?.name ??
-    "en";
+    websiteLangs.find((l) => l.default)?.name ?? websiteLangs[0]?.name ?? "en";
 
-  // Language options (all langs from website)
-  const langOptions = websiteLangs!.map((l) => ({
+  // All non-default langs — these get their own translation box
+  const targetLangs = websiteLangs.filter((l) => !l.default);
+
+  // Language options for the preview selector (all langs)
+  const langOptions = websiteLangs.map((l) => ({
     value: l.name,
     label: `${LANG_META[l.name]?.flag ?? "🌐"} ${LANG_META[l.name]?.label ?? l.name.toUpperCase()}`,
   }));
 
   // ── State ──
   const [activeTab, setActiveTab] = useState<"editor" | "string">("editor");
-  const [selectedLang, setSelectedLang] = useState<string>(
-    // Default: first non-default lang
-    websiteLangs!.find((l) => !l.default)?.name ??
-      websiteLangs![0]?.name ??
-      "fr",
-  );
+
+  // This selector ONLY controls which language HTML is previewed in the editor
+  const [previewLang, setPreviewLang] = useState<string>(defaultLang);
+
   const [selectedText, setSelectedText] = useState<string>("");
-  const [translationInput, setTranslationInput] = useState<string>("");
-  const [dictionary, setDictionary] =
-    useState<TranslationDictionary>(loadDictionary);
+
+  // Per-language translation inputs: { [lang]: string }
+  const [translationInputs, setTranslationInputs] = useState<
+    Record<string, string>
+  >({});
+
+  const [dictionary, setDictionary] = useState<TranslationDictionary>(
+    page?.dictionary!,
+  );
   const [parsedTexts, setParsedTexts] = useState<ParsedText[]>([]);
   const [isParsing, setIsParsing] = useState(true);
   const [history, setHistory] = useState<TranslationDictionary[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [saved, setSaved] = useState(false);
-  const [searchStr, setSearchStr] = useState("");
 
   // For string tab
   const [stringInput, setStringInput] = useState("");
-  const [stringTranslation, setStringTranslation] = useState("");
+  const [stringTranslations, setStringTranslations] = useState<
+    Record<string, string>
+  >({});
+
   // ── Parse on mount ──
   useEffect(() => {
     setIsParsing(true);
@@ -272,18 +211,24 @@ export default function TranslationEditor({
     return () => clearTimeout(t);
   }, [editorHtml]);
 
-  // ── Persist ──
-  useEffect(() => {
-    saveDictionary(dictionary);
-  }, [dictionary]);
+  // ── Persist dictionary ──
+  // useEffect(() => {
+  //   saveDictionary(dictionary);
+  // }, [dictionary]);
 
-  // ── When text or lang changes, load existing translation ──
+  // ── When selectedText changes, load all existing translations into inputs ──
   useEffect(() => {
-    if (!selectedText) return;
-    const existing = dictionary[selectedText]?.[selectedLang] ?? "";
-    setTranslationInput(existing);
-  }, [selectedText, selectedLang, dictionary]);
-
+    if (!selectedText) {
+      setTranslationInputs({});
+      return;
+    }
+    const existing: Record<string, string> = {};
+    targetLangs.forEach((l) => {
+      existing[l.name] = dictionary[selectedText]?.[l.name] ?? "";
+    });
+    setTranslationInputs(existing);
+  }, [selectedText, dictionary]);
+  // Note: intentionally not including targetLangs/dictionary as deps to avoid reset on every keystroke
 
   // ── Page text options ──
   const textOptions = useMemo(
@@ -295,48 +240,163 @@ export default function TranslationEditor({
     [parsedTexts],
   );
 
-  // ── Source text: what the word looks like in defaultLang ──
+  // ── Source text ──
   const sourceText = selectedText
     ? (dictionary[selectedText]?.[defaultLang] ?? selectedText)
     : "";
 
-  // ── Save translation ──
-  const handleSave = useCallback(() => {
+  const sourceMeta = LANG_META[defaultLang] ?? {
+    label: defaultLang,
+    flag: "🌐",
+  };
+
+  // ── Save ALL translations at once ──
+  const handleSave = useCallback(async () => {
     if (!selectedText) return;
 
-    const newDict: TranslationDictionary = {
-      ...dictionary,
-      [selectedText]: {
-        // Always include defaultLang
-        [defaultLang]: dictionary[selectedText]?.[defaultLang] ?? selectedText,
-        ...(dictionary[selectedText] ?? {}),
-        [selectedLang]: translationInput,
-      },
-    };
+    try {
+      const newDict: TranslationDictionary = {
+        ...dictionary,
+        [selectedText]: {
+          [defaultLang]:
+            dictionary[selectedText]?.[defaultLang] ?? selectedText,
+          ...(dictionary[selectedText] ?? {}),
+          ...translationInputs,
+        },
+      };
 
-    // History for undo/redo
-    const newHistory = history.slice(0, historyIndex + 1);
-    newHistory.push(dictionary);
-    setHistory(newHistory);
-    setHistoryIndex(newHistory.length - 1);
+      const newHistory = history.slice(0, historyIndex + 1);
+      newHistory.push(dictionary);
 
-    setDictionary(newDict);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+      const req = await fetch(`/api/pages/${page?._id}`, {
+        method: "PUT",
+        body: JSON.stringify(newDict),
+      });
+
+      const res = await req.json();
+
+      if (res.success) {
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+        setDictionary(newDict);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+        toast.success(res.message);
+      } else {
+        setSaved(false);
+      }
+    } catch (error) {
+      setSaved(false);
+      toast.error(String(error));
+    }
   }, [
     selectedText,
-    selectedLang,
-    translationInput,
+    translationInputs,
     dictionary,
     defaultLang,
     history,
     historyIndex,
   ]);
 
+  // const handleConvertAllWithAI = async () => {
+  //   try {
+  //     const finalData = {
+  //       sample_dictionary: sample_dictionary,
+  //       parsedTexts,
+  //       lang: websiteLangs,
+  //       apiKey: currentLLMSetting.secreteKey,
+  //       model: currentLLMSetting.model,
+  //     };
+
+  //     const array = parsedTexts.map((d: any) => d.text);
+  //     const finalText = [...new Set(array)];
+
+  //     console.log(finalText);
+
+  //     const req = await fetch("/api/admin/llm/translator", {
+  //       method: "POST",
+  //       body: JSON.stringify(finalData),
+  //     });
+
+  //     const res = await req.json();
+
+  //     if (res.success) {
+  //       const parseObj = JSON.parse(res.data);
+  //       console.log("=====>>>",parseObj)
+  //       const innerreq = await fetch(`/api/pages/${page?._id}`, {
+  //         method: "PUT",
+  //         body: JSON.stringify(parseObj),
+  //       });
+  //       const innerRes = await innerreq.json();
+
+  //       if (innerRes.success) {
+  //         setDictionary(parseObj);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     toast.error(String(error));
+  //   }
+  // };
+
   // ── Discard ──
+
+  const handleConvertAllWithAI = async () => {
+    if (isConverting) return;
+
+    try {
+      setIsConverting(true);
+
+      const finalData = {
+        sample_dictionary: sample_dictionary,
+        parsedTexts,
+        lang: websiteLangs,
+        apiKey: currentLLMSetting.secreteKey,
+        model: currentLLMSetting.model,
+      };
+
+      const array = parsedTexts.map((d: any) => d.text);
+      const finalText = [...new Set(array)];
+
+      console.log(finalText);
+
+      const req = await fetch("/api/admin/llm/translator", {
+        method: "POST",
+        body: JSON.stringify(finalData),
+      });
+
+      const res = await req.json();
+
+      if (res.success) {
+        const innerreq = await fetch(`/api/pages/${page?._id}`, {
+          method: "PUT",
+          body: JSON.stringify(res.data),
+        });
+
+        const innerRes = await innerreq.json();
+
+        if (innerRes.success) {
+          setDictionary(res.data);
+          toast.success("Translations generated successfully");
+        } else {
+          toast.error(innerRes.message || "Failed to save translated data");
+        }
+      } else {
+        toast.error(res.message || "Translation failed");
+      }
+    } catch (error) {
+      toast.error(String(error));
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
   const handleDiscard = () => {
-    const existing = dictionary[selectedText]?.[selectedLang] ?? "";
-    setTranslationInput(existing);
+    if (!selectedText) return;
+    const reset: Record<string, string> = {};
+    targetLangs.forEach((l) => {
+      reset[l.name] = dictionary[selectedText]?.[l.name] ?? "";
+    });
+    setTranslationInputs(reset);
   };
 
   // ── Undo / Redo ──
@@ -352,36 +412,24 @@ export default function TranslationEditor({
     setHistoryIndex((i) => i + 1);
   };
 
-  // ── Save string translation ──
-  const handleSaveString = () => {
-    if (!stringInput.trim()) return;
-    const word = stringInput.trim();
-    const newDict: TranslationDictionary = {
-      ...dictionary,
-      [word]: {
-        [defaultLang]: word,
-        ...(dictionary[word] ?? {}),
-        [selectedLang]: stringTranslation,
-      },
-    };
-    setDictionary(newDict);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-    setStringTranslation("");
-  };
+  // ── Preview lang change: swap HTML in editor ──
+  const handlePreviewLangChange = (lang: string) => {
+    setPreviewLang(lang);
 
-  const sourceMeta = LANG_META[defaultLang] ?? {
-    label: defaultLang,
-    flag: "🌐",
-  };
-  const targetMeta = LANG_META[selectedLang] ?? {
-    label: selectedLang,
-    flag: "🌐",
-  };
+    const arrayofkeys = Object.keys(dictionary);
+    let finalHtml = originalHtmlRef.current;
 
-  const isDirty = selectedText
-    ? translationInput !== (dictionary[selectedText]?.[selectedLang] ?? "")
-    : false;
+    arrayofkeys.forEach((d) => {
+      const obj = dictionary[d];
+      const value = obj[lang];
+      if (value && finalHtml.includes(d)) {
+        finalHtml = finalHtml.split(d).join(value);
+      }
+    });
+
+    isOwnUpdate.current = true;
+    handleUpdateHtml(finalHtml);
+  };
 
   useEffect(() => {
     if (!isOwnUpdate.current) {
@@ -390,22 +438,45 @@ export default function TranslationEditor({
     isOwnUpdate.current = false;
   }, [editorHtml]);
 
-  const handleEditor = (key: string) => {
-    const arrayofkeys = Object.keys(dictionary);
-    let finalHtml = originalHtmlRef.current;
+  // ── Dirty check: any lang has unsaved changes ──
+  const isDirty = selectedText
+    ? targetLangs.some(
+        (l) =>
+          (translationInputs[l.name] ?? "") !==
+          (dictionary[selectedText]?.[l.name] ?? ""),
+      )
+    : false;
 
-    arrayofkeys.forEach((d) => {
-      const obj = dictionary[d];
-      const value = obj[key];
-      if (value && finalHtml.includes(d)) {
-        finalHtml = finalHtml.split(d).join(value); // replaceAll equivalent
-      }
-    });
-
-    isOwnUpdate.current = true;
-
-    handleUpdateHtml(finalHtml);
+  // ── Save string translations ──
+  const handleSaveString = () => {
+    if (!stringInput.trim()) return;
+    const word = stringInput.trim();
+    const newDict: TranslationDictionary = {
+      ...dictionary,
+      [word]: {
+        [defaultLang]: word,
+        ...(dictionary[word] ?? {}),
+        ...stringTranslations,
+      },
+    };
+    setDictionary(newDict);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+    setStringTranslations({});
   };
+
+  // ── Progress: how many source texts have ALL target langs translated ──
+  const progressPct = useMemo(() => {
+    const total = parsedTexts.length * targetLangs.length;
+    if (total === 0) return 0;
+    let translated = 0;
+    parsedTexts.forEach((t) => {
+      targetLangs.forEach((l) => {
+        if (dictionary[t.text]?.[l.name]) translated++;
+      });
+    });
+    return (translated / total) * 100;
+  }, [parsedTexts, targetLangs, dictionary]);
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-950 text-slate-800 dark:text-slate-100 text-sm select-none">
@@ -434,31 +505,25 @@ export default function TranslationEditor({
         {/* ════════ TRANSLATION EDITOR TAB ════════ */}
         {activeTab === "editor" && (
           <div className="flex flex-col gap-0">
-            {/* Language selector */}
+            {/* 
+              ── Language selector ──
+              This ONLY changes which language is previewed in the editor canvas.
+              It does NOT control which translation box is shown.
+            */}
             <div className="px-3 pt-4 pb-2">
               <SimpleSelect
-                value={selectedLang}
-                onChange={setSelectedLang}
+                value={previewLang}
+                onChange={handlePreviewLangChange}
                 options={langOptions}
-                handleEditor={handleEditor}
               />
             </div>
 
-            {/* Green progress bar (visual) */}
+            {/* Progress bar */}
             <div className="mx-3 h-1 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden mb-2">
-              {(() => {
-                const total = parsedTexts.length;
-                const translated = parsedTexts.filter(
-                  (t) => !!dictionary[t.text]?.[selectedLang],
-                ).length;
-                const pct = total > 0 ? (translated / total) * 100 : 0;
-                return (
-                  <div
-                    className="h-full bg-green-500 transition-all duration-500"
-                    style={{ width: `${pct}%` }}
-                  />
-                );
-              })()}
+              <div
+                className="h-full bg-green-500 transition-all duration-500"
+                style={{ width: `${progressPct}%` }}
+              />
             </div>
 
             {/* Page text selector */}
@@ -499,10 +564,9 @@ export default function TranslationEditor({
               </button>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-slate-200 dark:bg-slate-800 mx-0 mb-0" />
+            <div className="h-px bg-slate-200 dark:bg-slate-800" />
 
-            {/* From [Lang] — read-only source */}
+            {/* From [defaultLang] — read-only source */}
             <div className="px-3 pt-4 pb-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -522,60 +586,85 @@ export default function TranslationEditor({
               <p className="text-xs text-slate-400 mt-1">Text</p>
             </div>
 
-            {/* To [Lang] — editable target */}
-            <div className="px-3 pb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  To {targetMeta.label}
-                </span>
-                <span className="text-base leading-none">
-                  {targetMeta.flag}
-                </span>
-              </div>
-              <textarea
-                value={translationInput}
-                onChange={(e) => setTranslationInput(e.target.value)}
-                rows={3}
-                placeholder={`Enter ${targetMeta.label} translation…`}
-                disabled={!selectedText}
-                className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-sm resize-none focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors leading-relaxed"
-              />
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-xs text-slate-400">Text</span>
-                {isDirty && (
-                  <button
-                    type="button"
-                    onClick={handleDiscard}
-                    className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
-                  >
-                    Discard changes
-                  </button>
-                )}
-              </div>
+            {/* 
+              ── One "To [Lang]" textarea per target language ──
+              All shown simultaneously so you can fill them all at once.
+            */}
+            {targetLangs.map((lang) => {
+              const meta = LANG_META[lang.name] ?? {
+                label: lang.name.toUpperCase(),
+                flag: "🌐",
+              };
+              const value = translationInputs[lang.name] ?? "";
+              const savedValue = dictionary[selectedText]?.[lang.name] ?? "";
+              const isLangDirty = value !== savedValue;
+              const isLangSaved = !isLangDirty && !!savedValue;
 
-              {/* Suggestions (if any from dict) */}
-              {selectedText && !dictionary[selectedText]?.[selectedLang] && (
-                <p className="text-xs text-slate-400 mt-3 italic">
-                  No available suggestions
-                </p>
-              )}
-
-              {/* If already translated, show existing */}
-              {selectedText &&
-                dictionary[selectedText]?.[selectedLang] &&
-                !isDirty && (
-                  <div className="mt-3 px-3 py-2 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded text-xs text-green-700 dark:text-green-400">
-                    ✓ Translation saved
+              return (
+                <div key={lang.name} className="px-3 pb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      To {meta.label}
+                    </span>
+                    <span className="text-base leading-none">{meta.flag}</span>
                   </div>
-                )}
-            </div>
+                  <textarea
+                    value={value}
+                    onChange={(e) =>
+                      setTranslationInputs((prev) => ({
+                        ...prev,
+                        [lang.name]: e.target.value,
+                      }))
+                    }
+                    rows={3}
+                    placeholder={`Enter ${meta.label} translation…`}
+                    disabled={!selectedText}
+                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-sm resize-none focus:outline-none focus:border-blue-500 dark:focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors leading-relaxed"
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-slate-400">Text</span>
+                    {isLangDirty && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setTranslationInputs((prev) => ({
+                            ...prev,
+                            [lang.name]: savedValue,
+                          }))
+                        }
+                        className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                      >
+                        Discard changes
+                      </button>
+                    )}
+                  </div>
 
-            {/* Save button */}
-            <div className="px-3 pb-4">
+                  {selectedText && !isLangDirty && !savedValue && (
+                    <p className="text-xs text-slate-400 mt-2 italic">
+                      No available suggestions
+                    </p>
+                  )}
+
+                  {isLangSaved && (
+                    <div className="mt-2 px-3 py-2 bg-green-50 dark:bg-green-500/10 border border-green-200 dark:border-green-500/30 rounded text-xs text-green-700 dark:text-green-400">
+                      ✓ Translation saved
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Save all button */}
+            <div className="px-3 pb-6">
               <button
                 type="button"
                 onClick={handleSave}
-                disabled={!selectedText || !translationInput.trim()}
+                disabled={
+                  !selectedText ||
+                  targetLangs.every(
+                    (l) => !(translationInputs[l.name] ?? "").trim(),
+                  )
+                }
                 className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${
                   saved
                     ? "bg-green-600 text-white"
@@ -586,69 +675,29 @@ export default function TranslationEditor({
               </button>
             </div>
 
-            {/* Divider */}
-            <div className="h-px bg-slate-200 dark:bg-slate-800 mx-0" />
-
-            {/* All translations in dict for this word */}
-            {selectedText && dictionary[selectedText] && (
-              <div className="px-3 py-4">
-                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-3">
-                  All translations for this word
-                </p>
-                <div className="space-y-2">
-                  {Object.entries(dictionary[selectedText]).map(
-                    ([lang, val]) => {
-                      const meta = LANG_META[lang] ?? {
-                        label: lang,
-                        flag: "🌐",
-                      };
-                      const isDefault = lang === defaultLang;
-                      return (
-                        <div
-                          key={lang}
-                          className="flex items-start gap-2.5 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0"
-                        >
-                          <span className="text-base shrink-0">
-                            {meta.flag}
-                          </span>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5 mb-0.5">
-                              <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                                {meta.label}
-                              </span>
-                              {isDefault && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400">
-                                  source
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-xs text-slate-700 dark:text-slate-300 break-words">
-                              {val}
-                            </p>
-                          </div>
-                        </div>
-                      );
-                    },
-                  )}
-                </div>
-              </div>
-            )}
+            <div className="px-3 pb-6">
+              <button
+                type="button"
+                onClick={handleConvertAllWithAI}
+                disabled={isConverting || isParsing || parsedTexts.length === 0}
+                className="w-full py-2.5 rounded text-sm font-semibold transition-all bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isConverting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Converting...
+                  </>
+                ) : (
+                  "Convert With AI"
+                )}
+              </button>
+            </div>
           </div>
         )}
 
         {/* ════════ STRING TRANSLATION TAB ════════ */}
         {activeTab === "string" && (
           <div className="flex flex-col gap-0">
-            {/* Language selector */}
-            <div className="px-3 pt-4 pb-3">
-              <SimpleSelect
-                value={selectedLang}
-                onChange={setSelectedLang}
-                options={langOptions.filter((l) => l.value !== defaultLang)}
-                placeholder="Select target language…"
-              />
-            </div>
-
             <div className="h-px bg-slate-200 dark:bg-slate-800" />
 
             {/* Source string input */}
@@ -669,47 +718,71 @@ export default function TranslationEditor({
               <p className="text-xs text-slate-400 mt-1">Text</p>
             </div>
 
-            {/* Target translation */}
-            <div className="px-3 pb-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  To {targetMeta.label}
-                </span>
-                <span className="text-base">{targetMeta.flag}</span>
-              </div>
-              <textarea
-                value={stringTranslation}
-                onChange={(e) => setStringTranslation(e.target.value)}
-                rows={3}
-                placeholder={`Enter ${targetMeta.label} translation…`}
-                className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-sm resize-none focus:outline-none focus:border-blue-500 transition-colors leading-relaxed"
-              />
-              <div className="flex items-center justify-between mt-1">
-                <span className="text-xs text-slate-400">Text</span>
-                {stringTranslation && (
-                  <button
-                    type="button"
-                    onClick={() => setStringTranslation("")}
-                    className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
-                  >
-                    Discard changes
-                  </button>
-                )}
-              </div>
+            {/* One textarea per target language */}
+            {targetLangs.map((lang) => {
+              const meta = LANG_META[lang.name] ?? {
+                label: lang.name.toUpperCase(),
+                flag: "🌐",
+              };
+              const value = stringTranslations[lang.name] ?? "";
 
-              {(!stringInput || !stringTranslation) && (
-                <p className="text-xs text-slate-400 mt-3 italic">
-                  No available suggestions
-                </p>
-              )}
-            </div>
+              return (
+                <div key={lang.name} className="px-3 pb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      To {meta.label}
+                    </span>
+                    <span className="text-base">{meta.flag}</span>
+                  </div>
+                  <textarea
+                    value={value}
+                    onChange={(e) =>
+                      setStringTranslations((prev) => ({
+                        ...prev,
+                        [lang.name]: e.target.value,
+                      }))
+                    }
+                    rows={3}
+                    placeholder={`Enter ${meta.label} translation…`}
+                    className="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-sm resize-none focus:outline-none focus:border-blue-500 transition-colors leading-relaxed"
+                  />
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-slate-400">Text</span>
+                    {value && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setStringTranslations((prev) => ({
+                            ...prev,
+                            [lang.name]: "",
+                          }))
+                        }
+                        className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        Discard changes
+                      </button>
+                    )}
+                  </div>
+                  {!stringInput && !value && (
+                    <p className="text-xs text-slate-400 mt-2 italic">
+                      No available suggestions
+                    </p>
+                  )}
+                </div>
+              );
+            })}
 
             {/* Save button */}
             <div className="px-3 pb-4">
               <button
                 type="button"
                 onClick={handleSaveString}
-                disabled={!stringInput.trim() || !stringTranslation.trim()}
+                disabled={
+                  !stringInput.trim() ||
+                  targetLangs.every(
+                    (l) => !(stringTranslations[l.name] ?? "").trim(),
+                  )
+                }
                 className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${
                   saved
                     ? "bg-green-600 text-white"
@@ -730,24 +803,38 @@ export default function TranslationEditor({
                   </p>
                   <div className="space-y-2">
                     {Object.entries(dictionary).map(([word, entry]) => {
-                      const tVal = entry[selectedLang];
-                      if (!tVal) return null;
+                      const hasAnyTarget = targetLangs.some(
+                        (l) => !!entry[l.name],
+                      );
+                      if (!hasAnyTarget) return null;
                       return (
                         <button
                           key={word}
                           type="button"
                           onClick={() => {
                             setStringInput(entry[defaultLang] ?? word);
-                            setStringTranslation(tVal);
+                            const loaded: Record<string, string> = {};
+                            targetLangs.forEach((l) => {
+                              loaded[l.name] = entry[l.name] ?? "";
+                            });
+                            setStringTranslations(loaded);
                           }}
                           className="w-full text-left px-3 py-2.5 rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
                         >
                           <p className="text-xs font-semibold text-slate-700 dark:text-slate-200 truncate">
                             {entry[defaultLang] ?? word}
                           </p>
-                          <p className="text-xs text-blue-600 dark:text-blue-400 truncate mt-0.5">
-                            {targetMeta.flag} {tVal}
-                          </p>
+                          {targetLangs.map((l) =>
+                            entry[l.name] ? (
+                              <p
+                                key={l.name}
+                                className="text-xs text-blue-600 dark:text-blue-400 truncate mt-0.5"
+                              >
+                                {LANG_META[l.name]?.flag ?? "🌐"}{" "}
+                                {entry[l.name]}
+                              </p>
+                            ) : null,
+                          )}
                         </button>
                       );
                     })}
