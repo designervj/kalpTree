@@ -1,4 +1,5 @@
-import { fetchWebsitePages } from "@/hooks/slices/website/websitePageSlice";
+
+import { fetchWebsitePages } from "@/hooks/slices/website/WebsitePageThunk";
 import { AppDispatch, RootState } from "@/store/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
