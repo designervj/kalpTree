@@ -16,12 +16,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-type IndustryOption = {
+export type IndustryOption = {
   _id: string;
   value?: string;
   name: string;
   desc?: string;
-  icon?: LucideIcon; // ✅ icon support
+  icon?: LucideIcon;
+  slug?:string // ✅ icon support
 };
 
 export default function IndustryRadioList({

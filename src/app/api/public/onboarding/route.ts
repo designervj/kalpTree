@@ -42,6 +42,7 @@ export async function POST(req: Request) {
       lang,
       business_url,
       primary_domain,
+      businessType,
     } = businessdetails;
 
     const branding = JSON.parse(formData.get("branding") as string);
@@ -68,7 +69,6 @@ export async function POST(req: Request) {
         branding: branding,
         businessdetails: {
           tagline,
-          industry,
           founded_year,
           about,
           public_email,
@@ -138,6 +138,7 @@ export async function POST(req: Request) {
         headquarters,
         brand_name,
         business_website_url,
+        businessType,
       },
       type: "business",
       tenantId: createByTenant,
