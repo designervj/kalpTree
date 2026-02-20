@@ -354,31 +354,32 @@ export function useEditor(containerId: string) {
       addSectionStyle.innerHTML = `
         .gjs-add-section-btn {
           position: absolute;
-          left: 50%;
+          left: 5%;
+          top:10px;
           transform: translate(-50%, -50%);
-          width: 32px;
-          height: 32px;
-          background-color: #6366f1;
+          padding: 8px 16px; 
+          background-color: #3b82f6; 
           color: white;
-          border-radius: 50%;
+          border-radius: 9999px; 
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
           z-index: 1000;
-          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
           transition: all 0.2s ease;
           pointer-events: auto;
-          border: 2px solid white;
+          border: none;
           opacity: 1;
+          gap: 8px;
         }
         .gjs-add-section-btn:hover {
-          background-color: #4f46e5;
-          transform: translate(-50%, -50%) scale(1.1);
+          background-color: #2563eb;
+          transform: translate(-50%, -50%) scale(1.05);
         }
         .gjs-add-section-btn svg {
-          width: 20px;
-          height: 20px;
+          width: 18px;
+          height: 18px;
           pointer-events: none;
         }
       `;
@@ -1183,26 +1184,89 @@ export function useEditor(containerId: string) {
         // Remove old if exists
         removeBtn();
 
-        // Create new button
-        addSectionBtn = doc.createElement('div');
-        addSectionBtn.className = 'gjs-add-section-btn';
-        addSectionBtn.innerHTML = `
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        // Inject button styles once into the iframe head
+        const STYLE_ID = 'gjs-add-section-style';
+        if (!doc.getElementById(STYLE_ID)) {
+          const styleEl = doc.createElement('style');
+          styleEl.id = STYLE_ID;
+          styleEl.textContent = `
+            .gjs-add-section-btn {
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+              background: #4F6EF7;
+              color: #fff;
+              border: none;
+              border-radius: 999px;
+              padding: 8px 20px;
+              font-size: 14px;
+              font-weight: 600;
+              font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+              cursor: pointer;
+              white-space: nowrap;
+              box-shadow: 0 2px 8px rgba(79,110,247,0.25);
+              transition: background 0.15s, box-shadow 0.15s;
+              user-select: none;
+              position: relative;
+              z-index: 1;
+            }
+            .gjs-add-section-btn:hover {
+              background: #3a57e8;
+              box-shadow: 0 4px 14px rgba(79,110,247,0.4);
+            }
+          `;
+          doc.head.appendChild(styleEl);
+        }
+
+        // Measure the real visible width of the iframe
+        const docWidth = doc.documentElement.clientWidth || doc.body.clientWidth || 800;
+        const scrollY = doc.defaultView?.scrollY || 0;
+        const rect = el.getBoundingClientRect();
+
+        // Wrapper: absolutely centered across the full document width
+        const wrapper = doc.createElement('div');
+        Object.assign(wrapper.style, {
+          position: 'absolute',
+          top: `${rect.bottom + scrollY}px`,
+          left: '0',
+          width: `${docWidth}px`,
+          height: '0px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+          zIndex: '9999',
+        });
+
+        // Horizontal divider line (full width behind the button)
+        const line = doc.createElement('div');
+        Object.assign(line.style, {
+          position: 'absolute',
+          top: '50%',
+          left: '0',
+          right: '0',
+          height: '2px',
+          background: '#4F6EF7',
+          transform: 'translateY(-50%)',
+        });
+
+        // The pill button
+        const btn = doc.createElement('button');
+        btn.className = 'gjs-add-section-btn';
+        btn.style.pointerEvents = 'all';
+        btn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
+          <span>Add section</span>
         `;
 
-        // Position at bottom center
-        const rect = el.getBoundingClientRect();
-        // Adjust for scroll in iframe
-        const scrollY = doc.defaultView?.scrollY || 0;
-        const scrollX = doc.defaultView?.scrollX || 0;
+        wrapper.appendChild(line);
+        wrapper.appendChild(btn);
+        addSectionBtn = wrapper;
 
-        addSectionBtn.style.top = `${rect.bottom + scrollY}px`;
-        addSectionBtn.style.left = `${rect.left + rect.width / 2 + scrollX}px`;
-
-        addSectionBtn.onclick = (e) => {
+        btn.onclick = (e) => {
           e.stopPropagation();
           const targetIndex = component.index() + 1;
           window.parent.postMessage({ type: 'OPEN_TEMPLATE_MANAGER', index: targetIndex }, '*');
@@ -1274,67 +1338,103 @@ export function useEditor(containerId: string) {
 
 
 
-      // Add custom toolbar buttons only if they don't already exist
-      const defaultToolbar = component.get('toolbar');
-      console.log("defaultToolbar-->", defaultToolbar)
+      // Custom Toolbar Logic: Clean up & Add Features
+      let toolbar = component.get('toolbar') || [];
 
-      const hasAiChatButton = defaultToolbar.some((btn: any) => btn.attributes?.title === 'AI Chat');
-      const hasCommentsButton = defaultToolbar.some((btn: any) => btn.attributes?.title === 'Comments');
+      // 1. Remove "Move" (Drag) and "Script" (Edit Code) icons
+      // 'tlb-move' is the standard drag handle. 
+      // 'open-code', 'script-editor', or anything with title 'Script' often comes from plugins.
+      toolbar = toolbar.filter((btn: any) => {
+        const cmd = btn.command;
+        const title = btn.attributes?.title || "";
+        const id = btn.id || "";
 
-      if (!hasAiChatButton || !hasCommentsButton) {
-        const customToolbar = [...defaultToolbar];
+        // Remove standard "Move" (Drag), "Script", and potentially the first icon if it's "Info"/"View"
+        // User specifically asked to "remove first icon". 
+        // In many setups, the first icon is 'tlb-move', but we filter that by command.
+        // If it's something else, let's look for common unwanted starters.
+        if (cmd === 'tlb-move') return false;
+        if (title.toLowerCase().includes('script') || cmd === 'open-code') return false;
+        if (cmd === 'core:preview' || title === 'View') return false; // often the eye/first icon
+        if (id === 'arrow-up') return false; // sometimes the up arrow is first
+        return true;
+      });
 
-        if (!hasAiChatButton) {
-          customToolbar.push({
-            attributes: { title: 'AI Chat' },
-            label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              <circle cx="9" cy="10" r="1"></circle>
-              <circle cx="15" cy="10" r="1"></circle>
-              <path d="M9 14s1 1 3 1 3-1 3-1"></path>
-            </svg>`,
-            command: (editor: any) => {
-              // Get component HTML
-              const componentHtml = component.toHTML();
-
-              // Store component with its HTML and CSS
-              setSelectedComponentForAi({
-                component,
-                html: componentHtml,
-                css: editorRef?.current?.getCss?.() || "",
-                type: component.get('type'),
-                tagName: component.get('tagName')
-              });
-              setIsAiChatOpen(true);
-            },
-          });
-        }
-
-        if (!hasCommentsButton) {
-          customToolbar.push({
-            attributes: { title: 'Comments' },
-            label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-            </svg>`,
-             command: (editor: any) => {
-              // Get component HTML
-              const componentHtml = component.toHTML();
-
-              // Store component with its HTML and CSS
-              setSelectedComponentForAi({
-                component,
-                html: componentHtml,
-                css: editorRef?.current?.getCss?.() || "",
-                type: component.get('type'),
-                tagName: component.get('tagName')
-              });
-              setIsCommentsOpen(true);
-            },
-          });
-        }
-
-        component.set('toolbar', customToolbar);
+      // Force remove the very first icon if it's still there and looks like a generic file/page icon (as seen in image 1)
+      // The image 1 shows: [FileIcon] [UpArrow] ...
+      // If we filtered correctly, it might catch it, but to be sure matching the "remove first icon" request:
+      if (toolbar.length > 0 && (toolbar[0].command === 'tlb-info' || toolbar[0].id === 'icon-fa-file-o')) {
+        toolbar.shift();
       }
+      // Or just blindly shift if they insist, but let's try to be smart first.
+      // Actually, let's just shift if it's NOT one of our desired ones (Delete, Clone, AI, Comments)
+      if (toolbar.length > 0) {
+        const first = toolbar[0];
+        // If the first icon is NOT Clone, Delete, or our custom ones... remove it.
+        // Common first icons: Move, Up Arrow, Select Parent, Info.
+        const keepCommands = ['tlb-clone', 'tlb-delete', 'tlb-edit'];
+        const keepTitles = ['AI Chat', 'Comments', 'Duplicate', 'Delete', 'Edit'];
+
+        const isKeeper = keepCommands.includes(first.command) ||
+          keepTitles.some(t => first.attributes?.title?.includes(t));
+
+        if (!isKeeper && !first.label?.includes('AI Chat')) {
+          // It's likely the unwanted "Page/File" icon or "Select Parent"
+          toolbar.shift();
+        }
+      }
+
+      // 2. Add "AI Chat" if missing
+      const hasAiChat = toolbar.some((btn: any) => btn.attributes?.title === 'AI Chat');
+      if (!hasAiChat) {
+        toolbar.push({
+          attributes: { title: 'AI Chat', class: 'gjs-tlb-btn-ai' }, // Add class for potential styling
+          // Purple Sparkle Icon
+          label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M12 8V4H8"></path>
+  <rect width="16" height="12" x="4" y="8" rx="2" fill="transparent"></rect>
+  <path d="M2 14h2"></path>
+  <path d="M20 14h2"></path>
+  <path d="M15 13v2"></path>
+  <path d="M9 13v2"></path>
+</svg>`,
+          command: (editor: any) => {
+            const componentHtml = component.toHTML();
+            setSelectedComponentForAi({
+              component,
+              html: componentHtml,
+              css: editorRef?.current?.getCss?.() || "",
+              type: component.get('type'),
+              tagName: component.get('tagName')
+            });
+            setIsAiChatOpen(true);
+          },
+        });
+      }
+
+      // 3. Add "Comments" if missing
+      const hasComments = toolbar.some((btn: any) => btn.attributes?.title === 'Comments');
+      if (!hasComments) {
+        toolbar.push({
+          attributes: { title: 'Comments' },
+          label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path fill="transparent" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>`,
+          command: (editor: any) => {
+            const componentHtml = component.toHTML();
+            setSelectedComponentForAi({
+              component,
+              html: componentHtml,
+              css: editorRef?.current?.getCss?.() || "",
+              type: component.get('type'),
+              tagName: component.get('tagName')
+            });
+            setIsCommentsOpen(true);
+          },
+        });
+      }
+
+      component.set('toolbar', toolbar);
 
     });
 

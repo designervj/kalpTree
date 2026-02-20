@@ -39,6 +39,7 @@ const WebsiteBuilder = ({ pages, website, search, headerData }: WebsiteBuilderPr
     }, [website, currentWebsiteData, dispatch])
 
 
+
     // add pages to redux
     useEffect(() => {
         console.log("pages", pages);

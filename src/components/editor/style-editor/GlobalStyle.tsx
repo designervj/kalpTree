@@ -30,7 +30,7 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
   // Get global styles from canvas document
   const canvasDoc = state.editor?.Canvas?.getDocument();
-  console.log(canvasDoc)
+
   const globalStylesRaw = canvasDoc?.querySelector('[data-global-styles="true"]')?.innerHTML || "";
   const [mode, setMode] = useState<"light" | "dark">("light");
 

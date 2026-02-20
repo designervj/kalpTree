@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { TranslationDictionary } from "@/components/editor/translation/TranslationPage";
 
 // WebsitePageModel interface for a website page document
 
@@ -21,30 +22,32 @@ export interface PageCommentModal {
 
 
 export interface WebsitePageModel {
-	_id: string; // MongoDB ObjectId as string
-	tenantId: string;
-	websiteId?: string;
-	slug: string;
-	title: string;
-	content: string;
-	seo?: SeoModel;
-	status: 'published' | 'draft' | 'archived';
-	createdAt: string; // ISO date string
-	updatedAt: string; // ISO date string
-	publishedAt: string; // ISO date string
-	isHomePage?: boolean
-	seoIssue?: boolean;
-	inNavigation?: boolean;
-	pageComments?:PageCommentModal[];
+  _id: string; // MongoDB ObjectId as string
+  tenantId: string;
+  websiteId?: string;
+  // MongoDB ObjectId as string
+  slug: string;
+  title: string;
+  content: string;
+  seo?: SeoModel;
+  status: "published" | "draft" | "archived";
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+  publishedAt: string; // ISO date string
+  isHomePage?: boolean;
+  seoIssue?: boolean;
+  inNavigation?: boolean;
+  dictionary?: TranslationDictionary;
 }
 export interface SeoModel {
-	title?: string;
-	slug?: string;
-	metaDescription?: string;
-	focusKeywords?:[{
-		keyword:string;
-		isSelected:boolean;
-		
-	}];
-	hideFromSearchResults?: boolean;
-};
+  title?: string;
+  slug?: string;
+  metaDescription?: string;
+  focusKeywords?: [
+    {
+      keyword: string;
+      isSelected: boolean;
+    },
+  ];
+  hideFromSearchResults?: boolean;
+}

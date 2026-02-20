@@ -1,6 +1,3 @@
-
-
-
 // "use client";
 // import React, { useMemo, useState } from "react";
 
@@ -24,6 +21,11 @@
 //   Sparkles,
 //   Store,
 //   XCircle,
+//   LayoutGrid,
+//   ShoppingCart,
+//   Megaphone,
+//   Calendar,
+//   Languages,
 // } from "lucide-react";
 // import Link from "next/link";
 // import { IBusiness } from "@/models/business";
@@ -43,6 +45,19 @@
 //   business: IBusiness;
 //   user: IUser;
 // };
+
+// // Service type mapping
+// const SERVICE_OPTIONS = [
+//   { value: "WEBSITE_ONLY", title: "Website Only", desc: "Basic website hosting and management with space 1GB", Icon: Globe },
+//   { value: "WEBSITE_CATALOGUE", title: "Website and Catalogue", desc: "Website hosting and catalogue with space 2GB", Icon: LayoutGrid },
+//   { value: "WEBSITE_CATALOGUE_ECOMMERCE", title: "Website, Catalogue and E-commerce", desc: "Website hosting + catalogue + e-commerce with space 3GB", Icon: ShoppingCart },
+//   { value: "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING", title: "Website, Catalogue, E-commerce and Marketing", desc: "Everything included with space 5GB and marketing", Icon: Megaphone },
+// ];
+
+// function getServiceTypeInfo(serviceType?: string) {
+//   const service = SERVICE_OPTIONS.find(opt => opt.value === serviceType);
+//   return service || { value: serviceType || "—", title: serviceType || "—", desc: "Unknown service type", Icon: Globe };
+// }
 
 // function fmtDate(iso?: string) {
 //   if (!iso) return "—";
@@ -96,28 +111,23 @@
 // const ShowBussinesById = ({ business, user }: Props) => {
 //   const { websites } = useSelector((state: RootState) => state.websites);
 //   const { businessWebsite, allBusiness } = useSelector((state: RootState) => state.business);
-//   const { allAgencies } = useSelector((state: RootState) => state.agency);
 //   const searchParams = useSearchParams();
 //   const id = searchParams.get("id");
 //   const primary = business.branding?.primary_color || business.branding?.colors?.primary || "#111827";
 //   const secondary = business.branding?.secondary_color || business.branding?.colors?.secondary || "#e5e7eb";
 //   const [modal, setModal] = useState<null | string>(null);
 //   const [open, setOpen] = useState(false);
-  
+
 //   const handleOpenModal = (modaltype: string) => {
 //     setModal(modaltype);
 //     setOpen(true);
 //   };
-
- 
 
 //   const bussinessWebsite: Website[] = useMemo(() => {
 //     return websites.filter(
 //       (website) => website.tenantId === businessWebsite?._id
 //     );
 //   }, [websites, businessWebsite]);
-
-//    console.log("====>>>", bussinessWebsite)
 
 //   const currentAgencyId = useMemo(() => {
 //     if (bussinessWebsite && bussinessWebsite.length > 0 && allBusiness && allBusiness.length > 0) {
@@ -312,10 +322,10 @@
 
 //         {/* MAIN GRID */}
 //         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-//           {/* LEFT */}
+
 //           <div className="lg:col-span-8 space-y-4">
-//             {/* QUICK ACTIONS */}
-//             <Card className="rounded-md border bg-white shadow-sm">
+
+//             {/* <Card className="rounded-md border bg-white shadow-sm">
 //               <CardHeader className="pb-2">
 //                 <CardTitle className="text-lg flex items-center gap-2">
 //                   <LayoutDashboard className="h-5 w-5 text-slate-700" />
@@ -376,7 +386,7 @@
 //                   </Button>
 //                 </div>
 //               </CardContent>
-//             </Card>
+//             </Card> */}
 
 //             {/* WEBSITES */}
 //             <Card className="rounded-md border bg-white shadow-sm">
@@ -408,62 +418,189 @@
 //                       user?.role!
 //                     );
 
+//                     const serviceInfo = getServiceTypeInfo(w.serviceType);
+//                     const ServiceIcon = serviceInfo.Icon;
+
 //                     return (
 //                       <div
 //                         key={`${w.name || "website"}-${idx}`}
-//                         className="rounded-md border bg-slate-50 p-4"
+//                         className="rounded-md border bg-slate-50 p-4 hover:bg-slate-100 transition-colors"
 //                       >
-//                         <div className="flex items-start justify-between gap-4 flex-wrap">
-//                           <div className="min-w-0 flex-1">
-//                             <div className="flex items-center gap-2 flex-wrap">
-//                               <div className="text-base font-semibold text-slate-900 truncate">
-//                                 {w.name || "Website"}
-//                               </div>
-//                               {statusPill(w.status)}
-//                               <Badge
-//                                 className="rounded-full"
-//                                 variant="secondary"
-//                               >
-//                                 {w.serviceType || "—"}
-//                               </Badge>
-//                               <Badge
-//                                 className="cursor-pointer"
-//                                 onClick={() => handleOpenModal(w._id)}
-//                               >
-//                                 Edit
-//                               </Badge>
-//                             </div>
-
-//                             <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-//                               <Globe className="h-4 w-4" />
-//                               <span className="truncate">{dom}</span>
-//                               {dom !== "—" ? (
-//                                 <Link
-//                                   href={href}
-//                                   target="_blank"
-//                                   rel="noreferrer"
-//                                   className="inline-flex items-center gap-1 text-slate-900 hover:underline"
+//                         <div className="space-y-4">
+//                           {/* Header Row */}
+//                           <div className="flex items-start justify-between gap-4 flex-wrap">
+//                             <div className="min-w-0 flex-1">
+//                               <div className="flex items-center gap-2 flex-wrap mb-2">
+//                                 <div className="text-base font-semibold text-slate-900 truncate">
+//                                   {w.name || "Website"}
+//                                 </div>
+//                                 {statusPill(w.status)}
+//                                 <Badge
+//                                   className="cursor-pointer hover:bg-blue-600"
+//                                   onClick={() => handleOpenModal(w._id)}
 //                                 >
-//                                   <ExternalLink className="h-4 w-4" />
-//                                 </Link>
-//                               ) : null}
+//                                   Edit
+//                                 </Badge>
+//                               </div>
+
+//                               {/* Domain */}
+//                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
+//                                 <Globe className="h-4 w-4" />
+//                                 <span className="truncate">{dom}</span>
+//                                 {dom !== "—" ? (
+//                                   <Link
+//                                     href={href}
+//                                     target="_blank"
+//                                     rel="noreferrer"
+//                                     className="inline-flex items-center gap-1 text-slate-900 hover:underline"
+//                                   >
+//                                     <ExternalLink className="h-4 w-4" />
+//                                   </Link>
+//                                 ) : null}
+//                               </div>
+//                             </div>
+
+//                             {/* Dates */}
+//                             <div className="text-xs text-muted-foreground font-semibold space-y-1">
+//                               <div className="flex items-center gap-2">
+//                                 <Calendar className="h-3 w-3" />
+//                                 <span className="font-medium text-slate-700">Created:</span>
+//                                 {fmtDate(w.createdAt)}
+//                               </div>
+//                               <div className="flex items-center gap-2">
+//                                 <Clock className="h-3 w-3" />
+//                                 <span className="font-medium text-slate-700">Updated:</span>
+//                                 {fmtDate(w.updatedAt)}
+//                               </div>
 //                             </div>
 //                           </div>
 
-//                           <div className="text-xs text-muted-foreground font-semibold space-y-1">
-//                             <div>
-//                               <span className="font-medium text-slate-700">
-//                                 Created:
-//                               </span>{" "}
-//                               {fmtDate(w.createdAt)}
+//                           <Separator />
+
+//                           {/* Service Type & Additional Info */}
+//                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                             {/* Service Type */}
+//                             <div className="space-y-2">
+//                               <div className="text-xs font-semibold text-muted-foreground uppercase">
+//                                 Service Type
+//                               </div>
+//                               <div className="flex items-start gap-3 p-3 rounded-md bg-white border">
+//                                 <ServiceIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+//                                 <div className="min-w-0">
+//                                   <div className="text-sm font-semibold text-slate-900">
+//                                     {serviceInfo.title}
+//                                   </div>
+//                                   <div className="text-xs text-muted-foreground mt-0.5">
+//                                     {serviceInfo.desc}
+//                                   </div>
+//                                 </div>
+//                               </div>
 //                             </div>
-//                             <div>
-//                               <span className="font-medium text-slate-700">
-//                                 Updated:
-//                               </span>{" "}
-//                               {fmtDate(w.updatedAt)}
+
+//                             {/* Additional Details */}
+//                             <div className="space-y-2">
+//                               <div className="text-xs font-semibold text-muted-foreground uppercase">
+//                                 Configuration
+//                               </div>
+//                               <div className="p-3 rounded-md bg-white border space-y-2">
+//                                 {/* Languages */}
+//                                 {w.lang && w.lang.length > 0 && (
+//                                   <div className="flex items-center justify-between text-xs">
+//                                     <span className="text-muted-foreground flex items-center gap-1">
+//                                       <Languages className="h-3 w-3" />
+//                                       Languages
+//                                     </span>
+//                                     <span className="font-medium text-slate-900">
+//                                       {w.lang.map((l: any) => l.name).join(", ").toUpperCase()}
+//                                       {w.lang.find((l: any) => l.default) && (
+//                                         <Badge className="ml-1 text-[10px] h-4" variant="outline">
+//                                           Default: {w.lang.find((l: any) => l.default)?.name?.toUpperCase()}
+//                                         </Badge>
+//                                       )}
+//                                     </span>
+//                                   </div>
+//                                 )}
+
+//                                 {/* Coming Soon Status */}
+//                                 <div className="flex items-center justify-between text-xs">
+//                                   <span className="text-muted-foreground">Coming Soon</span>
+//                                   <span className="font-medium text-slate-900">
+//                                     {w.isComingSoon ? (
+//                                       <Badge variant="outline" className="bg-yellow-50">
+//                                         Active
+//                                       </Badge>
+//                                     ) : (
+//                                       <Badge variant="outline" className="bg-green-50">
+//                                         Live
+//                                       </Badge>
+//                                     )}
+//                                   </span>
+//                                 </div>
+
+//                                 {/* System Subdomain */}
+//                                 {w.systemSubdomain && (
+//                                   <div className="flex items-center justify-between text-xs">
+//                                     <span className="text-muted-foreground">System Subdomain</span>
+//                                     <span className="font-medium text-slate-900 truncate max-w-[200px]">
+//                                       {w.systemSubdomain}
+//                                     </span>
+//                                   </div>
+//                                 )}
+//                               </div>
 //                             </div>
+
 //                           </div>
+
+//                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+//                   <Button className="rounded-md h-12 justify-between" asChild>
+//                     <Link href={`/admin/businesses/${id}/websites`}>
+//                       <span className="inline-flex items-center gap-2">
+//                         <Store className="h-4 w-4" /> Manage websites
+//                       </span>
+//                       <ExternalLink className="h-4 w-4 opacity-70" />
+//                     </Link>
+//                   </Button>
+
+//                   <Button
+//                     variant="outline"
+//                     className="rounded-md h-12 justify-between"
+//                     asChild
+//                   >
+//                     <Link href={`/admin/businesses/${id}/domains`}>
+//                       <span className="inline-flex items-center gap-2">
+//                         <Globe className="h-4 w-4" /> Domain & SSL
+//                       </span>
+//                       <ExternalLink className="h-4 w-4 opacity-60" />
+//                     </Link>
+//                   </Button>
+
+//                   <Button
+//                     variant="outline"
+//                     className="rounded-md h-12 justify-between"
+//                     asChild
+//                   >
+//                     <Link href={`/admin/businesses/${id}/branding`}>
+//                       <span className="inline-flex items-center gap-2">
+//                         <Palette className="h-4 w-4" /> Branding
+//                       </span>
+//                       <ExternalLink className="h-4 w-4 opacity-60" />
+//                     </Link>
+//                   </Button>
+
+//                   <Button
+//                     variant="outline"
+//                     className="rounded-md h-12 justify-between"
+//                     asChild
+//                   >
+//                     <Link href={`/admin/businesses/${id}/billing`}>
+//                       <span className="inline-flex items-center gap-2">
+//                         <CreditCard className="h-4 w-4" /> Billing
+//                       </span>
+//                       <ExternalLink className="h-4 w-4 opacity-60" />
+//                     </Link>
+//                   </Button>
+//                                </div>
+
 //                         </div>
 //                       </div>
 //                     );
@@ -474,8 +611,7 @@
 //                       No websites yet
 //                     </div>
 //                     <div className="text-sm text-muted-foreground mt-1">
-//                       Add a website to start managing pages, domains and
-//                       ecommerce.
+//                       Add a website to start managing pages, domains and ecommerce.
 //                     </div>
 //                     <div className="mt-4">
 //                       <Button className="rounded-full" asChild>
@@ -673,7 +809,6 @@
 
 // export default ShowBussinesById;
 
-
 "use client";
 import React, { useMemo, useState } from "react";
 
@@ -683,16 +818,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
   ArrowLeft,
-  Building2,
   CheckCircle2,
   Clock,
-  CreditCard,
   ExternalLink,
   Globe,
-  LayoutDashboard,
   Mail,
   Palette,
-  Settings,
   ShieldCheck,
   Sparkles,
   Store,
@@ -702,6 +833,7 @@ import {
   Megaphone,
   Calendar,
   Languages,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { IBusiness } from "@/models/business";
@@ -724,15 +856,42 @@ type Props = {
 
 // Service type mapping
 const SERVICE_OPTIONS = [
-  { value: "WEBSITE_ONLY", title: "Website Only", desc: "Basic website hosting and management with space 1GB", Icon: Globe },
-  { value: "WEBSITE_CATALOGUE", title: "Website and Catalogue", desc: "Website hosting and catalogue with space 2GB", Icon: LayoutGrid },
-  { value: "WEBSITE_CATALOGUE_ECOMMERCE", title: "Website, Catalogue and E-commerce", desc: "Website hosting + catalogue + e-commerce with space 3GB", Icon: ShoppingCart },
-  { value: "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING", title: "Website, Catalogue, E-commerce and Marketing", desc: "Everything included with space 5GB and marketing", Icon: Megaphone },
+  {
+    value: "WEBSITE_ONLY",
+    title: "Website Only",
+    desc: "Basic website hosting and management with space 1GB",
+    Icon: Globe,
+  },
+  {
+    value: "WEBSITE_CATALOGUE",
+    title: "Website and Catalogue",
+    desc: "Website hosting and catalogue with space 2GB",
+    Icon: LayoutGrid,
+  },
+  {
+    value: "WEBSITE_CATALOGUE_ECOMMERCE",
+    title: "Website, Catalogue and E-commerce",
+    desc: "Website hosting + catalogue + e-commerce with space 3GB",
+    Icon: ShoppingCart,
+  },
+  {
+    value: "WEBSITE_CATALOGUE_ECOMMERCE_MARKETING",
+    title: "Website, Catalogue, E-commerce and Marketing",
+    desc: "Everything included with space 5GB and marketing",
+    Icon: Megaphone,
+  },
 ];
 
 function getServiceTypeInfo(serviceType?: string) {
-  const service = SERVICE_OPTIONS.find(opt => opt.value === serviceType);
-  return service || { value: serviceType || "—", title: serviceType || "—", desc: "Unknown service type", Icon: Globe };
+  const service = SERVICE_OPTIONS.find((opt) => opt.value === serviceType);
+  return (
+    service || {
+      value: serviceType || "—",
+      title: serviceType || "—",
+      desc: "Unknown service type",
+      Icon: Globe,
+    }
+  );
 }
 
 function fmtDate(iso?: string) {
@@ -748,6 +907,13 @@ function fmtDate(iso?: string) {
   });
 }
 
+function appRoute(baseHref?: string, path?: string) {
+  if (!baseHref) return "#";
+  const base = baseHref.replace(/\/+$/, "");
+  const nextPath = (path || "").replace(/^\/+/, "");
+  return nextPath ? `${base}/${nextPath}` : base;
+}
+
 function statusPill(status?: string) {
   const s = (status || "").toLowerCase();
   const ok = s === "active";
@@ -757,7 +923,7 @@ function statusPill(status?: string) {
         "rounded-full",
         ok
           ? "bg-emerald-600 text-white hover:bg-emerald-600"
-          : "bg-slate-700 text-white hover:bg-slate-700"
+          : "bg-slate-700 text-white hover:bg-slate-700",
       )}
     >
       {status || "—"}
@@ -786,29 +952,37 @@ function FeatureRow({ label, enabled }: { label: string; enabled?: boolean }) {
 
 const ShowBussinesById = ({ business, user }: Props) => {
   const { websites } = useSelector((state: RootState) => state.websites);
-  const { businessWebsite, allBusiness } = useSelector((state: RootState) => state.business);
+  const { businessWebsite, allBusiness } = useSelector(
+    (state: RootState) => state.business,
+  );
+
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const primary = business.branding?.primary_color || business.branding?.colors?.primary || "#111827";
-  const secondary = business.branding?.secondary_color || business.branding?.colors?.secondary || "#e5e7eb";
+
   const [modal, setModal] = useState<null | string>(null);
   const [open, setOpen] = useState(false);
-  
+
   const handleOpenModal = (modaltype: string) => {
     setModal(modaltype);
     setOpen(true);
   };
 
-
   const bussinessWebsite: Website[] = useMemo(() => {
     return websites.filter(
-      (website) => website.tenantId === businessWebsite?._id
+      (website) => website.tenantId === businessWebsite?._id,
     );
   }, [websites, businessWebsite]);
 
   const currentAgencyId = useMemo(() => {
-    if (bussinessWebsite && bussinessWebsite.length > 0 && allBusiness && allBusiness.length > 0) {
-      return allBusiness.find((agency) => agency._id === bussinessWebsite[0]?.tenantId)?.tenantId;
+    if (
+      bussinessWebsite &&
+      bussinessWebsite.length > 0 &&
+      allBusiness &&
+      allBusiness.length > 0
+    ) {
+      return allBusiness.find(
+        (agency) => agency._id === bussinessWebsite[0]?.tenantId,
+      )?.tenantId;
     }
     return null;
   }, [bussinessWebsite, allBusiness]);
@@ -818,6 +992,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
       <GetAllAgency />
       <GetAllBusiness />
       <GetAllWebsites />
+
       <BusinessModal
         open={open}
         business={business}
@@ -825,26 +1000,27 @@ const ShowBussinesById = ({ business, user }: Props) => {
         onClose={() => setOpen(false)}
         type={modal}
       />
+
       <div className="w-full space-y-6 p-6">
         {/* HERO */}
         <div className="relative overflow-hidden rounded-md border bg-white shadow-sm">
           <div className="absolute inset-0 bg-white" />
           <div className="relative p-6 md:p-8">
             {/* Breadcrumb + Actions */}
-            <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
-              <div className="space-y-4 flex-1 min-w-0">
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+              <div className="min-w-0 flex-1 space-y-4">
                 {/* Breadcrumb */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Link
                     href="/admin"
-                    className="hover:text-slate-900 transition"
+                    className="transition hover:text-slate-900"
                   >
                     Admin
                   </Link>
                   <span>/</span>
                   <Link
                     href="/admin/businesses"
-                    className="hover:text-slate-900 transition"
+                    className="transition hover:text-slate-900"
                   >
                     Businesses
                   </Link>
@@ -855,17 +1031,17 @@ const ShowBussinesById = ({ business, user }: Props) => {
                 </div>
 
                 {/* Business Name & Status */}
-                <div className="flex gap-3 items-center flex-wrap">
-                  <div className="h-12 w-12 rounded-md bg-slate-900 text-white grid place-items-center font-semibold text-lg flex-shrink-0">
+                <div className="flex flex-wrap items-center gap-3">
+                  <div className="grid h-12 w-12 flex-shrink-0 place-items-center rounded-md bg-slate-900 text-lg font-semibold text-white">
                     {(business.name?.[0] || "B").toUpperCase()}
                     {(business.name?.[1] || "Z").toUpperCase()}
                   </div>
 
-                  <div className="flex-1 min-w-0">
-                    <h1 className="text-[26px] md:text-[32px] font-semibold text-slate-900 leading-tight">
+                  <div className="min-w-0 flex-1">
+                    <h1 className="text-[26px] font-semibold leading-tight text-slate-900 md:text-[32px]">
                       {business.name || "Business"}
                     </h1>
-                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                    <div className="mt-2 flex flex-wrap items-center gap-2">
                       <Badge
                         className="rounded-full text-primary"
                         variant="outline"
@@ -889,17 +1065,19 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     {bussinessWebsite.map((w: any, idx: number) => {
                       const dom = w?.primaryDomain?.[0] || "—";
                       const domain = w?.primaryDomain?.find((d: string) =>
-                        d?.includes("kalptree.xyz")
+                        d?.includes("kalptree.xyz"),
                       );
+
                       const agencyId =
                         user?.role === "agency"
                           ? (user?.tenantId?.toString() ?? null)
                           : (currentAgencyId ?? null);
+
                       const href = toCreateHref(
                         domain,
                         w?.tenantId?.toString() ?? null,
                         agencyId,
-                        user?.role!
+                        user?.role!,
                       );
 
                       return (
@@ -945,9 +1123,9 @@ const ShowBussinesById = ({ business, user }: Props) => {
             </div>
 
             {/* STATS STRIP */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-md border bg-gray-100 p-4">
-                <div className="text-xs text-muted-foreground font-semibold">
+                <div className="text-xs font-semibold text-muted-foreground">
                   Primary domain
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
@@ -959,33 +1137,19 @@ const ShowBussinesById = ({ business, user }: Props) => {
               </div>
 
               <div className="rounded-md border bg-gray-100 p-4">
-                <div className="text-xs text-muted-foreground font-semibold">
+                <div className="text-xs font-semibold text-muted-foreground">
                   Websites
                 </div>
                 <div className="mt-2 text-2xl font-semibold text-slate-900">
                   {bussinessWebsite?.length || 0}
                 </div>
-                <div className="text-xs text-muted-foreground font-semibold">
+                <div className="text-xs font-semibold text-muted-foreground">
                   Total projects
                 </div>
               </div>
 
               <div className="rounded-md border bg-gray-100 p-4">
-                <div className="text-xs text-muted-foreground font-semibold">
-                  Domain verified
-                </div>
-                <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
-                  {business.customDomainVerified ? (
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-slate-400" />
-                  )}
-                  {business.customDomainVerified ? "Verified" : "Not verified"}
-                </div>
-              </div>
-
-              <div className="rounded-md border bg-gray-100 p-4">
-                <div className="text-xs text-muted-foreground font-semibold">
+                <div className="text-xs font-semibold text-muted-foreground">
                   Last updated
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
@@ -997,78 +1161,13 @@ const ShowBussinesById = ({ business, user }: Props) => {
           </div>
         </div>
 
-        {/* MAIN GRID */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-      
-          <div className="lg:col-span-8 space-y-4">
-  
-            {/* <Card className="rounded-md border bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <LayoutDashboard className="h-5 w-5 text-slate-700" />
-                  Quick actions
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Fast shortcuts for common setup tasks.
-                </p>
-              </CardHeader>
-              <CardContent className="p-5 pt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button className="rounded-md h-12 justify-between" asChild>
-                    <Link href={`/admin/businesses/${id}/websites`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Store className="h-4 w-4" /> Manage websites
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-70" />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/domains`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Globe className="h-4 w-4" /> Domain & SSL
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/branding`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Palette className="h-4 w-4" /> Branding
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/billing`}>
-                      <span className="inline-flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" /> Billing
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card> */}
-
+        {/* MAIN CONTENT (single column for consistent UI) */}
+        <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-4">
             {/* WEBSITES */}
             <Card className="rounded-md border bg-white shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <Store className="h-5 w-5 text-slate-700" />
                   Websites
                 </CardTitle>
@@ -1077,22 +1176,51 @@ const ShowBussinesById = ({ business, user }: Props) => {
                 </p>
               </CardHeader>
 
-              <CardContent className="p-5 pt-0 space-y-3">
+              <CardContent className="space-y-3 p-5 pt-0">
                 {bussinessWebsite.length ? (
                   bussinessWebsite.map((w: any, idx: number) => {
                     const dom = w.primaryDomain?.[0] || "—";
                     const domain = w.primaryDomain?.find((d: string) =>
-                      d.includes("kalptree.xyz")
+                      d.includes("kalptree.xyz"),
                     );
+
                     const agencyId =
                       user.role === "agency"
-                        ? user.tenantId?.toString() ?? null
-                        : currentAgencyId ?? null;
-                    let href = toCreateHref(
+                        ? (user.tenantId?.toString() ?? null)
+                        : (currentAgencyId ?? null);
+
+                    const href = toCreateHref(
                       domain,
                       w?.tenantId?.toString() ?? null,
                       agencyId,
-                      user?.role!
+                      user?.role!,
+                    );
+
+                    const manageWebsiteHref = toCreateHref(
+                      `${domain}/website/pages`,
+                      w?.tenantId?.toString() ?? null,
+                      agencyId,
+                      user?.role!,
+                    );
+                    const brandingHref = toCreateHref(
+                      `${domain}/branding/typography`,
+                      w?.tenantId?.toString() ?? null,
+                      agencyId,
+                      user?.role!,
+                    );
+
+                    const domainDnsHref = toCreateHref(
+                      `${domain}/settings/domain-dns`,
+                      w?.tenantId?.toString() ?? null,
+                      agencyId,
+                      user?.role!,
+                    );
+
+                    const usersHref = toCreateHref(
+                      `${domain}"/users/all-user`,
+                      w?.tenantId?.toString() ?? null,
+                      agencyId,
+                      user?.role!,
                     );
 
                     const serviceInfo = getServiceTypeInfo(w.serviceType);
@@ -1101,14 +1229,14 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     return (
                       <div
                         key={`${w.name || "website"}-${idx}`}
-                        className="rounded-md border bg-slate-50 p-4 hover:bg-slate-100 transition-colors"
+                        className="rounded-md border bg-slate-50 p-4 transition-colors hover:bg-slate-100"
                       >
                         <div className="space-y-4">
                           {/* Header Row */}
-                          <div className="flex items-start justify-between gap-4 flex-wrap">
+                          <div className="flex flex-wrap items-start justify-between gap-4">
                             <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-2 flex-wrap mb-2">
-                                <div className="text-base font-semibold text-slate-900 truncate">
+                              <div className="mb-2 flex flex-wrap items-center gap-2">
+                                <div className="truncate text-base font-semibold text-slate-900">
                                   {w.name || "Website"}
                                 </div>
                                 {statusPill(w.status)}
@@ -1138,15 +1266,19 @@ const ShowBussinesById = ({ business, user }: Props) => {
                             </div>
 
                             {/* Dates */}
-                            <div className="text-xs text-muted-foreground font-semibold space-y-1">
+                            <div className="space-y-1 text-xs font-semibold text-muted-foreground">
                               <div className="flex items-center gap-2">
                                 <Calendar className="h-3 w-3" />
-                                <span className="font-medium text-slate-700">Created:</span>
+                                <span className="font-medium text-slate-700">
+                                  Created:
+                                </span>
                                 {fmtDate(w.createdAt)}
                               </div>
                               <div className="flex items-center gap-2">
                                 <Clock className="h-3 w-3" />
-                                <span className="font-medium text-slate-700">Updated:</span>
+                                <span className="font-medium text-slate-700">
+                                  Updated:
+                                </span>
                                 {fmtDate(w.updatedAt)}
                               </div>
                             </div>
@@ -1155,43 +1287,52 @@ const ShowBussinesById = ({ business, user }: Props) => {
                           <Separator />
 
                           {/* Service Type & Additional Info */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                             {/* Service Type */}
                             <div className="space-y-2">
-                              <div className="text-xs font-semibold text-muted-foreground uppercase">
+                              <div className="text-xs font-semibold uppercase text-muted-foreground">
                                 Service Type
                               </div>
-                              <div className="flex items-start gap-3 p-3 rounded-md bg-white border">
-                                <ServiceIcon className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                              <div className="flex items-start gap-3 rounded-md border bg-white p-3">
+                                <ServiceIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                                 <div className="min-w-0">
                                   <div className="text-sm font-semibold text-slate-900">
                                     {serviceInfo.title}
                                   </div>
-                                  <div className="text-xs text-muted-foreground mt-0.5">
+                                  <div className="mt-0.5 text-xs text-muted-foreground">
                                     {serviceInfo.desc}
                                   </div>
                                 </div>
                               </div>
                             </div>
 
-                            {/* Additional Details */}
+                            {/* Configuration */}
                             <div className="space-y-2">
-                              <div className="text-xs font-semibold text-muted-foreground uppercase">
+                              <div className="text-xs font-semibold uppercase text-muted-foreground">
                                 Configuration
                               </div>
-                              <div className="p-3 rounded-md bg-white border space-y-2">
+                              <div className="space-y-2 rounded-md border bg-white p-3">
                                 {/* Languages */}
                                 {w.lang && w.lang.length > 0 && (
-                                  <div className="flex items-center justify-between text-xs">
-                                    <span className="text-muted-foreground flex items-center gap-1">
+                                  <div className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="flex items-center gap-1 text-muted-foreground">
                                       <Languages className="h-3 w-3" />
                                       Languages
                                     </span>
-                                    <span className="font-medium text-slate-900">
-                                      {w.lang.map((l: any) => l.name).join(", ").toUpperCase()}
+                                    <span className="text-right font-medium text-slate-900">
+                                      {w.lang
+                                        .map((l: any) => l.name)
+                                        .join(", ")
+                                        .toUpperCase()}
                                       {w.lang.find((l: any) => l.default) && (
-                                        <Badge className="ml-1 text-[10px] h-4" variant="outline">
-                                          Default: {w.lang.find((l: any) => l.default)?.name?.toUpperCase()}
+                                        <Badge
+                                          className="ml-1 h-4 text-[10px]"
+                                          variant="outline"
+                                        >
+                                          Default:{" "}
+                                          {w.lang
+                                            .find((l: any) => l.default)
+                                            ?.name?.toUpperCase()}
                                         </Badge>
                                       )}
                                     </span>
@@ -1200,14 +1341,22 @@ const ShowBussinesById = ({ business, user }: Props) => {
 
                                 {/* Coming Soon Status */}
                                 <div className="flex items-center justify-between text-xs">
-                                  <span className="text-muted-foreground">Coming Soon</span>
+                                  <span className="text-muted-foreground">
+                                    Coming Soon
+                                  </span>
                                   <span className="font-medium text-slate-900">
                                     {w.isComingSoon ? (
-                                      <Badge variant="outline" className="bg-yellow-50">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-yellow-50"
+                                      >
                                         Active
                                       </Badge>
                                     ) : (
-                                      <Badge variant="outline" className="bg-green-50">
+                                      <Badge
+                                        variant="outline"
+                                        className="bg-green-50"
+                                      >
                                         Live
                                       </Badge>
                                     )}
@@ -1216,70 +1365,88 @@ const ShowBussinesById = ({ business, user }: Props) => {
 
                                 {/* System Subdomain */}
                                 {w.systemSubdomain && (
-                                  <div className="flex items-center justify-between text-xs">
-                                    <span className="text-muted-foreground">System Subdomain</span>
-                                    <span className="font-medium text-slate-900 truncate max-w-[200px]">
+                                  <div className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="text-muted-foreground">
+                                      System Subdomain
+                                    </span>
+                                    <span className="max-w-[200px] truncate font-medium text-slate-900">
                                       {w.systemSubdomain}
                                     </span>
                                   </div>
                                 )}
                               </div>
                             </div>
-
-                           
-
                           </div>
 
-                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <Button className="rounded-md h-12 justify-between" asChild>
-                    <Link href={`/admin/businesses/${id}/websites`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Store className="h-4 w-4" /> Manage websites
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-70" />
-                    </Link>
-                  </Button>
+                          {/* Website Action Shortcuts */}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                            <Button
+                              className="h-12 justify-between rounded-md"
+                              asChild
+                            >
+                              <Link
+                                href={manageWebsiteHref}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <Store className="h-4 w-4" /> Manage website
+                                </span>
+                                <ExternalLink className="h-4 w-4 opacity-70" />
+                              </Link>
+                            </Button>
 
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/domains`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Globe className="h-4 w-4" /> Domain & SSL
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
+                            <Button
+                              variant="outline"
+                              className="h-12 justify-between rounded-md"
+                              asChild
+                            >
+                              <Link
+                                href={domainDnsHref}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <Globe className="h-4 w-4" /> Domain & SSL
+                                </span>
+                                <ExternalLink className="h-4 w-4 opacity-60" />
+                              </Link>
+                            </Button>
 
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/branding`}>
-                      <span className="inline-flex items-center gap-2">
-                        <Palette className="h-4 w-4" /> Branding
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
+                            <Button
+                              variant="outline"
+                              className="h-12 justify-between rounded-md"
+                              asChild
+                            >
+                              <Link
+                                href={brandingHref}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <Palette className="h-4 w-4" /> Branding
+                                </span>
+                                <ExternalLink className="h-4 w-4 opacity-60" />
+                              </Link>
+                            </Button>
 
-                  <Button
-                    variant="outline"
-                    className="rounded-md h-12 justify-between"
-                    asChild
-                  >
-                    <Link href={`/admin/businesses/${id}/billing`}>
-                      <span className="inline-flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" /> Billing
-                      </span>
-                      <ExternalLink className="h-4 w-4 opacity-60" />
-                    </Link>
-                  </Button>
-                               </div>
-
+                            <Button
+                              variant="outline"
+                              className="h-12 justify-between rounded-md"
+                              asChild
+                            >
+                              <Link
+                                href={usersHref}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="inline-flex items-center gap-2">
+                                  <Users className="h-4 w-4" /> Users
+                                </span>
+                                <ExternalLink className="h-4 w-4 opacity-60" />
+                              </Link>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );
@@ -1289,8 +1456,9 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     <div className="text-sm font-semibold text-slate-900">
                       No websites yet
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      Add a website to start managing pages, domains and ecommerce.
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      Add a website to start managing pages, domains and
+                      ecommerce.
                     </div>
                     <div className="mt-4">
                       <Button className="rounded-full" asChild>
@@ -1307,7 +1475,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
             {/* FEATURES */}
             <Card className="rounded-md border bg-white shadow-sm">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-lg">
                   <ShieldCheck className="h-5 w-5 text-slate-700" />
                   Features & modules
                 </CardTitle>
@@ -1317,7 +1485,7 @@ const ShowBussinesById = ({ business, user }: Props) => {
               </CardHeader>
 
               <CardContent className="p-5 pt-0">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <FeatureRow
                     label="Website"
                     enabled={business.features?.websiteEnabled}
@@ -1334,148 +1502,6 @@ const ShowBussinesById = ({ business, user }: Props) => {
                     label="Invoices"
                     enabled={business.features?.invoicesEnabled}
                   />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* RIGHT */}
-          <div className="lg:col-span-4 space-y-4">
-            {/* BRANDING */}
-            <Card className="rounded-md border bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Palette className="h-4 w-4 text-slate-700" />
-                  Branding
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Primary & secondary theme colors.
-                </p>
-              </CardHeader>
-
-              <CardContent className="p-5 pt-0 space-y-4">
-                <div className="rounded-md border bg-slate-50 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-slate-900">
-                      Primary
-                    </div>
-                    <div className="text-xs text-muted-foreground font-semibold">
-                      {primary}
-                    </div>
-                  </div>
-                  <div className="h-10 rounded-md border bg-white overflow-hidden">
-                    <div
-                      className="h-full w-full"
-                      style={{ backgroundColor: primary }}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm font-semibold text-slate-900">
-                      Secondary
-                    </div>
-                    <div className="text-xs text-muted-foreground font-semibold">
-                      {secondary}
-                    </div>
-                  </div>
-                  <div className="h-10 rounded-md border bg-white overflow-hidden">
-                    <div
-                      className="h-full w-full"
-                      style={{ backgroundColor: secondary }}
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="rounded-full w-full bg-primary/10 hover:no-underline"
-                  asChild
-                >
-                  <Link href={`/admin/businesses/${id}/branding`}>
-                    Manage branding
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* SETTINGS */}
-            <Card className="rounded-md border bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Settings className="h-4 w-4 text-slate-700" />
-                  Settings
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  Locale, currency and timezone.
-                </p>
-              </CardHeader>
-
-              <CardContent className="p-5 pt-0 space-y-3">
-                <div className="rounded-md border bg-slate-50 p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-700">Locale</div>
-                    <div className="text-sm font-semibold text-slate-900">
-                      {business.settings?.locale || "—"}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-700">Currency</div>
-                    <div className="text-sm font-semibold text-slate-900">
-                      {business.settings?.currency || "—"}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="text-sm text-slate-700">Timezone</div>
-                    <div className="text-sm font-semibold text-slate-900">
-                      {business.settings?.timezone || "—"}
-                    </div>
-                  </div>
-                </div>
-
-                <Button
-                  variant="outline"
-                  className="rounded-full w-full"
-                  asChild
-                >
-                  <Link href={`/admin/businesses/${id}/settings`}>
-                    Edit settings
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* BUSINESS META */}
-            <Card className="rounded-md border bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-slate-700" />
-                  Business info
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  System metadata (safe view).
-                </p>
-              </CardHeader>
-              <CardContent className="p-5 pt-0 space-y-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Created</span>
-                  <span className="font-medium text-slate-900">
-                    {fmtDate(business.createdAt)}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Updated</span>
-                  <span className="font-medium text-slate-900">
-                    {fmtDate(business.updatedAt)}
-                  </span>
-                </div>
-                <Separator />
-                <div className="text-xs text-muted-foreground font-semibold">
-                  Logged in as{" "}
-                  <span className="font-medium text-slate-900">
-                    {user?.name || "User"}
-                  </span>
                 </div>
               </CardContent>
             </Card>
