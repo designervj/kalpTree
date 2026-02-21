@@ -60,7 +60,7 @@ const BlocksPage = ({ blocks, recentBlock, favoriteBlock, onFavoritesChange }: B
 
     return (
 
-        <div>
+        <div className='grid grid-cols-2 gap-2 mt-3'>
             {filteredBlocks.length > 0 ? (
                 filteredBlocks.map((block) => {
                     const b = block as BlockConfig;

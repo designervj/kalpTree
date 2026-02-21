@@ -60,10 +60,10 @@ type PropertiesSidebarProps = {
   categoryStyleConfigs: any;
   setCategoryStyleConfigs: any;
   editorHtml?: any;
-  handleUpdateHtml:any
-    blocks: any[];
-    recentBlocks: string[];
-    favoriteBlocks: string[];
+  handleUpdateHtml: any
+  blocks: any[];
+  recentBlocks: string[];
+  favoriteBlocks: string[];
 };
 
 type TabKey =
@@ -183,10 +183,33 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
   const renderRightContent = () => {
     switch (tab) {
+
+
+      /* <TabsTrigger
+      value="analytics"
+      className="
+        px-6 py-2 text-sm font-medium
+        text-gray-500
+        bg-transparent
+        border-0
+        border-b-2 border-transparent
+        rounded-none
+        shadow-none
+        data-[state=active]:text-blue-600
+        data-[state=active]:border-blue-600
+        data-[state=active]:bg-transparent
+      "
+    >
+      Attributes
+    </TabsTrigger> */
+
       // case "style":
       //   if (!selectedElement) return renderEmptySelectionMessage("Box", "styles");
       //   return <StyleEditor styles={styles} onStyleChange={onStyleChange} /> ;
 
+
+      
+      
       case "style":
         if (!selectedElement)
           return renderEmptySelectionMessage("Box", "attributes");
@@ -196,13 +219,44 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           //   onAttributeChange={onAttributeChange}
           // />
 
-          <Tabs defaultValue="overview" className="">
-            <TabsList>
-              <TabsTrigger value="overview">Style</TabsTrigger>
-              <TabsTrigger value="analytics">Attributes</TabsTrigger>
-              <TabsTrigger value="reports">Interactivity</TabsTrigger>
-              {/* <TabsTrigger value="settings">Settings</TabsTrigger> */}
-            </TabsList>
+          <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid grid-cols-2 w-full border-b border-gray-200 bg-transparent p-0 h-auto">
+  <TabsTrigger
+    value="overview"
+    className="
+      w-full px-4 py-2 text-sm font-medium
+      text-gray-500
+      bg-transparent
+      border-0
+      border-b-2 border-transparent
+      rounded-none
+      shadow-none
+      data-[state=active]:text-blue-600
+      data-[state=active]:border-blue-600
+      data-[state=active]:bg-transparent
+    "
+  >
+    Style
+  </TabsTrigger>
+
+  <TabsTrigger
+    value="reports"
+    className="
+      w-full px-4 py-2 text-sm font-medium
+      text-gray-500
+      bg-transparent
+      border-0
+      border-b-2 border-transparent
+      rounded-none
+      shadow-none
+      data-[state=active]:text-blue-600
+      data-[state=active]:border-blue-600
+      data-[state=active]:bg-transparent
+    "
+  >
+    Interactivity
+  </TabsTrigger>
+</TabsList>
 
             <TabsContent value="overview">
               <StyleEditor
@@ -228,11 +282,11 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         );
 
       case "blocks":
-        return <BlocksPage 
-        blocks={blocks}
-            recentBlock={recentBlocks}
-            favoriteBlock={favoriteBlocks}
-        
+        return <BlocksPage
+          blocks={blocks}
+          recentBlock={recentBlocks}
+          favoriteBlock={favoriteBlocks}
+
         />;
 
       case "global":
@@ -325,17 +379,17 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
 
   return (
     <TooltipProvider delayDuration={150}>
-      <aside className="w-[450px] h-full flex border-l bg-white border-slate-200 text-slate-900 dark:bg-[#0b1220] dark:border-slate-800 dark:text-slate-100">
+      <aside className="w-[400px] h-full flex border-l bg-white border-slate-200 text-slate-900 dark:bg-[#0b1220] dark:border-slate-800 dark:text-slate-100">
         {/* LEFT ICON TABS */}
         <div className="w-[64px] shrink-0 border-r bg-slate-50 border-slate-200 flex flex-col items-center py-2 gap-2 dark:bg-[#081021] dark:border-slate-800">
 
-            <IconTab
+          <IconTab
             active={tab === "blocks"}
             label="Blocks"
             onClick={() => setTab("blocks")}
             icon={<Blocks className="w-5 h-5" />}
           />
-          
+
           <IconTab
             active={tab === "global"}
             label="Global"
@@ -431,14 +485,14 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         {/* RIGHT CONTENT */}
         <div className="flex-1 min-w-0 flex flex-col  border-e border-slate-200 ">
           {/* header */}
-          <div className="h-14 px-4 flex items-center border-b border-slate-200 dark:border-slate-800">
+          <div className="h-14 px-4 flex items-center border-b border-slate-300 dark:border-slate-800">
             <div className="text-sm font-semibold text-slate-900 dark:text-slate-200">
               {title}
             </div>
           </div>
 
           {/* content */}
-          <div className="flex-1 min-h-0 overflow-auto p-4 pt-1">
+          <div className="flex-1 min-h-0 overflow-auto p-3 pt-1">
             {renderRightContent()}
           </div>
         </div>

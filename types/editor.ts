@@ -166,6 +166,7 @@ export interface StyleState {
     letterSpacing?: string;
     textDecoration?: string;
     textTransform?: string;
+    textShadow?: string;
     textShadowX?: string;
     textShadowY?: string;
     textShadowBlur?: string;
