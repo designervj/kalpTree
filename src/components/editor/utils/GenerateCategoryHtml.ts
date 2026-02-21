@@ -26,6 +26,8 @@ export function generateCategoryPageHtml(
     heroImageUrl = 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=2070&auto=format&fit=crop',
     desktopColumns = 3,
     showHero = true,
+    layout = options.layout,
+    productView = options.productView,
   } = options;
 
   // Unique section ID — stable because it is derived from category title
@@ -90,7 +92,7 @@ export function generateCategoryPageHtml(
       ).replace(/"/g, '&quot;');
 
       // Image resolution priority:
-      // 1. imageUrls  — set by the admin product creation API (POST /api/admin/product)
+      // 1. imageUrls  — set by the admin product creation API (POST /api/admin /product)
       // 2. gallery     — alternative array field used by some older records
       // 3. photo       — legacy single-image field
       const imageUrl =
@@ -112,6 +114,7 @@ export function generateCategoryPageHtml(
            data-price="${basePriceNum.toFixed(2)}"
            data-attrs="${allAttrJson}">
         <div class="cp-img-box">
+         <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop" alt="Fashion Item">
           ${hasSale ? '<span class="cp-badge-sale">Sale</span>' : ''}
         <div class="cp-img-placeholder"><span>🛍</span></div>
         </div>
@@ -128,6 +131,12 @@ export function generateCategoryPageHtml(
 
   const totalProducts = products.length;
   const colClass = desktopColumns === 2 ? 'cp-cols-2' : desktopColumns === 4 ? 'cp-cols-4' : 'cp-cols-3';
+
+  // Normalize layout for backward compatibility with older "sidebar" / "top" values
+  const normalizedLayout = layout === 'sidebar' ? 'sidebar-left' : (layout === 'top' ? 'filter-top' : layout);
+  const layoutClass = `cp-layout-${normalizedLayout}`;
+
+  const viewClass = `cp-view-${productView}`;
 
   // ── Hero section ──────────────────────────────────────────────────────────
   const heroHtml = showHero
@@ -271,6 +280,29 @@ export function generateCategoryPageHtml(
     gap: 48px;
     align-items: flex-start;
   }
+  #${sectionId} .cp-page-body.cp-layout-sidebar-right {
+    flex-direction: row-reverse;
+  }
+  #${sectionId} .cp-page-body.cp-layout-filter-top {
+    flex-direction: column;
+  }
+  #${sectionId} .cp-page-body.cp-layout-filter-top .cp-sidebar {
+    width: 100%;
+    position: static;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+  }
+  #${sectionId} .cp-page-body.cp-layout-filter-top .cp-filter-group {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
 
   /* ── Sidebar ── */
   #${sectionId} .cp-sidebar {
@@ -349,6 +381,29 @@ export function generateCategoryPageHtml(
   #${sectionId} .cp-product-grid.cp-cols-2 { grid-template-columns: repeat(2, 1fr); }
   #${sectionId} .cp-product-grid.cp-cols-3 { grid-template-columns: repeat(3, 1fr); }
   #${sectionId} .cp-product-grid.cp-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── List View ── */
+  #${sectionId} .cp-product-grid.cp-view-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  #${sectionId} .cp-product-grid.cp-view-list .cp-product-card {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+  #${sectionId} .cp-product-grid.cp-view-list .cp-img-box {
+    width: 150px;
+    height: 200px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  #${sectionId} .cp-product-grid.cp-view-list .cp-product-info {
+    flex-grow: 1;
+  }
 
   /* ── Product card ── */
   #${sectionId} .cp-product-card {
@@ -510,7 +565,7 @@ export function generateCategoryPageHtml(
     </div>
 
     <!-- Body -->
-    <div class="cp-page-body">
+    <div class="cp-page-body ${layoutClass}">
       <!-- Sidebar -->
       <aside class="cp-sidebar" data-gjs-custom-name="Filter Sidebar">
         ${filterGroupsHtml || '<p style="color:var(--muted-text);font-size:13px;">No filters available.</p>'}
@@ -518,7 +573,7 @@ export function generateCategoryPageHtml(
 
       <!-- Products -->
       <div class="cp-product-container">
-        <main class="cp-product-grid ${colClass}" data-gjs-custom-name="Product Grid">
+        <main class="cp-product-grid ${colClass} ${viewClass}" data-gjs-custom-name="Product Grid">
           ${productCardsHtml || '<div class="cp-empty-state">No products found in this category.</div>'}
         </main>
 

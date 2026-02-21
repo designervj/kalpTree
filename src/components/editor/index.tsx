@@ -8,7 +8,7 @@ import TopToolbar from "./GrapesJSEditor/toolbars/TopToolbar";
 import BottomToolbar from "./GrapesJSEditor/toolbars/BottomToolbar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { setPageLoading } from "@/hooks/slices/pageEditSlice";
+import { setPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
 import {
   extractHtmlParts,
@@ -28,6 +28,7 @@ import { isHeaderPresent } from "./utils/htmlParser";
 import CommentsModal from "./commentModal/CommentModal";
 
 import CategoryPage from "../categoryPage/CategoryPage";
+import { PageModel } from "@/types/pages/PageModel";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -797,10 +798,28 @@ export default function GrapesJSEditor() {
   const handleCategoryHtmlGenerated = (html: string) => {
     setCategoryPageHtml(html);
   };
-
+  const { page: currentPage } = useSelector((state: RootState) => state.pageEdit);
   const handlePushCategoryToCanvas = () => {
     if (!state.editor || !categoryPageHtml) return;
-    handleSelectTemplate(categoryPageHtml, false);
+    dispatch(setPageLoading(true));
+
+    // Reset the flag to ensure the content reload useEffect triggers
+    contentLoadedRef.current = false;
+
+    const data: PageModel = {
+      ...currentPage,
+      content: categoryPageHtml,
+    };
+
+    dispatch(
+      setPageEdit({
+        page: data,
+        type: "page",
+      }),
+    );
+
+    // Switch view back to the normal editor canvas
+    setPageType("normal");
   };
 
   useEffect(() => {
@@ -847,8 +866,7 @@ export default function GrapesJSEditor() {
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
-                pagetype !== "normal" ? "hidden" : ""
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
                 }`}
             >
               {(state.isLoading || isPageLoading) && (
@@ -913,6 +931,7 @@ export default function GrapesJSEditor() {
                     desktopColumns: (categoryStyleConfigs[pagetype].layoutConfig?.gridColumns?.desktop ?? 3) as 2 | 3 | 4,
                     heroImageUrl: categoryStyleConfigs[pagetype].heroConfig?.backgroundImage,
                     categoryTitle: categoryStyleConfigs[pagetype].heroConfig?.title,
+                    layout:categoryStyleConfigs[pagetype].layoutConfig?.filterPosition,
                   } : undefined}
                 />
               </div>
@@ -960,6 +979,9 @@ export default function GrapesJSEditor() {
               setCategoryStyleConfigs={setCategoryStyleConfigs}
               editorHtml={editorHtml}
               handleUpdateHtml={handleUpdateHtml}
+               blocks={state.blocks}
+                   recentBlocks={recentBlocks}
+            favoriteBlocks={favoriteBlocks}
             />
           </div>
 

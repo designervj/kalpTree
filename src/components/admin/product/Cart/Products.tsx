@@ -142,7 +142,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   // State management
   const [showCart, setShowCart] = useState(false);
   const [sidebarVisible, setSidebarVisible] = useState(
-    filterPosition === "sidebar",
+    filterPosition?.includes("sidebar"),
   );
   const [sortBy, setSortBy] = useState("price-high");
   const [currentPage, setCurrentPage] = useState(1);
@@ -182,7 +182,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   const getTotalPrice = () => {
     return cart.reduce((total, item) => {
       const product = products?.find((d) => d._id == item?.productId);
-      const variant = product?.variants.find((d) => d._id == item?.variantId);
+      const variant = product?.variants?.find((d) => d._id == item?.variantId);
       const price = parseFloat(variant?.price || "0");
       return total + price * item?.quantity;
     }, 0);
@@ -242,7 +242,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     }
 
     let filtered = [...products].filter((d) =>
-      slug ? d?.allcategories?.includes(slug?._id) : true,
+      slug ? d?.allcategories?.includes(slug?._id?.toString() ?? "") : true,
     );
 
     Object.entries(dynamicFilters).forEach(([filterTitle, selectedValues]) => {
@@ -267,14 +267,14 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
     if (sortBy === "price-low") {
       filtered.sort((a, b) => {
-        const priceA = Math.min(...a?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
-        const priceB = Math.min(...b?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
+        const priceA = Math.min(...a?.variants?.map((v: ProductVariant) => parseFloat(v?.price ?? "0")));
+        const priceB = Math.min(...b?.variants?.map((v: ProductVariant) => parseFloat(v?.price ?? "0")));
         return priceA - priceB;
       });
     } else if (sortBy === "price-high") {
       filtered.sort((a, b) => {
-        const priceA = Math.min(...a?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
-        const priceB = Math.min(...b?.variants?.map((v:ProductVariant) => parseFloat(v?.price??"0")));
+        const priceA = Math.min(...a?.variants?.map((v: ProductVariant) => parseFloat(v?.price ?? "0")));
+        const priceB = Math.min(...b?.variants?.map((v: ProductVariant) => parseFloat(v?.price ?? "0")));
         return priceB - priceA;
       });
     }
@@ -288,7 +288,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedProducts = allProducts.slice(startIndex, endIndex);
-   console.log("paginatedProducts",paginatedProducts)
+  console.log("paginatedProducts", paginatedProducts)
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
@@ -725,7 +725,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         {/* Top Toolbar */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center py-5 border-b border-gray-200 mb-8 gap-5">
           <div className="flex gap-4">
-            {filterPosition === "sidebar" && (
+            {filterPosition?.includes("sidebar") && (
               <button
                 onClick={toggleSidebar}
                 className={`bg-white border px-5 py-3 text-xs font-semibold uppercase transition-colors flex items-center gap-2.5 ${getButtonStyleClass()}`}
@@ -771,7 +771,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
         </div>
 
         {/* Top Filters */}
-        {filterPosition === "top" && <TopFilters />}
+        {(filterPosition === "top" || filterPosition === "filter-top") && <TopFilters />}
 
         {/* Pagination Top */}
         {paginationEnabled &&
@@ -783,7 +783,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
         <div className="flex gap-12 items-start">
           {/* Sidebar Filters */}
-          {filterPosition === "sidebar" && sidebarVisible && <SidebarFilters />}
+          {filterPosition?.includes("sidebar") && sidebarVisible && <SidebarFilters />}
 
           {/* Product Grid */}
           <div className="flex-1">
@@ -849,7 +849,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                     const product = products.find(
                       (d) => d._id == item.productId,
                     );
-                    const variant = product?.variants.find(
+                    const variant = product?.variants?.find(
                       (d) => d._id == item.variantId,
                     );
 
@@ -859,7 +859,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                           <div className="flex-1">
                             <h3 className="font-semibold">{product?.title}</h3>
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {variant?.attributes.map((attr, idx) => (
+                              {variant?.attributes?.map((attr, idx) => (
                                 <span
                                   key={idx}
                                   className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded"

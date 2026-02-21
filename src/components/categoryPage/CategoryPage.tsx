@@ -17,6 +17,10 @@ export interface CategoryPageHtmlOptions {
     desktopColumns?: 2 | 3 | 4;
     /** Show hero section (default: true) */
     showHero?: boolean;
+    /** Layout type (default: 'sidebar-left') */
+    layout?: 'sidebar-left' | 'sidebar-right' | 'filter-top' | 'sidebar' | 'top';
+    /** Product view mode (default: 'grid') */
+    productView?: 'grid' | 'list';
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -98,9 +102,9 @@ const CategoryPage = ({ category, onHtmlGenerated, options }: Props) => {
         return generateCategoryPageHtml(
             categoryProducts,
             filterAttributes,
-
+            options
         );
-    }, [categoryProducts, filterAttributes]);
+    }, [categoryProducts, filterAttributes, options]);
 
     // Notify parent whenever the HTML changes
     useEffect(() => {
