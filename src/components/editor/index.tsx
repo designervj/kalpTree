@@ -29,6 +29,7 @@ import CommentsModal from "./commentModal/CommentModal";
 
 import CategoryPage from "../categoryPage/CategoryPage";
 import { PageModel } from "@/types/pages/PageModel";
+import NewSingleProductPage from "../admin/product/Cart/NewSingleProductPage";
 
 type PropertiesSidebarProps = {
   showSidebar: boolean;
@@ -283,55 +284,6 @@ export default function GrapesJSEditor() {
     currentHeader,
   ]);
 
-  function getSelectedGalleryProductFromEditor(editor: any) {
-    if (!editor?.Canvas) return null;
-
-    const iframe = editor.Canvas.getFrameEl();
-
-    const doc = iframe?.contentDocument;
-
-    if (!doc) return null;
-
-    const selectedItem = doc.querySelectorAll(
-      'section[class^="product-gallery-"]',
-    );
-
-    const selectedItemm = doc.querySelector(
-      'section[class^="product-gallery-"]',
-    );
-
-    const finalGallery: any = [];
-
-    selectedItem.forEach((element: any) => {
-      const productItem = element.querySelectorAll(".gallery-item");
-
-      const final: any = [];
-
-      productItem.forEach((inner: any) => {
-        const t = {
-          id: inner.getAttribute("data-index"),
-        };
-        final.push(t);
-        // console.log("====>>>>", element.querySelector("h3")?.textContent?.trim());
-        // console.log("===>>>", element.querySelector("img")?.getAttribute("src"));
-      });
-
-      finalGallery.push(final);
-    });
-
-    // const productItem = doc.querySelectorAll(".gallery-item");
-
-    if (!selectedItemm) return null;
-
-    return {
-      id: selectedItemm.getAttribute("data-index"),
-      name: selectedItemm.querySelector("h3")?.textContent?.trim(),
-      image: selectedItemm.querySelector("img")?.getAttribute("src"),
-      price: selectedItemm
-        .querySelector("p[style*='color: #059669']")
-        ?.textContent?.trim(),
-    };
-  }
 
   useEffect(() => {
     if (!state.editor) return;
@@ -805,7 +757,6 @@ export default function GrapesJSEditor() {
 
     // Reset the flag to ensure the content reload useEffect triggers
     contentLoadedRef.current = false;
-
     const data: PageModel = {
       ...currentPage,
       content: categoryPageHtml,
@@ -822,6 +773,29 @@ export default function GrapesJSEditor() {
     setPageType("normal");
   };
 
+
+  const handlePushSingleProductToCanvas = (html: string) => {
+  
+     if (!state.editor) return;
+    dispatch(setPageLoading(true));
+
+    // Reset the flag to ensure the content reload useEffect triggers
+    contentLoadedRef.current = false;
+    const data: PageModel = {
+      ...currentPage,
+      content: html,
+    };
+
+    dispatch(
+      setPageEdit({
+        page: data,
+        type: "page",
+      }),
+    );
+
+    // Switch view back to the normal editor canvas
+    setPageType("normal");
+  }
   useEffect(() => {
     if (state.editorJs && state.editorJs !== editorJs) {
       setEditorJs(state.editorJs);
@@ -940,7 +914,10 @@ export default function GrapesJSEditor() {
             {pagetype !== "normal" && pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
-                <SingleProductShowcase slug={pagetype.split("-")[1]} />
+                {/* <SingleProductShowcase slug={pagetype.split("-")[1]} /> */}
+                <NewSingleProductPage slug={pagetype.split("-")[1]} 
+                onPushToCanvas={handlePushSingleProductToCanvas}
+                />
               </div>
             )}
             {/* Canvas */}

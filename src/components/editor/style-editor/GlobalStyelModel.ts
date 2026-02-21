@@ -302,3 +302,68 @@ export const transformRawToGlobalStyleModel = (
 
   return transformVarsToGlobalStyleModel(vars);
 };
+
+/**
+ * Updates a CSS string (containing variable declarations) with new values from a color palette.
+ * This is useful for applying a full brand/button color palette to an existing CSS template.
+ */
+export const updateCssWithColors = (
+  css: string,
+  palette: {
+    brand: BrandColors;
+    buttons: Record<string, ButtonColors>;
+  }
+): string => {
+  let updatedCss = css;
+
+  // 1. Update Brand Colors
+  const brandMap: Record<string, keyof BrandColors> = {
+    "--primary": "primary",
+    "--secondary": "secondary",
+    "--accent": "accent",
+    "--dark": "dark",
+    "--ring": "ring",
+    "--text": "text",
+    "--muted-text": "mutedText",
+    "--border": "border",
+ 
+  };
+
+  Object.entries(brandMap).forEach(([varName, key]) => {
+    const value = palette.brand[key];
+    if (value) {
+      const regex = new RegExp(`${varName}\\s*:\\s*[^;]+`, 'g');
+      updatedCss = updatedCss.replace(regex, `${varName}: ${value}`);
+    }
+  });
+
+  // 2. Update Button Colors (primary, secondary, outline, etc.)
+  Object.entries(palette.buttons).forEach(([btnType, colors]) => {
+    //console.log("btnType", btnType);
+    //console.log("colors", colors);
+    const btnMap: Record<string, keyof ButtonColors> = {
+      "bg": "bg",
+      "text": "text",
+      "border": "border",
+      "hover-bg": "hoverBg",
+      "hover-text": "hoverText",
+      "hover-border": "hoverBorder",
+    };
+
+    Object.entries(btnMap).forEach(([subKey, colorKey]) => {
+      
+      const varName = `--btn-${btnType}-${subKey}`;
+      const value = colors[colorKey];
+
+      console.log("varName", varName);
+      console.log("value", value);
+      if (value) {
+        const regex = new RegExp(`${varName}\\s*:\\s*[^;]+`, 'g');
+        console.log("regex", regex);
+        updatedCss = updatedCss.replace(regex, `${varName}: ${value}`);
+      }
+    });
+  });
+
+  return updatedCss;
+};

@@ -1142,7 +1142,7 @@ export function StyleEditor({ styles, onStyleChange, selectedElement }: StyleEdi
     <div>
 
       <Accordion type="single" collapsible defaultValue="typography" className="w-full">
-        {(showTypography || tagType === "text" || tagType === "p" || tagType === "span" || tagType === "h1" || tagType === "h2" || tagType === "h3" || tagType === "h4" || tagType === "h5" || tagType === "h6") && (
+        {(showTypography || tagType === "text" || tagType === "p" || tagType === "span" || tagType === "h1" || tagType === "h2" || tagType === "h3" || tagType === "h4" || tagType === "h5" || tagType === "h6" || tagType === "cp-product-title") && (
           <AccordionItem value="typography" className={UI.accordionItem}>
             <AccordionTrigger className={UI.sectionTitle}>Typography</AccordionTrigger>
             <AccordionContent>

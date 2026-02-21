@@ -62,6 +62,7 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
     }
   }, [productId, products]);
 
+  console.log("selectedProduct", selectedProduct);
   // Find matching variant based on selected options
   useEffect(() => {
     if (!selectedProduct) return;
@@ -69,12 +70,13 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
     const variantOptions = selectedProduct?.options?.filter(
       (opt) => opt.useForVariants,
     );
+    console.log("variantOptions", variantOptions);
     const selectedKeys = Object.keys(selectedOptions);
-
+  console.log("selectedKeys", selectedKeys);
     const allVariantOptionsSelected = variantOptions?.every((opt) =>
       selectedKeys.includes(opt.id),
     );
-
+    console.log("allVariantOptionsSelected", allVariantOptionsSelected);
     if (!allVariantOptionsSelected) {
       setMatchedVariant(null);
       return;

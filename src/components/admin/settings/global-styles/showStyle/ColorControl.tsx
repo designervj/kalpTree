@@ -5,6 +5,11 @@ import { BrandColors, BtnKey, ButtonColors } from '../GlobalStyleModal';
 import { Separator } from "@/components/ui/separator";
 import HexInput from './HexInput';
 import ColorPallet from '@/app/admin/websites/[website]/branding/typography/ColorPallet';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { updateCurrentWebsiteGlobalStyle } from '@/hooks/slices/websites/WebsiteSlice';
+import { colorModal } from '@/components/admin/branding/color_pallet/Color_Pallet_Modal';
+import { updateCssWithColors } from '@/components/editor/style-editor/GlobalStyelModel';
 
 type ColorControlProps = {
     brand: BrandColors;
@@ -16,12 +21,37 @@ type ColorControlProps = {
 
 
 const ColorControl = ({ brand, setBrand, uiPalette, setC, setButtonColors }: ColorControlProps) => {
+    const { currentWebsite } = useSelector((state: RootState) => state.websites);
+    const dispatch = useDispatch();
 
     const handleColorPallet = (allcolors: any) => {
         if (!allcolors) return;
-        const { brand, buttons } = allcolors;
-        if (brand) setBrand(brand);
-        if (buttons) setButtonColors(buttons);
+        const { brand: paletteBrand, buttons: paletteButtons } = allcolors;
+
+        console.log("allcolors", allcolors);
+
+        if (!currentWebsite || !currentWebsite.globalStyle) {
+            return
+        }
+
+        const brandColors = {
+            brand: paletteBrand,
+            buttons: paletteButtons
+        }
+
+        const updateRoot = updateCssWithColors(
+            currentWebsite.globalStyle,
+            brandColors
+        );
+         console.log("brandColors", brandColors);
+        console.log("updateRoot", updateRoot);
+
+        // Update individual local states in parent (GlobalStyle.tsx)
+        if (paletteBrand) setBrand(paletteBrand);
+        if (paletteButtons) setButtonColors(paletteButtons);
+
+        // Update the global style string in Redux
+        dispatch(updateCurrentWebsiteGlobalStyle(updateRoot));
     };
     return (
         <Card>

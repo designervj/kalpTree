@@ -1293,6 +1293,7 @@ import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
 import { clearUser } from "@/hooks/slices/user/userSlice";
 import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
+import { ColorPalletModal } from "./branding/color_pallet/Color_Pallet_Modal";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -1310,7 +1311,7 @@ export type Website = {
   isComingSoon?: boolean;
   globalStyle?: string;
   branding?: {
-    colors: Combo[];
+    colors: ColorPalletModal[];
     typography: any[];
   };
 };
