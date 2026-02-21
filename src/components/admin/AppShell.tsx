@@ -1241,6 +1241,7 @@ import {
   LayoutGridIcon,
   TypeIcon,
   Factory,
+  LanguagesIcon,
 } from "lucide-react";
 
 import {
@@ -1882,6 +1883,12 @@ export const currentWebsiteSections: NavSection[] = [
         label: "Billing & Plans",
         href: "/admin/settings/billing-plans",
         icon: CreditCard,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Language Manager",
+        href: "/admin/settings/language",
+        icon: LanguagesIcon,
         permission: ["content:read", "content:update", "content:delete"],
       },
       {

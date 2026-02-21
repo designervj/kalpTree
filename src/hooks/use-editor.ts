@@ -355,7 +355,7 @@ export function useEditor(containerId: string) {
         .gjs-add-section-btn {
           position: absolute;
           left: 5%;
-          top:10px;
+          top:16px;
           transform: translate(-50%, -50%);
           padding: 8px 16px; 
           background-color: #3b82f6; 

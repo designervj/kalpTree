@@ -15,13 +15,12 @@ const LANGUAGES = [
   { code: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺" },
 ];
 
-export function LanguageSelector({ formData, handleInputChange }) {
-  const selectedLanguages = formData?.businessdetails?.lang || [
-    { name: "en", default: true },
-  ];
+export function LanguageSelector({ formData, handleInputChange }: any) {
+  const selectedLanguages = formData?.businessdetails?.lang ||
+    formData.lang || [{ name: "en", default: true }];
 
   const [isMultilingual, setIsMultilingual] = useState(
-    selectedLanguages.length > 1
+    selectedLanguages.length > 1,
   );
 
   const getDefaultLanguage = () => {
@@ -51,10 +50,10 @@ export function LanguageSelector({ formData, handleInputChange }) {
     if (isMultilingual) {
       // Multilingual mode: toggle selection
       const isSelected = selectedLanguages.some(
-        (lang) => lang.name === langCode
+        (lang) => lang.name === langCode,
       );
       const isDefault = selectedLanguages.find(
-        (lang) => lang.name === langCode
+        (lang) => lang.name === langCode,
       )?.default;
 
       if (isSelected) {
@@ -64,7 +63,7 @@ export function LanguageSelector({ formData, handleInputChange }) {
         if (isDefault) return;
 
         newSelection = selectedLanguages.filter(
-          (lang) => lang.name !== langCode
+          (lang) => lang.name !== langCode,
         );
       } else {
         newSelection = [
