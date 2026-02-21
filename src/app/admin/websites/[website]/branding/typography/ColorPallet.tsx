@@ -4,15 +4,15 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Globe, Shuffle, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { ColorPalletModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
+import { colorModal, ColorPalletModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 
-export type Combo = {
-  _id: string;
-  name: string;
-  colors: any;
-  seed?: string;
-  usertype?: boolean;
-};
+// export type Combo = {
+//   _id: string;
+//   name: string;
+//   colors: colorModal;
+//   seed?: string;
+//   usertype?: boolean;
+// };
 
 const CARD_W = 140;
 const GAP = 14;
@@ -28,7 +28,9 @@ const ColorPallet = ({ handleColorPallet }: any) => {
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const [combo, setCombo] = useState<ColorPalletModal[]>([]);
-  const { colorPallets, isFetched } = useSelector((state: RootState) => state.colorPallet)
+  const { colorPallets,allColorPallets, isFetched } = useSelector((state: RootState) => state.colorPallet)
+  
+  
   const updateArrows = () => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -101,12 +103,17 @@ const ColorPallet = ({ handleColorPallet }: any) => {
   //   fetchPalettes();
   // }, [currentWebsite?._id]);
   useEffect(() => {
-    if (colorPallets && colorPallets.length) {
- setCombo(colorPallets)
+    if (allColorPallets && allColorPallets.length) {
+ setCombo(allColorPallets)
     }
-  }, [colorPallets])
+  }, [allColorPallets])
 
-  console.log("combo-->",combo)
+
+
+  const handleUpdateColor = (colors: any) => {
+    console.log("colors", colors);
+    handleColorPallet(colors);
+  }
   return (
     <section className="w-full bg-white">
       <style>{`
@@ -174,7 +181,7 @@ const ColorPallet = ({ handleColorPallet }: any) => {
             {/* Scroller */}
             <div
               ref={scrollerRef}
-              className="no-scrollbar flex gap-[14px] overflow-x-auto scroll-smooth pr-[58px] pl-[58px]"
+              className="no-scrollbar flex gap-[14px] overflow-x-auto scroll-smooth pr-[5px] pl-[5px]"
               style={{ scrollSnapType: "x mandatory" }}
             >
               {combo.map((c) => {
@@ -234,7 +241,7 @@ const ColorPallet = ({ handleColorPallet }: any) => {
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleColorPallet(c.colors);
+                              handleUpdateColor(c.colors);
                             }}
                             className="px-4 py-2 bg-slate-900 text-white text-[13px] font-medium rounded-lg shadow-lg hover:bg-slate-800 transition-colors"
                             style={{
@@ -259,6 +266,7 @@ const ColorPallet = ({ handleColorPallet }: any) => {
                         </div>
                       </div>
                     </div>
+                    <h3>{c.name}</h3>
                   </div>
                 );
               })}

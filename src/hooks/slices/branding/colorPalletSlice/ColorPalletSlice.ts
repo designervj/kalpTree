@@ -8,15 +8,17 @@ import {
 } from "./ColorPalletThunk";
 
 interface ColorPalletState {
-    colorPallets: ColorPalletModal[];
+    colorPallets: ColorPalletModal[];  // global one 
     isLoading: boolean;
     currentColorPallet: ColorPalletModal | null;
     isError: boolean;
     isFetched: boolean;
+    allColorPallets: ColorPalletModal[]; // website one
 }
 
 const initialState: ColorPalletState = {
     colorPallets: [],
+    allColorPallets: [],
     isLoading: false,
     currentColorPallet: null,
     isError: false,
@@ -39,6 +41,9 @@ const ColorPalletSlice = createSlice({
         },
         setError: (state, action: PayloadAction<boolean>) => {
             state.isError = action.payload;
+        },
+        setAllColorPallets: (state, action: PayloadAction<ColorPalletModal[]>) => {
+            state.allColorPallets = action.payload;
         },
     },
     extraReducers: (builder) => {
@@ -107,6 +112,7 @@ export const {
     setCurrentColorPallet,
     setLoading,
     setError,
+    setAllColorPallets,
 } = ColorPalletSlice.actions;
 
 export default ColorPalletSlice.reducer;

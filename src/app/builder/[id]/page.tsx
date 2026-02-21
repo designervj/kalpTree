@@ -61,6 +61,7 @@ const page = async ({
     tenantId: website.tenantId?.toString(),
     websiteId: website.websiteId,
     name: website.name,
+    branding: website.branding,
     primaryDomain: website.primaryDomain,
     systemSubdomain: website.systemSubdomain,
     serviceType: website.serviceType,
