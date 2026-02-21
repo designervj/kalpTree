@@ -61,6 +61,9 @@ type PropertiesSidebarProps = {
   setCategoryStyleConfigs: any;
   editorHtml?: any;
   handleUpdateHtml:any
+    blocks: any[];
+    recentBlocks: string[];
+    favoriteBlocks: string[];
 };
 
 type TabKey =
@@ -121,9 +124,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   categoryStyleConfigs,
   setCategoryStyleConfigs,
   editorHtml,
-  handleUpdateHtml
+  handleUpdateHtml,
+  blocks,
+  recentBlocks,
+  favoriteBlocks
 }) => {
-  const [tab, setTab] = React.useState<TabKey>("global");
+  const [tab, setTab] = React.useState<TabKey>("blocks");
 
   // ✅ Hooks must be called BEFORE any early returns
   const { editForm } = useEditorContext();
@@ -222,7 +228,12 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
         );
 
       case "blocks":
-        return <BlocksPage />;
+        return <BlocksPage 
+        blocks={blocks}
+            recentBlock={recentBlocks}
+            favoriteBlock={favoriteBlocks}
+        
+        />;
 
       case "global":
         return <GlobalStylesSection onStyleChange={onStyleChange} />;

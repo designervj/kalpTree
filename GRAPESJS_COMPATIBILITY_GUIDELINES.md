@@ -20,7 +20,6 @@ AI agents generating components **MUST** follow these rules to ensure perfect co
 10. **Unique Section ID**: Generated IDs must be unique (e.g., `section-{{random_hex}}`) to ensure the script's `querySelector` targets the correct component on pages with multiple similar sections.
 11. **No Inline Styles**: Never use `style="..."` on elements. All styling must live inside the `<style>` block.
 12. **Button Variants**: Use the correct button token set for primary, secondary, or outline buttons (see **Section 3**).
-13. **No `:root { }` Block**: Do **NOT** include a `:root { }` block in your output. Global CSS design tokens are already injected by the KalpTree canvas runtime. Adding your own `:root` block will conflict with the platform's variable injection system.
 
 ---
 
