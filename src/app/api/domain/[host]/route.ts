@@ -6,7 +6,7 @@ import { getCollection } from "../../tenants/[id]/route";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ host: string }> }
+  { params }: { params: Promise<{ host: string }> },
 ) {
   const { host } = await params; //
 
@@ -27,7 +27,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ host: string }> }
+  { params }: { params: Promise<{ host: string }> },
 ) {
   const param = await params;
   const hostid = new ObjectId(param.host);
@@ -41,7 +41,8 @@ export async function PUT(
       });
     }
 
-    const { name, primaryDomain, status, systemSubdomain, serviceType } = body;
+    const { name, primaryDomain, status, serviceType, isComingSoon, lang } =
+      body;
 
     const websiteColl = await getCollection("websites");
     const updatedValue = await websiteColl.updateOne(
@@ -53,11 +54,12 @@ export async function PUT(
           name,
           primaryDomain,
           status,
-          systemSubdomain,
+          isComingSoon,
           serviceType,
+          lang,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     if (updatedValue.acknowledged) {

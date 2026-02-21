@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const param = await params;
@@ -14,11 +14,19 @@ export async function PUT(
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { success: false, message: "Invalid Id" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const body = await req.json();
+    const {
+      branding,
+      businessdetails,
+      features,
+      plan,
+      settings,
+      status,
+      subscriptionStatus,
+    } = await req.json();
 
     const businessColl = await getCollection("tenants");
 
@@ -26,47 +34,42 @@ export async function PUT(
       { _id: new ObjectId(id) },
       {
         $set: {
-          name: body.name,
-          email: body.email,
-          plan: body.plan,
-          status: body.status,
-          branding: {
-            colors: {
-              primary: body.branding?.primary,
-              secondary: body.branding?.secondary,
-            },
-          },
-          features: body.features,
+          branding,
+          businessdetails,
+          features,
+          plan,
+          settings,
+          status,
+          subscriptionStatus,
           updatedAt: new Date(),
         },
-      }
+      },
     );
 
     if (!result.acknowledged) {
       return NextResponse.json(
         { success: false, message: "Business not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     return NextResponse.json({
       success: true,
       message: "Business updated successfully",
-      data: body,
     });
   } catch (error) {
     console.error(error);
 
     return NextResponse.json(
       { success: false, message: "Not Updated" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const param = await params;
   let id = param.id;
@@ -114,7 +117,7 @@ export async function GET(
           return value.toString();
         }
         return value;
-      })
+      }),
     ) as IBusiness;
 
     return NextResponse.json({

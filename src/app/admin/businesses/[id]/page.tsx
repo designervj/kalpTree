@@ -15,8 +15,6 @@ export const BusinesswithID = () => {
     return businessWebsite;
   }, [businessWebsite]);
 
-  console.log(upadatedBusiness);
-
   // Handle null case
   if (!upadatedBusiness || !user) {
     return (
