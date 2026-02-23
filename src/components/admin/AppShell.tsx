@@ -132,7 +132,7 @@ import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
 import { clearUser } from "@/hooks/slices/user/userSlice";
-import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
+// import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
 import { ColorPalletModal } from "./branding/color_pallet/Color_Pallet_Modal";
 // ---------------------------------------------------------------------------
 // Types & interfaces
@@ -799,7 +799,7 @@ export const currentWebsiteSections: NavSection[] = [
   },
 ];
 
-const getRoleAvatarClass = (role?: string) => {
+export const getRoleAvatarClass = (role?: string) => {
   const r = (role || "").toLowerCase().trim();
 
   if (r === "super admin" || r === "superadmin" || r === "admin") {
@@ -1098,15 +1098,6 @@ export function AppShell({ children }: AppShellProps) {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* <DropdownMenuItem
-                onClick={handleSignOut}
-                className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </div>
       </header>
 
@@ -1130,7 +1121,7 @@ export function AppShell({ children }: AppShellProps) {
             />
           )}
 
-          {isHighLevelCollapsed && (
+          {user && user.role == "business" && (
             <Sidebar
               collapsed={false}
               onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}

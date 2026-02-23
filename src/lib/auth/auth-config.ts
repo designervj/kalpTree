@@ -35,37 +35,25 @@ export const authConfig: NextAuthConfig = {
           if (!user || user.status !== "active") {
             throw new Error("Invalid credentials ");
           }
-
-          if (user.role != "superadmin" && credentials?.isMainDomain) {
-            throw new Error("Invalid domain for this user");
-          }
-
-          if (user.role != "superadmin" && !credentials?.isMainDomain) {
-            console.log("credentials?.isMainDomain",credentials?.isMainDomain)
-              if (user?.role==="agency"){
-                const getAgencyTenant = await tenantService.getTenantById(
-                  user.tenantId?.toString() as string,
-            
-                );
-                console.log("getAgencyTenant",getAgencyTenant)
-                
-              }
-            // const website = await websiteService.getByHost(
-            //   credentials.domain as string,
-            // );
-
-            // if (!website) {
-            //   throw new Error("Invalid domain for this user");
-            // }
-
-            // Verify that the user's tenant matches the website's tenant
-            // const userTenantId = user.tenantId?.toString();
-            // const websiteTenantId = website.tenantId?.toString();
-
-            // if (userTenantId !== websiteTenantId) {
-            //   throw new Error("Invalid domain for this user");
-            // }
-          }
+          console.log("credentials?.isMainDomain",credentials?.isMainDomain)
+          let businessTenant
+          let tenantdetail
+          if (user.role != "superadmin" ) {
+                const gettenant= await tenantService.getTenantById(user.tenantId?.toString() as string)
+                console.log("gettenant",gettenant)
+                 const getWebsite= await tenantService.getWebsiteByDomain(credentials?.domain as string)
+                 console.log("getWebsite",getWebsite)
+                 if(!getWebsite){
+                  throw new Error("Invalid domain for this user");
+                 }
+                 if(!gettenant){
+                  throw new Error("Invalid tenant for this user");
+                 }
+                 tenantdetail=gettenant
+                 if(getWebsite){
+                  businessTenant=getWebsite
+                 }
+            }
           // Verify password
           const isValid = await userService.verifyPassword(
             user,
@@ -94,10 +82,8 @@ export const authConfig: NextAuthConfig = {
             role: user.role,
             permissions: user.permissions,
             createdById: user.createdById?.toString(), // Handle optional createdById
-            // tenantdetail: {
-            //   _id: finaltenant?._id.toString(),
-            //   type: finaltenant?.type,
-            // },
+            businessTenant: businessTenant,
+            tenantdetail: tenantdetail,
           };
         } catch (error) {
           console.error("Authorization error:", error);
