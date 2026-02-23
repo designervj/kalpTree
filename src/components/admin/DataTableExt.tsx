@@ -526,7 +526,7 @@ export function DataTableExt({
   const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
 
   return (
-    <div className="space-y-4 w-[1100px]">
+    <div className="space-y-4 ">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>

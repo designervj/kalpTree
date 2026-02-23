@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useDispatch } from "react-redux";
+import { signOut } from "next-auth/react";
 import type { AppDispatch } from "@/store/store";
 import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
@@ -225,6 +226,56 @@ export function HighLevelSidebar({
     variant === "desktop" ? "hidden md:flex h-screen" : "flex h-full",
     collapsed ? "w-[84px]" : "w-[100%] md:w-[280px]"
   );
+
+  const handleSignOut = async () => {
+    const redirect = `${window.location.origin}/auth/signin`;
+
+    try {
+      // 1️⃣ Server-side cleanup (optional but good)
+      await fetch("/api/appshell-data", { method: "POST" });
+
+      // 2️⃣ Clear storages (Redux resets automatically on page reload)
+      localStorage.clear();
+      sessionStorage.clear();
+
+      // 4️⃣ Best-effort cookie cleanup
+      const cookiesToClear = [
+        "admin-cart-token",
+        "current_website_data",
+        "current_website",
+        "current_website_id",
+        "authjs.session-token",
+        "authjs.csrf-token",
+        "authjs.callback-url",
+        "__Secure-authjs.session-token",
+        "__Host-authjs.csrf-token",
+      ];
+
+      cookiesToClear.forEach((cookieName) => {
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
+
+        const rootDomain = window.location.hostname
+          .split(".")
+          .slice(-2)
+          .join(".");
+
+        document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${rootDomain};`;
+      });
+
+      // 5️⃣ Tell NextAuth to logout BUT DO NOT REDIRECT
+      await signOut({ redirect: false });
+
+      // 6️⃣ YOU decide where to go
+      window.location.href = redirect;
+    } catch (err) {
+      console.error("Logout error:", err);
+
+      // fallback hard redirect
+      window.location.href = redirect;
+    }
+  };
+
 
   return (
     <div className={containerClass}>
@@ -548,7 +599,9 @@ export function HighLevelSidebar({
 
                   <DropdownMenuSeparator className="my-1" />
 
-                  <DropdownMenuItem className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600">
+                  <DropdownMenuItem className="rounded-md text-red-600 focus:bg-red-50 focus:text-red-600"
+                    onClick={handleSignOut}
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
                   </DropdownMenuItem>

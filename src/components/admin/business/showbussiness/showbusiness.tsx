@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -29,6 +27,7 @@ import {
   Building2,
   Globe,
   LayoutGrid,
+  BadgeCheck,
 } from "lucide-react";
 
 import {
@@ -122,6 +121,7 @@ const ShowBusiness = () => {
   const handleItemsPerPageChange = (value: string) => {
     router.push(`/admin/businesses?itemsperpage=${value}`);
   };
+
   const filteredBusinesses = useMemo(() => {
     if (!allBusiness) return [];
     const query = q.trim().toLowerCase();
@@ -163,7 +163,6 @@ const ShowBusiness = () => {
           new Date(b.createdAt || 0).getTime(),
       );
     } else {
-      // newest
       data.sort(
         (a, b) =>
           new Date(b.createdAt || 0).getTime() -
@@ -176,7 +175,7 @@ const ShowBusiness = () => {
 
   if (!pagination) {
     return (
-      <div className="w-full rounded-xl border bg-white p-8 text-center text-sm text-muted-foreground shadow-sm">
+      <div className="w-full rounded-2xl border border-slate-200 bg-white p-10 text-center text-sm text-muted-foreground shadow-sm">
         Loading businesses...
       </div>
     );
@@ -286,7 +285,7 @@ const ShowBusiness = () => {
     return (
       <span
         className={cn(
-          "rounded-md border px-2 py-0.5 text-[11px] font-medium",
+          "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold",
           styles[color],
         )}
       >
@@ -298,25 +297,25 @@ const ShowBusiness = () => {
   return (
     <div className="w-full space-y-5">
       {/* Header */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>
           <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
             Businesses
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage businesses, websites, and quick access to admin dashboards.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <Button asChild variant="outline" className="rounded-lg">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline" className="rounded-xl border-slate-200">
             <Link href="/admin/rolesandpermission">
               <ShieldCheck className="mr-2 h-4 w-4" />
               Roles & Permissions
             </Link>
           </Button>
 
-          <Button asChild className="rounded-lg">
+          <Button asChild className="rounded-xl">
             <Link href="/admin/businesses/create">
               <Plus className="mr-2 h-4 w-4" />
               Add Business
@@ -326,10 +325,10 @@ const ShowBusiness = () => {
       </div>
 
       {/* Info / tip bar */}
-      <Card className="rounded-xl border bg-gradient-to-r from-white to-slate-50 shadow-sm">
+      <Card className="rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50/60 via-white to-white shadow-sm">
         <CardContent className="p-3.5">
           <div className="flex items-start gap-3">
-            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-violet-100">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-violet-100">
               <Sparkles className="h-4 w-4 text-violet-700" />
             </div>
             <div className="space-y-0.5">
@@ -344,7 +343,7 @@ const ShowBusiness = () => {
       </Card>
 
       {/* Search + Filters */}
-      <Card className="rounded-xl border bg-white shadow-sm">
+      <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
         <CardContent className="p-3">
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
             <div className="relative flex-1">
@@ -353,13 +352,13 @@ const ShowBusiness = () => {
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
                 placeholder="Search by name, email, domain..."
-                className="h-10 rounded-lg border-slate-200 pl-9"
+                className="h-10 rounded-xl border-slate-200 bg-slate-50/70 pl-9 focus-visible:ring-1"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <Select value={status} onValueChange={setStatus}>
-                <SelectTrigger className="h-10 w-[140px] rounded-lg">
+                <SelectTrigger className="h-10 w-[145px] rounded-xl border-slate-200">
                   <SelectValue placeholder="All status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -372,7 +371,7 @@ const ShowBusiness = () => {
 
               <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="h-10 rounded-lg px-4">
+                  <Button variant="outline" className="h-10 rounded-xl border-slate-200 px-4">
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
                     Filters
                   </Button>
@@ -445,12 +444,12 @@ const ShowBusiness = () => {
       {/* List */}
       <div className="space-y-3">
         {filteredBusinesses.length === 0 ? (
-          <Card className="rounded-xl border bg-white shadow-sm">
-            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="mb-3 rounded-full bg-slate-100 p-3">
+          <Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <CardContent className="flex flex-col items-center justify-center py-14 text-center">
+              <div className="mb-3 rounded-2xl bg-slate-100 p-3">
                 <Building2 className="h-5 w-5 text-slate-600" />
               </div>
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-semibold text-slate-900">
                 No businesses found
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
@@ -469,10 +468,10 @@ const ShowBusiness = () => {
 
             const joinedDate = b?.createdAt
               ? new Date(b.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
               : null;
 
             const website = b.website;
@@ -481,10 +480,10 @@ const ShowBusiness = () => {
               allAgencies.find((agency) => agency._id === b!.tenantId)?._id ??
               null;
 
-            // const dom = website?.primaryDomain?.[0] || "—";
             const domain = website?.primaryDomain?.find((d: string) =>
               d?.includes("kalptree.xyz"),
             );
+
             const agencyId =
               user?.role === "agency"
                 ? (user?.tenantId?.toString() ?? null)
@@ -496,21 +495,6 @@ const ShowBusiness = () => {
               String(agencyId),
               user?.role!,
             );
-
-            // const agencyId =
-            //   user?.role === "agency"
-            //     ? (user?.tenantId?.toString() ?? null)
-            //     : (major ?? null);
-
-            // const href =
-            //   domain && website
-            //     ? toCreateHref(
-            //       domain,
-            //       website?.tenantId?.toString() ?? null,
-            //       agencyId,
-            //       user?.role || "",
-            //     )
-            //     : "#";
 
             const isLocalhost =
               typeof window !== "undefined" &&
@@ -528,175 +512,258 @@ const ShowBusiness = () => {
             const visitHref = visitDomain ? `http://${visitDomain}` : null;
 
             const isActive = (b.status || "").toLowerCase() === "active";
-            // return (
-            //   <Card
-            //     key={String(b._id)}
-            //     className="rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow"
-            //   >
-            //     <CardContent className="px-4 py-3">
-            //       <div className="flex items-center gap-4">
-            //         {/* Logo */}
-            //         <div className="h-10 w-10 rounded-lg border border-slate-200 bg-slate-50 grid place-items-center shrink-0 overflow-hidden">
-            //           <img
-            //             src={
-            //               b?.branding?.logo ||
-            //               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7NnXia5DWq6qfBisS5mDI7r8xa5sT8cuvnA&s"
-            //             }
-            //             alt={b.name}
-            //             className="h-8 w-8 object-contain"
-            //           />
-            //         </div>
 
             return (
               <Card
                 key={String(b._id)}
-                className="rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-[1px] hover:shadow-md"
+                className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:shadow-md"
               >
-                <CardContent className="p-4">
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-                    {/* Left: identity */}
-                    <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                        <img
-                          src={
-                            b?.branding?.logo ||
-                            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7NnXia5DWq6qfBisS5mDI7r8xa5sT8cuvnA&s"
-                          }
-                          alt={b.name}
-                          className="h-9 w-9 object-contain"
-                        />
-                      </div>
+                <CardContent className="p-0">
+                  {/* top strip */}
+                  <div className="border-b border-slate-100 bg-slate-50/70 px-4 py-2.5">
+                    <div className="flex justify-between items-center gap-2">
 
-                      <div className="min-w-0 flex-1">
-                        {/* Title row */}
-                        <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="truncate text-[15px] font-semibold text-slate-900">
-                            {b.name}
-                          </h3>
-                        </div>
-                        <Link
-                          href={`/builder/${b._id}`}
-                          target="_blank"
-                          className="flex gap-1 text-[12px] items-center rounded-md bg-orange-100 px-2 py-0.5"
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold",
+                            isActive
+                              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              : "border-rose-200 bg-rose-50 text-rose-700",
+                          )}
                         >
-                          View Website{" "}
-                          <ExternalLink className="h-3.5 w-3.5 text-slate-600" />
-                        </Link>
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 rounded-full",
+                              isActive ? "bg-emerald-500" : "bg-rose-500",
+                            )}
+                          />
+                          {isActive ? "Active" : "Inactive"}
+                        </span>
 
-                        <Link
-                          href={href}
-                          target="_blank"
-                          className="flex gap-1 text-[12px] items-center rounded-md bg-red-100 px-2 py-0.5"
-                        >
-                          View Admin
-                          <ExternalLink className="h-3.5 w-3.5 text-slate-600" />
-                        </Link>
-                      </div>
-
-                      {/* Meta row */}
-                      <div className="mt-1 flex items-center gap-3 flex-wrap text-xs text-slate-500">
-                        {b.email && (
-                          <a
-                            href={`mailto:${b.email}`}
-                            className="flex items-center gap-1 hover:text-slate-800 transition-colors"
-                          >
-                            <Mail className="h-3 w-3" />
-                            {b.email}
-                          </a>
-                        )}
-                        {joinedDate && (
-                          <span className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Joined {joinedDate}
+                        {Icon && (
+                          <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600">
+                            <Icon className="h-3.5 w-3.5" />
+                            Industry
                           </span>
                         )}
 
-                        {/* Feature pills */}
-                        <div className="flex items-center gap-1 flex-wrap">
-                          {b?.features?.websiteEnabled && (
-                            <span className="rounded-md border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-700">
-                              Website
-                            </span>
-                          )}
-                          {b?.features?.ecommerceEnabled && (
-                            <span className="rounded-md border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[11px] font-medium text-purple-700">
-                              E-commerce
-                            </span>
-                          )}
-                          {b?.features?.blogEnabled && (
-                            <span className="rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700">
-                              Blog
-                            </span>
-                          )}
-                          {b?.features?.invoicesEnabled && (
-                            <>
-                              <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
-                                Invoices
-                              </span>
-
-                              {Icon && (
-                                <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5">
-                                  <Icon className="h-3.5 w-3.5 text-slate-600" />
-                                </span>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        {/* Meta row */}
-                        <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                          {b.email && (
-                            <a
-                              href={`mailto:${b.email}`}
-                              className="inline-flex items-center gap-1 hover:text-slate-800"
+                        {joinedDate && (
+                          <span className="inline-flex items-center gap-1 text-xs text-slate-500">
+                            <Calendar className="h-3.5 w-3.5" />
+                            Joined {joinedDate}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-9 w-9 cursor-pointer rounded-xl border-slate-200 p-0 xl:w-full xl:justify-center"
                             >
-                              <Mail className="h-3 w-3" />
-                              <span className="truncate">{b.email}</span>
-                            </a>
-                          )}
+                              <HiDotsVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
 
-                          {joinedDate && (
-                            <span className="inline-flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              Joined {joinedDate}
-                            </span>
-                          )}
+                          <DropdownMenuContent className="mr-2 w-36" align="end">
+                            <DropdownMenuGroup>
+                              <DropdownMenuItem
+                                className="cursor-pointer text-sm"
+                                onClick={() => handleEditBusiness(b)}
+                              >
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="cursor-pointer text-sm text-rose-600 focus:text-rose-600"
+                                onClick={() => handleDeleteBusiness(b)}
+                              >
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <div className="flex flex-col gap-4 xl:flex-row">
+                      {/* Left content */}
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start gap-3 w-full justify-between">
+                          <div className="flex gap-4">
+                            <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                              <img
+                                src={
+                                  b?.branding?.logo ||
+                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7NnXia5DWq6qfBisS5mDI7r8xa5sT8cuvnA&s"
+                                }
+                                alt={b.name}
+                                className="h-9 w-9 object-contain"
+                              />
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <h3 className="truncate text-base font-semibold text-slate-900">
+                                  {b.name}
+                                </h3>
+                                {b?.features?.websiteEnabled && (
+                                  <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                                    <BadgeCheck className="h-3 w-3" />
+                                    Website Ready
+                                  </span>
+                                )}
+                              </div>
+
+                              {/* quick links */}
+                              {/* <div className="mt-2 flex flex-wrap items-center gap-2">
+                                <Link
+                                  href={`/builder/${b._id}`}
+                                  target="_blank"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-700 hover:bg-orange-100"
+                                >
+                                  <LayoutGrid className="h-3.5 w-3.5" />
+                                  View Website
+                                </Link>
+
+                                <Link
+                                  href={href}
+                                  target="_blank"
+                                  className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700 hover:bg-rose-100"
+                                >
+                                  <ExternalLink className="h-3.5 w-3.5" />
+                                  View Admin
+                                </Link>
+                              </div> */}
+
+                              {/* email */}
+                              <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                                {b.email && (
+                                  <a
+                                    href={`mailto:${b.email}`}
+                                    className="inline-flex items-center gap-1 hover:text-slate-800"
+                                  >
+                                    <Mail className="h-3.5 w-3.5" />
+                                    <span className="truncate">{b.email}</span>
+                                  </a>
+                                )}
+                              </div>
+
+                              {/* features */}
+
+                              <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                                <FeatureChip
+                                  show={b?.features?.websiteEnabled}
+                                  label="Website"
+                                  color="blue"
+                                />
+                                <FeatureChip
+                                  show={b?.features?.ecommerceEnabled}
+                                  label="E-commerce"
+                                  color="purple"
+                                />
+                                <FeatureChip
+                                  show={b?.features?.blogEnabled}
+                                  label="Blog"
+                                  color="emerald"
+                                />
+                                <FeatureChip
+                                  show={b?.features?.invoicesEnabled}
+                                  label="Invoices"
+                                  color="amber"
+                                />
+                              </div>
+
+
+
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-3 h-full flex-wrap items-start gap-2">
+                            {b?._id && (
+                              <Link href={`/builder/${b._id}`} target="_blank" className="flex-1 xl:flex-none">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 cursor-pointer w-full rounded-xl border-orange-200 bg-orange-50 px-3 text-orange-700 hover:bg-orange-100 hover:text-orange-800"
+                                >
+                                  <LayoutGrid className="mr-1.5 h-4 w-4" />
+                                  View Website
+                                </Button>
+                              </Link>
+                            )}
+
+                            {href !== "#" && (
+                              <Link href={href} target="_blank" className="flex-1 xl:flex-none">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 cursor-pointer w-full rounded-xl border-rose-200 bg-rose-50 px-3 text-rose-700 hover:bg-rose-100 hover:text-rose-800"
+                                >
+                                  <ExternalLink className="mr-1.5 h-4 w-4" />
+                                  View Admin
+                                </Button>
+                              </Link>
+                            )}
+
+                             <Button
+                              size="sm"
+                              className="h-9 cursor-pointer flex-1 rounded-xl px-3 xl:w-full xl:flex-none"
+                              onClick={() => handleOpenDashboard(b)}
+                            >
+                              Open Dashboard
+                            </Button>
+
+                            {/* <div className="flex gap-2"> */}
+
+
+                            {/* <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-9 w-9 rounded-xl border-slate-200 p-0 xl:w-full xl:justify-center"
+                                >
+                                  <HiDotsVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+
+                              <DropdownMenuContent className="mr-2 w-36" align="end">
+                                <DropdownMenuGroup>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-sm"
+                                    onClick={() => handleEditBusiness(b)}
+                                  >
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="cursor-pointer text-sm text-rose-600 focus:text-rose-600"
+                                    onClick={() => handleDeleteBusiness(b)}
+                                  >
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuGroup>
+                              </DropdownMenuContent>
+                            </DropdownMenu> */}
+                            {/* </div> */}
+                          </div>
+
                         </div>
 
-                        {/* Feature chips */}
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                          <FeatureChip
-                            show={b?.features?.websiteEnabled}
-                            label="Website"
-                            color="blue"
-                          />
-                          <FeatureChip
-                            show={b?.features?.ecommerceEnabled}
-                            label="E-commerce"
-                            color="purple"
-                          />
-                          <FeatureChip
-                            show={b?.features?.blogEnabled}
-                            label="Blog"
-                            color="emerald"
-                          />
-                          <FeatureChip
-                            show={b?.features?.invoicesEnabled}
-                            label="Invoices"
-                            color="amber"
-                          />
-                        </div>
-
-                        {/* Domain row */}
+                        {/* domain card */}
                         {displayDomain && (
-                          <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50/80 p-2.5">
-                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0">
-                                <div className="mb-0.5 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                                <div className="mb-1 inline-flex items-center gap-1.5 text-xs font-medium text-slate-500">
                                   <Globe className="h-3.5 w-3.5" />
-                                  Website
+                                  Website Domain
                                 </div>
-                                <p className="truncate text-sm font-medium text-slate-800">
+                                <p className="truncate text-sm font-semibold text-slate-800">
                                   {displayDomain}
                                 </p>
                               </div>
@@ -733,72 +800,74 @@ const ShowBusiness = () => {
                           </div>
                         )}
                       </div>
-                    </div>
 
-                    {/* Right: actions */}
-                    <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
-                      {b?._id && (
-                        <Link href={`/builder/${b._id}`} target="_blank">
+                      {/* Right actions panel */}
+                      {/* <div className="xl:w-[220px]">
+                        <div className="flex h-full flex-row flex-wrap items-start gap-2 xl:flex-col xl:items-stretch">
+                          {b?._id && (
+                            <Link href={`/builder/${b._id}`} target="_blank" className="flex-1 xl:flex-none">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9 w-full rounded-xl border-orange-200 bg-orange-50 px-3 text-orange-700 hover:bg-orange-100 hover:text-orange-800"
+                              >
+                                <LayoutGrid className="mr-1.5 h-4 w-4" />
+                                View Website
+                              </Button>
+                            </Link>
+                          )}
+
+                          {href !== "#" && (
+                            <Link href={href} target="_blank" className="flex-1 xl:flex-none">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9 w-full rounded-xl border-rose-200 bg-rose-50 px-3 text-rose-700 hover:bg-rose-100 hover:text-rose-800"
+                              >
+                                <ExternalLink className="mr-1.5 h-4 w-4" />
+                                View Admin
+                              </Button>
+                            </Link>
+                          )}
+
                           <Button
-                            variant="outline"
                             size="sm"
-                            className="h-9 rounded-lg border-orange-200 bg-orange-50 px-3 text-orange-700 hover:bg-orange-100 hover:text-orange-800"
+                            className="h-9 flex-1 rounded-xl px-3 xl:w-full xl:flex-none"
+                            onClick={() => handleOpenDashboard(b)}
                           >
-                            <LayoutGrid className="mr-1.5 h-4 w-4" />
-                            View Website
+                            Open Dashboard
                           </Button>
-                        </Link>
-                      )}
 
-                      {href !== "#" && (
-                        <Link href={href} target="_blank">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-9 rounded-lg border-rose-200 bg-rose-50 px-3 text-rose-700 hover:bg-rose-100 hover:text-rose-800"
-                          >
-                            <ExternalLink className="mr-1.5 h-4 w-4" />
-                            View Admin
-                          </Button>
-                        </Link>
-                      )}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-9 w-9 rounded-xl border-slate-200 p-0 xl:w-full xl:justify-center"
+                              >
+                                <HiDotsVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
 
-                      <Button
-                        size="sm"
-                        className="h-9 rounded-lg px-3"
-                        onClick={() => handleOpenDashboard(b)}
-                      >
-                        Open Dashboard
-                      </Button>
-
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-9 w-9 rounded-lg p-0"
-                          >
-                            <HiDotsVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent className="mr-4 w-36" align="end">
-                          <DropdownMenuGroup>
-                            <DropdownMenuItem
-                              className="cursor-pointer text-sm"
-                              onClick={() => handleEditBusiness(b)}
-                            >
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="cursor-pointer text-sm text-rose-600 focus:text-rose-600"
-                              onClick={() => handleDeleteBusiness(b)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                            <DropdownMenuContent className="mr-2 w-36" align="end">
+                              <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                  className="cursor-pointer text-sm"
+                                  onClick={() => handleEditBusiness(b)}
+                                >
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="cursor-pointer text-sm text-rose-600 focus:text-rose-600"
+                                  onClick={() => handleDeleteBusiness(b)}
+                                >
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuGroup>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div> */}
                     </div>
                   </div>
                 </CardContent>
@@ -809,14 +878,14 @@ const ShowBusiness = () => {
       </div>
 
       {/* Footer */}
-      <div className="flex flex-col gap-2 rounded-xl border bg-white p-3 shadow-sm md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Show</span>
           <Select
             value={String(itemsperpage)}
             onValueChange={handleItemsPerPageChange}
           >
-            <SelectTrigger className="h-8 w-[74px] rounded-lg bg-white text-sm">
+            <SelectTrigger className="h-8 w-[74px] rounded-xl border-slate-200 bg-white text-sm">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -840,7 +909,7 @@ const ShowBusiness = () => {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="flex flex-col gap-2 rounded-xl border bg-white p-3 shadow-sm md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:flex-row md:items-center md:justify-between">
           <div className="text-sm text-muted-foreground">
             Page {pagination.page} of {pagination.totalPages}
           </div>
@@ -851,7 +920,7 @@ const ShowBusiness = () => {
               size="sm"
               onClick={() => handlePageChange(pagination.page - 1)}
               disabled={!pagination.hasPrevPage}
-              className="h-8 rounded-lg"
+              className="h-8 rounded-xl border-slate-200"
             >
               <ChevronLeft className="mr-1 h-3.5 w-3.5" />
               Previous
@@ -876,7 +945,7 @@ const ShowBusiness = () => {
                     variant={pagination.page === page ? "default" : "outline"}
                     size="sm"
                     onClick={() => handlePageChange(page as number)}
-                    className="h-8 w-8 rounded-lg p-0 text-sm"
+                    className="h-8 w-8 rounded-xl p-0 text-sm"
                   >
                     {page}
                   </Button>
@@ -889,7 +958,7 @@ const ShowBusiness = () => {
               size="sm"
               onClick={() => handlePageChange(pagination.page + 1)}
               disabled={!pagination.hasNextPage}
-              className="h-8 rounded-lg"
+              className="h-8 rounded-xl border-slate-200"
             >
               Next
               <ChevronRight className="ml-1 h-3.5 w-3.5" />

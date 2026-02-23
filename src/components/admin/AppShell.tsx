@@ -1084,6 +1084,7 @@ export function AppShell({ children }: AppShellProps) {
                 <Settings className="mr-2 h-4 w-4" />
                 Account settings
               </DropdownMenuItem>
+              
 
               <DropdownMenuSeparator className="my-1" />
 
