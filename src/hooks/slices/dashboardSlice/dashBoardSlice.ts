@@ -85,6 +85,8 @@ export const savedashboardDetailsThunk = createAsyncThunk(
       const response = await fetch(`/api/appshell-data`);
       const data = await response.json();
 
+      console.log("====>>>", data)
+
       if (!response.ok) throw new Error("Failed to save page");
         console.log("savedashboard",data);
       return {

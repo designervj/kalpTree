@@ -21,7 +21,7 @@ const BusinessHome = () => {
   <>
       <GetAllAgency />
       <GetAllBusiness />
-      <GetAllWebsites />
+      {/* <GetAllWebsites /> */}
       <UpdateBusiness  />
       <ShowBusiness />
     </>

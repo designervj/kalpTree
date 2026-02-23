@@ -115,7 +115,7 @@ const businessSlice = createSlice({
         state.allBusiness = business;
         // Also update in allBusiness array if it exists
         const index = state.allBusiness.findIndex(
-          (b) => b._id?.toString() === businessId.toString()
+          (b) => b._id?.toString() === businessId.toString(),
         );
         if (index !== -1) {
           state.businessWebsite = business[index];
@@ -135,7 +135,7 @@ const businessSlice = createSlice({
         state.currentBusiness = action.payload;
         // Also update in allBusiness array if it exists
         const index = state.allBusiness.findIndex(
-          (b) => b._id?.toString() === action.payload._id?.toString()
+          (b) => b._id?.toString() === action.payload._id?.toString(),
         );
         if (index !== -1) {
           state.allBusiness[index] = action.payload;
@@ -168,17 +168,16 @@ const businessSlice = createSlice({
       })
       .addCase(updateBusiness.fulfilled, (state, action) => {
         state.isLoading = false;
-        const {business}=action.payload
+        const { business } = action.payload;
         const index = state.allBusiness.findIndex(
-          (b) => b._id?.toString() === business._id?.toString()
+          (b) => b._id?.toString() === business._id?.toString(),
         );
         if (index !== -1) {
           state.allBusiness[index] = business;
         }
         // Update currentBusiness if it's the same one
         if (
-          state.currentBusiness?._id?.toString() ===
-          business._id?.toString()
+          state.currentBusiness?._id?.toString() === business._id?.toString()
         ) {
           state.currentBusiness = business;
         }
@@ -197,7 +196,7 @@ const businessSlice = createSlice({
         const deletedId = action.payload.deletedId;
         // Remove from allBusiness array
         state.allBusiness = state.allBusiness.filter(
-          (b: IBusiness) => b._id?.toString() !== deletedId
+          (b: IBusiness) => b._id?.toString() !== deletedId,
         );
         // Clear currentBusiness if it was the deleted one
         if (state.currentBusiness?._id?.toString() === deletedId) {
@@ -256,15 +255,16 @@ const businessSlice = createSlice({
       })
       .addCase(savedashboardDetailsThunk.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { business, user, agencies ,agencyid,businessid} = action.payload;
+        const { business, user, agencies, agencyid, businessid } =
+          action.payload;
 
-        if (business && agencies &&agencyid) {
+        if (business && agencies && agencyid) {
           state.allBusiness = business;
           const allBus = business.filter(
-            (item: IBusiness) => item.tenantId === agencyid
+            (item: IBusiness) => item.tenantId === agencyid,
           );
           state.allSelectedBusiness = allBus;
-           state.currentBusiness = allBus[0];
+          state.currentBusiness = allBus[0];
           state.hasFetchedBusiness = true;
         }
       })
@@ -282,7 +282,7 @@ const businessSlice = createSlice({
         state.currentBusiness = data;
         // update in allBusiness array if it exists
         const index = state.allBusiness.findIndex(
-          (b: IBusiness) => b._id?.toString() === data._id?.toString()
+          (b: IBusiness) => b._id?.toString() === data._id?.toString(),
         );
         if (index !== -1) {
           state.allBusiness[index] = data;
@@ -294,14 +294,15 @@ const businessSlice = createSlice({
       })
 
       //on delete agenct delete business
-          .addCase(deleteAgency.fulfilled, (state, action) => {
-              const {success,agencyId}=action.payload
-                state.allBusiness = state.allBusiness.filter((b: IBusiness) => b.tenantId !== agencyId);
-                state.allSelectedBusiness = state.allSelectedBusiness.filter((b: IBusiness) => b.tenantId !== agencyId);
-             
-            })
-
-          
+      .addCase(deleteAgency.fulfilled, (state, action) => {
+        const { success, agencyId } = action.payload;
+        state.allBusiness = state.allBusiness.filter(
+          (b: IBusiness) => b.tenantId !== agencyId,
+        );
+        state.allSelectedBusiness = state.allSelectedBusiness.filter(
+          (b: IBusiness) => b.tenantId !== agencyId,
+        );
+      });
   },
 });
 
@@ -314,7 +315,7 @@ export const {
   setEditBusiness,
   setLoading,
   setError,
-  addCreatedBusiness
+  addCreatedBusiness,
 } = businessSlice.actions;
 
 export default businessSlice.reducer;

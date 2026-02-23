@@ -29,7 +29,6 @@ export async function POST(req: Request) {
       password,
       service,
       business_name,
-      business_website_url,
       tagline,
       industry,
       founded_year,
@@ -43,6 +42,7 @@ export async function POST(req: Request) {
       business_url,
       primary_domain,
       businessType,
+      globalStyle,
     } = businessdetails;
 
     const branding = JSON.parse(formData.get("branding") as string);
@@ -66,7 +66,6 @@ export async function POST(req: Request) {
         email: agency_email,
         plan: "trial",
         createdById: createdById,
-        branding: branding,
         businessdetails: {
           tagline,
           founded_year,
@@ -99,13 +98,19 @@ export async function POST(req: Request) {
         logo_url = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
       }
 
-      const newBranding = {
-        ...branding,
+      const newBusinessDetails = {
+        tagline,
+        founded_year,
+        about,
+        public_email,
+        phone,
+        headquarters,
+        brand_name,
         logo: logo_url,
       };
 
       await tenantService.updateTenant(agencyid, {
-        branding: newBranding,
+        businessdetails: newBusinessDetails,
       });
 
       createByTenant = agencyid;
@@ -137,7 +142,6 @@ export async function POST(req: Request) {
         phone,
         headquarters,
         brand_name,
-        business_website_url,
         businessType,
       },
       type: "business",
@@ -191,16 +195,30 @@ export async function POST(req: Request) {
 
     const finalDomain = new Set([...primaryDomain]);
 
-    const website = await websiteService.create({
-      tenantId: businessTenant._id,
+    const website = {
       name: business_name,
       serviceType: service ?? "WEBSITE_ONLY",
       primaryDomain: [...finalDomain],
       systemSubdomain: `${business_url}.kalptree.xyz`,
       lang,
       isComingSoon: true,
-      // isHomePage:true
+      globalStyle: globalStyle,
+    };
+
+    await tenantService.updateTenant(id, {
+      website: website,
     });
+
+    // const website = await websiteService.create({
+    // tenantId: businessTenant._id,
+    // name: business_name,
+    // serviceType: service ?? "WEBSITE_ONLY",
+    // primaryDomain: [...finalDomain],
+    // systemSubdomain: `${business_url}.kalptree.xyz`,
+    // lang,
+    // isComingSoon: true,
+    //   // isHomePage:true
+    // });
 
     const pageColl = await getCollection("pages");
 
@@ -208,7 +226,7 @@ export async function POST(req: Request) {
       return {
         ...d,
         tenantId: new ObjectId(String(businessTenant._id)),
-        websiteId: new ObjectId(String(website._id)),
+        // websiteId: new ObjectId(String(website._id)),
         seo: {
           title: d.title,
           slug: d.slug,
@@ -235,7 +253,7 @@ export async function POST(req: Request) {
       website: website,
       tenantId: String(businessTenant._id),
       tenantSlug: businessTenant.slug,
-      websiteId: website.websiteId,
+      websiteId: businessTenant._id,
       message: `${message}Business Created`,
       page: page.insertedCount,
     });

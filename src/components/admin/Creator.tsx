@@ -12,7 +12,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/store/store";
 import { toast } from "sonner";
-import { AlertCircle, CheckCircle2, Copy, Info, PlusCircle } from "lucide-react";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Copy,
+  Info,
+  PlusCircle,
+} from "lucide-react";
 
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
@@ -26,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 
 import { PAGE_TEMPLATES } from "./DemoTemplate";
 import { TemplateDocument } from "./templates/TemplateType";
@@ -101,7 +106,9 @@ const unescapeHtmlIfNeeded = (s: string) => {
 };
 
 const looksLikeFullDoc = (html: string) =>
-  /<html[\s>]/i.test(html) || /<!doctype/i.test(html) || /<body[\s>]/i.test(html);
+  /<html[\s>]/i.test(html) ||
+  /<!doctype/i.test(html) ||
+  /<body[\s>]/i.test(html);
 
 /** Clean iframe document wrapper */
 const buildIframeDoc = (userHtml: string) => {
@@ -172,18 +179,23 @@ const HtmlCodeEditor = forwardRef<
     placeholder?: string;
   }
 >(function HtmlCodeEditor(
-  { value, onChange, rows = 18, placeholder = "<h1>Title</h1><p>Content...</p>" },
-  ref
+  {
+    value,
+    onChange,
+    rows = 18,
+    placeholder = "<h1>Title</h1><p>Content...</p>",
+  },
+  ref,
 ) {
   const lnRef = useRef<HTMLPreElement | null>(null);
 
   const lineCount = useMemo(
     () => Math.max(1, (value || "").split("\n").length),
-    [value]
+    [value],
   );
   const lineNumbers = useMemo(
     () => Array.from({ length: lineCount }, (_, i) => String(i + 1)).join("\n"),
-    [lineCount]
+    [lineCount],
   );
 
   const syncScroll = (ta?: HTMLTextAreaElement | null) => {
@@ -191,7 +203,9 @@ const HtmlCodeEditor = forwardRef<
     lnRef.current.scrollTop = ta.scrollTop;
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (
+    e,
+  ) => {
     if (e.key !== "Tab") return;
     e.preventDefault();
 
@@ -199,7 +213,8 @@ const HtmlCodeEditor = forwardRef<
     const start = el.selectionStart ?? 0;
     const end = el.selectionEnd ?? 0;
     const insert = "  ";
-    const next = (value || "").slice(0, start) + insert + (value || "").slice(end);
+    const next =
+      (value || "").slice(0, start) + insert + (value || "").slice(end);
     onChange(next);
 
     requestAnimationFrame(() => {
@@ -223,7 +238,7 @@ const HtmlCodeEditor = forwardRef<
             className={cn(
               "h-full max-h-[560px] overflow-hidden",
               "px-3 py-4 text-right",
-              "font-mono text-[12.5px] leading-6 text-slate-400 select-none"
+              "font-mono text-[12.5px] leading-6 text-slate-400 select-none",
             )}
           >
             {lineNumbers}
@@ -245,12 +260,13 @@ const HtmlCodeEditor = forwardRef<
               "font-mono text-[13px] leading-6 text-slate-900",
               "outline-none bg-white",
               "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-              "resize-none"
+              "resize-none",
             )}
           />
           <div className="px-5 pb-3 pt-3 text-xs text-slate-500">
             Escaped HTML like{" "}
-            <span className="font-mono">&amp;lt;div&amp;gt;</span> will be converted automatically.
+            <span className="font-mono">&amp;lt;div&amp;gt;</span> will be
+            converted automatically.
           </div>
         </div>
       </div>
@@ -283,7 +299,7 @@ function SeoRow({
       <div
         className={cn(
           "leading-5",
-          ok ? "text-slate-700" : warn ? "text-slate-700" : "text-slate-600"
+          ok ? "text-slate-700" : warn ? "text-slate-700" : "text-slate-600",
         )}
       >
         {text}
@@ -301,7 +317,6 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   const { curretAgency } = useSelector((state: RootState) => state.agency);
   const { allTemplate } = useSelector((state: RootState) => state.template);
 
-
   // get all template of category type page
   const pageTemplates = useMemo(() => {
     return allTemplate.filter((t) => t.category === "page");
@@ -311,15 +326,19 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   const searchParams = useSearchParams();
   const dispatch = useDispatch<AppDispatch>();
   const [saving, startTransition] = useTransition();
-  const { user } = useSelector((state: RootState) => state.user)
+  const { user } = useSelector((state: RootState) => state.user);
   const [msg, setMsg] = useState<string | null>(null);
   const [mode, setMode] = useState<"html" | "preview">("html");
   const [slugTouched, setSlugTouched] = useState(false);
 
   // ✅ Template Gallery state (right side red mark areas)
-  const [tplCategory, setTplCategory] = useState<"all" | TemplateCategory>("all");
+  const [tplCategory, setTplCategory] = useState<"all" | TemplateCategory>(
+    "all",
+  );
   const [tplSearch, setTplSearch] = useState("");
-  const [selectedTplKey, setSelectedTplKey] = useState<string>(pageTemplates[0]?._id?.toString() || "");
+  const [selectedTplKey, setSelectedTplKey] = useState<string>(
+    pageTemplates[0]?._id?.toString() || "",
+  );
   const [showTplCode, setShowTplCode] = useState(false);
 
   const editorRef = useRef<HTMLTextAreaElement | null>(null);
@@ -337,21 +356,20 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
     initial.focusKeyword = item?.focusKeyword ?? [];
     initial.selectedKeyWord = item?.selectedKeyWord ?? "";
 
-    if (currentWebsite?._id) initial.websiteId = currentWebsite._id;
-    if (currentWebsite?.tenantId) initial.tenantId = currentWebsite.tenantId;
+    if (currentBusiness?._id) initial.tenantId = currentBusiness._id;
 
     return initial;
   });
 
-  useEffect(() => {
-    if (currentWebsite?._id && currentWebsite?.tenantId) {
-      setFormData((p) => ({
-        ...p,
-        websiteId: currentWebsite._id,
-        tenantId: currentWebsite.tenantId,
-      }));
-    }
-  }, [currentWebsite]);
+  // useEffect(() => {
+  //   if (currentWebsite?._id && currentWebsite?.tenantId) {
+  //     setFormData((p) => ({
+  //       ...p,
+  //       websiteId: currentWebsite._id,
+  //       tenantId: currentWebsite.tenantId,
+  //     }));
+  //   }
+  // }, [currentWebsite]);
 
   const setContentValue = (raw: string) => {
     const normalized = unescapeHtmlIfNeeded(raw || "");
@@ -400,7 +418,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
     params.set("businessid", currentBusiness?._id?.toString() ?? "");
     const primaryBusiness = currentWebsite?.primaryDomain?.[0] ?? null;
     router.push(
-      `/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`
+      `/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`,
     );
   };
 
@@ -408,7 +426,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
     e.preventDefault();
     setMsg(null);
 
-    if (!formData?.title || !formData?.slug || !formData?.websiteId) {
+    if (!formData?.title || !formData?.slug || !formData?.tenantId) {
       toast.error("Please fill all required fields");
       return;
     }
@@ -423,27 +441,28 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
 
       if (keepHeader) {
         // User clicked "OK" (Yes)
-        callApi(formData.content)
+        callApi(formData.content);
       } else {
         console.log("Keeping existing header");
-        callApi(updatedHtml)
-        updateHeaderPage(header)
-
+        callApi(updatedHtml);
+        updateHeaderPage(header);
       }
-
     } else {
-      callApi(formData.content)
+      callApi(formData.content);
     }
-
   };
 
-
-  //update page 
+  //update page
   const callApi = async (content: string) => {
-
-    console.log("formData", formData)
     startTransition(async () => {
-      const res = await dispatch(createWebsitePage({ ...formData, content, isHomePage: formData.slug === "home" ? true : false }));
+      const { websiteId: _drop, ...rest } = formData;
+      const res = await dispatch(
+        createWebsitePage({
+          ...rest,
+          content,
+          isHomePage: formData.slug === "home",
+        }),
+      );
       if (createWebsitePage.fulfilled.match(res)) {
         setMsg("Created successfully!");
         toast.success("Created successfully!");
@@ -453,13 +472,11 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
         toast.error("Create failed");
       }
     });
-  }
+  };
 
-  //update headerPage 
-
+  //update headerPage
 
   const updateHeaderPage = async (content: string) => {
-
     const data: TemplateDocument = {
       slug: formData.slug,
       status: "draft",
@@ -471,8 +488,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       pageSlug: [formData.slug],
       createdAt: new Date(),
       updatedAt: new Date(),
-
-    }
+    };
     const result = await dispatch(createHeader(data));
     if (createHeader.fulfilled.match(result)) {
       setMsg("Created successfully!");
@@ -482,15 +498,18 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       setMsg("Create failed");
       toast.error("Create failed");
     }
-  }
+  };
   const leftFields = fields.filter((f) => f.side === "left");
   const rightFields = fields.filter((f) => f.side === "right");
 
   const renderableHtml = useMemo(
     () => unescapeHtmlIfNeeded(formData?.content || ""),
-    [formData?.content]
+    [formData?.content],
   );
-  const iframeDoc = useMemo(() => buildIframeDoc(renderableHtml), [renderableHtml]);
+  const iframeDoc = useMemo(
+    () => buildIframeDoc(renderableHtml),
+    [renderableHtml],
+  );
 
   // ✅ Thumbnail scaling (shows more of page in small box)
   const THUMB_SCALE = 0.32;
@@ -508,7 +527,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
         "tenant_id",
         "website_id",
       ]),
-    []
+    [],
   );
 
   const shouldHideField = (field: FieldConfig) => {
@@ -527,7 +546,10 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   const seoTitleLen = String(formData?.seoTitle || "").trim().length;
   const metaLen = String(formData?.metaDescription || "").trim().length;
 
-  const pageText = useMemo(() => stripHtmlToText(renderableHtml), [renderableHtml]);
+  const pageText = useMemo(
+    () => stripHtmlToText(renderableHtml),
+    [renderableHtml],
+  );
   const wordCount = useMemo(() => countWords(pageText), [pageText]);
 
   const imgStats = useMemo(() => {
@@ -535,12 +557,12 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(
         `<body>${renderableHtml}</body>`,
-        "text/html"
+        "text/html",
       );
       const imgs = Array.from(doc.querySelectorAll("img"));
       const total = imgs.length;
       const withAlt = imgs.filter(
-        (i) => (i.getAttribute("alt") || "").trim().length > 0
+        (i) => (i.getAttribute("alt") || "").trim().length > 0,
       ).length;
       return { total, withAlt };
     } catch {
@@ -570,9 +592,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
   ------------------------------ */
   const selectedTemplate = useMemo(
     () => allTemplate.find((t) => t._id === selectedTplKey) || allTemplate[0],
-    [selectedTplKey]
+    [selectedTplKey],
   );
-
 
   const filteredTemplates = useMemo(() => {
     const q = tplSearch.trim().toLowerCase();
@@ -603,7 +624,6 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
       ...p,
       content: tpl?.content,
     }));
-
 
     toast.success(`Applied template: ${tpl.label}`);
   };
@@ -703,7 +723,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 {label}
               </Label>
               <div className="text-xs text-slate-500 mt-0.5">
-                Edit HTML and preview instantly. Use templates from the right panel.
+                Edit HTML and preview instantly. Use templates from the right
+                panel.
               </div>
             </div>
 
@@ -713,7 +734,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 variant={mode === "html" ? "default" : "ghost"}
                 className={cn(
                   "h-9 rounded-md px-4",
-                  mode === "html" && "bg-violet-600 hover:bg-violet-700 text-white"
+                  mode === "html" &&
+                    "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("html")}
               >
@@ -725,7 +747,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 className={cn(
                   "h-9 rounded-md px-4",
                   mode === "preview" &&
-                  "bg-violet-600 hover:bg-violet-700 text-white"
+                    "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("preview")}
               >
@@ -760,7 +782,6 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                     className="w-full h-[520px] bg-white"
                     srcDoc={iframeDoc}
                     sandbox="allow-scripts allow-same-origin"
-
                   />
                 </div>
               </div>
@@ -783,7 +804,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
             readOnly={readOnly}
             className={cn(
               "h-11 rounded-md bg-white border-slate-200",
-              readOnly && "bg-slate-50 text-slate-700"
+              readOnly && "bg-slate-50 text-slate-700",
             )}
           />
         </div>
@@ -805,7 +826,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
               "w-full rounded-md border border-slate-200 bg-white px-5 py-4",
               "text-[14px] leading-6 text-slate-900 outline-none",
               "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-              "resize-none"
+              "resize-none",
             )}
           />
         </div>
@@ -876,7 +897,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
               "mt-5 rounded-md border px-4 py-3 shadow-sm",
               msg.toLowerCase().includes("success")
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                : "bg-rose-50 border-rose-200 text-rose-800"
+                : "bg-rose-50 border-rose-200 text-rose-800",
             )}
           >
             <div className="text-sm font-medium">{msg}</div>
@@ -887,7 +908,9 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
           {/* Left */}
           <div className="lg:col-span-8">
             <div className="rounded-md border border-slate-200 bg-white shadow-sm p-7">
-              <div className="space-y-7">{leftFields.map((f) => renderField(f))}</div>
+              <div className="space-y-7">
+                {leftFields.map((f) => renderField(f))}
+              </div>
             </div>
 
             {/* SEO Panel */}
@@ -895,7 +918,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
               <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
                 <div className="text-sm font-semibold text-slate-900">SEO</div>
                 <div className="text-xs text-slate-500 mt-0.5">
-                  Improve search visibility with better title, description and keywords.
+                  Improve search visibility with better title, description and
+                  keywords.
                 </div>
               </div>
 
@@ -906,7 +930,9 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                   </Label>
                   <Input
                     value={formData.focusKeyword || ""}
-                    onChange={(e) => handleChange("focusKeyword", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("focusKeyword", e.target.value)
+                    }
                     placeholder="e.g. sustainability, roofing, modern exterior"
                     className="h-11 rounded-md bg-white border-slate-200"
                   />
@@ -949,14 +975,16 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                   </Label>
                   <textarea
                     value={formData.metaDescription || ""}
-                    onChange={(e) => handleChange("metaDescription", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("metaDescription", e.target.value)
+                    }
                     placeholder="Write a short summary for search results..."
                     rows={4}
                     className={cn(
                       "w-full rounded-md border border-slate-200 bg-white px-4 py-3",
                       "text-[13.5px] leading-6 text-slate-900 outline-none",
                       "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-                      "resize-none"
+                      "resize-none",
                     )}
                   />
                   <div className="space-y-1 pt-1">
@@ -968,11 +996,13 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                     <SeoRow
                       ok={
                         !!focusKeyword &&
-                        keywordIn(String(formData.metaDescription || "")) === true
+                        keywordIn(String(formData.metaDescription || "")) ===
+                          true
                       }
                       warn={
                         !focusKeyword ||
-                        keywordIn(String(formData.metaDescription || "")) !== true
+                        keywordIn(String(formData.metaDescription || "")) !==
+                          true
                       }
                       text={
                         focusKeyword
@@ -993,7 +1023,8 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                     className="h-11 rounded-md bg-slate-50 border-slate-200 text-slate-700 mt-2"
                   />
                   <div className="text-xs text-slate-500 py-2">
-                    Full URL: <span className="font-mono">{fullUrl || "—"}</span>
+                    Full URL:{" "}
+                    <span className="font-mono">{fullUrl || "—"}</span>
                   </div>
 
                   <div className="space-y-2">
@@ -1007,16 +1038,20 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                         text={`Recommended 300+ words. Current: ${wordCount}`}
                       />
                       <SeoRow
-                        ok={imgStats.total === 0 ? true : imgStats.withAlt === imgStats.total}
-                        warn={imgStats.total > 0 && imgStats.withAlt < imgStats.total}
+                        ok={
+                          imgStats.total === 0
+                            ? true
+                            : imgStats.withAlt === imgStats.total
+                        }
+                        warn={
+                          imgStats.total > 0 &&
+                          imgStats.withAlt < imgStats.total
+                        }
                         text={`Images with alt text: ${imgStats.withAlt}/${imgStats.total}`}
                       />
                     </div>
                   </div>
-
                 </div>
-
-
               </div>
             </div>
           </div>
@@ -1089,7 +1124,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                               "text-left rounded-md border bg-white overflow-hidden shadow-sm",
                               isActive
                                 ? "border-violet-400 ring-2 ring-violet-200"
-                                : "border-slate-200 hover:border-slate-300"
+                                : "border-slate-200 hover:border-slate-300",
                             )}
                           >
                             <div className="px-3 py-2 border-b border-slate-200 bg-white">
@@ -1155,7 +1190,9 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                         <div className="relative aspect-[16/10] w-full bg-white overflow-hidden">
                           <iframe
                             title="selected-template"
-                            srcDoc={buildIframeDoc(selectedTemplate?.content || "")}
+                            srcDoc={buildIframeDoc(
+                              selectedTemplate?.content || "",
+                            )}
                             sandbox="allow-scripts allow-same-origin"
                             className="absolute left-0 top-0 origin-top-left"
                             style={{
@@ -1181,7 +1218,9 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                          onClick={() => insertTemplateAtCursor(selectedTemplate)}
+                          onClick={() =>
+                            insertTemplateAtCursor(selectedTemplate)
+                          }
                         >
                           <PlusCircle className="h-4 w-4 mr-2" />
                           Insert
@@ -1191,7 +1230,9 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                          onClick={() => copyToClipboard(selectedTemplate?.content || "")}
+                          onClick={() =>
+                            copyToClipboard(selectedTemplate?.content || "")
+                          }
                         >
                           <Copy className="h-4 w-4 mr-2" />
                           Copy
@@ -1243,12 +1284,13 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 </div>
 
                 {/* Hidden IDs (still in payload) */}
-                <input type="hidden" name="tenantId" value={formData.tenantId || ""} />
-                <input type="hidden" name="websiteId" value={formData.websiteId || ""} />
+                <input
+                  type="hidden"
+                  name="tenantId"
+                  value={formData.tenantId || ""}
+                />
               </div>
             </div>
-
-
           </div>
         </div>
       </div>

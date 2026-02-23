@@ -30,7 +30,7 @@ export interface Permission {
 
 // White-labeling and Branding
 export interface BrandingSettings {
-  logo?: string,
+  logo?: string;
   favicon?: string;
   colors?: {
     primary: string;
@@ -49,7 +49,6 @@ export interface BrandingSettings {
     body?: string;
   };
   customCSS?: string;
-
 }
 
 // Tenant (franchise/client) - Enhanced
@@ -87,7 +86,7 @@ export interface Tenant extends Omit<BaseDocument, "tenantId"> {
       keySecret: string; // Store encrypted
     };
   };
-  tenantId?: ObjectId | string
+  tenantId?: ObjectId | string;
   // Feature flags
   features: {
     websiteEnabled: boolean;
@@ -128,6 +127,17 @@ export interface Tenant extends Omit<BaseDocument, "tenantId"> {
     twitter?: string;
   };
 
+  website: {
+    // tenantId: string | ObjectId;
+    name: string;
+    serviceType: string;
+    primaryDomain?: string[] | null;
+    systemSubdomain?: string;
+    lang: any[];
+    isComingSoon?: boolean;
+    globalStyle: string
+  };
+
   // Status
   status: "active" | "suspended" | "pending";
 }
@@ -155,7 +165,7 @@ export interface User extends BaseDocument {
     notes?: string;
   };
   managedServices?: any;
-  tenantdetail?: any
+  tenantdetail?: any;
 }
 
 // Super Admin (platform-level access)

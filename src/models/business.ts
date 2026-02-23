@@ -6,8 +6,22 @@ export interface IBusiness {
   slug?: string;
   name?: string;
   email?: string;
-  plan?: "trial" | "free" | "pro" | "agency" | "enterprise" | "basic" | undefined;
-  subscriptionStatus?: "active" | "paused" | "cancelled" | "suspended" | "inactive" | "pending" |undefined;
+  plan?:
+    | "trial"
+    | "free"
+    | "pro"
+    | "agency"
+    | "enterprise"
+    | "basic"
+    | undefined;
+  subscriptionStatus?:
+    | "active"
+    | "paused"
+    | "cancelled"
+    | "suspended"
+    | "inactive"
+    | "pending"
+    | undefined;
   customDomainVerified?: boolean;
   branding?: {
     primary_color?: string;
@@ -37,29 +51,28 @@ export interface IBusiness {
   updatedAt?: string;
   createdById?: string;
   type?: "business" | "franchise" | "agency";
-  tenantId?: string ;
+  tenantId?: string;
   websitesCount?: number;
   membersCount?: number;
-  websites?: Array<{
+  website?: {
     name?: string;
     primaryDomain?: string[];
     serviceType?: string;
     status?: string;
     createdAt?: string;
     updatedAt?: string;
-  }>;
+  };
   businessdetails?: BussinessDetailModel;
-  socialPresence?:{
-   facebook?:string,
-   twitter?:string,
-   linkedin?:string,
-   instagram?:string,
-   youtube?:string,
-   tiktok?:string,
-   whatsapp?:string,
-   telegram?:string,
-   
-  }
+  socialPresence?: {
+    facebook?: string;
+    twitter?: string;
+    linkedin?: string;
+    instagram?: string;
+    youtube?: string;
+    tiktok?: string;
+    whatsapp?: string;
+    telegram?: string;
+  };
 }
 
 export interface BussinessDetailModel {

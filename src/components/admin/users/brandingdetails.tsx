@@ -216,13 +216,7 @@
 import TypographyPage from "@/app/admin/websites/[website]/branding/typography/StaticTypography";
 import { Palette, Upload } from "lucide-react";
 
-export const Brandingdetails = ({
-  logoPreview,
-  handleInputChange,
-  formData,
-}: any) => {
-
-  
+export const Brandingdetails = ({ logoPreview, handleInputChange }: any) => {
   return (
     <div className="space-y-6">
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">

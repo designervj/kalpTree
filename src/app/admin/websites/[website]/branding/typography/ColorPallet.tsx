@@ -9,14 +9,6 @@ import {
   ColorPalletModal,
 } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 
-// export type Combo = {
-//   _id: string;
-//   name: string;
-//   colors: colorModal;
-//   seed?: string;
-//   usertype?: boolean;
-// };
-
 const CARD_W = 140;
 const GAP = 14;
 

@@ -7,16 +7,19 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   const slug = searchParams.get("slug");
-  const websiteId = searchParams.get("websiteId") || id;
+  const tenantId = searchParams.get("tenantId") || id;
 
   const db = await getDatabase();
   const collection = db.collection("pages");
   const filter: any = {};
-  if (websiteId) {
+  if (tenantId) {
     // websiteId is stored as string in the database, not ObjectId
-    filter.websiteId = typeof websiteId === "string" ? new ObjectId(websiteId) : websiteId;
+    filter._id =
+      typeof tenantId === "string" ? new ObjectId(tenantId) : tenantId;
   }
   const data = await collection.find(filter).sort({ name: 1 }).toArray();
+
+  console.log(data)
 
   return NextResponse.json(data);
 }
@@ -28,7 +31,6 @@ export async function POST(req: Request) {
     const collection = db.collection("pages");
     const body = await req.json();
     body.tenantId = new ObjectId(body.tenantId);
-    body.websiteId = new ObjectId(body.websiteId);
     // Optionally validate body here
     const now = new Date().toISOString();
     const newPage = {
@@ -40,12 +42,12 @@ export async function POST(req: Request) {
     const result = await collection.insertOne(newPage);
     return NextResponse.json(
       { ...newPage, _id: result.insertedId },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || "Failed to create page" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -88,14 +90,14 @@ export async function PUT(req: Request) {
     if (updateDoc.isHomePage) {
       // update all other pages isHomePage to false
       await collection.updateMany(
-        { websiteId: updateDoc.websiteId,_id:{$ne:updateDoc._id}},
-        { $set: { isHomePage: false } }
+        { websiteId: updateDoc.websiteId, _id: { $ne: updateDoc._id } },
+        { $set: { isHomePage: false } },
       );
     }
 
     const updateResult = await collection.updateOne(
       { _id: id },
-      { $set: updateDoc }
+      { $set: updateDoc },
     );
     if (updateResult.matchedCount === 0) {
       return NextResponse.json({ error: "Page not found" }, { status: 404 });
@@ -106,7 +108,7 @@ export async function PUT(req: Request) {
     console.error("PUT error:", err);
     return NextResponse.json(
       { error: err.message || "Failed to update page" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -132,7 +134,7 @@ export async function DELETE(req: Request) {
   } catch (err: any) {
     return NextResponse.json(
       { error: err.message || "Failed to delete page" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -112,7 +114,9 @@ const ShowBusiness = () => {
   }, []);
 
   const handlePageChange = (newPage: number) => {
-    router.push(`/admin/businesses?page=${newPage}&itemsperpage=${itemsperpage}`);
+    router.push(
+      `/admin/businesses?page=${newPage}&itemsperpage=${itemsperpage}`,
+    );
   };
 
   const handleItemsPerPageChange = (value: string) => {
@@ -132,8 +136,9 @@ const ShowBusiness = () => {
       data = data.filter((b) => {
         const website = websites.find((web) => web.tenantId == b._id);
         const domain =
-          website?.primaryDomain?.find((d: string) => !d?.includes("localhost")) ||
-          "";
+          website?.primaryDomain?.find(
+            (d: string) => !d?.includes("localhost"),
+          ) || "";
         const email = (b.email || "").toLowerCase();
         const name = (b.name || "").toLowerCase();
         const industryVal = (b.businessdetails?.industry || "")
@@ -154,19 +159,20 @@ const ShowBusiness = () => {
     } else if (sortBy === "oldest") {
       data.sort(
         (a, b) =>
-          new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime(),
+          new Date(a.createdAt || 0).getTime() -
+          new Date(b.createdAt || 0).getTime(),
       );
     } else {
       // newest
       data.sort(
         (a, b) =>
-          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
       );
     }
 
     return data;
   }, [allBusiness, websites, q, status, sortBy]);
-
 
   if (!pagination) {
     return (
@@ -228,13 +234,17 @@ const ShowBusiness = () => {
   };
 
   const handleEditBusiness = (business: IBusiness) => {
-    const website = websites.find((website) => website.tenantId === business._id);
+    const website = websites.find(
+      (website) => website.tenantId === business._id,
+    );
     if (!website) {
       toast.error("Website not found");
       return;
     }
 
-    const agency = allAgencies.find((agency) => agency._id === business.tenantId);
+    const agency = allAgencies.find(
+      (agency) => agency._id === business.tenantId,
+    );
     if (!agency) {
       toast.error("Agency not found");
       return;
@@ -245,7 +255,6 @@ const ShowBusiness = () => {
     dispatch(setEditBusiness(business));
     router.push(`/admin/businesses/edit`);
   };
-
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -326,8 +335,8 @@ const ShowBusiness = () => {
             <div className="space-y-0.5">
               <p className="text-sm font-semibold text-slate-900">Quick tip</p>
               <p className="text-xs text-muted-foreground">
-                Each business keeps its own website, users, and settings separate —
-                perfect for multi-tenant management.
+                Each business keeps its own website, users, and settings
+                separate — perfect for multi-tenant management.
               </p>
             </div>
           </div>
@@ -460,38 +469,48 @@ const ShowBusiness = () => {
 
             const joinedDate = b?.createdAt
               ? new Date(b.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
               : null;
 
-            const website = websites.find((web) => web.tenantId == b._id);
+            const website = b.website;
 
-            // NOTE: your original logic preserved here, but made safe
-            const major = website
-              ? allBusiness.find((agency) => agency._id === website.tenantId)?.tenantId ||
-              null
-              : null;
+            const major =
+              allAgencies.find((agency) => agency._id === b!.tenantId)?._id ??
+              null;
 
+            // const dom = website?.primaryDomain?.[0] || "—";
             const domain = website?.primaryDomain?.find((d: string) =>
               d?.includes("kalptree.xyz"),
             );
-
             const agencyId =
               user?.role === "agency"
                 ? (user?.tenantId?.toString() ?? null)
                 : (major ?? null);
 
-            const href =
-              domain && website
-                ? toCreateHref(
-                  domain,
-                  website?.tenantId?.toString() ?? null,
-                  agencyId,
-                  user?.role || "",
-                )
-                : "#";
+            const href = toCreateHref(
+              domain!,
+              String(b._id) ?? null,
+              String(agencyId),
+              user?.role!,
+            );
+
+            // const agencyId =
+            //   user?.role === "agency"
+            //     ? (user?.tenantId?.toString() ?? null)
+            //     : (major ?? null);
+
+            // const href =
+            //   domain && website
+            //     ? toCreateHref(
+            //       domain,
+            //       website?.tenantId?.toString() ?? null,
+            //       agencyId,
+            //       user?.role || "",
+            //     )
+            //     : "#";
 
             const isLocalhost =
               typeof window !== "undefined" &&
@@ -509,6 +528,24 @@ const ShowBusiness = () => {
             const visitHref = visitDomain ? `http://${visitDomain}` : null;
 
             const isActive = (b.status || "").toLowerCase() === "active";
+            // return (
+            //   <Card
+            //     key={String(b._id)}
+            //     className="rounded-lg border bg-white shadow-sm hover:shadow-md transition-shadow"
+            //   >
+            //     <CardContent className="px-4 py-3">
+            //       <div className="flex items-center gap-4">
+            //         {/* Logo */}
+            //         <div className="h-10 w-10 rounded-lg border border-slate-200 bg-slate-50 grid place-items-center shrink-0 overflow-hidden">
+            //           <img
+            //             src={
+            //               b?.branding?.logo ||
+            //               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7NnXia5DWq6qfBisS5mDI7r8xa5sT8cuvnA&s"
+            //             }
+            //             alt={b.name}
+            //             className="h-8 w-8 object-contain"
+            //           />
+            //         </div>
 
             return (
               <Card
@@ -536,28 +573,73 @@ const ShowBusiness = () => {
                           <h3 className="truncate text-[15px] font-semibold text-slate-900">
                             {b.name}
                           </h3>
+                        </div>
+                        <Link
+                          href={`/builder/${b._id}`}
+                          target="_blank"
+                          className="flex gap-1 text-[12px] items-center rounded-md bg-orange-100 px-2 py-0.5"
+                        >
+                          View Website{" "}
+                          <ExternalLink className="h-3.5 w-3.5 text-slate-600" />
+                        </Link>
 
-                          <span
-                            className={cn(
-                              "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-xs font-medium",
-                              isActive
-                                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                                : "border-rose-200 bg-rose-50 text-rose-700",
-                            )}
+                        <Link
+                          href={href}
+                          target="_blank"
+                          className="flex gap-1 text-[12px] items-center rounded-md bg-red-100 px-2 py-0.5"
+                        >
+                          View Admin
+                          <ExternalLink className="h-3.5 w-3.5 text-slate-600" />
+                        </Link>
+                      </div>
+
+                      {/* Meta row */}
+                      <div className="mt-1 flex items-center gap-3 flex-wrap text-xs text-slate-500">
+                        {b.email && (
+                          <a
+                            href={`mailto:${b.email}`}
+                            className="flex items-center gap-1 hover:text-slate-800 transition-colors"
                           >
-                            <span
-                              className={cn(
-                                "h-1.5 w-1.5 rounded-full",
-                                isActive ? "bg-emerald-500" : "bg-rose-500",
-                              )}
-                            />
-                            {isActive ? "Active" : "Inactive"}
+                            <Mail className="h-3 w-3" />
+                            {b.email}
+                          </a>
+                        )}
+                        {joinedDate && (
+                          <span className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            Joined {joinedDate}
                           </span>
+                        )}
 
-                          {Icon && (
-                            <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5">
-                              <Icon className="h-3.5 w-3.5 text-slate-600" />
+                        {/* Feature pills */}
+                        <div className="flex items-center gap-1 flex-wrap">
+                          {b?.features?.websiteEnabled && (
+                            <span className="rounded-md border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-700">
+                              Website
                             </span>
+                          )}
+                          {b?.features?.ecommerceEnabled && (
+                            <span className="rounded-md border border-purple-200 bg-purple-50 px-1.5 py-0.5 text-[11px] font-medium text-purple-700">
+                              E-commerce
+                            </span>
+                          )}
+                          {b?.features?.blogEnabled && (
+                            <span className="rounded-md border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[11px] font-medium text-emerald-700">
+                              Blog
+                            </span>
+                          )}
+                          {b?.features?.invoicesEnabled && (
+                            <>
+                              <span className="rounded-md border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
+                                Invoices
+                              </span>
+
+                              {Icon && (
+                                <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5">
+                                  <Icon className="h-3.5 w-3.5 text-slate-600" />
+                                </span>
+                              )}
+                            </>
                           )}
                         </div>
 
@@ -655,8 +737,8 @@ const ShowBusiness = () => {
 
                     {/* Right: actions */}
                     <div className="flex shrink-0 flex-wrap items-center gap-2 lg:justify-end">
-                      {website?._id && (
-                        <Link href={`/builder/${website._id}`} target="_blank">
+                      {b?._id && (
+                        <Link href={`/builder/${b._id}`} target="_blank">
                           <Button
                             variant="outline"
                             size="sm"

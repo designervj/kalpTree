@@ -73,7 +73,6 @@ export async function GET(req: NextRequest) {
       //   name: 1,
       //   tenantId: 1,
       //   email: 1,
-
       // })
       .toArray();
 

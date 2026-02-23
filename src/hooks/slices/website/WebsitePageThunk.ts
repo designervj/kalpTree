@@ -7,9 +7,9 @@ export const fetchWebsitePages = createAsyncThunk<
   WebsitePageModel[],
   string | ObjectId,
   { rejectValue: string }
->("websitePage/fetchWebsitePages", async (websiteId, { rejectWithValue }) => {
+>("websitePage/fetchWebsitePages", async (tenantId, { rejectWithValue }) => {
   try {
-    const response = await fetch(`/api/pages/websites?websiteId=${websiteId}`);
+    const response = await fetch(`/api/pages/websites?tenantId=${tenantId}`);
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to fetch pages");
