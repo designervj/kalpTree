@@ -68,6 +68,7 @@ export default function BusinessCreatePage({
   const router = useRouter();
   const isAgencyPath = path.includes("agencies");
   const dispatch = useDispatch();
+
   const safeUser = useMemo(() => {
     return {
       id: user?.id ?? "",
@@ -78,7 +79,7 @@ export default function BusinessCreatePage({
   }, [user]);
 
   const [activeTab, setActiveTab] = useState<StepId>(
-    isAgencyPath ? "agency" : "general",
+    isAgencyPath ? "agency" : "business",
   );
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,7 +92,6 @@ export default function BusinessCreatePage({
       agency_email: "",
       agency_password: "",
     }),
-
     businessdetails: {
       email: "",
       password: "",
@@ -99,7 +99,7 @@ export default function BusinessCreatePage({
       business_name: "",
       business_url: "",
       tagline: "",
-      industry: "Architecture",
+      industry: "",
       founded_year: "2023",
       about: "",
       public_email: "",
@@ -111,8 +111,8 @@ export default function BusinessCreatePage({
       business_website_url: "",
       primary_domain: "",
       added_domains: [],
+      globalStyle: ""
     },
-
     branding: {
       logo: null as File | null,
       primary_color: "#6366f1",
@@ -120,7 +120,6 @@ export default function BusinessCreatePage({
       tertiary_color: "#ec4899",
       typography: "Inter",
     },
-
     createdById: safeUser?.id,
   }));
 
@@ -132,11 +131,7 @@ export default function BusinessCreatePage({
         try {
           const req = await fetch("/api/admin/attributessets");
           const res = await req.json();
-          if (res.items.length > 0) {
-            setBusinessType(res.items);
-          } else {
-            setBusinessType([]);
-          }
+          setBusinessType(res.items.length > 0 ? res.items : []);
         } catch (error) {
           toast.error(String(error));
         }
@@ -177,10 +172,7 @@ export default function BusinessCreatePage({
       const [parent, child] = name.split(".");
       setFormData((prev: any) => ({
         ...prev,
-        [parent]: {
-          ...prev[parent],
-          [child]: value,
-        },
+        [parent]: { ...prev[parent], [child]: value },
       }));
       return;
     }
@@ -190,12 +182,8 @@ export default function BusinessCreatePage({
       if (file) {
         setFormData((prev: any) => ({
           ...prev,
-          branding: {
-            ...prev.branding,
-            logo: file,
-          },
+          branding: { ...prev.branding, logo: file },
         }));
-
         const reader = new FileReader();
         reader.onloadend = () => setLogoPreview(reader.result);
         reader.readAsDataURL(file);
@@ -203,10 +191,7 @@ export default function BusinessCreatePage({
       return;
     }
 
-    setFormData((prev: any) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
@@ -224,7 +209,6 @@ export default function BusinessCreatePage({
 
       fd.append("createdById", safeUser?.id.toString());
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
-
       fd.append(
         "branding",
         JSON.stringify({
@@ -253,7 +237,6 @@ export default function BusinessCreatePage({
         dispatch(addCreatedBusiness(result.business));
         dispatch(addCreatedWebsite(result.website));
         toast.success(result.message);
-
         setMessage({ type: "success", text: "Account created successfully!" });
         setLogoPreview(null);
         router.push(`/admin/agencies`);
@@ -274,7 +257,6 @@ export default function BusinessCreatePage({
     }
   };
 
-  // ✅ 4 Steps
   const tabs = isAgencyPath
     ? [
         {
@@ -284,15 +266,15 @@ export default function BusinessCreatePage({
           icon: User,
         },
         {
-          id: "general" as const,
-          label: "Account Details",
-          desc: "Basic information & branding",
-          icon: Briefcase,
-        },
-        {
           id: "business" as const,
           label: "Website Setup",
           desc: "Configure your website",
+          icon: Briefcase,
+        },
+        {
+          id: "general" as const,
+          label: "Account Details",
+          desc: "Basic information & branding",
           icon: Briefcase,
         },
         {
@@ -310,15 +292,15 @@ export default function BusinessCreatePage({
       ]
     : [
         {
-          id: "general" as const,
-          label: "Account Details",
-          desc: "Basic information",
+          id: "business" as const,
+          label: "Business Setup",
+          desc: "Configure your business",
           icon: Briefcase,
         },
         {
-          id: "business" as const,
-          label: "Website Setup",
-          desc: "Configure your website",
+          id: "general" as const,
+          label: "Account Details",
+          desc: "Basic information",
           icon: Briefcase,
         },
         {
@@ -348,7 +330,6 @@ export default function BusinessCreatePage({
     if (currentIdx < tabs.length - 1) setActiveTab(tabs[currentIdx + 1].id);
   };
 
-  // values for review
   const orgName = formData?.businessdetails?.business_name;
   const slug =
     formData?.businessdetails?.business_url ||
@@ -360,298 +341,303 @@ export default function BusinessCreatePage({
     formData?.branding?.secondary_color || "#8b5cf6",
     formData?.branding?.tertiary_color || "#ec4899",
   ];
-
   const websiteFull =
     formData?.businessdetails?.primary_domain ||
     (slug ? `${slug}.kalptree.xyz` : "-");
 
+  const progressPercent = Math.round(((currentIdx + 1) / tabs.length) * 100);
 
   return (
     <div className="min-h-screen bg-[#f3f4f6]">
-      <div className="mx-auto max-w-7xl px-6 py-8">
+      <div className="mx-auto max-w-5xl px-6 py-8">
+        {/* Breadcrumb */}
         <div className="mb-6">
           <BreadCrumbPage />
         </div>
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          {/* LEFT */}
-          <div className="lg:col-span-8">
-            <div className="overflow-hidden">
-              {message.text && (
-                <div
-                  className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${
-                    message.type === "success"
-                      ? "bg-green-50 text-green-800 border-green-200"
-                      : "bg-red-50 text-red-800 border-red-200"
-                  }`}
+        {/* ── HORIZONTAL STEPPER (top) ── */}
+        <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#0b1220] via-[#0f1a2f] to-[#0b1220] px-8 py-6 shadow-xl">
+          {/* Header row */}
+          <div className="mb-5 flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-white">Account Setup</h3>
+            </div>
+          </div>
+
+          {/* Steps */}
+          <div className="relative flex items-start gap-0">
+            {/* connector line behind */}
+            <div
+              className="absolute top-[18px] left-0 right-0 h-[2px] bg-white/10"
+              style={{ zIndex: 0 }}
+            />
+            {/* filled connector */}
+            <div
+              className="absolute top-[18px] left-0 h-[2px] bg-gradient-to-r from-blue-500 to-fuchsia-500 transition-all duration-500"
+              style={{
+                width:
+                  currentIdx === 0
+                    ? "0%"
+                    : `${(currentIdx / (tabs.length - 1)) * 100}%`,
+                zIndex: 1,
+              }}
+            />
+
+            {tabs.map((step, idx) => {
+              const isActive = idx === currentIdx;
+              const isDone = idx < currentIdx;
+
+              return (
+                <button
+                  key={step.id}
+                  type="button"
+                  onClick={() => setActiveTab(step.id)}
+                  className="relative z-10 flex flex-1 flex-col items-center gap-2 px-2 text-center group"
                 >
-                  {message.type === "success" ? (
-                    <CheckCircle className="h-5 w-5" />
-                  ) : (
-                    <XCircle className="h-5 w-5" />
-                  )}
-                  <span className="text-sm">{message.text}</span>
-                </div>
+                  {/* Circle */}
+                  <div
+                    className={[
+                      "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-300",
+                      isDone
+                        ? "border-emerald-500 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                        : isActive
+                          ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-600/40 ring-4 ring-blue-500/20"
+                          : "border-white/20 bg-[#0b1220] text-white/50 group-hover:border-white/40 group-hover:text-white/80",
+                    ].join(" ")}
+                  >
+                    {isDone ? <Check className="h-4 w-4" /> : idx + 1}
+                  </div>
+
+                  {/* Label */}
+                  <div>
+                    <p
+                      className={[
+                        "text-xs font-semibold leading-tight transition-colors",
+                        isActive
+                          ? "text-white"
+                          : isDone
+                            ? "text-emerald-400"
+                            : "text-white/50 group-hover:text-white/80",
+                      ].join(" ")}
+                    >
+                      {step.label}
+                    </p>
+                    <p className="mt-0.5 text-[10px] text-white/40 hidden sm:block">
+                      {step.desc}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── FORM AREA (full width) ── */}
+        <div>
+          {message.text && (
+            <div
+              className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${
+                message.type === "success"
+                  ? "bg-green-50 text-green-800 border-green-200"
+                  : "bg-red-50 text-red-800 border-red-200"
+              }`}
+            >
+              {message.type === "success" ? (
+                <CheckCircle className="h-5 w-5 shrink-0" />
+              ) : (
+                <XCircle className="h-5 w-5 shrink-0" />
               )}
+              <span className="text-sm">{message.text}</span>
+            </div>
+          )}
 
-              {/* main */}
-              <div className="rounded-xl border border-gray-200 bg-white p-6">
-                {activeTab === "agency" && isAgencyPath && (
-                  <Userdetails
-                    handleInputChange={handleInputChange}
+          <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+            {/* Step label inside form */}
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C2D64]/10">
+                {React.createElement(tabs[currentIdx]?.icon ?? Briefcase, {
+                  className: "h-4 w-4 text-[#7C2D64]",
+                })}
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-gray-900">
+                  {tabs[currentIdx]?.label}
+                </h2>
+                <p className="text-xs text-gray-500">
+                  {tabs[currentIdx]?.desc}
+                </p>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div className="mb-6 h-px bg-gray-100" />
+
+            {/* Step content */}
+            {activeTab === "agency" && isAgencyPath && (
+              <Userdetails
+                handleInputChange={handleInputChange}
+                formData={formData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                role={safeUser.role}
+              />
+            )}
+
+            {activeTab === "general" && (
+              <Businessdetails
+                step="general"
+                handleInputChange={handleInputChange}
+                formData={formData}
+                showPassword={showPassword}
+                setShowPassword={setShowPassword}
+                user={user}
+                agencies={agencies}
+                businessType={businessType}
+              />
+            )}
+
+            {activeTab === "business" && (
+              <div className="space-y-6">
+                <Businessdetails
+                  step="business"
+                  handleInputChange={handleInputChange}
+                  formData={formData}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  user={user}
+                  agencies={agencies}
+                  businessType={businessType}
+                />
+                <div className="pt-6 border-t border-gray-200">
+                  <PrimaryDomains
                     formData={formData}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    role={safeUser.role}
-                  />
-                )}
-
-                {activeTab === "general" && (
-                  <Businessdetails
-                    step="general"
                     handleInputChange={handleInputChange}
-                    formData={formData}
-                    showPassword={showPassword}
-                    setShowPassword={setShowPassword}
-                    user={user}
-                    agencies={agencies}
-                    businessType={businessType}
                   />
-                )}
+                </div>
+              </div>
+            )}
 
-                {activeTab === "business" && (
-                  <div className="space-y-6">
-                    <Businessdetails
-                      step="business"
-                      handleInputChange={handleInputChange}
-                      formData={formData}
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      user={user}
-                      agencies={agencies}
-                      businessType={businessType}
-                    />
+            {activeTab === "branding" && (
+              <Brandingdetails
+                handleInputChange={handleInputChange}
+                formData={formData}
+                logoPreview={logoPreview}
+              />
+            )}
 
-                    {/* Primary Domains Section - Added after About section */}
-                    <div className="pt-6 border-t border-gray-200">
-                      <PrimaryDomains
-                        formData={formData}
-                        handleInputChange={handleInputChange}
+            {/* Review step */}
+            {activeTab === "review" && (
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Review Your Information
+                  </h2>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Please review all details before submitting
+                  </p>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {/* Tenant Details */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                      Tenant Details
+                    </h3>
+                    <div className="mt-3 divide-y divide-gray-100">
+                      <InfoRow label="Organization:" value={orgName} />
+                      <InfoRow label="Slug:" value={slug} />
+                      <InfoRow label="Email:" value={ownerEmail} />
+                      <InfoRow
+                        label="Account Type:"
+                        value={formData?.businessdetails?.industry}
+                      />
+                      <InfoRow label="Plan:" value={plan} />
+                      <InfoRow
+                        label="Brand Colors:"
+                        value={<ColorDots colors={colors} />}
                       />
                     </div>
                   </div>
-                )}
 
-                {activeTab === "branding" && (
-                  <Brandingdetails
-                    handleInputChange={handleInputChange}
-                    formData={formData}
-                    logoPreview={logoPreview}
-                  />
-                )}
-
-                {/* ✅ REVIEW STEP */}
-                {activeTab === "review" && (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-2xl font-bold text-gray-900">
-                        Review Your Information
-                      </h2>
-                      <p className="mt-1 text-sm text-gray-600">
-                        Please review all details before submitting
-                      </p>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* Tenant Details */}
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <h3 className="text-base font-semibold text-gray-900">
-                          Tenant Details
-                        </h3>
-                        <div className="mt-3">
-                          <InfoRow label="Organization:" value={orgName} />
-                          <InfoRow label="Slug:" value={slug} />
-                          <InfoRow label="Email:" value={ownerEmail} />
-                          <InfoRow
-                            label="Account Type:"
-                            value={formData?.businessdetails?.industry}
-                          />
-                          <InfoRow label="Plan:" value={plan} />
-                          <InfoRow
-                            label="Brand Colors:"
-                            value={<ColorDots colors={colors} />}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Owner Account */}
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <h3 className="text-base font-semibold text-gray-900">
-                          Owner Account
-                        </h3>
-                        <div className="mt-3">
-                          <InfoRow label="Name:" value={safeUser?.name} />
-                          <InfoRow
-                            label="Email:"
-                            value={safeUser?.email || ownerEmail}
-                          />
-                          <InfoRow label="Role:" value={safeUser?.role} />
-                        </div>
-                      </div>
-
-                      {/* Website Configuration */}
-                      <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                        <h3 className="text-base font-semibold text-gray-900">
-                          Website Configuration
-                        </h3>
-                        <div className="mt-3">
-                          <InfoRow
-                            label="Website Name:"
-                            value={formData?.businessdetails?.brand_name}
-                          />
-                          <InfoRow label="Service Type:" value={plan} />
-                          <InfoRow
-                            label="Primary Domain:"
-                            value={websiteFull}
-                          />
-                          {formData?.businessdetails?.added_domains?.length >
-                            0 && (
-                            <InfoRow
-                              label="Additional Domains:"
-                              value={
-                                <div className="text-right space-y-1">
-                                  {formData.businessdetails.added_domains.map(
-                                    (domain: string) => (
-                                      <div key={domain} className="text-sm">
-                                        {domain}
-                                      </div>
-                                    ),
-                                  )}
-                                </div>
-                              }
-                            />
-                          )}
-                        </div>
-                      </div>
+                  {/* Owner Account */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                      Owner Account
+                    </h3>
+                    <div className="mt-3 divide-y divide-gray-100">
+                      <InfoRow label="Name:" value={safeUser?.name} />
+                      <InfoRow
+                        label="Email:"
+                        value={safeUser?.email || ownerEmail}
+                      />
+                      <InfoRow label="Role:" value={safeUser?.role} />
                     </div>
                   </div>
-                )}
-              </div>
 
-              {/* footer buttons */}
-              <div className="mt-6 flex items-center justify-between">
-                <button
-                  onClick={goPrev}
-                  disabled={currentIdx === 0}
-                  className="rounded-md border border-gray-300 bg-white px-5 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  Previous
-                </button>
-
-                {activeTab === "review" ? (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="w-full ml-6 rounded-xl bg-gradient-to-r from-blue-600 to-fuchsia-600 px-7 py-3 text-sm font-semibold text-white shadow hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Submitting..." : "Submit & Create Tenant"}
-                  </button>
-                ) : (
-                  <button
-                    onClick={goNext}
-                    className="rounded-md bg-[#7C2D64] px-7 py-2 text-sm font-semibold text-white shadow hover:bg-[#6B2457]"
-                  >
-                    Next
-                  </button>
-                )}
+                  {/* Website Configuration */}
+                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 sm:col-span-2">
+                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                      Website Configuration
+                    </h3>
+                    <div className="mt-3 divide-y divide-gray-100">
+                      <InfoRow
+                        label="Website Name:"
+                        value={formData?.businessdetails?.brand_name}
+                      />
+                      <InfoRow label="Service Type:" value={plan} />
+                      <InfoRow label="Primary Domain:" value={websiteFull} />
+                      {formData?.businessdetails?.added_domains?.length > 0 && (
+                        <InfoRow
+                          label="Additional Domains:"
+                          value={
+                            <div className="text-right space-y-1">
+                              {formData.businessdetails.added_domains.map(
+                                (domain: string) => (
+                                  <div key={domain} className="text-sm">
+                                    {domain}
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          }
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {/* RIGHT */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-6">
-              <div className="rounded-2xl bg-gradient-to-b from-[#0b1220] via-[#0f1a2f] to-[#0b1220] p-6 shadow-xl">
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold text-white">
-                    Account Setup
-                  </h3>
-                  <p className="mt-1 text-sm text-white/70">
-                    Complete all steps to get started
-                  </p>
-                </div>
+          {/* Footer navigation */}
+          <div className="mt-6 flex items-center justify-between">
+            <button
+              onClick={goPrev}
+              disabled={currentIdx === 0}
+              className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              ← Previous
+            </button>
 
-                <div className="space-y-4">
-                  {tabs.map((step, idx) => {
-                    const isActive = idx === currentIdx;
-                    const isDone = idx < currentIdx;
-
-                    return (
-                      <div key={step.id} className="relative">
-                        {idx !== tabs.length - 1 && (
-                          <div className="absolute left-[33px] top-[42px] h-[68px] w-[2px] bg-white/10" />
-                        )}
-
-                        <button
-                          type="button"
-                          onClick={() => setActiveTab(step.id)}
-                          className={[
-                            "w-full rounded-xl p-4 text-left transition",
-                            isActive
-                              ? "bg-white/10 ring-1 ring-white/15"
-                              : "bg-white/5 hover:bg-white/10",
-                          ].join(" ")}
-                        >
-                          <div className="flex items-start gap-3">
-                            <div
-                              className={[
-                                "mt-0.5 flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold",
-                                isDone
-                                  ? "bg-emerald-500 text-white"
-                                  : isActive
-                                    ? "bg-blue-600 text-white ring-4 ring-blue-600/25"
-                                    : "bg-white/10 text-white/70",
-                              ].join(" ")}
-                            >
-                              {isDone ? <Check className="h-4 w-4" /> : idx + 1}
-                            </div>
-
-                            <div className="min-w-0">
-                              <p
-                                className={[
-                                  "font-semibold",
-                                  isActive ? "text-white" : "text-white/80",
-                                ].join(" ")}
-                              >
-                                {step.label}
-                              </p>
-                              <p className="mt-1 text-xs text-white/60">
-                                {step.desc}
-                              </p>
-                            </div>
-                          </div>
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className="mt-8 rounded-xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-sm text-white/75">
-                    Need help? Contact our support team at
-                  </p>
-                  <p className="mt-1 text-sm font-semibold text-blue-300">
-                    support@example.com
-                  </p>
-                </div>
-              </div>
-            </div>
+            {activeTab === "review" ? (
+              <button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="rounded-xl bg-gradient-to-r from-blue-600 to-fuchsia-600 px-8 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+              >
+                {isSubmitting ? "Submitting…" : "Submit & Create Tenant"}
+              </button>
+            ) : (
+              <button
+                onClick={goNext}
+                className="rounded-lg bg-[#7C2D64] px-8 py-2.5 text-sm font-semibold text-white shadow hover:bg-[#6B2457] transition-colors"
+              >
+                Next →
+              </button>
+            )}
           </div>
-          {/* end right */}
         </div>
       </div>
     </div>
   );
 }
-
-

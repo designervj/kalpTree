@@ -4,7 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Globe, Shuffle, User } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { colorModal, ColorPalletModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
+import {
+  colorModal,
+  ColorPalletModal,
+} from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 
 // export type Combo = {
 //   _id: string;
@@ -17,20 +20,20 @@ import { colorModal, ColorPalletModal } from "@/components/admin/branding/color_
 const CARD_W = 140;
 const GAP = 14;
 
-const ColorPallet = ({ handleColorPallet }: any) => {
+const ColorPallet = ({ handleColorPallet, type }: any) => {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);
 
-
   // NEW: which card is active (clicked)
   const [activeId, setActiveId] = useState<string | null>(null);
 
   const [combo, setCombo] = useState<ColorPalletModal[]>([]);
-  const { colorPallets,allColorPallets, isFetched } = useSelector((state: RootState) => state.colorPallet)
-  
-  
+  const { colorPallets, allColorPallets, isFetched } = useSelector(
+    (state: RootState) => state.colorPallet,
+  );
+
   const updateArrows = () => {
     const el = scrollerRef.current;
     if (!el) return;
@@ -104,16 +107,16 @@ const ColorPallet = ({ handleColorPallet }: any) => {
   // }, [currentWebsite?._id]);
   useEffect(() => {
     if (allColorPallets && allColorPallets.length) {
- setCombo(allColorPallets)
+      setCombo(allColorPallets);
+    } else {
+      setCombo(colorPallets);
     }
-  }, [allColorPallets])
-
-
+  }, [allColorPallets]);
 
   const handleUpdateColor = (colors: any) => {
     console.log("colors", colors);
     handleColorPallet(colors);
-  }
+  };
   return (
     <section className="w-full bg-white">
       <style>{`
@@ -187,7 +190,9 @@ const ColorPallet = ({ handleColorPallet }: any) => {
               {combo.map((c) => {
                 const isActive = activeId === c._id;
                 const brand = c?.colors?.brand || {};
-                const allColors = [...new Set(Object.values(brand).filter(Boolean))];
+                const allColors = [
+                  ...new Set(Object.values(brand).filter(Boolean)),
+                ];
                 return (
                   <div
                     key={c._id}

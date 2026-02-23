@@ -70,72 +70,6 @@ export default function IndustryRadioList({
     })();
   }, []);
 
-  // const DEFAULT_INDUSTRIES: IndustryOption[] = useMemo(
-  //   () => [
-  //     {
-  //       value: "Architecture",
-  //       title: "Architecture",
-  //       desc: "Design and construction services",
-  //       icon: Landmark,
-  //     },
-  //     {
-  //       value: "Interior Design",
-  //       title: "Interior Design",
-  //       desc: "Interior space planning and decoration",
-  //       icon: Sofa,
-  //     },
-  //     {
-  //       value: "Real Estate",
-  //       title: "Real Estate",
-  //       desc: "Property sales and management",
-  //       icon: Home,
-  //     },
-  //     {
-  //       value: "Technology",
-  //       title: "Technology",
-  //       desc: "Software and tech solutions",
-  //       icon: Cpu,
-  //     },
-  //     {
-  //       value: "Construction",
-  //       title: "Construction",
-  //       desc: "Builders and contractors",
-  //       icon: HardHat,
-  //     },
-  //     {
-  //       value: "Home Improvement",
-  //       title: "Home Improvement",
-  //       desc: "Renovation and remodeling services",
-  //       icon: Hammer,
-  //     },
-  //     {
-  //       value: "Manufacturing",
-  //       title: "Manufacturing",
-  //       desc: "Production and industrial services",
-  //       icon: Factory,
-  //     },
-  //     {
-  //       value: "Retail",
-  //       title: "Retail",
-  //       desc: "Stores and online commerce",
-  //       icon: ShoppingBag,
-  //     },
-  //     {
-  //       value: "Marketing",
-  //       title: "Marketing",
-  //       desc: "Branding and growth services",
-  //       icon: Megaphone,
-  //     },
-  //     {
-  //       value: "Consulting",
-  //       title: "Consulting",
-  //       desc: "Strategy and advisory services",
-  //       icon: Briefcase,
-  //     },
-  //   ],
-  //   [],
-  // );
-
   const MAX_VISIBLE = 6;
   const [showAll, setShowAll] = useState(false);
 
@@ -213,7 +147,7 @@ export default function IndustryRadioList({
                 </div>
 
                 <div className="min-w-0">
-                  <div className="text-sm font-semibold truncate">
+                  <div className="text-sm font-semibold ">
                     {opt.name}
                   </div>
                   {opt.desc ? (

@@ -234,7 +234,13 @@ function HexInput({
 /* -----------------------------
   Component
 ------------------------------ */
-export default function TypographyPage() {
+export default function TypographyPage({
+  type,
+  handleInputChange,
+}: {
+  type?: string;
+  handleInputChange?: any;
+}) {
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
 
@@ -243,8 +249,6 @@ export default function TypographyPage() {
   const data = transformRawToGlobalStyleModel(
     currentWebsite?.globalStyle || "",
   );
-
-
 
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
   // Add this useEffect:
@@ -630,6 +634,17 @@ export default function TypographyPage() {
     lines.push(``);
 
     setRoot_Css(lines.join("\n"));
+
+    if (handleInputChange) {
+      const e = {
+        target: {
+          name: "businessdetails.globalStyle",
+          value: lines.join("\n"),
+        },
+      };
+      handleInputChange(e);
+    }
+
     // return lines.join("\n");
   };
 
@@ -962,7 +977,7 @@ export default function TypographyPage() {
             </div>
           </div>
 
-          <ColorPallet handleColorPallet={handleColorPallet} />
+          <ColorPallet type={type} handleColorPallet={handleColorPallet} />
 
           <HexInput
             label="Primary"
@@ -2327,127 +2342,134 @@ export default function TypographyPage() {
   ───────────────────────────────────────── */
   return (
     <>
-    <GetAlColorPallet/>
-    
-    <div className="space-y-6 max-w-6xl mx-auto pb-10">
-      {/* TOP BAR */}
-      <div className="flex justify-between items-center gap-3">
-        <div className="grid grid-cols-4 gap-2">
-          {(["colors", "headings", "body", "buttons"] as LeftTab[]).map((t) => (
-            <Button
-              key={t}
-              variant={leftTab === t ? "default" : "outline"}
-              onClick={() => onLeftTab(t)}
-            >
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </Button>
-          ))}
-        </div>
+      <GetAlColorPallet />
 
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
-            className="gap-2"
-            title="Toggle Light/Dark"
-          >
-            {mode === "light" ? (
-              <Sun className="h-4 w-4" />
-            ) : (
-              <Moon className="h-4 w-4" />
-            )}
-            {mode === "light" ? "Light" : "Dark"}
-          </Button>
-
-          <Button
-            size="sm"
-            variant={rightPanel === "preview" ? "secondary" : "ghost"}
-            onClick={() => {
-              setRightPanel("preview");
-              setLeftTab("headings");
-            }}
-            className="gap-2"
-          >
-            <Eye className="h-4 w-4" />
-            Preview
-          </Button>
-
-          <Button
-            size="sm"
-            variant={rightPanel === "root" ? "secondary" : "ghost"}
-            onClick={() => setRightPanel("root")}
-            className="gap-2"
-          >
-            <Code2 className="h-4 w-4" />
-            Root File
-          </Button>
-
-          <Button
-            size="sm"
-            variant={rightPanel === "root" ? "secondary" : "default"}
-            onClick={() => handleSaveGlobalCss()}
-            className="gap-2"
-          >
-            <Save className="h-4 w-4" />
-            Save
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT */}
-        <div className="lg:col-span-4 space-y-6">
-          {leftTab === "colors" && colorsControls}
-          {leftTab === "headings" && headingControls}
-          {leftTab === "body" && bodyControls}
-          {leftTab === "buttons" && buttonControls}
-        </div>
-
-        {/* RIGHT */}
-        <div className="lg:col-span-8">
-          <Card className="h-full min-h-[580px] border-2 border-muted/40">
-            <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
-              {rightPanel === "root" && (
+      <div className="space-y-6 max-w-6xl mx-auto pb-10">
+        {/* TOP BAR */}
+        <div className="flex justify-between items-center gap-3">
+          <div className="grid grid-cols-4 gap-2">
+            {(["colors", "headings", "body", "buttons"] as LeftTab[]).map(
+              (t) => (
                 <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopyRoot}
-                  className="gap-2"
+                  key={t}
+                  variant={leftTab === t ? "default" : "outline"}
+                  onClick={() => onLeftTab(t)}
                 >
-                  {copied ? (
-                    <Check className="h-4 w-4" />
-                  ) : (
-                    <Copy className="h-4 w-4" />
-                  )}
-                  {copied ? "Copied" : "Copy"}
+                  {t.charAt(0).toUpperCase() + t.slice(1)}
                 </Button>
-              )}
-            </div>
-
-            {rightPanel === "preview" ? (
-              <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
-                {RightPreviewContent}
-              </CardContent>
-            ) : (
-              <CardContent className="p-6">
-                <div className="mb-3">
-                  <p className="text-sm font-semibold">Root File Code (LIVE)</p>
-                  <p className="text-xs text-muted-foreground">
-                    Light/Dark have separate variables via{" "}
-                    <span className="font-mono">:root[data-theme="..."]</span>.
-                    Body, Heading, and Button fonts are tracked independently.
-                  </p>
-                </div>
-                <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
-                  <code>{ROOT_CSS}</code>
-                </pre>
-              </CardContent>
+              ),
             )}
-          </Card>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
+              className="gap-2"
+              title="Toggle Light/Dark"
+            >
+              {mode === "light" ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+              {mode === "light" ? "Light" : "Dark"}
+            </Button>
+
+            <Button
+              size="sm"
+              variant={rightPanel === "preview" ? "secondary" : "ghost"}
+              onClick={() => {
+                setRightPanel("preview");
+                setLeftTab("headings");
+              }}
+              className="gap-2"
+            >
+              <Eye className="h-4 w-4" />
+              Preview
+            </Button>
+
+            <Button
+              size="sm"
+              variant={rightPanel === "root" ? "secondary" : "ghost"}
+              onClick={() => setRightPanel("root")}
+              className="gap-2"
+            >
+              <Code2 className="h-4 w-4" />
+              Root File
+            </Button>
+
+            {!type && type !== "onboard" && (
+              <Button
+                size="sm"
+                variant={rightPanel === "root" ? "secondary" : "default"}
+                onClick={() => handleSaveGlobalCss()}
+                className="gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Save
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* LEFT */}
+          <div className="lg:col-span-4 space-y-6">
+            {leftTab === "colors" && colorsControls}
+            {leftTab === "headings" && headingControls}
+            {leftTab === "body" && bodyControls}
+            {leftTab === "buttons" && buttonControls}
+          </div>
+
+          {/* RIGHT */}
+          <div className="lg:col-span-8">
+            <Card className="h-full min-h-[580px] border-2 border-muted/40">
+              <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
+                {rightPanel === "root" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleCopyRoot}
+                    className="gap-2"
+                  >
+                    {copied ? (
+                      <Check className="h-4 w-4" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                    {copied ? "Copied" : "Copy"}
+                  </Button>
+                )}
+              </div>
+
+              {rightPanel === "preview" ? (
+                <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
+                  {RightPreviewContent}
+                </CardContent>
+              ) : (
+                <CardContent className="p-6">
+                  <div className="mb-3">
+                    <p className="text-sm font-semibold">
+                      Root File Code (LIVE)
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Light/Dark have separate variables via{" "}
+                      <span className="font-mono">:root[data-theme="..."]</span>
+                      . Body, Heading, and Button fonts are tracked
+                      independently.
+                    </p>
+                  </div>
+                  <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
+                    <code>{ROOT_CSS}</code>
+                  </pre>
+                </CardContent>
+              )}
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

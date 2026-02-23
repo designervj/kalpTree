@@ -134,7 +134,6 @@
 //   );
 // }
 
-
 import React, { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { GoArrowDown, GoArrowUp } from "react-icons/go";
@@ -174,6 +173,38 @@ export default function BusinessTypeRadioList({
       }));
   }, [formData.businessdetails.industry]);
 
+  if (!formData.businessdetails.industry) {
+    return (
+      <div className="flex min-h-[220px] items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-6 text-center shadow-sm">
+          <div className="mb-3 text-2xl">🏷️</div>
+          <h3 className="text-lg font-semibold text-amber-900">
+            Select Industry
+          </h3>
+          <p className="mt-2 text-sm text-amber-700">
+            Please select an industry first to continue.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (industries.length <= 0) {
+    return (
+      <div className="flex min-h-[220px] items-center justify-center p-6">
+        <div className="w-full max-w-md rounded-2xl border border-dashed border-blue-300 bg-blue-50 p-6 text-center shadow-sm">
+          <div className="mb-3 text-2xl">📂</div>
+          <h3 className="text-lg font-semibold text-blue-900">
+            No Business Type Found
+          </h3>
+          <p className="mt-2 text-sm text-blue-700">
+            No business type options are available right now.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   // ✅ selectedIds is now an array
   const selectedIds: string[] = formData?.businessdetails?.businessType ?? [];
 
@@ -191,7 +222,9 @@ export default function BusinessTypeRadioList({
     } as any);
   };
 
-  const visibleIndustries = showAll ? industries : industries.slice(0, MAX_VISIBLE);
+  const visibleIndustries = showAll
+    ? industries
+    : industries.slice(0, MAX_VISIBLE);
   const canToggle = industries.length > MAX_VISIBLE;
 
   return (
@@ -205,7 +238,9 @@ export default function BusinessTypeRadioList({
             onClick={() => setShowAll((v) => !v)}
             className="text-sm font-semibold text-blue-600 hover:text-blue-800"
           >
-            {showAll ? "VIEW LESS" : `VIEW MORE (${industries.length - MAX_VISIBLE})`}
+            {showAll
+              ? "VIEW LESS"
+              : `VIEW MORE (${industries.length - MAX_VISIBLE})`}
           </button>
         )}
       </div>
@@ -238,60 +273,67 @@ export default function BusinessTypeRadioList({
 
       {/* ✅ Grid */}
       <div className="grid grid-cols-3 gap-3">
-        {visibleIndustries.map((opt, idx) => {
-          const checked = selectedIds.includes(opt._id);
-          const id = `businessType_${idx}_${opt._id}`;
+        {visibleIndustries.length > 0 &&
+          visibleIndustries.map((opt, idx) => {
+            const checked = selectedIds.includes(opt._id);
+            const id = `businessType_${idx}_${opt._id}`;
 
-          return (
-            <label
-              key={opt._id}
-              htmlFor={id}
-              className={[
-                "relative cursor-pointer select-none rounded-md border p-3 transition-all",
-                "flex flex-col gap-1",
-                checked
-                  ? "border-blue-500 bg-blue-50 ring-1 ring-blue-200"
-                  : "bg-white border-gray-200 text-gray-800 hover:bg-gray-50",
-              ].join(" ")}
-            >
-              {/* ✅ Checkbox instead of radio */}
-              <input
-                id={id}
-                type="checkbox"
-                name="businessdetails.businessType"
-                value={opt._id}
-                checked={checked}
-                onChange={() => toggleSelection(opt._id)}
-                className="sr-only"
-              />
+            return (
+              <label
+                key={opt._id}
+                htmlFor={id}
+                className={[
+                  "relative cursor-pointer select-none rounded-md border p-3 transition-all",
+                  "flex flex-col gap-1",
+                  checked
+                    ? "border-blue-500 bg-blue-50 ring-1 ring-blue-200"
+                    : "bg-white border-gray-200 text-gray-800 hover:bg-gray-50",
+                ].join(" ")}
+              >
+                {/* ✅ Checkbox instead of radio */}
+                <input
+                  id={id}
+                  type="checkbox"
+                  name="businessdetails.businessType"
+                  value={opt._id}
+                  checked={checked}
+                  onChange={() => toggleSelection(opt._id)}
+                  className="sr-only"
+                />
 
-              <div className="min-w-0">
-                <div className="text-sm font-semibold truncate">{opt.name}</div>
-              </div>
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold truncate">
+                    {opt.name}
+                  </div>
+                </div>
 
-              {/* ✅ Remove button on selected cards */}
-              {checked && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    toggleSelection(opt._id);
-                  }}
-                  className="absolute right-2 top-2 rounded-full bg-white shadow p-0.5 hover:bg-red-50"
-                  aria-label={`Remove ${opt.name}`}
-                >
-                  <IoClose className="h-3 w-3 text-red-500" />
-                </button>
-              )}
-            </label>
-          );
-        })}
+                {/* ✅ Remove button on selected cards */}
+                {checked && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleSelection(opt._id);
+                    }}
+                    className="absolute right-2 top-2 rounded-full bg-white shadow p-0.5 hover:bg-red-50"
+                    aria-label={`Remove ${opt.name}`}
+                  >
+                    <IoClose className="h-3 w-3 text-red-500" />
+                  </button>
+                )}
+              </label>
+            );
+          })}
       </div>
 
       {/* Bottom View more/less button */}
       <div className="flex justify-center pt-2">
         {canToggle && (
-          <Button type="button" variant="outline" onClick={() => setShowAll((v) => !v)}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setShowAll((v) => !v)}
+          >
             {showAll ? (
               <span className="inline-flex items-center gap-2">
                 <GoArrowUp className="h-4 w-4" />
