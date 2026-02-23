@@ -19,7 +19,7 @@ export class UserService {
       // tenantId: tid,
       email: email.toLowerCase(),
     });
-    console.log("get user by Emnmails---", response);
+    // console.log("get user by Emnmails---", response);
     return response;
   }
 

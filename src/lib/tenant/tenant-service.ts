@@ -258,12 +258,12 @@ export class TenantService {
       // Match domains that start with the subdomain pattern
       // e.g., "ai-tech" matches "ai-tech.kalptree.xyz" or "ai-tech.localhost:55803"
       orConditions.push({
-        primaryDomain: {
-          $elemMatch: {
-            $regex: `^${subdomain}\\.`,
-            $options: 'i'
-          }
-        }
+        "website.primaryDomain": {
+           $elemMatch: {
+             $regex: `^${subdomain}\\.`,
+             $options: 'i'
+           }
+         }
       });
     }
        console.log("orConditions====", orConditions);
