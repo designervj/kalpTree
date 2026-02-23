@@ -174,6 +174,13 @@ function buildBusinessForm(b: any) {
       currency: b?.settings?.currency || "USD",
       timezone: b?.settings?.timezone || "UTC",
     },
+    website: {
+      name: b.name,
+      serviceType: b.serviceType,
+      primaryDomain: b.primaryDomain,
+      lang: b.primaryDomain,
+      isComingSoon: b.isComingSoon,
+    },
   };
 }
 
@@ -1217,6 +1224,13 @@ function buildBusinessPayload(fd: any) {
     businessdetails: fd.businessdetails,
     features: fd.features,
     settings: fd.settings,
+    website: {
+      name: fd.name,
+      serviceType: fd.serviceType,
+      isComingSoon: fd.isComingSoon,
+      lang: fd.lang,
+      primaryDomain: fd.primaryDomain,
+    },
   };
 }
 
@@ -1239,6 +1253,7 @@ export const BusinessModal = ({
   onClose,
   type,
 }: ModalProps) => {
+  console.log(business);
   const [formData, setFormData] = React.useState<any>(null);
   const [isSaving, setIsSaving] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
