@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { websiteService } from '@/lib/websites/website-service';
-
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);

@@ -4,7 +4,7 @@ import React from 'react'
 const Shipping = () => {
   return (
     <div>
-        <ShippingPage />
+      <ShippingPage />
     </div>
   )
 }

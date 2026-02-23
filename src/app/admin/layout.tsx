@@ -1,3 +1,4 @@
+
 import { ReactNode, Suspense } from "react";
 import { AppShellProvider } from "@/components/admin/AppShellProvider";
 import { Inter } from "next/font/google";
@@ -17,8 +18,8 @@ export default async function AdminLayout({
   return (
     <>
       <Suspense fallback={null}>
-        {/* <AppShellProvider>{children}</AppShellProvider> */}
-        <WebsiteSidebar>{children}</WebsiteSidebar>
+        <AppShellProvider>{children}</AppShellProvider>
+        {/* <WebsiteSidebar>{children}</WebsiteSidebar> */}
       </Suspense>
     </>
   );

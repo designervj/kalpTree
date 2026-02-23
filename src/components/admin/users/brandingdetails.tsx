@@ -1,3 +1,59 @@
+
+import TypographyPage from "@/app/admin/websites/[website]/branding/typography/StaticTypography";
+import { Palette, Upload } from "lucide-react";
+
+export const Brandingdetails = ({ logoPreview, handleInputChange }: any) => {
+  return (
+    <div className="space-y-6">
+      <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
+        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Upload className="w-5 h-5 text-indigo-600" />
+          Logo Upload
+        </h3>
+        <div className="flex items-start gap-6">
+          <div className="flex-1">
+            <label className="block w-full cursor-pointer">
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:border-indigo-400 transition-all bg-white text-center">
+                {logoPreview ? (
+                  <div className="flex flex-col items-center gap-4">
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      className="max-h-32 rounded-lg"
+                    />
+                    <p className="text-sm text-gray-600">
+                      Click to change logo
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm font-semibold text-gray-700 mb-1">
+                      Click to upload logo
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, SVG up to 5MB
+                    </p>
+                  </>
+                )}
+              </div>
+              <input
+                type="file"
+                name="logo"
+                accept="image/*"
+                onChange={handleInputChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+      </div>
+      <TypographyPage type={"onboard"} handleInputChange={handleInputChange} />
+    </div>
+  );
+};
+
+
 // import { Palette, Upload } from "lucide-react";
 
 // export const Brandingdetails = ({
@@ -213,56 +269,3 @@
 //   );
 // };
 
-import TypographyPage from "@/app/admin/websites/[website]/branding/typography/StaticTypography";
-import { Palette, Upload } from "lucide-react";
-
-export const Brandingdetails = ({ logoPreview, handleInputChange }: any) => {
-  return (
-    <div className="space-y-6">
-      <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
-        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-          <Upload className="w-5 h-5 text-indigo-600" />
-          Logo Upload
-        </h3>
-        <div className="flex items-start gap-6">
-          <div className="flex-1">
-            <label className="block w-full cursor-pointer">
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:border-indigo-400 transition-all bg-white text-center">
-                {logoPreview ? (
-                  <div className="flex flex-col items-center gap-4">
-                    <img
-                      src={logoPreview}
-                      alt="Logo preview"
-                      className="max-h-32 rounded-lg"
-                    />
-                    <p className="text-sm text-gray-600">
-                      Click to change logo
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-sm font-semibold text-gray-700 mb-1">
-                      Click to upload logo
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      PNG, JPG, SVG up to 5MB
-                    </p>
-                  </>
-                )}
-              </div>
-              <input
-                type="file"
-                name="logo"
-                accept="image/*"
-                onChange={handleInputChange}
-                className="hidden"
-              />
-            </label>
-          </div>
-        </div>
-      </div>
-      <TypographyPage type={"onboard"} handleInputChange={handleInputChange} />
-    </div>
-  );
-};

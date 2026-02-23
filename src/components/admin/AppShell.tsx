@@ -1121,7 +1121,7 @@ export function AppShell({ children }: AppShellProps) {
             />
           )}
 
-          {user && user.role == "business" && (
+          {user && (user.role == "business"||businessid) && (
             <Sidebar
               collapsed={false}
               onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
