@@ -21,6 +21,7 @@ interface BlockListItemProps {
   isFavorite: boolean;
   onToggleSelection: (blockId: string, event: React.MouseEvent) => void;
   onToggleFavorite: (blockId: string, event: React.MouseEvent) => void;
+  editor: any;
 }
 
 // Fallback icon map
@@ -42,8 +43,75 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
   isFavorite,
   onToggleSelection,
   onToggleFavorite,
+  editor,
 }) => {
   const blockId = block?.id ?? "";
+
+  const handleDragStart = (e: React.DragEvent) => {
+    if (!editor) return;
+
+    // Use editor.Blocks or editor.BlockManager (aliases)
+    const blockManager = editor.Blocks || editor.BlockManager;
+    const blockModel = blockManager?.get(blockId);
+
+    if (blockModel) {
+      // 1. Set as the current dragging block in GrapesJS
+      if (typeof (editor as any).setDragBlock === "function") {
+        (editor as any).setDragBlock(blockModel);
+      } else if (typeof blockManager?.setDragBlock === "function") {
+        blockManager.setDragBlock(blockModel);
+      }
+
+      // 2. Start the drag command (common in v0.17+)
+      try {
+        editor.runCommand("block:drag", {
+          block: blockModel,
+          event: e.nativeEvent,
+        });
+      } catch (err) {
+        // Fallback for older versions or different command naming
+        console.warn("GrapesJS: 'block:drag' command failed, falling back to events");
+        editor.trigger("block:drag:start", blockModel, e.nativeEvent);
+      }
+    }
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    if (!editor) return;
+    const blockManager = editor.Blocks || editor.BlockManager;
+    const blockId = block?.id ?? "";
+    const blockModel = blockManager?.get(blockId);
+
+    // Clean up drag state
+    try {
+      editor.stopCommand("block:drag");
+    } catch (err) {
+      // Ignore
+    }
+    editor.trigger("block:drag:stop", blockModel, e.nativeEvent);
+
+    if (blockModel) {
+      const content = blockModel.get("content");
+      if (content) {
+        // Get the drop position from the canvas
+        const position = editor.Canvas.getDropPosition(e);
+        const { target, index } = position;
+
+        // Add the component at the drop position
+        editor.addComponents(content, {
+          at: index,
+          target: target || editor.getWrapper(),
+        });
+
+        console.log("Block added at position:", position);
+      }
+    }
+
+    if (typeof (editor as any).setDragBlock === "function") {
+      (editor as any).setDragBlock(null);
+    }
+  };
+
 
   const iconFromManager = blockId
     ? getBlockIcon(blockId as keyof typeof blockIcons)
@@ -60,6 +128,9 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
     <div
       role="button"
       tabIndex={0}
+      draggable="true"
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       onClick={(e) => onToggleSelection(blockId, e)}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -95,11 +166,10 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
         ].join(" ")}
       >
         <Star
-          className={`h-3.5 w-3.5 ${
-            isFavorite
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-slate-400 hover:text-slate-600"
-          }`}
+          className={`h-3.5 w-3.5 ${isFavorite
+            ? "fill-yellow-400 text-yellow-400"
+            : "text-slate-400 hover:text-slate-600"
+            }`}
         />
       </button>
 
@@ -114,8 +184,8 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
       >
         {React.isValidElement(icon)
           ? React.cloneElement(icon as React.ReactElement, {
-              // className: "w-5 h-5",
-            })
+            // className: "w-5 h-5",
+          })
           : icon}
       </div>
 

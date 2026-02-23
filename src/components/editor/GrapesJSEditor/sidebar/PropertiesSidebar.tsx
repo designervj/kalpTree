@@ -52,7 +52,7 @@ type PropertiesSidebarProps = {
   onStyleChange: (property: string, value: string) => void;
   onAttributeChange: (name: string, value: any) => void;
   onInteractivityChange: (config: any) => void;
-  setOpen: (open: boolean) => void;
+  setOpen: (args: { isOpen: boolean; pageType: string }) => void;
   open: boolean;
   actions: any;
   handlePageType: (type: string) => void;
@@ -60,10 +60,11 @@ type PropertiesSidebarProps = {
   categoryStyleConfigs: any;
   setCategoryStyleConfigs: any;
   editorHtml?: any;
-  handleUpdateHtml: any
+  handleUpdateHtml: any;
   blocks: any[];
   recentBlocks: string[];
   favoriteBlocks: string[];
+  editor: any;
 };
 
 type TabKey =
@@ -127,7 +128,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
   handleUpdateHtml,
   blocks,
   recentBlocks,
-  favoriteBlocks
+  favoriteBlocks,
+  editor
 }) => {
   const [tab, setTab] = React.useState<TabKey>("blocks");
 
@@ -208,8 +210,8 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       //   return <StyleEditor styles={styles} onStyleChange={onStyleChange} /> ;
 
 
-      
-      
+
+
       case "style":
         if (!selectedElement)
           return renderEmptySelectionMessage("Box", "attributes");
@@ -220,10 +222,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           // />
 
           <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid grid-cols-2 w-full border-b border-gray-200 bg-transparent p-0 h-auto">
-  <TabsTrigger
-    value="overview"
-    className="
+            <TabsList className="grid grid-cols-2 w-full border-b border-gray-200 bg-transparent p-0 h-auto">
+              <TabsTrigger
+                value="overview"
+                className="
       w-full px-4 py-2 text-sm font-medium
       text-gray-500
       bg-transparent
@@ -235,13 +237,13 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       data-[state=active]:border-blue-600
       data-[state=active]:bg-transparent
     "
-  >
-    Style
-  </TabsTrigger>
+              >
+                Style
+              </TabsTrigger>
 
-  <TabsTrigger
-    value="reports"
-    className="
+              <TabsTrigger
+                value="reports"
+                className="
       w-full px-4 py-2 text-sm font-medium
       text-gray-500
       bg-transparent
@@ -253,10 +255,10 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
       data-[state=active]:border-blue-600
       data-[state=active]:bg-transparent
     "
-  >
-    Interactivity
-  </TabsTrigger>
-</TabsList>
+              >
+                Interactivity
+              </TabsTrigger>
+            </TabsList>
 
             <TabsContent value="overview">
               <StyleEditor
@@ -286,7 +288,7 @@ const PropertiesSidebar: React.FC<PropertiesSidebarProps> = ({
           blocks={blocks}
           recentBlock={recentBlocks}
           favoriteBlock={favoriteBlocks}
-
+          editor={editor}
         />;
 
       case "global":

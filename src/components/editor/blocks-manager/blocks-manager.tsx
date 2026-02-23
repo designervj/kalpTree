@@ -54,6 +54,7 @@ interface BlocksManagerProps {
   onRecentBlocksChange?: (blocks: string[]) => void;
   favorites?: string[];
   onFavoritesChange?: (blocks: string[]) => void;
+  editor: any
 }
 
 // Block icons mapping
@@ -76,6 +77,7 @@ export function BlocksManager({
   onRecentBlocksChange,
   favorites = [],
   onFavoritesChange,
+  editor
 }: BlocksManagerProps) {
   // State hooks
   const [searchTerm, setSearchTerm] = useState("");
@@ -136,17 +138,17 @@ export function BlocksManager({
   // Add block content to canvas
   const addBlockContent = useCallback(
     (block: BlockConfig) => {
-if (block.content) {
-  onAddBlock(block);
-} else {
-  onAddBlock({
-    ...block,
-    content: `<div class="p-4 bg-gray-100 border border-gray-300 rounded">
+      if (block.content) {
+        onAddBlock(block);
+      } else {
+        onAddBlock({
+          ...block,
+          content: `<div class="p-4 bg-gray-100 border border-gray-300 rounded">
       <h3 class="text-lg font-medium">${block.label}</h3>
       <p class="text-gray-600">This is a placeholder for ${block.label}</p>
     </div>`
-  });
-}
+        });
+      }
     },
     [onAddBlock]
   );
@@ -218,10 +220,11 @@ if (block.content) {
                 isFavorite={favoritesList.includes(b.id)}
                 onToggleSelection={toggleBlockSelection}
                 onToggleFavorite={toggleFavorite}
+                editor={editor}
               />
             );
           })
-          
+
         ) : (
           <EmptyBlocksMessage />
         )}
@@ -240,23 +243,24 @@ if (block.content) {
   const renderListView = useCallback(
     () => (
       <div className="space-y-1.5 p-1">
-  {filteredBlocks.length > 0 ? (
-  filteredBlocks.map((block) => {
-    const b = block as BlockConfig;
-    return (
-      <BlockListItem
-        key={b.id}
-        block={b}
-        isSelected={selectedBlocks.includes(b.id)}
-        isFavorite={favoritesList.includes(b.id)}
-        onToggleSelection={toggleBlockSelection}
-        onToggleFavorite={toggleFavorite}
-      />
-    );
-  })
-) : (
-  <EmptyBlocksMessage />
-)}
+        {filteredBlocks.length > 0 ? (
+          filteredBlocks.map((block) => {
+            const b = block as BlockConfig;
+            return (
+              <BlockListItem
+                key={b.id}
+                block={b}
+                isSelected={selectedBlocks.includes(b.id)}
+                isFavorite={favoritesList.includes(b.id)}
+                onToggleSelection={toggleBlockSelection}
+                onToggleFavorite={toggleFavorite}
+                editor={editor}
+              />
+            );
+          })
+        ) : (
+          <EmptyBlocksMessage />
+        )}
       </div>
     ),
     [

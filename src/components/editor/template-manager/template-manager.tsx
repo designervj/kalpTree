@@ -32,11 +32,12 @@ import { toast } from "sonner";
 //   componentCategories,
 //   componentTemplates,
 // } from "../../../../utils/component-library";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 import ShowHTMLtemplate from "@/components/admin/templates/showTemplate/ShowHTMLtemplate";
 import ShowPallete from "@/components/admin/templates/showTemplate/ShowPallete";
+import { setPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
 
 interface TemplateManagerProps {
   onSelectTemplate: (content: string, append?: boolean) => void;
@@ -44,19 +45,21 @@ interface TemplateManagerProps {
   currentContent?: string;
   setOpen: (open: boolean) => void;
   open: boolean;
+  isAddPage: boolean;
 }
 
-interface CategoryBasedTemplate {
-  id: string;
-  label: string;
-  content: string;
-}
+// interface CategoryBasedTemplate {
+//   id: string;
+//   label: string;
+//   content: string;
+// }
 export function TemplateManager({
   onSelectTemplate,
   onSaveTemplate,
   currentContent,
   setOpen,
   open,
+  isAddPage
 }: TemplateManagerProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -65,7 +68,7 @@ export function TemplateManager({
   const [activeTab, setActiveTab] = useState<"browse" | "saved">("browse");
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
   const { allTemplate } = useSelector((state: RootState) => state.template);
-
+  const dispatch = useDispatch<AppDispatch>()
   const categorybasedTemplate = useMemo(() => {
     if (!allTemplate) return [];
 
@@ -110,12 +113,28 @@ export function TemplateManager({
     });
   };
 
+  const { page: currentEditPage } = useSelector((state: RootState) => state.pageEdit)
   const handleAddSelectedTemplates = () => {
     const templates = allTemplate.filter((template) =>
       selectedTemplates.includes(template?.templateId ?? "")
     );
+    if (isAddPage && currentEditPage) {
+      const dataPage = {
+        ...currentEditPage,
+        content: templates[0]?.content,
 
-    templates.forEach((template) => onSelectTemplate(template?.content ?? "", true));
+      }
+      dispatch(setPageLoading(true));
+      dispatch(
+        setPageEdit({
+          page: dataPage,
+          type: "page",
+        }),
+      );
+      onSelectTemplate(templates[0]?.content ?? "", false);
+    } else {
+      templates.forEach((template) => onSelectTemplate(template?.content ?? "", true));
+    }
 
     setSelectedTemplates([]);
     setOpen(false);
@@ -377,7 +396,7 @@ export function TemplateManager({
                                         <div className="flex-1 relative overflow-hidden">
                                           <ShowHTMLtemplate html={template?.content || ""} />
                                         </div>
-                                      
+
                                       </div>
 
 
@@ -405,9 +424,9 @@ export function TemplateManager({
                                       {/* <div className="text-sm font-semibold text-slate-900 truncate">
                                         {template.label}
                                       </div> */}
-                                        <div className="h-2 w-full">
-                                          <ShowPallete html={template} />
-                                        </div>
+                                      <div className="h-2 w-full">
+                                        <ShowPallete html={template} />
+                                      </div>
                                       {/* <div className="text-xs text-slate-500 truncate">
                                         {componentCategories.find((c) => c.id === template.category)
                                           ?.label || template.category}

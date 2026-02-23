@@ -56,7 +56,7 @@ const NewSingleProductPage = ({ slug, onPushToCanvas }: Props) => {
         return getSignglePageHtml(selectedProduct)
     }, [selectedProduct])
 
-    
+
     const handlePushCategoryToCanvas = () => {
         onPushToCanvas(GetSinglePageHtml)
     }
@@ -80,7 +80,7 @@ const NewSingleProductPage = ({ slug, onPushToCanvas }: Props) => {
                         Product Preview: <em style={{ fontWeight: 400 }}>{"Single Product"}</em>
                     </span>
                     <button
-                          onClick={handlePushCategoryToCanvas}
+                        onClick={handlePushCategoryToCanvas}
                         style={{
                             background: "#6d28d9",
                             color: "#fff",
