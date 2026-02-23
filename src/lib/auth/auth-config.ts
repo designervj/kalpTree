@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { userService } from "./user-service";
 import { tenantService } from "../tenant/tenant-service";
 
+
 export const authConfig: NextAuthConfig = {
   trustHost: true,
   providers: [
@@ -26,19 +27,6 @@ export const authConfig: NextAuthConfig = {
         }
 
         try {
-          // const getWebsite = await websiteService.getByHost(
-          //   credentials.domain as string,
-          // );
-
-          // if (!getWebsite) {
-          //   throw new Error("Invalid domain");
-          // }
-
-          // const tenantdetail = await tenantService.getTenantById(
-          //   getWebsite?.tenantId?.toString() as string,
-          // );
-
-          // console.log("tenantdetail====", tenantdetail);
           const user = await userService.getUserByEmail(
             credentials.email as string,
           );
@@ -47,27 +35,37 @@ export const authConfig: NextAuthConfig = {
           if (!user || user.status !== "active") {
             throw new Error("Invalid credentials ");
           }
-          // if (user.role != "superadmin") {
-          //   throw new Error("Invalid domain");
-          // }
-          // Convert isMainDomain from string to boolean (NextAuth passes credentials as strings)
-          // const isMainDomain =
-          //   credentials.isMainDomain === "true" ||
-          //   credentials.isMainDomain === true;
-          // // const getTenantId =
-          // //   user.role == "agency"
-          // //     ? tenantdetail?.tenantId?.toString()
-          // //     : tenantdetail?._id?.toString();
-          // // console.log("userTenatId====", user.tenantId?.toString());
-          // // console.log("getTenantId====", getTenantId);
-          // if (
-          //   !isMainDomain &&
-          //  // user.tenantId?.toString() !== getTenantId &&
-          //   user.role !== "superadmin"
-          // ) {
-          //   throw new Error("Invalid domain");
-          // }
 
+          if (user.role != "superadmin" && credentials?.isMainDomain) {
+            throw new Error("Invalid domain for this user");
+          }
+
+          if (user.role != "superadmin" && !credentials?.isMainDomain) {
+            console.log("credentials?.isMainDomain",credentials?.isMainDomain)
+              if (user?.role==="agency"){
+                const getAgencyTenant = await tenantService.getTenantById(
+                  user.tenantId?.toString() as string,
+            
+                );
+                console.log("getAgencyTenant",getAgencyTenant)
+                
+              }
+            // const website = await websiteService.getByHost(
+            //   credentials.domain as string,
+            // );
+
+            // if (!website) {
+            //   throw new Error("Invalid domain for this user");
+            // }
+
+            // Verify that the user's tenant matches the website's tenant
+            // const userTenantId = user.tenantId?.toString();
+            // const websiteTenantId = website.tenantId?.toString();
+
+            // if (userTenantId !== websiteTenantId) {
+            //   throw new Error("Invalid domain for this user");
+            // }
+          }
           // Verify password
           const isValid = await userService.verifyPassword(
             user,
@@ -83,9 +81,9 @@ export const authConfig: NextAuthConfig = {
             console.error("Failed to update last login:", err);
           });
 
-          const finaltenant = await tenantService.getTenantById(
-            user.tenantId?.toString() as string,
-          );
+          // const finaltenant = await tenantService.getTenantById(
+          //   user.tenantId?.toString() as string,
+          // );
 
           // Return user object
           return {
@@ -96,10 +94,10 @@ export const authConfig: NextAuthConfig = {
             role: user.role,
             permissions: user.permissions,
             createdById: user.createdById?.toString(), // Handle optional createdById
-            tenantdetail: {
-              _id: finaltenant?._id.toString(),
-              type: finaltenant?.type,
-            },
+            // tenantdetail: {
+            //   _id: finaltenant?._id.toString(),
+            //   type: finaltenant?.type,
+            // },
           };
         } catch (error) {
           console.error("Authorization error:", error);
