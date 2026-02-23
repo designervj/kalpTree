@@ -25,7 +25,7 @@ export default function ActivityLogPage() {
           <BreadCrumbPage/>
           <p className="text-muted-foreground">Audit trail of all actions performed within the system.</p>
         </div>
-        <Button><Filter className="mr-2 h-4 w-4" /> Advanced Filters</Button>
+        <Button><Filter className="h-4 w-4" />Advanced Filters</Button>
       </div>
 
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">

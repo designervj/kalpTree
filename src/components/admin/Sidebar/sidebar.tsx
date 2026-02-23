@@ -93,6 +93,36 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const toggleGroup = (id: string) =>
     setOpenGroups((p) => ({ ...p, [id]: !p[id] }));
 
+  // ✅ Normalize path (remove query/hash)
+  const normalizePath = React.useCallback((href: string) => {
+    return (href || "").split("?")[0].split("#")[0];
+  }, []);
+
+  // ✅ Find ONLY one active item (longest matching path wins)
+  const activeItemPath = React.useMemo(() => {
+    const current = normalizePath(pathname || "");
+    const allItems = filteredWebsiteSections.flatMap((s) => s.items);
+
+    const matches = allItems
+      .map((item) => normalizePath(item.href))
+      .filter((href) => current === href || current.startsWith(href + "/"));
+
+    if (matches.length === 0) return null;
+
+    // Most specific route wins (e.g. /notifications over /dashboard parent)
+    return matches.sort((a, b) => b.length - a.length)[0];
+  }, [pathname, filteredWebsiteSections, normalizePath]);
+
+  // ✅ Optional helper if you later want active parent section styling
+  const isSectionActive = React.useCallback(
+    (section: (typeof filteredWebsiteSections)[number]) => {
+      return section.items.some(
+        (item) => normalizePath(item.href) === activeItemPath
+      );
+    },
+    [activeItemPath, normalizePath]
+  );
+
   // collapsed hover floating panel
   const [hoverGroupId, setHoverGroupId] = React.useState<string | null>(null);
 
@@ -144,6 +174,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                   const HeaderIcon =
                     sectionIconMap[section.id] || LayoutDashboard;
                   const isOpen = !!openGroups[section.id];
+                  const _sectionActive = isSectionActive(section); // currently not changing UI, just available
 
                   /**
                    * ✅ COLLAPSED VIEW:
@@ -214,8 +245,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
                                     const active =
-                                      pathname === item.href ||
-                                      pathname?.startsWith(item.href + "/");
+                                      normalizePath(item.href) === activeItemPath;
 
                                     return (
                                       <Link
@@ -225,13 +255,20 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                       >
                                         <div
                                           className={cn(
-                                            "flex items-center gap-3 rounded-xl px-3 py-2 text-sm",
+                                            "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm",
                                             active
-                                              ? "bg-[#f2f3f4] text-black shadow-sm"
+                                              ? "bg-[#eef2ff] text-black shadow-sm border border-[#dfe5ff]"
                                               : "text-black/70 hover:bg-[#f6f7f8]"
                                           )}
                                         >
-                                          <Icon className="h-4 w-4" />
+                                          <Icon
+                                            className={cn(
+                                              "h-4 w-4",
+                                              active
+                                                ? "text-black"
+                                                : "text-black/55"
+                                            )}
+                                          />
                                           <span className="truncate flex-1">
                                             {item.label}
                                           </span>
@@ -240,7 +277,14 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                               {item.badge}
                                             </span>
                                           )}
-                                          <ChevronRight className="h-4 w-4 opacity-40" />
+                                          <ChevronRight
+                                            className={cn(
+                                              "h-4 w-4 transition-opacity",
+                                              active
+                                                ? "opacity-60 text-black"
+                                                : "opacity-0 group-hover:opacity-40"
+                                            )}
+                                          />
                                         </div>
                                       </Link>
                                     );
@@ -312,8 +356,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
                                     const active =
-                                      pathname === item.href ||
-                                      pathname?.startsWith(item.href + "/");
+                                      normalizePath(item.href) === activeItemPath;
 
                                     return (
                                       <Link
@@ -325,11 +368,19 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2",
                                             active
-                                              ? "bg-white text-black shadow-sm"
+                                              ? "bg-[#eef2ff] text-black shadow-sm border border-[#dfe5ff]"
                                               : "text-black/70 hover:bg-[#f6f7f8]"
                                           )}
                                         >
-                                          <Icon className="h-4 w-4 text-black/55" />
+                                          <Icon
+                                            className={cn(
+                                              "h-4 w-4",
+                                              active
+                                                ? "text-black"
+                                                : "text-black/55"
+                                            )}
+                                          />
+
                                           <span className="text-[13px] font-medium truncate flex-1">
                                             {item.label}
                                           </span>
@@ -340,7 +391,14 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                             </span>
                                           )}
 
-                                          <ChevronRight className="h-4 w-4 opacity-0 group-hover:opacity-40 transition" />
+                                          <ChevronRight
+                                            className={cn(
+                                              "h-4 w-4 transition-opacity",
+                                              active
+                                                ? "opacity-60 text-black"
+                                                : "opacity-0 group-hover:opacity-40"
+                                            )}
+                                          />
                                         </div>
                                       </Link>
                                     );

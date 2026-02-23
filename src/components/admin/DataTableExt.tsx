@@ -526,7 +526,7 @@ export function DataTableExt({
   const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 w-[1100px]">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -930,7 +930,7 @@ export function DataTableExt({
                       }
 
                       return (
-                        <TableCell key={key} className="py-3 text-sm text-slate-700">
+                        <TableCell key={key} className="py-3 text-sm text-slate-700 break-all">
                           {formatValue(value)}
                         </TableCell>
                       );

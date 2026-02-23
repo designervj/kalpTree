@@ -1489,12 +1489,12 @@ export const currentWebsiteSections: NavSection[] = [
         icon: Type,
         permission: ["content:read", "content:update", "content:delete"],
       },
-      {
-        label: "Layout Settings",
-        href: "/admin/branding/layout-settings",
-        icon: LayoutTemplate,
-        permission: ["content:read", "content:update", "content:delete"],
-      },
+      // {
+      //   label: "Layout Settings",
+      //   href: "/admin/branding/layout-settings",
+      //   icon: LayoutTemplate,
+      //   permission: ["content:read", "content:update", "content:delete"],
+      // },
       {
         label: "Theme Presets",
         href: "/admin/branding/theme-presets",
