@@ -1,12 +1,11 @@
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
 
-
-export const transporter =  nodemailer.createTransport({
-  host: "smtp.hostinger.com",
-  port: 465,
-  secure: true,
+export const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || "smtp.hostinger.com",
+  port: parseInt(process.env.SMTP_PORT || "465"),
+  secure: process.env.SMTP_SECURE === "true" || true,
   auth: {
-    user: "hello@roveo.in",
-    pass: "?jd2hHf3X",
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });

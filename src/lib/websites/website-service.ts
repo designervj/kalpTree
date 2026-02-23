@@ -142,9 +142,9 @@ export class WebsiteService {
 
     // Extract subdomain from host (e.g., "ai-tech" from "ai-tech.localhost")
     const extractSubdomain = (hostname: string) => {
-      // Remove port if present
+ 
       const withoutPort = hostname.split(':')[0];
-      // Get the first part before the first dot
+   
       const parts = withoutPort.split('.');
       return parts.length > 1 ? parts[0] : null;
     };
@@ -262,4 +262,4 @@ export class WebsiteService {
   }
 }
 
-export const websiteService = new WebsiteService();
+export const websitenantServiceteService = new WebsiteService();
