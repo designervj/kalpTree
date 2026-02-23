@@ -59,10 +59,10 @@ function SignInForm() {
     }
   }, []);
 
-   const handleCancel=()=>{
-    console.log("gadhhdhh"  )
+  const handleCancel = () => {
+    console.log("gadhhdhh");
     setMode("signin");
-  }
+  };
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -78,15 +78,13 @@ function SignInForm() {
         domain,
         // tenantSlug,
       });
-
       if (result?.error) {
         throw new Error(result.error || "Sign-in failed");
       }
-  console.log("result", result)
+      console.log("result", result);
       const session = await getSession();
 
-
-      console.log("user session--->",session)
+      console.log("user session--->", session);
       if (session?.user) {
         const mappedUser = {
           email: session.user.email,
@@ -141,7 +139,7 @@ function SignInForm() {
       await new Promise((resolve) => setTimeout(resolve, 900));
 
       setForgotSuccess(
-        "If this email exists, a password reset link has been sent."
+        "If this email exists, a password reset link has been sent.",
       );
     } catch (err: unknown) {
       const msg =
@@ -197,7 +195,9 @@ function SignInForm() {
         {/* Password Input */}
         <div>
           <div className="flex justify-between mb-2">
-            <label className="text-sm font-bold text-foreground">Password</label>
+            <label className="text-sm font-bold text-foreground">
+              Password
+            </label>
             <button
               type="button"
               onClick={() => {
@@ -246,7 +246,7 @@ function SignInForm() {
         <Button
           type="submit"
           disabled={loading}
-           className="cursor-pointer h-10 w-full"
+          className="cursor-pointer h-10 w-full"
           // className="w-full bg-primary hover:opacity-90 text-primary-foreground py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? "Verifying..." : "Sign In to Dashboard"}
@@ -263,6 +263,113 @@ function SignInForm() {
     </>
   );
 
+  const renderForgotPasswordForm = () => (
+    <>
+      <div className="mb-8 text-center md:text-left">
+        <button
+          type="button"
+          onClick={() => {
+            setMode("signin");
+            setForgotError(null);
+            setForgotSuccess(null);
+          }}
+          // className="cursor-pointer h-10 cursor-pointer"
+          className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to sign in
+        </button>
+
+        <div className="flex items-center gap-3 my-3">
+          <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+            <KeyRound className="w-5 h-5 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">
+            Forgot Password
+          </h1>
+        </div>
+
+        <p className="text-muted-foreground font-medium">
+          Enter your email address and we’ll send you a reset link.
+        </p>
+      </div>
+
+      <form onSubmit={onForgotSubmit} className="space-y-5">
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <div className="flex items-start gap-3">
+            <div className="mt-0.5">
+              <ShieldCheck className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                Secure Password Recovery
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                We’ll send instructions to your registered email. For security,
+                we won’t confirm whether the email exists.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-bold text-foreground mb-2">
+            Email Address
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="email"
+              className="w-full bg-input/50 border border-input rounded-xl pl-10 pr-4 py-3 text-foreground focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-muted-foreground/50"
+              value={forgotEmail}
+              onChange={(e) => setForgotEmail(e.target.value)}
+              placeholder="name@company.com"
+              required
+            />
+          </div>
+        </div>
+
+        {forgotError && (
+          <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-lg border border-destructive/20 font-medium">
+            {forgotError}
+          </div>
+        )}
+
+        {forgotSuccess && (
+          <div className="p-3 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm rounded-lg border border-emerald-500/20 font-medium flex items-start gap-2">
+            <CheckCircle2 className="w-4 h-4 mt-0.5" />
+            <span>{forgotSuccess}</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-center gap-2">
+          <Button
+            type="submit"
+            disabled={forgotLoading}
+            className="cursor-pointer h-10 w-[49%]"
+            // className="w-full bg-primary hover:opacity-90 text-primary-foreground py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+          >
+            {forgotLoading ? "Sending reset link..." : "Send Reset Link"}
+            {!forgotLoading && <ArrowRight className="w-5 h-5" />}
+          </Button>
+
+          <Button
+            type="button"
+            onClick={() => {
+              setMode("signin");
+              setForgotError(null);
+              setForgotSuccess(null);
+            }}
+            variant={"outline"}
+            className="cursor-pointer h-10 w-[49%] "
+            // className="w-full py-3 rounded-xl font-semibold border border-border text-foreground hover:bg-muted/50 transition-colors"
+          >
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </>
+  );
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background text-foreground">
@@ -304,16 +411,15 @@ function SignInForm() {
       {/* RIGHT PANEL */}
       <div className="flex-1 flex items-center justify-center p-8 lg:p-16 bg-background">
         <div className="w-full max-w-[420px]">
-          {mode === "signin" ? renderSignInForm():<RenderForgotPasswordForm
-          setMode={handleCancel}
-          />}
+          {mode === "signin" ? (
+            renderSignInForm()
+          ) : (
+            <RenderForgotPasswordForm setMode={handleCancel} />
+          )}
         </div>
       </div>
-    </div>  
+    </div>
   );
-
-
- 
 }
 
 export default function SignInPage() {

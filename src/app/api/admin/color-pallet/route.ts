@@ -7,7 +7,6 @@ export async function GET(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
 
     const colorpalletColl = await getCollection("colors_pallets");
-    const websiteId = searchParams.get("websiteId");
 
     let allPallets = await colorpalletColl.find().toArray();
 
@@ -43,18 +42,18 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const searchParams = req.nextUrl.searchParams;
-    const websiteId = searchParams.get("websiteId");
+    const tenantId = searchParams.get("websiteId");
 
-    if (websiteId) {
-      const websitesColl = await getCollection("websites");
+    if (tenantId) {
+      const tenantColl = await getCollection("tenants");
 
       const _id = new ObjectId();
 
-      const updateColorsInWebsite = await websitesColl.updateOne(
-        { _id: new ObjectId(websiteId) },
+      const updateColorsInWebsite = await tenantColl.updateOne(
+        { _id: new ObjectId(tenantId) },
         {
           $push: {
-            "branding.colors": {
+            "website.branding.colors": {
               ...body,
               _id,
             },
@@ -89,22 +88,20 @@ export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
     const searchParams = req.nextUrl.searchParams;
-    const websiteId = searchParams.get("websiteId");
+    const tenantId = searchParams.get("tenantId");
     const palletId = searchParams.get("palletId");
 
-    console.log(websiteId, palletId);
+    if (tenantId && palletId) {
+      const tenantColl = await getCollection("tenants");
 
-    if (websiteId && palletId) {
-      const websitesColl = await getCollection("websites");
-
-      const updateColorsInWebsite = await websitesColl.updateOne(
+      const updateColorsInWebsite = await tenantColl.updateOne(
         {
-          _id: new ObjectId(websiteId),
-          "branding.colors._id": new ObjectId(palletId),
+          _id: new ObjectId(tenantId),
+          "website.branding.colors._id": new ObjectId(palletId),
         },
         {
           $set: {
-            "branding.colors.$": {
+            "website.branding.colors.$": {
               ...body,
               _id: new ObjectId(palletId),
             },
@@ -137,17 +134,17 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   try {
     const searchParams = req.nextUrl.searchParams;
-    const websiteId = searchParams.get("websiteId");
+    const tenantId = searchParams.get("tenantId");
     const palletId = searchParams.get("palletId");
 
-    if (websiteId && palletId) {
-      const websitesColl = await getCollection("websites");
+    if (tenantId && palletId) {
+      const tenantColl = await getCollection("tenants");
 
-      const updateColorsInWebsite = await websitesColl.updateOne(
-        { _id: new ObjectId(websiteId) },
+      const updateColorsInWebsite = await tenantColl.updateOne(
+        { _id: new ObjectId(tenantId) },
         {
           $pull: {
-            "branding.colors": { _id: new ObjectId(palletId) },
+            "website.branding.colors": { _id: new ObjectId(palletId) },
           } as any,
         },
       );

@@ -13,7 +13,7 @@ const CARD_W = 140;
 const GAP = 14;
 
 const ColorPallet = ({ handleColorPallet, type }: any) => {
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  // const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [canLeft, setCanLeft] = useState(false);
   const [canRight, setCanRight] = useState(true);

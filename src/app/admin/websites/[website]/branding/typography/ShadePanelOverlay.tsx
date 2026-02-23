@@ -148,12 +148,16 @@ export const BUTTON_TOKENS = [
   { id: "outline.hoverBorder", label: "Outline Hover Border" },
 ] as const;
 
-export function getButtonToken(btns: ButtonTokens, tokenId: string) {
+export function getButtonToken(btns: any, tokenId: string) {
   const [variant, prop] = tokenId.split(".") as [ButtonVariant, any];
   return (btns?.[variant]?.[prop] ?? "") as string;
 }
 
-export function setButtonToken(btns: ButtonTokens, tokenId: string, value: string) {
+export function setButtonToken(
+  btns: ButtonTokens,
+  tokenId: string,
+  value: string,
+) {
   const [variant, prop] = tokenId.split(".") as [ButtonVariant, any];
   const next: ButtonTokens = structuredClone(btns);
 
@@ -178,7 +182,6 @@ export function setButtonToken(btns: ButtonTokens, tokenId: string, value: strin
 
   return next;
 }
-
 
 export function PreviewButton({
   label,

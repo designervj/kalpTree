@@ -35,7 +35,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 import { extractHeader } from "./website/websitePage/util/ExtractHeader";
 import { TemplateDocument } from "./templates/TemplateType";
 import { PAGE_TEMPLATES } from "./DemoTemplate";
@@ -112,7 +111,9 @@ const unescapeHtmlIfNeeded = (s: string) => {
 };
 
 const looksLikeFullDoc = (html: string) =>
-  /<html[\s>]/i.test(html) || /<!doctype/i.test(html) || /<body[\s>]/i.test(html);
+  /<html[\s>]/i.test(html) ||
+  /<!doctype/i.test(html) ||
+  /<body[\s>]/i.test(html);
 
 /** Clean iframe document wrapper */
 const buildIframeDoc = (userHtml: string) => {
@@ -167,7 +168,6 @@ function inRange(n: number, min: number, max: number) {
   return n >= min && n <= max;
 }
 
-
 /* -----------------------------
   HTML Editor (line numbers + tab indent)
 ------------------------------ */
@@ -180,18 +180,23 @@ const HtmlCodeEditor = forwardRef<
     placeholder?: string;
   }
 >(function HtmlCodeEditor(
-  { value, onChange, rows = 18, placeholder = "<h1>Title</h1><p>Content...</p>" },
-  ref
+  {
+    value,
+    onChange,
+    rows = 18,
+    placeholder = "<h1>Title</h1><p>Content...</p>",
+  },
+  ref,
 ) {
   const lnRef = useRef<HTMLPreElement | null>(null);
 
   const lineCount = useMemo(
     () => Math.max(1, (value || "").split("\n").length),
-    [value]
+    [value],
   );
   const lineNumbers = useMemo(
     () => Array.from({ length: lineCount }, (_, i) => String(i + 1)).join("\n"),
-    [lineCount]
+    [lineCount],
   );
 
   const syncScroll = (ta?: HTMLTextAreaElement | null) => {
@@ -199,7 +204,9 @@ const HtmlCodeEditor = forwardRef<
     lnRef.current.scrollTop = ta.scrollTop;
   };
 
-  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+  const handleKeyDown: React.KeyboardEventHandler<HTMLTextAreaElement> = (
+    e,
+  ) => {
     if (e.key !== "Tab") return;
     e.preventDefault();
 
@@ -207,7 +214,8 @@ const HtmlCodeEditor = forwardRef<
     const start = el.selectionStart ?? 0;
     const end = el.selectionEnd ?? 0;
     const insert = "  ";
-    const next = (value || "").slice(0, start) + insert + (value || "").slice(end);
+    const next =
+      (value || "").slice(0, start) + insert + (value || "").slice(end);
     onChange(next);
 
     requestAnimationFrame(() => {
@@ -231,7 +239,7 @@ const HtmlCodeEditor = forwardRef<
             className={cn(
               "h-full max-h-[560px] overflow-hidden",
               "px-3 py-4 text-right",
-              "font-mono text-[12.5px] leading-6 text-slate-400 select-none"
+              "font-mono text-[12.5px] leading-6 text-slate-400 select-none",
             )}
           >
             {lineNumbers}
@@ -253,13 +261,13 @@ const HtmlCodeEditor = forwardRef<
               "font-mono text-[13px] leading-6 text-slate-900",
               "outline-none bg-white",
               "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-              "resize-none"
+              "resize-none",
             )}
           />
           <div className="px-5 pb-3 pt-3 text-xs text-slate-500">
             Escaped HTML like{" "}
-            <span className="font-mono">&amp;lt;div&amp;gt;</span> will be converted
-            automatically.
+            <span className="font-mono">&amp;lt;div&amp;gt;</span> will be
+            converted automatically.
           </div>
         </div>
       </div>
@@ -280,7 +288,11 @@ function SeoRow({
   text: string;
 }) {
   const Icon = ok ? CheckCircle2 : warn ? AlertCircle : Info;
-  const cls = ok ? "text-emerald-600" : warn ? "text-amber-600" : "text-slate-500";
+  const cls = ok
+    ? "text-emerald-600"
+    : warn
+      ? "text-amber-600"
+      : "text-slate-500";
 
   return (
     <div className="flex items-start gap-2 text-[12.5px]">
@@ -288,7 +300,7 @@ function SeoRow({
       <div
         className={cn(
           "leading-5",
-          ok ? "text-slate-700" : warn ? "text-slate-700" : "text-slate-600"
+          ok ? "text-slate-700" : warn ? "text-slate-700" : "text-slate-600",
         )}
       >
         {text}
@@ -323,10 +335,12 @@ export default function PageEditor({
   const [slugTouched, setSlugTouched] = useState(false);
 
   // ✅ Template Gallery state (right side panel)
-  const [tplCategory, setTplCategory] = useState<"all" | TemplateCategory>("all");
+  const [tplCategory, setTplCategory] = useState<"all" | TemplateCategory>(
+    "all",
+  );
   const [tplSearch, setTplSearch] = useState("");
   const [selectedTplKey, setSelectedTplKey] = useState<string>(
-    PAGE_TEMPLATES[0]?.key || ""
+    PAGE_TEMPLATES[0]?.key || "",
   );
   const [showTplCode, setShowTplCode] = useState(false);
 
@@ -343,7 +357,7 @@ export default function PageEditor({
         "tenant_id",
         "website_id",
       ]),
-    []
+    [],
   );
 
   const shouldHideField = (field: FieldConfig) => {
@@ -447,7 +461,7 @@ export default function PageEditor({
     params.set("agencyid", curretAgency?._id?.toString() ?? "");
     params.set("businessid", currentBusiness?._id?.toString() ?? "");
     const primaryBusiness = currentWebsite?.primaryDomain?.[0] ?? null;
-    router.back()
+    router.back();
     // router.push(
     //   `/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`
     // );
@@ -472,7 +486,10 @@ export default function PageEditor({
       const { name, nestedKey } = f;
 
       if (nestedKey) {
-        payload[name] = typeof payload[name] === "object" && payload[name] ? payload[name] : {};
+        payload[name] =
+          typeof payload[name] === "object" && payload[name]
+            ? payload[name]
+            : {};
         payload[name][nestedKey] = formData[name];
       } else {
         payload[name] = formData[name];
@@ -490,7 +507,6 @@ export default function PageEditor({
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     setMsg(null);
-   
 
     if (!formData?.title || !formData?.slug || !formData?.websiteId) {
       toast.error("Please fill all required fields");
@@ -500,49 +516,36 @@ export default function PageEditor({
       toast.error("Content is required");
       return;
     }
-     const { header, updatedHtml } = extractHeader(editorRef.current?.value ?? null);
-      if (header && updatedHtml) {
-     const keepHeader = confirm("Do you want to keep the existing header?");
+    const { header, updatedHtml } = extractHeader(
+      editorRef.current?.value ?? null,
+    );
+    if (header && updatedHtml) {
+      const keepHeader = confirm("Do you want to keep the existing header?");
 
-    if (keepHeader) {
-       // User clicked "OK" (Yes)
-      handleUpdate(editorRef.current?.value ?? "")
+      if (keepHeader) {
+        // User clicked "OK" (Yes)
+        handleUpdate(editorRef.current?.value ?? "");
+      } else {
+        handleUpdate(updatedHtml);
+        updateHeaderPage(header);
+      }
     } else {
-      handleUpdate(updatedHtml)
-      updateHeaderPage(header)
+      handleUpdate(editorRef.current?.value ?? "");
     }
-  }else{
-    handleUpdate(editorRef.current?.value ?? "")
-  }
-
-    // startTransition(async () => {
-    //   try {
-    //     const payload = buildPayload();
-    //     const res = await dispatch(updateWebsitePage(payload as any));
-    //     if (updateWebsitePage.fulfilled.match(res)) {
-    //       setMsg("Updated successfully!");
-    //       toast.success("Page Updated Successfully");
-    //       goBack();
-    //     } else {
-    //       setMsg("Update failed");
-    //       toast.error("Update failed");
-    //     }
-    //   } catch (err) {
-    //     setMsg("Update failed");
-    //     toast.error("Update failed");
-    //   }
-    // });
   };
 
-
-
-  //update page 
+  //update page
   const handleUpdate = async (content: string) => {
-
-startTransition(async () => {
+    startTransition(async () => {
       try {
         const payload = buildPayload();
-        const res = await dispatch(updateWebsitePage({...payload, content, isHomePage: formData.slug === "home" ? true : false} as any));
+        const res = await dispatch(
+          updateWebsitePage({
+            ...payload,
+            content,
+            isHomePage: formData.slug === "home" ? true : false,
+          } as any),
+        );
         if (updateWebsitePage.fulfilled.match(res)) {
           setMsg("Updated successfully!");
           toast.success("Page Updated Successfully");
@@ -556,32 +559,31 @@ startTransition(async () => {
         toast.error("Update failed");
       }
     });
-  }
-   const updateHeaderPage = async (content: string) => {
-  
-      const data: TemplateDocument = {
-        slug: formData.slug,
-        status: "draft",
-        content: content,
-        websiteId: formData.websiteId,
-        category: "navbar",
-        tenantId: formData.tenantId,
-        createdBy: user?._id,
-        pageSlug: [formData.slug],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-  
-      }
-      const result = await dispatch(createHeader(data));
-      if (createHeader.fulfilled.match(result)) {
-        setMsg("Created successfully!");
-        toast.success("Created successfully!");
-        // goBack();
-      } else {
-        setMsg("Create failed");
-        toast.error("Create failed");
-      }
+  };
+  const updateHeaderPage = async (content: string) => {
+    const data: TemplateDocument = {
+      slug: formData.slug,
+      status: "draft",
+      content: content,
+      websiteId: formData.websiteId,
+      category: "navbar",
+      tenantId: formData.tenantId,
+      createdBy: user?._id,
+      pageSlug: [formData.slug],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    const result = await dispatch(createHeader(data));
+    if (createHeader.fulfilled.match(result)) {
+      setMsg("Created successfully!");
+      toast.success("Created successfully!");
+      // goBack();
+    } else {
+      setMsg("Create failed");
+      toast.error("Create failed");
     }
+  };
+
   const handleDelete = async () => {
     if (!confirm("Delete this page?")) return;
     try {
@@ -604,24 +606,34 @@ startTransition(async () => {
   ------------------------------ */
   const renderableHtml = useMemo(
     () => unescapeHtmlIfNeeded(String(formData?.content || "")),
-    [formData?.content]
+    [formData?.content],
   );
-  const iframeDoc = useMemo(() => buildIframeDoc(renderableHtml), [renderableHtml]);
+  const iframeDoc = useMemo(
+    () => buildIframeDoc(renderableHtml),
+    [renderableHtml],
+  );
 
   // const focusKeyword = (formData?.focusKeyword || "").trim();
   const seoTitleLen = String(formData?.seoTitle || "").trim().length;
 
-  const pageText = useMemo(() => stripHtmlToText(renderableHtml), [renderableHtml]);
+  const pageText = useMemo(
+    () => stripHtmlToText(renderableHtml),
+    [renderableHtml],
+  );
   const wordCount = useMemo(() => countWords(pageText), [pageText]);
 
   const imgStats = useMemo(() => {
     try {
       const parser = new DOMParser();
-      const doc = parser.parseFromString(`<body>${renderableHtml}</body>`, "text/html");
+      const doc = parser.parseFromString(
+        `<body>${renderableHtml}</body>`,
+        "text/html",
+      );
       const imgs = Array.from(doc.querySelectorAll("img"));
       const total = imgs.length;
-      const withAlt = imgs.filter((i) => (i.getAttribute("alt") || "").trim().length > 0)
-        .length;
+      const withAlt = imgs.filter(
+        (i) => (i.getAttribute("alt") || "").trim().length > 0,
+      ).length;
       return { total, withAlt };
     } catch {
       return { total: 0, withAlt: 0 };
@@ -644,8 +656,9 @@ startTransition(async () => {
     Templates Gallery (RIGHT SIDE)
   ------------------------------ */
   const selectedTemplate = useMemo(
-    () => PAGE_TEMPLATES.find((t) => t.key === selectedTplKey) || PAGE_TEMPLATES[0],
-    [selectedTplKey]
+    () =>
+      PAGE_TEMPLATES.find((t) => t.key === selectedTplKey) || PAGE_TEMPLATES[0],
+    [selectedTplKey],
   );
 
   const filteredTemplates = useMemo(() => {
@@ -721,8 +734,16 @@ startTransition(async () => {
   const renderField = (field: FieldConfig) => {
     if (shouldHideField(field)) return null;
 
-    const { name, label, type, options, placeholder, readOnly, rows, nestedKey } =
-      field;
+    const {
+      name,
+      label,
+      type,
+      options,
+      placeholder,
+      readOnly,
+      rows,
+      nestedKey,
+    } = field;
 
     if (type === "readonly") {
       const raw =
@@ -730,13 +751,13 @@ startTransition(async () => {
           ? item[name]?.[nestedKey]
           : item?.[name];
 
-      const value =
-        raw == null || raw === "" ? "—" : String(raw);
+      const value = raw == null || raw === "" ? "—" : String(raw);
 
       return (
-
-        <div key={`${name}${nestedKey ? "." + nestedKey : ""}`} className="grid items-center gap-2">
-
+        <div
+          key={`${name}${nestedKey ? "." + nestedKey : ""}`}
+          className="grid items-center gap-2"
+        >
           <span className="text-xs font-semibold text-slate-600">{label}:</span>
           <span className="text-xs text-slate-700 px-2.5 py-2 rounded-md border border-slate-200 bg-white">
             {value}
@@ -750,7 +771,9 @@ startTransition(async () => {
       return (
         <div key={name} className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
+            <Label className="text-[13px] font-semibold text-slate-900">
+              {label}
+            </Label>
             <Button
               type="button"
               variant="outline"
@@ -791,9 +814,12 @@ startTransition(async () => {
           <div key={name} className="space-y-3">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <Label className="text-[14px] font-semibold text-slate-900">{label}</Label>
+                <Label className="text-[14px] font-semibold text-slate-900">
+                  {label}
+                </Label>
                 <div className="text-xs text-slate-500 mt-0.5">
-                  Edit HTML and preview instantly. Use templates from the right panel.
+                  Edit HTML and preview instantly. Use templates from the right
+                  panel.
                 </div>
               </div>
 
@@ -803,7 +829,8 @@ startTransition(async () => {
                   variant={mode === "html" ? "default" : "ghost"}
                   className={cn(
                     "h-9 rounded-md px-4",
-                    mode === "html" && "bg-violet-600 hover:bg-violet-700 text-white"
+                    mode === "html" &&
+                      "bg-violet-600 hover:bg-violet-700 text-white",
                   )}
                   onClick={() => setMode("html")}
                 >
@@ -814,7 +841,8 @@ startTransition(async () => {
                   variant={mode === "preview" ? "default" : "ghost"}
                   className={cn(
                     "h-9 rounded-md px-4",
-                    mode === "preview" && "bg-violet-600 hover:bg-violet-700 text-white"
+                    mode === "preview" &&
+                      "bg-violet-600 hover:bg-violet-700 text-white",
                   )}
                   onClick={() => setMode("preview")}
                 >
@@ -836,7 +864,9 @@ startTransition(async () => {
             {mode === "preview" && (
               <div className="rounded-md border border-slate-200 bg-white shadow-sm overflow-hidden">
                 <div className="px-5 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-                  <div className="text-sm font-semibold text-slate-900">Live Preview</div>
+                  <div className="text-sm font-semibold text-slate-900">
+                    Live Preview
+                  </div>
                   <div className="text-xs text-slate-500">Sandbox iframe</div>
                 </div>
 
@@ -860,7 +890,9 @@ startTransition(async () => {
     if (type === "text") {
       return (
         <div key={name} className="space-y-2">
-          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
+          <Label className="text-[13px] font-semibold text-slate-900">
+            {label}
+          </Label>
           <Input
             value={formData[name] || ""}
             onChange={(e) => handleChange(name, e.target.value)}
@@ -868,7 +900,7 @@ startTransition(async () => {
             readOnly={readOnly}
             className={cn(
               "h-11 rounded-md bg-white border-slate-200",
-              readOnly && "bg-slate-50 text-slate-700"
+              readOnly && "bg-slate-50 text-slate-700",
             )}
           />
         </div>
@@ -878,7 +910,9 @@ startTransition(async () => {
     if (type === "textarea") {
       return (
         <div key={name} className="space-y-2">
-          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
+          <Label className="text-[13px] font-semibold text-slate-900">
+            {label}
+          </Label>
           <textarea
             value={formData[name] || ""}
             onChange={(e) => handleChange(name, e.target.value)}
@@ -888,7 +922,7 @@ startTransition(async () => {
               "w-full rounded-md border border-slate-200 bg-white px-5 py-4",
               "text-[14px] leading-6 text-slate-900 outline-none",
               "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-              "resize-none"
+              "resize-none",
             )}
           />
         </div>
@@ -898,8 +932,13 @@ startTransition(async () => {
     if (type === "select" && options) {
       return (
         <div key={name} className="space-y-2">
-          <Label className="text-[13px] font-semibold text-slate-900">{label}</Label>
-          <Select value={formData[name] || ""} onValueChange={(v) => handleChange(name, v)}>
+          <Label className="text-[13px] font-semibold text-slate-900">
+            {label}
+          </Label>
+          <Select
+            value={formData[name] || ""}
+            onValueChange={(v) => handleChange(name, v)}
+          >
             <SelectTrigger className="h-11 w-full rounded-md bg-white border-slate-200">
               <SelectValue placeholder={placeholder || "Select"} />
             </SelectTrigger>
@@ -952,7 +991,9 @@ startTransition(async () => {
                 variant="outline"
                 className="gap-2"
                 onClick={() => {
-                  const domain = viewUrl?.item?.primaryDomain?.[0] || currentWebsite?.primaryDomain?.[0];
+                  const domain =
+                    viewUrl?.item?.primaryDomain?.[0] ||
+                    currentWebsite?.primaryDomain?.[0];
                   const slug = String(formData?.slug || item?.slug || "");
                   if (!domain) {
                     toast.error("No domain found");
@@ -993,7 +1034,7 @@ startTransition(async () => {
               "mt-5 rounded-md border px-4 py-3 shadow-sm",
               msg.toLowerCase().includes("success")
                 ? "bg-emerald-50 border-emerald-200 text-emerald-800"
-                : "bg-rose-50 border-rose-200 text-rose-800"
+                : "bg-rose-50 border-rose-200 text-rose-800",
             )}
           >
             <div className="text-sm font-medium">{msg}</div>
@@ -1015,7 +1056,8 @@ startTransition(async () => {
               <div className="px-5 py-4 border-b border-slate-200 bg-slate-50">
                 <div className="text-sm font-semibold text-slate-900">SEO</div>
                 <div className="text-xs text-slate-500 mt-0.5">
-                  Improve search visibility with better title, description and keywords.
+                  Improve search visibility with better title, description and
+                  keywords.
                 </div>
               </div>
 
@@ -1026,7 +1068,9 @@ startTransition(async () => {
                   </Label>
                   <Input
                     value={formData.focusKeyword || ""}
-                    onChange={(e) => handleChange("focusKeyword", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("focusKeyword", e.target.value)
+                    }
                     placeholder="e.g. sustainability, roofing, modern exterior"
                     className="h-11 rounded-md bg-white border-slate-200"
                   />
@@ -1060,27 +1104,32 @@ startTransition(async () => {
                   </Label>
                   <textarea
                     value={formData.metaDescription || ""}
-                    onChange={(e) => handleChange("metaDescription", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("metaDescription", e.target.value)
+                    }
                     placeholder="Write a short summary for search results..."
                     rows={4}
                     className={cn(
                       "w-full rounded-md border border-slate-200 bg-white px-4 py-3",
                       "text-[13.5px] leading-6 text-slate-900 outline-none",
                       "focus:ring-2 focus:ring-violet-200 focus:border-violet-300",
-                      "resize-none"
+                      "resize-none",
                     )}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-[13px] font-semibold text-slate-900">Page URL</Label>
+                  <Label className="text-[13px] font-semibold text-slate-900">
+                    Page URL
+                  </Label>
                   <Input
                     value={formData.slug || ""}
                     readOnly
                     className="h-11 rounded-md bg-slate-50 border-slate-200 text-slate-700 mt-2"
                   />
                   <div className="text-xs text-slate-500 py-2">
-                    Full URL: <span className="font-mono">{fullUrl || "—"}</span>
+                    Full URL:{" "}
+                    <span className="font-mono">{fullUrl || "—"}</span>
                   </div>
                 </div>
 
@@ -1095,8 +1144,14 @@ startTransition(async () => {
                       text={`Recommended 300+ words. Current: ${wordCount}`}
                     />
                     <SeoRow
-                      ok={imgStats.total === 0 ? true : imgStats.withAlt === imgStats.total}
-                      warn={imgStats.total > 0 && imgStats.withAlt < imgStats.total}
+                      ok={
+                        imgStats.total === 0
+                          ? true
+                          : imgStats.withAlt === imgStats.total
+                      }
+                      warn={
+                        imgStats.total > 0 && imgStats.withAlt < imgStats.total
+                      }
                       text={`Images with alt text: ${imgStats.withAlt}/${imgStats.total}`}
                     />
                   </div>
@@ -1131,7 +1186,10 @@ startTransition(async () => {
                         className="h-11 rounded-md bg-white border-slate-200"
                       />
 
-                      <Select value={tplCategory} onValueChange={(v) => setTplCategory(v as any)}>
+                      <Select
+                        value={tplCategory}
+                        onValueChange={(v) => setTplCategory(v as any)}
+                      >
                         <SelectTrigger className="h-11 rounded-md bg-white border-slate-200">
                           <SelectValue placeholder="Category" />
                         </SelectTrigger>
@@ -1163,7 +1221,7 @@ startTransition(async () => {
                               "text-left rounded-md border bg-white overflow-hidden shadow-sm",
                               isActive
                                 ? "border-violet-400 ring-2 ring-violet-200"
-                                : "border-slate-200 hover:border-slate-300"
+                                : "border-slate-200 hover:border-slate-300",
                             )}
                           >
                             <div className="px-3 py-2 border-b border-slate-200 bg-white">
@@ -1225,7 +1283,9 @@ startTransition(async () => {
                         <div className="relative aspect-[16/10] w-full bg-white overflow-hidden">
                           <iframe
                             title="selected-template"
-                            srcDoc={buildIframeDoc(selectedTemplate?.html || "")}
+                            srcDoc={buildIframeDoc(
+                              selectedTemplate?.html || "",
+                            )}
                             sandbox="allow-scripts allow-same-origin"
                             className="absolute left-0 top-0 origin-top-left"
                             style={{
@@ -1251,7 +1311,9 @@ startTransition(async () => {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                          onClick={() => insertTemplateAtCursor(selectedTemplate)}
+                          onClick={() =>
+                            insertTemplateAtCursor(selectedTemplate)
+                          }
                         >
                           <PlusCircle className="h-4 w-4 mr-2" />
                           Insert
@@ -1261,7 +1323,9 @@ startTransition(async () => {
                           type="button"
                           variant="outline"
                           className="h-10 rounded-md"
-                          onClick={() => copyToClipboard(selectedTemplate?.html || "")}
+                          onClick={() =>
+                            copyToClipboard(selectedTemplate?.html || "")
+                          }
                         >
                           <Copy className="h-4 w-4 mr-2" />
                           Copy
@@ -1313,8 +1377,16 @@ startTransition(async () => {
                 </div>
 
                 {/* Hidden IDs (still in payload) */}
-                <input type="hidden" name="tenantId" value={formData.tenantId || ""} />
-                <input type="hidden" name="websiteId" value={formData.websiteId || ""} />
+                <input
+                  type="hidden"
+                  name="tenantId"
+                  value={formData.tenantId || ""}
+                />
+                <input
+                  type="hidden"
+                  name="websiteId"
+                  value={formData.websiteId || ""}
+                />
               </div>
             </div>
           </div>

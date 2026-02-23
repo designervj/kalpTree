@@ -52,7 +52,7 @@ export type SelectedToken =
 ───────────────────────────────────────────── */
 export default function ColorPaletteStudio() {
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const [tab, setTab] = useState<"all" | "edit">("all");
   const [palettes, setPalettes] = useState<any[]>([]);
@@ -63,7 +63,7 @@ export default function ColorPaletteStudio() {
 
   useEffect(() => {
     // If currentWebsite hasn't arrived yet, keep booting
-    if (!currentWebsite) {
+    if (!currentBusiness) {
       setIsBooting(true);
       return;
     }
@@ -72,12 +72,12 @@ export default function ColorPaletteStudio() {
     setIsBooting(false);
 
     // hydrate palettes if branding exists
-    if (currentWebsite.branding?.colors) {
-      setPalettes(currentWebsite.branding.colors);
+    if (currentBusiness?.website?.branding?.colors) {
+      setPalettes(currentBusiness?.website?.branding?.colors);
     } else {
       setPalettes([]);
     }
-  }, [currentWebsite]);
+  }, [currentBusiness]);
 
   const handleSave = (p: any) => {
     if (!editing) {
@@ -97,10 +97,10 @@ export default function ColorPaletteStudio() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!currentWebsite) return;
+    if (!currentBusiness) return;
     try {
       const req = await fetch(
-        `/api/admin/color-pallet?websiteId=${currentWebsite._id}&palletId=${id}`,
+        `/api/admin/color-pallet?tenantId=${currentBusiness._id}&palletId=${id}`,
         {
           method: "DELETE",
         },

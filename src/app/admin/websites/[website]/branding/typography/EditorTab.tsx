@@ -39,6 +39,8 @@ export function EditorTab({
   const defaultSeed = editingPalette?.seed || "#1F6F43";
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
 
   const [name, setName] = useState(editingPalette?.name || "");
   const [hexSeed, setHexSeed] = useState(defaultSeed);
@@ -183,7 +185,7 @@ export function EditorTab({
 
   // ✅ LOCAL STATE SAVE (no window.storage)
   const handleSave = async () => {
-    if (!currentWebsite) return;
+    if (!currentBusiness) return;
     try {
       setSaving(true);
       if (!name.trim()) {
@@ -200,7 +202,7 @@ export function EditorTab({
 
       if (editingPalette) {
         req = await fetch(
-          `/api/admin/color-pallet?websiteId=${currentWebsite._id}&palletId=${editingPalette._id}`,
+          `/api/admin/color-pallet?tenantId=${currentBusiness._id}&palletId=${editingPalette._id}`,
           {
             method: "PUT",
             body: JSON.stringify(palette),
@@ -208,7 +210,7 @@ export function EditorTab({
         );
       } else {
         req = await fetch(
-          `/api/admin/color-pallet?websiteId=${currentWebsite._id}`,
+          `/api/admin/color-pallet?tenantId=${currentBusiness._id}`,
           {
             method: "POST",
             body: JSON.stringify(palette),
@@ -217,8 +219,6 @@ export function EditorTab({
       }
 
       const res = await req.json();
-
-      console.log(res);
 
       if (res.success) {
         onSave({ ...palette, _id: res.data });

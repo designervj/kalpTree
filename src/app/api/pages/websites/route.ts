@@ -14,12 +14,10 @@ export async function GET(req: Request) {
   const filter: any = {};
   if (tenantId) {
     // websiteId is stored as string in the database, not ObjectId
-    filter._id =
+    filter.tenantId =
       typeof tenantId === "string" ? new ObjectId(tenantId) : tenantId;
   }
   const data = await collection.find(filter).sort({ name: 1 }).toArray();
-
-  console.log(data)
 
   return NextResponse.json(data);
 }

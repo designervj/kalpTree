@@ -244,10 +244,12 @@ export default function TypographyPage({
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
 
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  // const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const data = transformRawToGlobalStyleModel(
-    currentWebsite?.globalStyle || "",
+    currentBusiness?.website?.globalStyle || "",
   );
 
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
@@ -677,7 +679,7 @@ export default function TypographyPage({
   const handleSaveGlobalCss = async () => {
     try {
       const req = await fetch(
-        `/api/websites?websiteId=${currentWebsite?._id}`,
+        `/api/websites?websiteId=${currentBusiness?._id}`,
         {
           method: "PATCH",
           body: JSON.stringify(ROOT_CSS),
@@ -700,7 +702,9 @@ export default function TypographyPage({
   useEffect(() => {
     if (!data) return;
 
-    const cssOnly = extractStyleContent(currentWebsite?.globalStyle || "");
+    const cssOnly = extractStyleContent(
+      currentBusiness?.website?.globalStyle || "",
+    );
 
     setRoot_Css(cssOnly);
     // Brand colors
@@ -833,7 +837,7 @@ export default function TypographyPage({
         },
       });
     }
-  }, [currentWebsite?.globalStyle]);
+  }, [currentBusiness?.website?.globalStyle]);
 
   useEffect(() => {
     if (!allFonts.length || !data?.fonts) return;
@@ -849,7 +853,7 @@ export default function TypographyPage({
       const found = allFonts.find((f) => f.name === name);
       if (found) ensureFontLoaded(found);
     });
-  }, [allFonts, currentWebsite?.globalStyle]);
+  }, [allFonts, currentBusiness?.website?.globalStyle]);
 
   const handleCopyRoot = async () => {
     try {

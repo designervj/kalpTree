@@ -268,8 +268,7 @@ export const UpperBar = () => {
           </Select>
         )}
 
-      {/* ================= Website ================= */}
-      {updatedAllWebsites.length > 0 && (
+      {/* {updatedAllWebsites.length > 0 && (
         <Select
           value={updatedCurrentWebsite?._id?.toString() ?? ""}
           onValueChange={(websiteId) => {
@@ -284,7 +283,6 @@ export const UpperBar = () => {
                   {currentWebsite?.name || "Select Website"}
                 </span>
               </div>
-              {/* <ChevronDown className="h-4 w-4 opacity-60" /> */}
             </div>
           </SelectTrigger>
 
@@ -307,7 +305,7 @@ export const UpperBar = () => {
             ))}
           </SelectContent>
         </Select>
-      )}
+      )} */}
     </div>
   );
 };

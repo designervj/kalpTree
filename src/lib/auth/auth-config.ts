@@ -1,7 +1,6 @@
 import { NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { userService } from "./user-service";
-import { websiteService } from "../websites/website-service";
 import { tenantService } from "../tenant/tenant-service";
 
 export const authConfig: NextAuthConfig = {
@@ -25,9 +24,21 @@ export const authConfig: NextAuthConfig = {
         ) {
           throw new Error("Email and password are required");
         }
-    
-        try {
 
+        try {
+          // const getWebsite = await websiteService.getByHost(
+          //   credentials.domain as string,
+          // );
+
+          // if (!getWebsite) {
+          //   throw new Error("Invalid domain");
+          // }
+
+          // const tenantdetail = await tenantService.getTenantById(
+          //   getWebsite?.tenantId?.toString() as string,
+          // );
+
+          // console.log("tenantdetail====", tenantdetail);
           const user = await userService.getUserByEmail(
             credentials.email as string,
           );

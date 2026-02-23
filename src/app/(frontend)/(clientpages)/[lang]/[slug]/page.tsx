@@ -12,7 +12,6 @@ import ProductCategoryPage from "../product-category/page";
 import SingleProductPage from "../product/[slug]/page";
 import ComingSoonPage from "./comingsoon/page";
 
-
 const API_BASE_URL = process.env.NEXTAUTH_URL || "http://localhost:55803";
 
 export default async function PageTemplate({
@@ -60,40 +59,42 @@ export default async function PageTemplate({
     const allfooter_coll = await db.collection("templates_footer");
 
     if (!website) {
-      const websiteColl = await getCollection("websites");
+      const tenantColl = await getCollection("tenants");
       const pagecoll = await getCollection("pages");
 
-      let websitedata = await websiteColl.findOne({
-        primaryDomain: {
+      let tenantData = await tenantColl.findOne({
+        "website.primaryDomain": {
           $in: [host],
         },
       });
 
-      if (!websitedata) {
+      if (!tenantData) {
         return <NotFound />;
       }
 
       let page;
       if (!slug) {
         page = await pagecoll.findOne({
-          websiteId: websitedata._id,
+          tenantId: tenantData._id,
           isHomePage: true,
         });
       } else {
         page = await pagecoll.findOne({
-          websiteId: websitedata._id,
+          tenantId: tenantData._id,
           slug: slug,
         });
       }
 
-      if (!lang && websitedata.lang) {
-        lang = websitedata.lang.find((d: any) => d.default == true)?.name;
+      if (!lang && tenantData.website.lang) {
+        lang = tenantData.website.lang.find(
+          (d: any) => d.default == true,
+        )?.name;
       }
       website = page;
       currentWebsite = {
-        ...websitedata,
-        _id: websitedata._id.toString(),
-        tenantId: websitedata.tenantId ? websitedata.tenantId.toString() : null,
+        ...tenantData,
+        _id: tenantData._id.toString(),
+        tenantId: tenantData.tenantId ? tenantData.tenantId.toString() : null,
       };
     }
 
@@ -133,7 +134,8 @@ export default async function PageTemplate({
       return <NotFound />;
     }
 
-    const html = (website?.content2 && lang) ? website.content2[lang] : website.content;
+    const html =
+      website?.content2 && lang ? website.content2[lang] : website.content;
 
     if (!html) {
       return <ComingSoonPage />;
