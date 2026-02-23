@@ -114,19 +114,19 @@ export default function WebsitesPage() {
   return (
     <div className="mx-auto w-full max-w-[1400px] p-6 space-y-6">
       <div className="flex justify-between items-center">
-          <div className="space-y-2">
-            <BreadCrumbPage />
-            <p className="text-muted-foreground">Manage your website configurations</p>
-          </div>
+        <div className="space-y-2">
+          <BreadCrumbPage />
+          <p className="text-muted-foreground">Manage your website configurations</p>
+        </div>
 
-          <Button
-              onClick={() => router.push("/admin/domain/create")}
-              className="gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Create New Website
-            </Button>
-          </div>
+        <Button
+          onClick={() => router.push("/admin/domain/create")}
+          className="gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Create New Website
+        </Button>
+      </div>
 
       <Card className="overflow-hidden">
         {/* <CardHeader className="border-b bg-transparent">
@@ -166,7 +166,7 @@ export default function WebsitesPage() {
             <ExtTable
               items={processedItems as any}
               currentId={currentId}
-            
+
             />
           )}
         </CardContent>

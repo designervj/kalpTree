@@ -114,16 +114,16 @@ const HeadingControl = ({ headings, headingFontFamily, setHeadingFontFamily, set
           </Select>
         </div>
 
-   {/* Preview badge showing active heading font */}
-            <div
-              className="rounded-md border px-3 py-2 text-sm"
-              style={{ fontFamily: headingFontFamily }}
-            >
-              <span className="text-xs text-muted-foreground mr-2">
-                Heading preview:
-              </span>
-              <span className="font-bold">{headingFontFamily}</span>
-            </div>
+        {/* Preview badge showing active heading font */}
+        <div
+          className="rounded-md border px-3 py-2 text-sm"
+          style={{ fontFamily: headingFontFamily }}
+        >
+          <span className="text-xs text-muted-foreground mr-2">
+            Heading preview:
+          </span>
+          <span className="font-bold">{headingFontFamily}</span>
+        </div>
         <div className="space-y-3">
           <Label>Font Weight</Label>
           <div className="grid grid-cols-3 gap-2">
