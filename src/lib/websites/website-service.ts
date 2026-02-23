@@ -262,4 +262,4 @@ export class WebsiteService {
   }
 }
 
-export const websiteService = new WebsiteService();
+export const websiteTenantService  = new WebsiteService();

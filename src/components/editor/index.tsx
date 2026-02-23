@@ -64,9 +64,13 @@ export default function GrapesJSEditor() {
     isLoading: isPageLoading,
   } = useSelector((state: RootState) => state.pageEdit);
 
+  console.log("======Page", page);
+
   const { currentHeader } = useSelector((state: RootState) => state.header);
   const { currentFooter } = useSelector((state: RootState) => state.footer);
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
   const { currentStyle } = useSelector((state: RootState) => state.globalStyle);
 
   const lastPageIdRef = useRef<string | null>(null);
@@ -76,28 +80,28 @@ export default function GrapesJSEditor() {
   useEffect(() => {
     if (
       state.editor &&
-      (currentWebsite?.globalStyle || currentStyle?.globalStyle)
+      (currentBusiness?.website?.globalStyle || currentStyle?.globalStyle)
     ) {
       console.log("🎨 Reactively updating global styles...");
       const globalStyle =
-        currentWebsite?.globalStyle || currentStyle?.globalStyle;
+        currentBusiness?.website?.globalStyle || currentStyle?.globalStyle;
       actions.setGlobalStyles(globalStyle);
     }
-  }, [state.editor, currentWebsite?.globalStyle]);
+  }, [state.editor, currentBusiness?.website?.globalStyle]);
 
   // Trigger loading state when page content changes
   useEffect(() => {
     if (
       page?.content &&
       !contentLoadedRef.current &&
-      (currentWebsite?.globalStyle || currentStyle?.globalStyle)
+      (currentBusiness?.website?.globalStyle || currentStyle?.globalStyle)
     ) {
       dispatch(setPageLoading(true));
     }
   }, [
     page?._id,
     page?.content,
-    currentWebsite?.globalStyle,
+    currentBusiness?.website?.globalStyle,
     currentHeader,
     currentStyle?.globalStyle,
     dispatch,
@@ -169,13 +173,14 @@ export default function GrapesJSEditor() {
 
             // Combine bodies with wrappers
             body = `
-              ${!isHeaderPresentInCurrentPage
-                ? `
+              ${
+                !isHeaderPresentInCurrentPage
+                  ? `
               <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
                 ${headerParts.body}
               </div>
               `
-                : ""
+                  : ""
               }
               <div data-gjs-type="page-body">
                 ${pageParts.body}
@@ -269,11 +274,10 @@ export default function GrapesJSEditor() {
     state.editor,
     state.isLoading,
     page?.content,
-    currentWebsite?.globalStyle,
+    currentBusiness?.website?.globalStyle,
     currentStyle?.globalStyle,
     currentHeader,
   ]);
-
 
   useEffect(() => {
     if (!state.editor) return;
@@ -504,9 +508,7 @@ export default function GrapesJSEditor() {
     }
   };
 
-  const handleSaveTemplate = (name: string, content: string) => {
-
-  };
+  const handleSaveTemplate = (name: string, content: string) => {};
 
   // ─────────────────────────────
   // Code editor sync
@@ -745,7 +747,9 @@ export default function GrapesJSEditor() {
   const handleCategoryHtmlGenerated = (html: string) => {
     setCategoryPageHtml(html);
   };
-  const { page: currentPage } = useSelector((state: RootState) => state.pageEdit);
+  const { page: currentPage } = useSelector(
+    (state: RootState) => state.pageEdit,
+  );
   const handlePushCategoryToCanvas = () => {
     if (!state.editor || !categoryPageHtml) return;
     dispatch(setPageLoading(true));
@@ -768,9 +772,7 @@ export default function GrapesJSEditor() {
     setPageType("normal");
   };
 
-
   const handlePushSingleProductToCanvas = (html: string) => {
-
     if (!state.editor) return;
     dispatch(setPageLoading(true));
 
@@ -790,21 +792,26 @@ export default function GrapesJSEditor() {
 
     // Switch view back to the normal editor canvas
     setPageType("normal");
-  }
+  };
   useEffect(() => {
     if (state.editorJs && state.editorJs !== editorJs) {
       setEditorJs(state.editorJs);
     }
   }, [state.editorJs, editorJs]);
 
-
-  const handleTemplateModal = ({ isOpen, pageType }: { isOpen: boolean; pageType: string }) => {
+  const handleTemplateModal = ({
+    isOpen,
+    pageType,
+  }: {
+    isOpen: boolean;
+    pageType: string;
+  }) => {
     setOpen(isOpen);
     if (pageType) {
       //  setPageType(pageType);
       setIsAddPage(true);
     }
-  }
+  };
 
   return (
     <EditorProvider editorState={editorProps}>
@@ -842,15 +849,14 @@ export default function GrapesJSEditor() {
             }}
             open={open}
             isAddPage={isAddPage}
-
-
           />
 
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
-                }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
+                pagetype !== "normal" ? "hidden" : ""
+              }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
@@ -867,7 +873,6 @@ export default function GrapesJSEditor() {
             {/* Alternative view - Category Pages */}
             {pagetype !== "normal" && !pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white relative">
-
                 {/* <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
                 <ProductShowcase */}
@@ -885,8 +890,11 @@ export default function GrapesJSEditor() {
                     gap: 12,
                   }}
                 >
-                  <span style={{ color: "#cbd5e1", fontSize: 13, fontWeight: 600 }}>
-                    Category Preview: <em style={{ fontWeight: 400 }}>{pagetype}</em>
+                  <span
+                    style={{ color: "#cbd5e1", fontSize: 13, fontWeight: 600 }}
+                  >
+                    Category Preview:{" "}
+                    <em style={{ fontWeight: 400 }}>{pagetype}</em>
                   </span>
                   <button
                     onClick={handlePushCategoryToCanvas}
@@ -909,22 +917,38 @@ export default function GrapesJSEditor() {
                 <CategoryPage
                   category={pagetype}
                   onHtmlGenerated={handleCategoryHtmlGenerated}
-                  options={categoryStyleConfigs[pagetype] ? {
-                    showHero: categoryStyleConfigs[pagetype].layoutConfig?.showHeroSection,
-                    desktopColumns: (categoryStyleConfigs[pagetype].layoutConfig?.gridColumns?.desktop ?? 3) as 2 | 3 | 4,
-                    heroImageUrl: categoryStyleConfigs[pagetype].heroConfig?.backgroundImage,
-                    categoryTitle: categoryStyleConfigs[pagetype].heroConfig?.title,
-                    layout: categoryStyleConfigs[pagetype].layoutConfig?.filterPosition,
-                  } : undefined}
+                  options={
+                    categoryStyleConfigs[pagetype]
+                      ? {
+                          showHero:
+                            categoryStyleConfigs[pagetype].layoutConfig
+                              ?.showHeroSection,
+                          desktopColumns: (categoryStyleConfigs[pagetype]
+                            .layoutConfig?.gridColumns?.desktop ?? 3) as
+                            | 2
+                            | 3
+                            | 4,
+                          heroImageUrl:
+                            categoryStyleConfigs[pagetype].heroConfig
+                              ?.backgroundImage,
+                          categoryTitle:
+                            categoryStyleConfigs[pagetype].heroConfig?.title,
+                          layout:
+                            categoryStyleConfigs[pagetype].layoutConfig
+                              ?.filterPosition,
+                        }
+                      : undefined
+                  }
                 />
               </div>
             )}
 
             {pagetype !== "normal" && pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white">
-                <GetAllProduct websiteId={currentWebsite?._id} />
+                <GetAllProduct websiteId={currentBusiness?._id} />
                 {/* <SingleProductShowcase slug={pagetype.split("-")[1]} /> */}
-                <NewSingleProductPage slug={pagetype.split("-")[1]}
+                <NewSingleProductPage
+                  slug={pagetype.split("-")[1]}
                   onPushToCanvas={handlePushSingleProductToCanvas}
                 />
               </div>

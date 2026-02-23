@@ -4,6 +4,7 @@ import { ObjectId } from "mongodb";
 import React from "react";
 import { Website } from "@/components/admin/AppShell";
 import { WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
+import { serializeMongoDoc } from "@/app/api/appshell-data/route";
 
 const page = async ({
   params,
@@ -26,50 +27,28 @@ const page = async ({
   }
 
   const db = await getDatabase();
-  const websiteColl = await db.collection("websites");
-  const website = await websiteColl.findOne({ _id: new ObjectId(param?.id) });
-  if (!website) {
+  const tenantColl = await db.collection("tenants");
+  const tenant = await tenantColl.findOne({ _id: new ObjectId(param?.id) });
+  if (!tenant) {
     return <div>Website not found</div>;
   }
 
   const pagecoll = await db.collection("pages");
-  const pagesData = await pagecoll.find({ websiteId: website._id }).toArray();
+  const pagesData = await pagecoll.find({ tenantId: tenant._id }).toArray();
   if (pagesData.length == 0) {
     return <div>No pages found</div>;
   }
 
+
+
   // get header
   const allheader_coll = await db.collection("templates_header");
   const headerData = await allheader_coll.findOne({
-    tenantId: website.tenantId,
+    tenantId: tenant.tenantId,
   });
 
-  // if (!headerData) {
-  //     return <div>Header not found</div>
-  // }
 
-  // get footer
-  // const allfooter_coll = await db.collection("templates_footer");
-  // const footerData = await allfooter_coll.findOne({ tenantId: website.tenantId });
-  // if (!footerData) {
-  //     return <div>Footer not found</div>
-  // }
-
-  // Serialize MongoDB documents to plain objects for Client Component
-  const serializedWebsite: Website = {
-    _id: website._id.toString(),
-    tenantId: website.tenantId?.toString(),
-    websiteId: website.websiteId,
-    name: website.name,
-    branding: website.branding,
-    primaryDomain: website.primaryDomain,
-    systemSubdomain: website.systemSubdomain,
-    serviceType: website.serviceType,
-    status: website.status,
-    lang: website.lang,
-    globalStyle: website.globalStyle,
-    isComingSoon: website.isComingSoon ?? true,
-  };
+  const docs = serializeMongoDoc(tenant);
 
   const serializedPages: WebsitePageModel[] = pagesData.map((page) => ({
     _id: page._id.toString(),
@@ -93,7 +72,7 @@ const page = async ({
     <>
       <WebsiteBuilder
         pages={serializedPages}
-        website={serializedWebsite}
+        website={docs}
         search={search}
         headerData={JSON.parse(JSON.stringify(headerData))}
         // footerData={JSON.parse(JSON.stringify(footerData))}

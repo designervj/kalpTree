@@ -1,4 +1,7 @@
-import { colorModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
+import {
+  colorModal,
+  ColorPalletModal,
+} from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 import { ObjectId } from "mongodb";
 
 export interface IBusiness {
@@ -64,8 +67,10 @@ export interface IBusiness {
     updatedAt?: string;
     globalStyle?: string;
     branding: {
-      colors: colorModal[];
+      colors: ColorPalletModal[];
     };
+    isComingSoon: boolean;
+    lang?: { name: string; default: boolean }[];
   };
   businessdetails?: BussinessDetailModel;
   socialPresence?: {

@@ -103,12 +103,13 @@ const ColorPallet = ({ handleColorPallet, type }: any) => {
     } else {
       setCombo(colorPallets);
     }
-  }, [allColorPallets]);
+  }, [allColorPallets, colorPallets]);
 
   const handleUpdateColor = (colors: any) => {
-    console.log("colors", colors);
+
     handleColorPallet(colors);
   };
+
   return (
     <section className="w-full bg-white">
       <style>{`

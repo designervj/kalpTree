@@ -71,6 +71,14 @@ const businessSlice = createSlice({
     addCreatedBusiness(state, action: PayloadAction<IBusiness>) {
       state.allBusiness.unshift(action.payload);
     },
+    updateCurrentBusinessWebsiteGlobalStyle(
+      state,
+      action: PayloadAction<string>,
+    ) {
+      if (state.currentBusiness) {
+        state.currentBusiness.website!.globalStyle = action.payload;
+      }
+    },
     clearBusinesses(state) {
       state.allBusiness = [];
       state.currentBusiness = null;
@@ -316,6 +324,7 @@ export const {
   setLoading,
   setError,
   addCreatedBusiness,
+  updateCurrentBusinessWebsiteGlobalStyle
 } = businessSlice.actions;
 
 export default businessSlice.reducer;

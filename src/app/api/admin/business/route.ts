@@ -133,8 +133,11 @@ export async function PUT(req: Request) {
         }
 
         const { searchParams } = new URL(req.url);
+
         const businessId = searchParams.get("businessId");
+
         const body = await req.json();
+
         const {input} = body;
         if (!businessId) {
             return NextResponse.json({ error: "Business ID is required" }, { status: 400 });
@@ -155,9 +158,9 @@ export async function PUT(req: Request) {
         }
 
         // Authorization check: only superadmin or agency (if it's their tenant) can update
-        if (user.role === "agency" && business.tenantId?.toString() !== user.id) {
-            return NextResponse.json({ error: "Forbidden: You don't have permission to update this business" }, { status: 403 });
-        }
+        // if (user.role === "agency" && business.tenantId?.toString() !== user.id) {
+        //     return NextResponse.json({ error: "Forbidden: You don't have permission to update this business" }, { status: 403 });
+        // }
 
         // Update the business
         const result = await tenantcoll.updateOne({ _id: new ObjectId(businessId) }, { $set: input });

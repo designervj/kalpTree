@@ -51,6 +51,8 @@ import {
 } from "@/components/admin/product/Cart/CartModal";
 import { TranslationDictionary } from "../translation/TranslationPage";
 import StyleSidebar from "./StyleSidebar";
+import { updateBusiness } from "@/hooks/slices/business/BusinessThunk";
+import { IBusiness } from "@/models/business";
 
 export type PageItem = {
   id: string;
@@ -132,7 +134,6 @@ type Props = {
   categoryStyleConfigs: any;
 };
 
-
 export default function Pages({
   open,
   setOpen,
@@ -146,6 +147,8 @@ export default function Pages({
   const { websitePages } = useSelector((state: RootState) => state.websitePage);
   const dispatch = useDispatch<AppDispatch>();
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listProduct } = useSelector((state: RootState) => state.product);
 
@@ -164,12 +167,12 @@ export default function Pages({
     if (
       websitePages &&
       websitePages.length > 0 &&
-      currentWebsite &&
-      currentWebsite.primaryDomain &&
-      currentWebsite.primaryDomain.length > 0
+      currentBusiness &&
+      currentBusiness?.website?.primaryDomain &&
+      currentBusiness?.website?.primaryDomain.length > 0
     ) {
-      const primaryDomain = currentWebsite.primaryDomain[0];
-      setComingSoon(currentWebsite?.isComingSoon ?? true);
+      const primaryDomain = currentBusiness.website.primaryDomain[0];
+      setComingSoon(currentBusiness.website?.isComingSoon ?? true);
       return websitePages.map((page): PageItem => {
         return {
           id: page._id,
@@ -185,7 +188,7 @@ export default function Pages({
       });
     }
     return [];
-  }, [websitePages, currentWebsite]);
+  }, [websitePages, currentBusiness?.website]);
 
   const [hiddenNav, setHiddenNav] = React.useState<PageItem[]>([
     {
@@ -338,14 +341,24 @@ export default function Pages({
     openSeoModal();
   };
 
+  // Need to be updated with Business Function
+
   const handleComingSoon = async (checked: boolean) => {
     setComingSoon(checked);
-    const data = {
-      ...currentWebsite,
-      isComingSoon: checked,
-    };
+    let cloned = structuredClone(currentBusiness);
+
+    if (cloned && cloned.website) {
+      cloned.website.isComingSoon = checked;
+    }
+
+    // const response = await dispatch(
+    //   updateWebsite({ id: data._id?.toString() || "", cloned: data }),
+    // ).unwrap();
     const response = await dispatch(
-      updateWebsite({ id: data._id?.toString() || "", websiteData: data }),
+      updateBusiness({
+        businessId: cloned!._id?.toString() || "",
+        input: cloned!,
+      }),
     ).unwrap();
     if (response) {
       toast.success("Website updated successfully");
@@ -392,13 +405,11 @@ export default function Pages({
   };
 
   const handleAddPage = () => {
-    setOpen(
-      {
-        isOpen: true,
-        pageType: "add-Page",
-      }
-    )
-  }
+    setOpen({
+      isOpen: true,
+      pageType: "add-Page",
+    });
+  };
 
   return (
     <TooltipProvider delayDuration={150}>

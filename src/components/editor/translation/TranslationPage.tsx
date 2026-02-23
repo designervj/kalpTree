@@ -148,6 +148,9 @@ export default function TranslationEditor({
   const isOwnUpdate = React.useRef(false);
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
+
   const {
     page,
     type,
@@ -160,7 +163,7 @@ export default function TranslationEditor({
 
   const [isConverting, setIsConverting] = useState(false);
 
-  const websiteLangs = currentWebsite?.lang ?? [];
+  const websiteLangs = currentBusiness?.website?.lang ?? [];
   const defaultLang =
     websiteLangs.find((l) => l.default)?.name ?? websiteLangs[0]?.name ?? "en";
 
@@ -357,7 +360,6 @@ export default function TranslationEditor({
       const array = parsedTexts.map((d: any) => d.text);
       const finalText = [...new Set(array)];
 
-      console.log(finalText);
 
       const req = await fetch("/api/admin/llm/translator", {
         method: "POST",
