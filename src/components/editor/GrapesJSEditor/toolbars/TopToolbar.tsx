@@ -54,6 +54,7 @@ type TopToolbarProps = {
   onSave: () => void;
   setOpen: (open: boolean) => void;
   open: boolean;
+  isAddPage: boolean;
 };
 
 type ThemeMode = "light" | "dark";
@@ -99,7 +100,8 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
   onSaveTemplate,
   onSave,
   setOpen,
-  open
+  open,
+  isAddPage
 }) => {
   const [theme, setTheme] = React.useState<ThemeMode>("dark");
 
@@ -195,6 +197,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                 onRecentBlocksChange={onRecentBlocksChange}
                 favorites={favoriteBlocks}
                 onFavoritesChange={onFavoriteBlocksChange}
+                editor={editor}
               />
             </TooltipTrigger>
             <TooltipContent side="bottom">Blocks</TooltipContent>
@@ -210,6 +213,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
                 currentContent={editorHtml || editor?.getHtml?.()}
                 setOpen={setOpen}
                 open={open}
+                isAddPage={isAddPage}
               />
             </TooltipTrigger>
             <TooltipContent side="bottom">Templates</TooltipContent>

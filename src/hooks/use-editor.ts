@@ -25,70 +25,13 @@ import { Website } from "@/components/admin/AppShell";
 import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
 import { addComponentAboveFooter } from "@/components/editor/utils/InsertionUtils";
 import { cleanupComponentStylesAndScripts } from "@/components/editor/utils/CleanupComponentStylesAndScripts";
+import { generateGlobalStyleContent } from "@/components/editor/utils/generateGlobalStyleContent";
+import { GrapesJSEditor } from "@/components/editor/GrapeJsType";
 
 /**
  * Generates the full CSS content for global styles, including variables and base rules.
  */
-const generateGlobalStyleContent = (cssVars: Record<string, string>) => {
-  const cssVarString = Object.entries(cssVars)
-    .map(([prop, val]) => `  ${prop}: ${val};`)
-    .sort()
-    .join('\n');
-
-  const headingStyles = [1, 2, 3, 4, 5, 6].map(num => `
-h${num} {
-  font-size: var(--h${num}-size);
-  font-weight: var(--h${num}-weight);
-  line-height: var(--h${num}-lh);
-  letter-spacing: var(--h${num}-ls);
-  margin-top: 0;
-  margin-bottom: 0.5em;
-}`).join('\n');
-
-  const buttonStyles = ['primary', 'secondary', 'outline'].map(type => `
-.btn-${type} {
-  background-color: var(--btn-${type}-bg);
-  color: var(--btn-${type}-text);
-  border: 1px solid var(--btn-${type}-border);
-  border-radius: var(--btn-radius);
-  font-size: var(--btn-size);
-  height: var(--btn-height);
-  transition: all var(--btn-transition);
-}
-.btn-${type}:hover {
-  background-color: var(--btn-${type}-hover-bg);
-}`).join('\n');
-
-  return `
-:root {
-${cssVarString}
-}
-
-body {
-  font-family: var(--font-body, var(--font-family, sans-serif));
-  font-size: var(--body-size, 16px);
-  font-weight: var(--body-weight, 400);
-  line-height: var(--body-lh, 1.5);
-  letter-spacing: var(--body-ls, 0);
-  color: var(--text, #000);
-  background-color: var(--bg, #fff);
-  margin: 0;
-  padding: 0;
-}
-
-${headingStyles}
-
-${buttonStyles}
-
-* {
-  box-sizing: border-box;
-}
-
-p {
-  margin-bottom: var(--body-paragraph-gap, 1rem);
-}
-`;
-};
+;
 
 // Extend HTMLElement to include event handlers storage
 declare global {
@@ -97,54 +40,7 @@ declare global {
   }
 }
 
-// Improved type definition for GrapesJS editor
-export interface GrapesJSEditor {
-  getHtml: () => string;
-  getCss: () => string | undefined;
-  getJs?: () => string;
-  setJs?: (js: string) => void;
-  setComponents: (components: string | object) => any;
-  addComponents: (components: string | object) => any;
-  setStyle: (style: string | object) => any;
-  UndoManager: {
-    undo: () => void;
-    redo: () => void;
-  };
-  select: (component: any) => void;
-  getSelected: () => any;
-  refresh: () => void;
-  setDevice: (device: string) => void;
-  getDevice: () => string;
-  Components: {
-    getComponents: () => any[];
-    getById: (id: string) => any;
-    getWrapper: () => any;
-  };
-  BlockManager: {
-    getAll: () => any;
-  };
-  DeviceManager: {
-    getAll: () => any;
-    get: (id: string) => any;
-    add: (device: any) => void;
-    remove: (id: string) => void;
-  };
-  Modal: {
-    open: (options: any) => void;
-    close: () => void;
-  };
-  StorageManager: {
-    store: (data: Record<string, any>) => void;
-    get: (key: string) => any;
-  };
-  Canvas: {
-    getDocument: () => Document | null;
-    getFrameEl?: () => HTMLIFrameElement | null;
-  };
-  on: (event: string, callback: Function) => void;
-  off: (event?: string, callback?: Function) => void;
-  destroy: () => void;
-}
+
 
 // Update your EditorState interface in types/editor.ts to include editorJs
 // If you can't modify that file directly, you can extend it here:
@@ -1175,7 +1071,7 @@ export function useEditor(containerId: string) {
       };
 
       // Tag name or type check for section
-      const isSection = component.get('tagName') === 'section' || component.get('type') === 'section';
+      const isSection = component?.get?.('tagName') === 'section' || component?.get?.('type') === 'section';
 
       if (isSection) {
         const el = component.getEl();

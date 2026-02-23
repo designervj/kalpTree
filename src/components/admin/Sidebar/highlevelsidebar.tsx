@@ -65,7 +65,7 @@ const navigationItems = [
       { label: "Add New Business", href: "/admin/businesses/create" },
     ],
   },
-{
+  {
     id: "users",
     label: "Users",
     icon: Network,
@@ -127,7 +127,7 @@ const navigationItems = [
       { label: "Webhooks", href: "/admin/settings/webhooks" },
       { label: "Data Export", href: "/admin/settings/data-export" },
       { label: "Security", href: "/admin/setting/security" },
-         { label: "Global Styles", href: "/admin/settings/global-styles" },
+      { label: "Global Styles", href: "/admin/settings/global-styles" },
     ],
   },
   {
@@ -269,7 +269,7 @@ export function HighLevelSidebar({
               )}
             >
               <div className="space-y-1">
-                {filteredNavigationItems.map((item) => {
+                {filteredNavigationItems?.map((item) => {
                   const Icon = item.icon as any;
                   const isOpen = !!openItems[item.id];
                   const isActive = pathname === item.href;

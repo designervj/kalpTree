@@ -9,12 +9,13 @@ type BlocksPageProps = {
     recentBlock: string[],
     favoriteBlock: string[],
     onFavoritesChange?: (blocks: string[]) => void;
+    editor: any;
 }
-const BlocksPage = ({ blocks, recentBlock, favoriteBlock, onFavoritesChange }: BlocksPageProps) => {
+const BlocksPage = ({ blocks, recentBlock, favoriteBlock, onFavoritesChange, editor }: BlocksPageProps) => {
     const [selectedBlocks, setSelectedBlocks] = useState<string[]>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [activeCategory, setActiveCategory] = useState<string>("all");
-    const [favoritesList, setFavoritesList] = useState<string[]>(favoriteBlock||[]);
+    const [favoritesList, setFavoritesList] = useState<string[]>(favoriteBlock || []);
 
     const [recentBlocksList, setRecentBlocksList] =
         useState<string[]>(recentBlock); const filteredBlocks = filterBlocks(
@@ -72,6 +73,7 @@ const BlocksPage = ({ blocks, recentBlock, favoriteBlock, onFavoritesChange }: B
                             isFavorite={favoritesList.includes(b.id)}
                             onToggleSelection={toggleBlockSelection}
                             onToggleFavorite={toggleFavorite}
+                            editor={editor}
                         />
                     );
                 })

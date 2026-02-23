@@ -118,6 +118,55 @@ const ShowBusiness = () => {
   const handleItemsPerPageChange = (value: string) => {
     router.push(`/admin/businesses?itemsperpage=${value}`);
   };
+  const filteredBusinesses = useMemo(() => {
+    if (!allBusiness) return [];
+    const query = q.trim().toLowerCase();
+
+    let data = [...allBusiness];
+
+    if (status !== "__all__") {
+      data = data.filter((b) => (b.status || "").toLowerCase() === status);
+    }
+
+    if (query) {
+      data = data.filter((b) => {
+        const website = websites.find((web) => web.tenantId == b._id);
+        const domain =
+          website?.primaryDomain?.find((d: string) => !d?.includes("localhost")) ||
+          "";
+        const email = (b.email || "").toLowerCase();
+        const name = (b.name || "").toLowerCase();
+        const industryVal = (b.businessdetails?.industry || "")
+          .toString()
+          .toLowerCase();
+
+        return (
+          name.includes(query) ||
+          email.includes(query) ||
+          domain.toLowerCase().includes(query) ||
+          industryVal.includes(query)
+        );
+      });
+    }
+
+    if (sortBy === "name") {
+      data.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    } else if (sortBy === "oldest") {
+      data.sort(
+        (a, b) =>
+          new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime(),
+      );
+    } else {
+      // newest
+      data.sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
+      );
+    }
+
+    return data;
+  }, [allBusiness, websites, q, status, sortBy]);
+
 
   if (!pagination) {
     return (
@@ -197,51 +246,6 @@ const ShowBusiness = () => {
     router.push(`/admin/businesses/edit`);
   };
 
-  const filteredBusinesses = useMemo(() => {
-    const query = q.trim().toLowerCase();
-
-    let data = [...allBusiness];
-
-    if (status !== "__all__") {
-      data = data.filter((b) => (b.status || "").toLowerCase() === status);
-    }
-
-    if (query) {
-      data = data.filter((b) => {
-        const website = websites.find((web) => web.tenantId == b._id);
-        const domain =
-          website?.primaryDomain?.find((d: string) => !d?.includes("localhost")) ||
-          "";
-        const email = (b.email || "").toLowerCase();
-        const name = (b.name || "").toLowerCase();
-        const industryVal = (b.businessdetails?.industry || "").toString().toLowerCase();
-
-        return (
-          name.includes(query) ||
-          email.includes(query) ||
-          domain.toLowerCase().includes(query) ||
-          industryVal.includes(query)
-        );
-      });
-    }
-
-    if (sortBy === "name") {
-      data.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-    } else if (sortBy === "oldest") {
-      data.sort(
-        (a, b) =>
-          new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime(),
-      );
-    } else {
-      // newest
-      data.sort(
-        (a, b) =>
-          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime(),
-      );
-    }
-
-    return data;
-  }, [allBusiness, websites, q, status, sortBy]);
 
   const copyToClipboard = async (text: string) => {
     try {
@@ -446,7 +450,7 @@ const ShowBusiness = () => {
             </CardContent>
           </Card>
         ) : (
-          filteredBusinesses.map((b) => {
+          filteredBusinesses?.map((b) => {
             const industry = defaultIndustries.find(
               (ind) =>
                 ind._id == b.businessdetails?.industry ||
@@ -456,10 +460,10 @@ const ShowBusiness = () => {
 
             const joinedDate = b?.createdAt
               ? new Date(b.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
               : null;
 
             const website = websites.find((web) => web.tenantId == b._id);
@@ -467,7 +471,7 @@ const ShowBusiness = () => {
             // NOTE: your original logic preserved here, but made safe
             const major = website
               ? allBusiness.find((agency) => agency._id === website.tenantId)?.tenantId ||
-                null
+              null
               : null;
 
             const domain = website?.primaryDomain?.find((d: string) =>
@@ -482,11 +486,11 @@ const ShowBusiness = () => {
             const href =
               domain && website
                 ? toCreateHref(
-                    domain,
-                    website?.tenantId?.toString() ?? null,
-                    agencyId,
-                    user?.role || "",
-                  )
+                  domain,
+                  website?.tenantId?.toString() ?? null,
+                  agencyId,
+                  user?.role || "",
+                )
                 : "#";
 
             const isLocalhost =

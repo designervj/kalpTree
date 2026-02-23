@@ -6,38 +6,38 @@ export const getSignglePageHtml = (selectedProduct: ProductModel) => {
 
     const styleHtml = `
     <style>
-        :root {
-            --black: #333333;
-            --gray: #767676;
-            --light-gray: #e5e5e5;
-            --border: #e5e5e5;
-            --sku-bg: #967249;
-            --bg: #ffffff;
-            --container-width: 1200px;
-        }
+    :root {
+        --black: #333333;
+        --gray: #767676;
+        --light-gray: #e5e5e5;
+        --border: #e5e5e5;
+        --sku-bg: #967249;
+        --bg: #ffffff;
+        --container-width: 1200px;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: "Inter", sans-serif;
-            color: var(--black);
-            background-color: var(--bg);
-            line-height: 1.6;
-        }
+    body {
+        font-family: "Inter", sans-serif;
+        color: var(--black);
+        background-color: var(--bg);
+        line-height: 1.6;
+    }
 
-        .gjs-section {
-            padding: 0;
-        }
+    .gjs-section {
+        padding: 0;
+    }
 
-        .gjs-container {
-            max-width: var(--container-width);
-            margin: 0 auto;
-            padding: 0 40px;
-        }
+    .gjs-container {
+        max-width: var(--container-width);
+        margin: 0 auto;
+        padding: 0 40px;
+    }
 
         /* --- NAVIGATION --- */
         #inav {
@@ -549,13 +549,13 @@ export const getSignglePageHtml = (selectedProduct: ProductModel) => {
             <div id="inavcnt" class="gjs-container">
                 <div id="ilogo" class="logo">MILITARY GEAR</div>
                 <div id="inavicons" class="nav-icons">
-                    <i class="fa fa-search"></i>
-                    <i id="iuser" class="fa fa-user-alt"></i>
-                    <i id="icart" class="fa fa-shopping-cart"></i>
-                </div>
+                <i class="fa fa-search"></i>
+                <i id="iuser" class="fa fa-user-alt"></i>
+                <i id="icart" class="fa fa-shopping-cart"></i>
             </div>
-        </section>
-    `;
+        </div>
+    </section>
+`;
 
     const breadcrumbHtml = `
         <section id="ibreadcrumbs" class="gjs-section">
@@ -629,7 +629,7 @@ export const getSignglePageHtml = (selectedProduct: ProductModel) => {
                 <div class="size-btn" onclick="selectSize(this)">L</div>
                 <div class="size-btn" onclick="selectSize(this)">XL</div>
                 <div class="size-btn" onclick="selectSize(this)">XXL</div>
-            </div>
+                    </div>
 
             <div id="iactions" class="action-row">
                 <div class="qty-box">
@@ -649,7 +649,7 @@ export const getSignglePageHtml = (selectedProduct: ProductModel) => {
                 <span id="ishare"><i class="fa fa-share-nodes"></i> SHARE</span>
             </div>
         </div>
-    `;
+`;
 
     const tabsHtml = `
         <section id="itabs" class="gjs-section">
@@ -659,7 +659,7 @@ export const getSignglePageHtml = (selectedProduct: ProductModel) => {
                     <button class="tab-trigger" onclick="openTab(event, 'tab-specifications')">Specifications</button>
                     <button class="tab-trigger" onclick="openTab(event, 'tab-size-guide')">Size Guide</button>
                     <button class="tab-trigger" onclick="openTab(event, 'tab-reviews')">Reviews (12)</button>
-                </div>
+                        </div>
 
                 <div id="tab-overview" class="tab-content active">
                     <p>Designed for professionals and enthusiasts alike, this piece combines rugged durability with modern aesthetic. Crafted from premium materials that ensure comfort and longevity.</p>

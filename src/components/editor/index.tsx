@@ -31,15 +31,6 @@ import CategoryPage from "../categoryPage/CategoryPage";
 import { PageModel } from "@/types/pages/PageModel";
 import NewSingleProductPage from "../admin/product/Cart/NewSingleProductPage";
 
-type PropertiesSidebarProps = {
-  showSidebar: boolean;
-  selectedElement: any;
-  styles: any;
-  onStyleChange: (property: string, value: string) => void;
-  onAttributeChange: (name: string, value: any) => void;
-  onInteractivityChange: (config: any) => void;
-};
-
 export default function GrapesJSEditor() {
   const containerRef = useRef<HTMLDivElement>(null);
   // Capture all props from useEditor to pass to Context
@@ -65,7 +56,7 @@ export default function GrapesJSEditor() {
   const [recentBlocks, setRecentBlocks] = useState<string[]>([]);
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
+  const [isAddPage, setIsAddPage] = useState(false);
   const dispatch = require("react-redux").useDispatch();
   const {
     page,
@@ -178,8 +169,7 @@ export default function GrapesJSEditor() {
 
             // Combine bodies with wrappers
             body = `
-              ${
-                !isHeaderPresentInCurrentPage
+              ${!isHeaderPresentInCurrentPage
                 ? `
               <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
                 ${headerParts.body}
@@ -462,6 +452,11 @@ export default function GrapesJSEditor() {
         }
       }
     } else {
+      setIsAddPage(false);
+      // Reset the flag so the loading useEffect can trigger and clear the loading state
+      contentLoadedRef.current = false;
+      dispatch(setPageLoading(true));
+
       state.editor.setComponents(body);
       if (cleanedStyles) {
         state.editor.setStyle(cleanedStyles);
@@ -775,8 +770,8 @@ export default function GrapesJSEditor() {
 
 
   const handlePushSingleProductToCanvas = (html: string) => {
-  
-     if (!state.editor) return;
+
+    if (!state.editor) return;
     dispatch(setPageLoading(true));
 
     // Reset the flag to ensure the content reload useEffect triggers
@@ -802,6 +797,14 @@ export default function GrapesJSEditor() {
     }
   }, [state.editorJs, editorJs]);
 
+
+  const handleTemplateModal = ({ isOpen, pageType }: { isOpen: boolean; pageType: string }) => {
+    setOpen(isOpen);
+    if (pageType) {
+      //  setPageType(pageType);
+      setIsAddPage(true);
+    }
+  }
 
   return (
     <EditorProvider editorState={editorProps}>
@@ -832,9 +835,15 @@ export default function GrapesJSEditor() {
             onSave={handleSaveData}
             setOpen={(isOpen) => {
               setOpen(isOpen);
-              if (!isOpen) setInsertionIndex(null);
+              if (!isOpen) {
+                setInsertionIndex(null);
+                setIsAddPage(false);
+              }
             }}
             open={open}
+            isAddPage={isAddPage}
+
+
           />
 
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
@@ -858,7 +867,7 @@ export default function GrapesJSEditor() {
             {/* Alternative view - Category Pages */}
             {pagetype !== "normal" && !pagetype.startsWith("product") && (
               <div className="flex-1 min-w-0 overflow-auto bg-white relative">
-               
+
                 {/* <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
                 <ProductShowcase */}
@@ -905,7 +914,7 @@ export default function GrapesJSEditor() {
                     desktopColumns: (categoryStyleConfigs[pagetype].layoutConfig?.gridColumns?.desktop ?? 3) as 2 | 3 | 4,
                     heroImageUrl: categoryStyleConfigs[pagetype].heroConfig?.backgroundImage,
                     categoryTitle: categoryStyleConfigs[pagetype].heroConfig?.title,
-                    layout:categoryStyleConfigs[pagetype].layoutConfig?.filterPosition,
+                    layout: categoryStyleConfigs[pagetype].layoutConfig?.filterPosition,
                   } : undefined}
                 />
               </div>
@@ -915,8 +924,8 @@ export default function GrapesJSEditor() {
               <div className="flex-1 min-w-0 overflow-auto bg-white">
                 <GetAllProduct websiteId={currentWebsite?._id} />
                 {/* <SingleProductShowcase slug={pagetype.split("-")[1]} /> */}
-                <NewSingleProductPage slug={pagetype.split("-")[1]} 
-                onPushToCanvas={handlePushSingleProductToCanvas}
+                <NewSingleProductPage slug={pagetype.split("-")[1]}
+                  onPushToCanvas={handlePushSingleProductToCanvas}
                 />
               </div>
             )}
@@ -941,6 +950,7 @@ export default function GrapesJSEditor() {
             )} */}
             {/* Sidebar */}
             <PropertiesSidebar
+              editor={state.editor}
               showSidebar={showSidebar}
               selectedElement={state.selectedElement}
               styles={state.styles}
@@ -948,7 +958,7 @@ export default function GrapesJSEditor() {
               onAttributeChange={actions.updateAttribute}
               onInteractivityChange={handleUpdateInteractivity}
               open={open}
-              setOpen={setOpen}
+              setOpen={handleTemplateModal}
               actions={actions}
               handlePageType={handlePageType}
               pagetype={pagetype}
@@ -956,9 +966,9 @@ export default function GrapesJSEditor() {
               setCategoryStyleConfigs={setCategoryStyleConfigs}
               editorHtml={editorHtml}
               handleUpdateHtml={handleUpdateHtml}
-               blocks={state.blocks}
-                   recentBlocks={recentBlocks}
-            favoriteBlocks={favoriteBlocks}
+              blocks={state.blocks}
+              recentBlocks={recentBlocks}
+              favoriteBlocks={favoriteBlocks}
             />
           </div>
 
