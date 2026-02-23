@@ -9,7 +9,495 @@ type Theme = {
   isDark: boolean;
 };
 
-export const themePresets: Record<string, Theme> = {
+type ThemeContextType = {
+  currentTheme: string;
+  setTheme: (themeId: string) => void;
+};
+
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+// ------------------------
+// Helpers
+// ------------------------
+function hslToCss(hsl: string) {
+  return `hsl(${hsl})`;
+}
+
+function hexToHslRaw(hex: string): string {
+  let clean = hex.replace("#", "").trim();
+
+  if (clean.length === 3) {
+    clean = clean
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  }
+
+  const r = parseInt(clean.substring(0, 2), 16) / 255;
+  const g = parseInt(clean.substring(2, 4), 16) / 255;
+  const b = parseInt(clean.substring(4, 6), 16) / 255;
+
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+
+  let h = 0;
+  let s = 0;
+  const l = (max + min) / 2;
+
+  if (delta !== 0) {
+    s = delta / (1 - Math.abs(2 * l - 1));
+
+    switch (max) {
+      case r:
+        h = 60 * (((g - b) / delta) % 6);
+        break;
+      case g:
+        h = 60 * ((b - r) / delta + 2);
+        break;
+      case b:
+        h = 60 * ((r - g) / delta + 4);
+        break;
+    }
+  }
+
+  if (h < 0) h += 360;
+
+  return `${Math.round(h)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
+function hexOrTransparentToVar(value: string): string {
+  if (value === "transparent") return "transparent";
+  return hexToHslRaw(value);
+}
+
+function slugifyThemeName(name: string) {
+  return name.toLowerCase().replace(/\s+/g, "-");
+}
+
+type BrandButtonPalette = {
+  name: string;
+  colors: {
+    brand: {
+      primary: string;
+      secondary: string;
+      accent: string;
+      dark: string;
+      text: string;
+      mutedText: string;
+      border: string;
+      ring: string;
+    };
+    buttons: {
+      primary: {
+        bg: string;
+        text: string;
+        border: string;
+        hoverBg: string;
+        hoverText: string;
+        hoverBorder: string;
+      };
+      secondary: {
+        bg: string;
+        text: string;
+        border: string;
+        hoverBg: string;
+        hoverText: string;
+        hoverBorder: string;
+      };
+      outline: {
+        bg: string;
+        text: string;
+        border: string;
+        hoverBg: string;
+        hoverText: string;
+        hoverBorder: string;
+      };
+    };
+  };
+};
+
+function createThemeFromBrandPalette(
+  palette: BrandButtonPalette,
+  isDark = false
+): Theme {
+  const { brand, buttons } = palette.colors;
+
+  const background = isDark ? brand.dark : "#FFFFFF";
+  const foreground = isDark ? "#FFFFFF" : brand.text;
+  const card = isDark ? brand.dark : "#FFFFFF";
+  const popover = isDark ? brand.dark : "#FFFFFF";
+
+  return {
+    id: slugifyThemeName(palette.name),
+    name: palette.name,
+    isDark,
+    cssVars: {
+      "--background": hexToHslRaw(background),
+      "--foreground": hexToHslRaw(foreground),
+
+      "--card": hexToHslRaw(card),
+      "--card-foreground": hexToHslRaw(foreground),
+
+      "--popover": hexToHslRaw(popover),
+      "--popover-foreground": hexToHslRaw(foreground),
+
+      "--primary": hexToHslRaw(brand.primary),
+      "--primary-foreground": hexToHslRaw(buttons.primary.text),
+
+      "--secondary": hexToHslRaw(buttons.secondary.bg),
+      "--secondary-foreground": hexToHslRaw(buttons.secondary.text),
+
+      "--muted": hexToHslRaw(buttons.secondary.bg),
+      "--muted-foreground": hexToHslRaw(brand.mutedText),
+
+      "--accent": hexToHslRaw(brand.accent),
+      "--accent-foreground": hexToHslRaw(brand.text),
+
+      "--destructive": "0 84% 60%",
+      "--destructive-foreground": "0 0% 98%",
+
+      "--border": hexToHslRaw(brand.border),
+      "--input": hexToHslRaw(brand.border),
+      "--ring": hexToHslRaw(brand.ring),
+
+      "--sidebar": isDark ? "222 47% 11%" : "0 0% 100%",
+      "--sidebar-foreground": isDark ? "210 40% 98%" : hexToHslRaw(brand.text),
+      "--sidebar-primary": hexToHslRaw(brand.primary),
+      "--sidebar-primary-foreground": hexToHslRaw(buttons.primary.text),
+      "--sidebar-accent": isDark ? "217 33% 17%" : hexToHslRaw(brand.accent),
+      "--sidebar-accent-foreground": isDark ? "210 40% 98%" : hexToHslRaw(brand.text),
+      "--sidebar-border": isDark ? "217 33% 20%" : hexToHslRaw(brand.border),
+      "--sidebar-ring": hexToHslRaw(brand.ring),
+
+      "--chart-1": hexToHslRaw(brand.primary),
+      "--chart-2": hexToHslRaw(brand.secondary),
+      "--chart-3": hexToHslRaw(brand.accent),
+      "--chart-4": hexToHslRaw(brand.dark),
+      "--chart-5": hexToHslRaw(brand.ring),
+
+      // Button vars (extra)
+      "--btn-primary-bg": hexOrTransparentToVar(buttons.primary.bg),
+      "--btn-primary-text": hexOrTransparentToVar(buttons.primary.text),
+      "--btn-primary-border": hexOrTransparentToVar(buttons.primary.border),
+      "--btn-primary-hover-bg": hexOrTransparentToVar(buttons.primary.hoverBg),
+      "--btn-primary-hover-text": hexOrTransparentToVar(buttons.primary.hoverText),
+      "--btn-primary-hover-border": hexOrTransparentToVar(buttons.primary.hoverBorder),
+
+      "--btn-secondary-bg": hexOrTransparentToVar(buttons.secondary.bg),
+      "--btn-secondary-text": hexOrTransparentToVar(buttons.secondary.text),
+      "--btn-secondary-border": hexOrTransparentToVar(buttons.secondary.border),
+      "--btn-secondary-hover-bg": hexOrTransparentToVar(buttons.secondary.hoverBg),
+      "--btn-secondary-hover-text": hexOrTransparentToVar(buttons.secondary.hoverText),
+      "--btn-secondary-hover-border": hexOrTransparentToVar(buttons.secondary.hoverBorder),
+
+      "--btn-outline-bg": hexOrTransparentToVar(buttons.outline.bg),
+      "--btn-outline-text": hexOrTransparentToVar(buttons.outline.text),
+      "--btn-outline-border": hexOrTransparentToVar(buttons.outline.border),
+      "--btn-outline-hover-bg": hexOrTransparentToVar(buttons.outline.hoverBg),
+      "--btn-outline-hover-text": hexOrTransparentToVar(buttons.outline.hoverText),
+      "--btn-outline-hover-border": hexOrTransparentToVar(buttons.outline.hoverBorder),
+    },
+  };
+}
+
+// ------------------------
+// Your custom palettes (added)
+// ------------------------
+const customBrandPalettes: BrandButtonPalette[] = [
+  {
+    name: "Sunset Orange",
+    colors: {
+      brand: {
+        primary: "#F97316",
+        secondary: "#FB923C",
+        accent: "#FED7AA",
+        dark: "#7C2D12",
+        text: "#7C2D12",
+        mutedText: "#9A3412",
+        border: "#FED7AA",
+        ring: "#FB923C",
+      },
+      buttons: {
+        primary: {
+          bg: "#F97316",
+          text: "#FFFFFF",
+          border: "#F97316",
+          hoverBg: "#EA580C",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#EA580C",
+        },
+        secondary: {
+          bg: "#FFF7ED",
+          text: "#7C2D12",
+          border: "#FED7AA",
+          hoverBg: "#FFEDD5",
+          hoverText: "#7C2D12",
+          hoverBorder: "#FDBA74",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#7C2D12",
+          border: "#FDBA74",
+          hoverBg: "#FFF7ED",
+          hoverText: "#7C2D12",
+          hoverBorder: "#FB923C",
+        },
+      },
+    },
+  },
+  {
+    name: "Royal Purple",
+    colors: {
+      brand: {
+        primary: "#7C3AED",
+        secondary: "#8B5CF6",
+        accent: "#DDD6FE",
+        dark: "#2E1065",
+        text: "#2E1065",
+        mutedText: "#5B21B6",
+        border: "#EDE9FE",
+        ring: "#8B5CF6",
+      },
+      buttons: {
+        primary: {
+          bg: "#7C3AED",
+          text: "#FFFFFF",
+          border: "#7C3AED",
+          hoverBg: "#6D28D9",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#6D28D9",
+        },
+        secondary: {
+          bg: "#F5F3FF",
+          text: "#2E1065",
+          border: "#DDD6FE",
+          hoverBg: "#EDE9FE",
+          hoverText: "#2E1065",
+          hoverBorder: "#C4B5FD",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#2E1065",
+          border: "#C4B5FD",
+          hoverBg: "#F5F3FF",
+          hoverText: "#2E1065",
+          hoverBorder: "#8B5CF6",
+        },
+      },
+    },
+  },
+  {
+    name: "Forest Green",
+    colors: {
+      brand: {
+        primary: "#15803D",
+        secondary: "#22C55E",
+        accent: "#BBF7D0",
+        dark: "#052E16",
+        text: "#052E16",
+        mutedText: "#166534",
+        border: "#DCFCE7",
+        ring: "#22C55E",
+      },
+      buttons: {
+        primary: {
+          bg: "#15803D",
+          text: "#FFFFFF",
+          border: "#15803D",
+          hoverBg: "#166534",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#166534",
+        },
+        secondary: {
+          bg: "#F0FDF4",
+          text: "#052E16",
+          border: "#BBF7D0",
+          hoverBg: "#DCFCE7",
+          hoverText: "#052E16",
+          hoverBorder: "#86EFAC",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#052E16",
+          border: "#86EFAC",
+          hoverBg: "#F0FDF4",
+          hoverText: "#052E16",
+          hoverBorder: "#22C55E",
+        },
+      },
+    },
+  },
+  {
+    name: "Crimson Red",
+    colors: {
+      brand: {
+        primary: "#DC2626",
+        secondary: "#EF4444",
+        accent: "#FECACA",
+        dark: "#450A0A",
+        text: "#450A0A",
+        mutedText: "#7F1D1D",
+        border: "#FEE2E2",
+        ring: "#EF4444",
+      },
+      buttons: {
+        primary: {
+          bg: "#DC2626",
+          text: "#FFFFFF",
+          border: "#DC2626",
+          hoverBg: "#B91C1C",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#B91C1C",
+        },
+        secondary: {
+          bg: "#FEF2F2",
+          text: "#450A0A",
+          border: "#FECACA",
+          hoverBg: "#FEE2E2",
+          hoverText: "#450A0A",
+          hoverBorder: "#FCA5A5",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#450A0A",
+          border: "#FCA5A5",
+          hoverBg: "#FEF2F2",
+          hoverText: "#450A0A",
+          hoverBorder: "#EF4444",
+        },
+      },
+    },
+  },
+  {
+    name: "Teal Breeze",
+    colors: {
+      brand: {
+        primary: "#0D9488",
+        secondary: "#14B8A6",
+        accent: "#99F6E4",
+        dark: "#042F2E",
+        text: "#042F2E",
+        mutedText: "#0F766E",
+        border: "#CCFBF1",
+        ring: "#14B8A6",
+      },
+      buttons: {
+        primary: {
+          bg: "#0D9488",
+          text: "#FFFFFF",
+          border: "#0D9488",
+          hoverBg: "#0F766E",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#0F766E",
+        },
+        secondary: {
+          bg: "#F0FDFA",
+          text: "#042F2E",
+          border: "#99F6E4",
+          hoverBg: "#CCFBF1",
+          hoverText: "#042F2E",
+          hoverBorder: "#5EEAD4",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#042F2E",
+          border: "#5EEAD4",
+          hoverBg: "#F0FDFA",
+          hoverText: "#042F2E",
+          hoverBorder: "#14B8A6",
+        },
+      },
+    },
+  },
+  {
+    name: "Golden Sand",
+    colors: {
+      brand: {
+        primary: "#D97706",
+        secondary: "#F59E0B",
+        accent: "#FDE68A",
+        dark: "#451A03",
+        text: "#451A03",
+        mutedText: "#92400E",
+        border: "#FEF3C7",
+        ring: "#F59E0B",
+      },
+      buttons: {
+        primary: {
+          bg: "#D97706",
+          text: "#FFFFFF",
+          border: "#D97706",
+          hoverBg: "#B45309",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#B45309",
+        },
+        secondary: {
+          bg: "#FFFBEB",
+          text: "#451A03",
+          border: "#FDE68A",
+          hoverBg: "#FEF3C7",
+          hoverText: "#451A03",
+          hoverBorder: "#FCD34D",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#451A03",
+          border: "#FCD34D",
+          hoverBg: "#FFFBEB",
+          hoverText: "#451A03",
+          hoverBorder: "#F59E0B",
+        },
+      },
+    },
+  },
+  {
+    name: "Dark Slate",
+    colors: {
+      brand: {
+        primary: "#334155",
+        secondary: "#475569",
+        accent: "#CBD5F5",
+        dark: "#020617",
+        text: "#020617",
+        mutedText: "#475569",
+        border: "#E2E8F0",
+        ring: "#475569",
+      },
+      buttons: {
+        primary: {
+          bg: "#334155",
+          text: "#FFFFFF",
+          border: "#334155",
+          hoverBg: "#1E293B",
+          hoverText: "#FFFFFF",
+          hoverBorder: "#1E293B",
+        },
+        secondary: {
+          bg: "#F8FAFC",
+          text: "#020617",
+          border: "#CBD5F5",
+          hoverBg: "#F1F5F9",
+          hoverText: "#020617",
+          hoverBorder: "#94A3B8",
+        },
+        outline: {
+          bg: "transparent",
+          text: "#020617",
+          border: "#94A3B8",
+          hoverBg: "#F8FAFC",
+          hoverText: "#020617",
+          hoverBorder: "#475569",
+        },
+      },
+    },
+  },
+];
+
+// ------------------------
+// Existing + new presets
+// ------------------------
+const basePresets: Record<string, Theme> = {
   "brand-modern": {
     id: "brand-modern",
     name: "Brand Modern",
@@ -34,8 +522,6 @@ export const themePresets: Record<string, Theme> = {
       "--border": "220 4% 88%",
       "--input": "220 4% 88%",
       "--ring": "322 47% 34%",
-
-      // Sidebar tokens (HSL)
       "--sidebar": "211 28% 22%",
       "--sidebar-foreground": "210 7% 96%",
       "--sidebar-primary": "322 47% 34%",
@@ -44,7 +530,6 @@ export const themePresets: Record<string, Theme> = {
       "--sidebar-accent-foreground": "210 7% 96%",
       "--sidebar-border": "211 28% 25%",
       "--sidebar-ring": "322 47% 34%",
-
       "--chart-1": "322 47% 34%",
       "--chart-2": "211 28% 22%",
       "--chart-3": "220 4% 60%",
@@ -52,7 +537,6 @@ export const themePresets: Record<string, Theme> = {
       "--chart-5": "211 28% 40%",
     },
   },
-
   "organic-calm": {
     id: "organic-calm",
     name: "Organic Calm",
@@ -92,7 +576,6 @@ export const themePresets: Record<string, Theme> = {
       "--chart-5": "20 20% 60%",
     },
   },
-
   "royal-dusk": {
     id: "royal-dusk",
     name: "Royal Dusk",
@@ -132,7 +615,6 @@ export const themePresets: Record<string, Theme> = {
       "--chart-5": "0 0% 100%",
     },
   },
-
   "soft-pastel": {
     id: "soft-pastel",
     name: "Soft Pastel",
@@ -172,7 +654,6 @@ export const themePresets: Record<string, Theme> = {
       "--chart-5": "280 60% 70%",
     },
   },
-
   "cyber-punk": {
     id: "cyber-punk",
     name: "Cyber Punk",
@@ -214,18 +695,20 @@ export const themePresets: Record<string, Theme> = {
   },
 };
 
-type ThemeContextType = {
-  currentTheme: string;
-  setTheme: (themeId: string) => void;
+export const themePresets: Record<string, Theme> = {
+  ...basePresets,
+  ...Object.fromEntries(
+    customBrandPalettes.map((palette) => {
+      const isDark = palette.name === "Dark Slate"; // Dark Slate in dark mode
+      const t = createThemeFromBrandPalette(palette, isDark);
+      return [t.id, t];
+    })
+  ),
 };
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
-
-function hslToCss(hsl: string) {
-  // input: "211 28% 22%" => output: "hsl(211 28% 22%)"
-  return `hsl(${hsl})`;
-}
-
+// ------------------------
+// Provider
+// ------------------------
 export function AdminThemeProvider({ children }: { children: React.ReactNode }) {
   const [currentTheme, setCurrentTheme] = useState("brand-modern");
 
@@ -235,35 +718,56 @@ export function AdminThemeProvider({ children }: { children: React.ReactNode }) 
 
     const root = document.documentElement;
 
-    // 1) apply all base css vars
+    // 1) Apply all CSS vars
     Object.entries(theme.cssVars).forEach(([key, value]) => {
-      root.style.setProperty(key, value);
+      // Button vars need actual CSS hsl(...)
+      if (key.startsWith("--btn-")) {
+        root.style.setProperty(key, value === "transparent" ? "transparent" : hslToCss(value));
+      } else {
+        root.style.setProperty(key, value);
+      }
     });
 
-    // 2) Toggle dark
+    // 2) Dark mode class
     if (theme.isDark) root.classList.add("dark");
     else root.classList.remove("dark");
 
-    // ✅ 3) Map sidebar HSL vars -> admin sidebar vars (actual colors)
-    const sidebarBg = theme.cssVars["--sidebar"] || "0 0% 100%";
-    const sidebarFg = theme.cssVars["--sidebar-foreground"] || "222.2 84% 4.9%";
-    const sidebarAccent = theme.cssVars["--sidebar-accent"] || "210 40% 96.1%";
-    const sidebarBorder = theme.cssVars["--sidebar-border"] || "214.3 31.8% 91.4%";
+    // 3) Sidebar override (FULL dark or FULL light)
+    const isDark = theme.isDark;
 
-    // active = a bit stronger than accent
-    root.style.setProperty("--admin-sidebar-bg", hslToCss(sidebarBg));
-    root.style.setProperty("--admin-sidebar-fg", hslToCss(sidebarFg));
-    root.style.setProperty("--admin-sidebar-white", "hsl(var(--muted-foreground))");
+    // Keep primary from theme for highlights
+    const primary = theme.cssVars["--primary"] || "222 47% 11%";
+    const primaryFg = theme.cssVars["--primary-foreground"] || "0 0% 100%";
 
-    root.style.setProperty("--admin-sidebar-hover", hslToCss(sidebarAccent));
-    root.style.setProperty("--admin-sidebar-active-bg", "hsl(var(--card))");
-    root.style.setProperty("--admin-sidebar-active-fg", hslToCss(sidebarFg));
+    if (isDark) {
+      // ✅ FULL DARK SIDEBAR
+      root.style.setProperty("--admin-sidebar-bg", "hsl(222 47% 11%)"); // deep dark
+      root.style.setProperty("--admin-sidebar-fg", "hsl(210 40% 96%)");
+      root.style.setProperty("--admin-sidebar-white", "hsl(215 20% 65%)");
 
-    root.style.setProperty("--admin-sidebar-border", hslToCss(sidebarBorder));
+      root.style.setProperty("--admin-sidebar-hover", "hsl(217 33% 17%)");
+      root.style.setProperty("--admin-sidebar-active-bg", "hsl(217 33% 20%)");
+      root.style.setProperty("--admin-sidebar-active-fg", "hsl(210 40% 98%)");
 
-    // badge using primary
-    root.style.setProperty("--admin-sidebar-badge-bg", "hsl(var(--primary))");
-    root.style.setProperty("--admin-sidebar-badge-fg", "hsl(var(--primary-foreground))");
+      root.style.setProperty("--admin-sidebar-border", "hsl(217 33% 22%)");
+
+      root.style.setProperty("--admin-sidebar-badge-bg", hslToCss(primary));
+      root.style.setProperty("--admin-sidebar-badge-fg", hslToCss(primaryFg));
+    } else {
+      // ✅ FULL LIGHT SIDEBAR
+      root.style.setProperty("--admin-sidebar-bg", "hsl(0 0% 100%)");
+      root.style.setProperty("--admin-sidebar-fg", "hsl(222 47% 11%)");
+      root.style.setProperty("--admin-sidebar-white", "hsl(215 16% 47%)");
+
+      root.style.setProperty("--admin-sidebar-hover", "hsl(210 40% 96%)");
+      root.style.setProperty("--admin-sidebar-active-bg", "hsl(210 40% 98%)");
+      root.style.setProperty("--admin-sidebar-active-fg", "hsl(222 47% 11%)");
+
+      root.style.setProperty("--admin-sidebar-border", "hsl(214 32% 91%)");
+
+      root.style.setProperty("--admin-sidebar-badge-bg", hslToCss(primary));
+      root.style.setProperty("--admin-sidebar-badge-fg", hslToCss(primaryFg));
+    }
   };
 
   useEffect(() => {
@@ -274,7 +778,6 @@ export function AdminThemeProvider({ children }: { children: React.ReactNode }) 
     } else {
       applyTheme("brand-modern");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setTheme = (themeId: string) => {
@@ -293,6 +796,8 @@ export function AdminThemeProvider({ children }: { children: React.ReactNode }) 
 
 export const useAdminTheme = () => {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useAdminTheme must be used within AdminThemeProvider");
+  if (!context) {
+    throw new Error("useAdminTheme must be used within AdminThemeProvider");
+  }
   return context;
 };

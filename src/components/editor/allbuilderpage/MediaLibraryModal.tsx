@@ -380,7 +380,7 @@ export default function MediaLibraryModal({
       <div className="relative h-[86vh] w-[96vw] max-w-[1400px] overflow-hidden rounded-2xl bg-white shadow-xl">
         {/* Header */}
         <div className="flex items-start justify-between px-10 pt-4">
-          <h2 className="text-[24px] font-semibold text-slate-900">Media library</h2>
+          <h2 className="text-[24px] font-semibold text-slate-900">Media library </h2>
           <button
             type="button"
             onClick={onClose}
@@ -461,8 +461,8 @@ export default function MediaLibraryModal({
           </div>
 
           <div className="flex-1 overflow-y-auto pr-3">
-        <div className="grid grid-cols-6 gap-2">
-             {subfolders.map((f) => (
+            <div className="grid grid-cols-6 gap-2">
+              {subfolders.map((f) => (
                 <FolderCard
                   key={f.id}
                   name={f.name}
@@ -475,7 +475,7 @@ export default function MediaLibraryModal({
 
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 mt-4">
               {/* ✅ Folder cards first (design like your screenshot tile) */}
-             
+
 
               {/* Media items */}
               {visibleItems.map((it) => (

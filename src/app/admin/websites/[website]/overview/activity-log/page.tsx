@@ -31,17 +31,20 @@ export default function ActivityLogPage() {
       <div className="bg-white rounded-xl border shadow-sm overflow-hidden">
          <div className="p-4 border-b bg-gray-50/50 flex gap-4">
             <div className="relative flex-1">
-               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-               <Input placeholder="Search logs by user, action, or IP..." className="pl-9 bg-white" />
+               <Search className="absolute left-2.5 top-3.5 h-4 w-4 text-muted-foreground" />
+               <Input placeholder="Search logs by user, action, or IP..." className="pl-9 h-11 bg-white" />
             </div>
             <Select defaultValue="all">
-               <SelectTrigger className="w-[180px] bg-white"><SelectValue placeholder="Event Type" /></SelectTrigger>
-               <SelectContent>
-                  <SelectItem value="all">All Events</SelectItem>
-                  <SelectItem value="security">Security</SelectItem>
-                  <SelectItem value="crud">Data Changes</SelectItem>
-               </SelectContent>
-            </Select>
+<SelectTrigger className="h-6 border rounded-md shadow-none">
+    <SelectValue placeholder="Event Type" />
+  </SelectTrigger>
+
+  <SelectContent className="bg-white">
+    <SelectItem value="all">All Events</SelectItem>
+    <SelectItem value="security">Security</SelectItem>
+    <SelectItem value="crud">Data Changes</SelectItem>
+  </SelectContent>
+</Select>
          </div>
 
          <div className="relative overflow-x-auto">
