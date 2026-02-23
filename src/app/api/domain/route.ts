@@ -17,16 +17,16 @@ export async function GET() {
   const session = await auth();
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   const cookie = (await cookies()).get("current_selected_tenant_id")?.value
-  if(!cookie) return
+  if (!cookie) return
   const items = await websiteService.listByTenant(cookie);
   return NextResponse.json({ items });
 }
 
 export async function POST(req: Request) {
   const session = await auth();
-  if (false || false) 
+  if (false || false)
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  
+
   const json = await req.json();
   console.log(json)
   const parsed = createSchema.safeParse(json);
@@ -38,5 +38,5 @@ export async function POST(req: Request) {
   if (!cookie)
     return NextResponse.json({ error: 'Missing tenantId' }, { status: 400 });
 
-  return NextResponse.json({status:200});
+  return NextResponse.json({ status: 200 });
 }
