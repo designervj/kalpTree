@@ -19,7 +19,7 @@ const AdminHeader = ({ sessionUser }: props) => {
   }, [sessionUser, dispatch, user]);
   return (
     <>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 mb-4">
         <h2 className="text-[28px] font-semibold text-slate-900">
           Welcome to {user?.role ? user.role : "User"} dashboard
         </h2>

@@ -62,7 +62,7 @@ const GlanceCount = () => {
                 <div>
                     <h3 className="text-[22px] font-semibold text-slate-900">At a glance</h3>
                     <p className="text-sm text-muted-foreground">
-                        Content + store totals across your workspace.
+                        Content + store totals across your workspace. 
                     </p>
                 </div>
 

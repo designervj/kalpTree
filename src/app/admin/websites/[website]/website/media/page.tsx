@@ -588,10 +588,6 @@ function AttachmentDetailsModal({
           </h2>
 
           <div className="flex items-center">
-
-           
-
-
             <button
               type="button"
               onClick={onClose}
@@ -601,6 +597,7 @@ function AttachmentDetailsModal({
               <X className="h-5 w-5" />
             </button>
           </div>
+          
         </div>
 
         {/* Body */}

@@ -23,6 +23,11 @@ import {
   Calendar,
   Languages,
   Users,
+  Icon,
+  FileText,
+  ImageIcon,
+  Settings,
+  ArrowRight,
 } from "lucide-react";
 import Link from "next/link";
 import { IBusiness } from "@/models/business";
@@ -36,6 +41,7 @@ import { IUser } from "@/models/user";
 import GetAllAgency from "../../agency/GetAllAgency";
 import GetAllBusiness from "../GetAllBusiness";
 import GetAllWebsites from "../../website/GetAllWebsites";
+import { ActionCard } from "@/app/admin/page";
 
 type Props = {
   business: IBusiness;
@@ -69,6 +75,88 @@ const SERVICE_OPTIONS = [
     Icon: Megaphone,
   },
 ];
+
+
+
+  const actions: ActionCard[] = [
+    {
+      title: "Create a new page",
+      desc: "Start building your website content quickly with blocks.",
+      href: "/admin/pages",
+      icon: FileText,
+      cta: "Create page",
+    },
+    {
+      title: "Upload media",
+      desc: "Add images and assets for banners, pages, and products.",
+      href: "/admin/media",
+      icon: ImageIcon,
+      cta: "Open media",
+    },
+    {
+      title: "Branding setup",
+      desc: "Update logo, colors, typography and theme presets.",
+      href: "/admin/branding/colors",
+      icon: Palette,
+      cta: "Open branding",
+    },
+    {
+      title: "Configure store",
+      desc: "Set payment, shipping, taxes and invoices in one place.",
+      href: "/admin/ecommerce/settings",
+      icon: Settings,
+      cta: "Open settings",
+    },
+  ];
+
+
+
+
+  function FeaturePill({
+  label,
+  enabled,
+}: {
+  label: string;
+  enabled?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between rounded-xl border px-3 py-2.5 transition-colors ${
+        enabled
+          ? "border-emerald-200 bg-white"
+          : "border-slate-200 bg-white opacity-80"
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        <div
+          className={`h-2.5 w-2.5 rounded-full ${
+            enabled ? "bg-emerald-500" : "bg-slate-300"
+          }`}
+        />
+        <span className="text-sm font-medium text-slate-800">{label}</span>
+      </div>
+
+      <div
+        className={`inline-flex items-center gap-1 text-xs font-medium ${
+          enabled ? "text-emerald-700" : "text-slate-500"
+        }`}
+      >
+        {enabled ? (
+          <>
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Enabled
+          </>
+        ) : (
+          <>
+            <XCircle className="h-3.5 w-3.5" />
+            Disabled
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+  
 
 function getServiceTypeInfo(serviceType?: string) {
   const service = SERVICE_OPTIONS.find((opt) => opt.value === serviceType);
@@ -450,16 +538,16 @@ const ShowBussinesById = ({ business, user }: Props) => {
                                     {websiteData.lang.find(
                                       (l: any) => l.default,
                                     ) && (
-                                      <Badge
-                                        className="ml-1 h-4 text-[10px]"
-                                        variant="outline"
-                                      >
-                                        Default:{" "}
-                                        {websiteData.lang
-                                          .find((l: any) => l.default)
-                                          ?.name?.toUpperCase()}
-                                      </Badge>
-                                    )}
+                                        <Badge
+                                          className="ml-1 h-4 text-[10px]"
+                                          variant="outline"
+                                        >
+                                          Default:{" "}
+                                          {websiteData.lang
+                                            .find((l: any) => l.default)
+                                            ?.name?.toUpperCase()}
+                                        </Badge>
+                                      )}
                                   </span>
                                 </div>
                               )}
@@ -595,39 +683,112 @@ const ShowBussinesById = ({ business, user }: Props) => {
               </CardContent>
             </Card>
 
-            {/* FEATURES */}
-            <Card className="rounded-md border bg-white shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <ShieldCheck className="h-5 w-5 text-slate-700" />
-                  Features & modules
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  What is enabled for this business.
-                </p>
-              </CardHeader>
+     {/* QUICK LINKS / FEATURES */}
+<Card className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <CardHeader className="pb-4">
+    <div className="flex items-start justify-between gap-3">
+      <div>
+        <CardTitle className="flex items-center gap-2 text-[20px] font-semibold text-slate-900">
+          <div className="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-slate-50">
+            <ShieldCheck className="h-4.5 w-4.5 text-slate-700" />
+          </div>
+          Quick Links
+        </CardTitle>
+        <p className="mt-2 text-sm text-slate-500">
+          Manage what’s enabled and jump into the most-used business settings.
+        </p>
+      </div>
 
-              <CardContent className="p-5 pt-0">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FeatureRow
-                    label="Website"
-                    enabled={business.features?.websiteEnabled}
-                  />
-                  <FeatureRow
-                    label="Ecommerce"
-                    enabled={business.features?.ecommerceEnabled}
-                  />
-                  <FeatureRow
-                    label="Blog"
-                    enabled={business.features?.blogEnabled}
-                  />
-                  <FeatureRow
-                    label="Invoices"
-                    enabled={business.features?.invoicesEnabled}
-                  />
+      <div className="hidden sm:flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700">
+        <CheckCircle2 className="h-3.5 w-3.5" />
+        Active modules
+      </div>
+    </div>
+  </CardHeader>
+
+  <CardContent className="space-y-5">
+    {/* Enabled modules */}
+    <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          Enabled Modules
+        </p>
+        <p className="text-xs text-slate-500">
+          {[
+            business.features?.websiteEnabled,
+            business.features?.ecommerceEnabled,
+            business.features?.blogEnabled,
+            business.features?.invoicesEnabled,
+          ].filter(Boolean).length}
+          /4 enabled
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <FeaturePill
+          label="Website"
+          enabled={business.features?.websiteEnabled}
+        />
+        <FeaturePill
+          label="Ecommerce"
+          enabled={business.features?.ecommerceEnabled}
+        />
+        <FeaturePill
+          label="Blog"
+          enabled={business.features?.blogEnabled}
+        />
+        <FeaturePill
+          label="Invoices"
+          enabled={business.features?.invoicesEnabled}
+        />
+      </div>
+    </div>
+
+    {/* Action cards */}
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      {actions.map((a) => {
+        const Icon = a.icon;
+
+        return (
+          <Link key={a.title} href={a.href} className="group block">
+            <div className="relative h-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300">
+              {/* subtle top glow */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-slate-50 to-transparent" />
+
+              <div className="relative flex h-full flex-col">
+                <div className="flex items-start gap-3">
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-slate-50 transition-colors group-hover:bg-slate-100">
+                    <Icon className="h-5 w-5 text-slate-700" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-[16px] font-semibold leading-5 text-slate-900">
+                      {a.title}
+                    </h3>
+                    <p className="mt-1.5 line-clamp-2 text-sm leading-5 text-slate-500">
+                      {a.desc}
+                    </p>
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 transition-colors group-hover:border-slate-300 group-hover:bg-slate-50">
+                    {a.cta}
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+
+                  {/* optional small status/label */}
+                  <span className="text-xs text-slate-400">Open</span>
+                </div>
+              </div>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  </CardContent>
+</Card>
+            
           </div>
         </div>
       </div>

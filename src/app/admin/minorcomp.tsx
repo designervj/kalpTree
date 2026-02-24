@@ -93,6 +93,9 @@ const MinorComp = ({ sessionUser }: any) => {
       {/* Header */}
       <AdminHeader sessionUser={sessionUser?.user} />
 
+      <GlanceCount />
+
+
       {/* Top Row: Promo + Quick Links */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Promo */}
@@ -103,13 +106,13 @@ const MinorComp = ({ sessionUser }: any) => {
       </div>
 
       {/* ✅ AT A GLANCE (counts moved here so "Your business" stays like screenshot) */}
-      <GlanceCount />
+      {/* <GlanceCount /> */}
 
       {/* ✅ YOUR BUSINESS (Hostinger-like list design) */}
       <ShowListOfBusiness />
 
       {/* Action Center */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <div className="flex items-end justify-between gap-4 flex-wrap">
           <div>
             <h3 className="text-[22px] font-semibold text-slate-900">
@@ -159,7 +162,7 @@ const MinorComp = ({ sessionUser }: any) => {
             );
           })}
         </div>
-      </div>
+      </div> */}
 
       {/* Helpful resources */}
       <Card className="rounded-2xl border bg-white shadow-sm mb-20">
