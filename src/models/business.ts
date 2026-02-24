@@ -71,6 +71,7 @@ export interface IBusiness {
     };
     isComingSoon: boolean;
     lang?: { name: string; default: boolean }[];
+    systemSubdomain?: string;
   };
   businessdetails?: BussinessDetailModel;
   socialPresence?: {
@@ -96,4 +97,5 @@ export interface BussinessDetailModel {
   headquarters?: string;
   brand_name?: string;
   service?: string;
+  businessType?: string[];
 }

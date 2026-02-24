@@ -10,30 +10,18 @@ const GetAllcategory = ({ websiteId }: { websiteId?: string }) => {
     (state: RootState) => state.category,
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
-  const resolvedWebsiteId = websiteId ?? currentWebsite?._id;
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // useEffect(() => {
-  //   if (
-  //     !hasFetched &&
-  //     !isCategoryLoading &&
-  //     currentWebsite &&
-  //     currentWebsite._id
-  //   ) {
-  //     dispatch(fetchCategories({ websiteId: resolvedWebsiteId }));
-  //   }
-  // }, [hasFetched, isCategoryLoading, user, dispatch, currentWebsite]);
 
   useEffect(() => {
-    if (!resolvedWebsiteId) return;
+    if (!currentBusiness) return;
 
     if (hasFetched || isCategoryLoading) return;
 
-    dispatch(fetchCategories({ websiteId: resolvedWebsiteId }));
-  }, [resolvedWebsiteId, hasFetched, isCategoryLoading, dispatch]);
+    dispatch(fetchCategories({ tenantId: String(currentBusiness._id) }));
+  }, [currentBusiness?._id, hasFetched, isCategoryLoading, dispatch]);
 
   return null;
 };

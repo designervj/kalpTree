@@ -236,13 +236,13 @@ const initialState: CategoryState = {
 
 export const fetchCategories = createAsyncThunk<
   MaterialCategory[],
-  { websiteId: string },
+  { tenantId: string },
   { state: { category: CategoryState }; rejectValue: string }
 >(
   "category/fetchCategories",
-  async ({ websiteId }, { rejectWithValue }) => {
+  async ({ tenantId }, { rejectWithValue }) => {
     try {
-      const res = await fetch(`/api/admin/category?websiteId=${websiteId}`);
+      const res = await fetch(`/api/admin/category?tenantId=${tenantId}`);
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         return rejectWithValue(body?.error || `HTTP ${res.status}`);

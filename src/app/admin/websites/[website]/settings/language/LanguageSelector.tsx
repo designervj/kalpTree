@@ -11,14 +11,14 @@ interface Language {
 }
 
 export const LanguageSelectComponent = () => {
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  //   const [languages, setLanguages] = useState<Language[]>([]);
-
+  const { allBusiness, businessWebsite, currentBusiness } = useSelector(
+    (state: RootState) => state.business,
+  );
 
   return (
     <>
       <LanguageSelector
-        formData={currentWebsite}
+        formData={currentBusiness?.website}
         handleInputChange={() => console.log("yes")}
       />
     </>

@@ -10,9 +10,8 @@ export async function POST(req: NextRequest) {
     const jsondata = await req.json();
     const searchParams = req.nextUrl.searchParams;
     const tenantId = searchParams.get("tenantId");
-    const websiteId = searchParams.get("websiteId");
 
-    if (!tenantId || !websiteId) {
+    if (!tenantId) {
       return NextResponse.json({
         success: false,
         message: "Not Allowed to Add Product Without TenantId and WebsiteId",
@@ -79,7 +78,6 @@ export async function POST(req: NextRequest) {
       description,
       basePrice,
       productType: new ObjectId(productType),
-      websiteId: new ObjectId(websiteId),
       tenantId: new ObjectId(tenantId),
       bookingConfg: bookingConfg ? bookingConfg : null,
       allcategories: allcategories.length > 0 ? allcategories : null,

@@ -21,7 +21,6 @@ export const BusinesswithID = () => {
       <div className="p-6 text-sm text-slate-600">
         {!user ? "User not found" : "Business not found"}
         <GetBusinessById />
-        {/* <GetAllWebsites /> */}
       </div>
     );
   }
@@ -30,7 +29,6 @@ export const BusinesswithID = () => {
     <>
       {user && upadatedBusiness ? (
         <>
-          {/* <GetAllWebsites /> */}
           <ShowBussinesById user={user} business={upadatedBusiness} />
         </>
       ) : (

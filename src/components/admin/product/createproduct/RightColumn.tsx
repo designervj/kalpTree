@@ -51,7 +51,7 @@ export const RightColumn = ({
   setAttributeSetId,
   listAttributeSets,
   setSelectedCategories,
-  selectedCategories
+  selectedCategories,
 }: any) => {
   const {
     listCategory,
@@ -59,6 +59,8 @@ export const RightColumn = ({
     listProductType,
     listProductTypeCategory,
   } = useSelector((state: RootState) => state.category);
+
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const handleProductTypeCategory = (e: string) => {
     setProductTypeCategory(e);
@@ -76,9 +78,6 @@ export const RightColumn = ({
   const NestedCategories = useMemo(() => {
     return buildCategoryTree(listCategory);
   }, [listCategory]);
-
-
-  
 
   const toggleCategory = (id: string) => {
     let copied = structuredClone(selectedCategories);
@@ -115,6 +114,7 @@ export const RightColumn = ({
 
     setSelectedCategories(copied);
   };
+
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { user } = useSelector((state: RootState) => state.user);
@@ -434,7 +434,7 @@ export const RightColumn = ({
           </CardHeader>
 
           <CardContent className="space-y-4">
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label>
                 Product Type <span className="text-red-500">*</span>
               </Label>
@@ -448,7 +448,7 @@ export const RightColumn = ({
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select segment type" />
+                  <SelectValue placeholder="Select product type" />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -460,11 +460,10 @@ export const RightColumn = ({
                 </SelectContent>
               </Select>
 
-              {/* Add Button */}
               <Button onClick={handleAddProductType}>+ Add Product Type</Button>
-            </div>
+            </div> */}
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="Product Category Type">
                 Industry Type <span className="text-red-500">*</span>
               </Label>
@@ -494,7 +493,7 @@ export const RightColumn = ({
               <Button onClick={handleProductTypeCategoryAdd}>
                 + Add Industry
               </Button>
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <Label htmlFor="Product Category Type">
@@ -509,18 +508,17 @@ export const RightColumn = ({
                   <SelectValue placeholder="Select Product Set" />
                 </SelectTrigger>
                 <SelectContent>
-                  {producttypecategory &&
-                    listAttributeSets
-                      .filter((d: any) => {
-                        return d.categoryId === producttypecategory;
-                      })
-                      .map((d: any) => {
-                        return (
-                          <SelectItem value={String(d._id)}>
-                            {d.name}
-                          </SelectItem>
-                        );
-                      })}
+                  {listAttributeSets
+                    .filter((d: any) => {
+                      return currentBusiness?.businessdetails.businessType.includes(
+                        d._id,
+                      );
+                    })
+                    .map((d: any) => {
+                      return (
+                        <SelectItem value={String(d._id)}>{d.name}</SelectItem>
+                      );
+                    })}
                 </SelectContent>
               </Select>
 

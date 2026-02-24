@@ -1,7 +1,5 @@
 "use client";
-import {
-  savedashboardDetailsThunk,
-} from "@/hooks/slices/dashboardSlice/dashBoardSlice";
+import { savedashboardDetailsThunk } from "@/hooks/slices/dashboardSlice/dashBoardSlice";
 import { getAllUser } from "@/hooks/slices/user/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useParams, useSearchParams } from "next/navigation";
@@ -9,16 +7,10 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const GetDashBoardDetails = () => {
-  // const {
-  //   agencies,
-  //   business,
-  //   websites,
-  //   totalbusiness,
-  //   totalwebsites,
-  //   currentAgency,
-  // } = useSelector((state: RootState) => state.dashboardDetails);
-  const {agencies,hasfetched}=useSelector((state: RootState)=>state.agency)
-  const {user}=useSelector((state: RootState)=>state.user)
+  const { agencies, hasfetched } = useSelector(
+    (state: RootState) => state.agency,
+  );
+  const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const params = useParams();
   const query = useSearchParams();
@@ -29,30 +21,30 @@ const GetDashBoardDetails = () => {
     : params.website;
 
   useEffect(() => {
-    if (agencies.length == 0 &&
-       !hasfetched && 
-       agencyid && 
-       businessid
-      && user) {
-      
-      dispatch(savedashboardDetailsThunk({agencyid,businessid, user}));
+    if (agencies.length == 0 && !hasfetched && agencyid && businessid && user) {
+      dispatch(savedashboardDetailsThunk({ agencyid, businessid, user }));
     }
-  }, [agencies,hasfetched,agencyid,businessid, user]);
+  }, [agencies, hasfetched, agencyid, businessid, user]);
 
- // if user is business get particular agenncy, business and website
+  useEffect(() => {
+    if (
+      user?.role == "business" &&
+      user.tenantId &&
+      user.id &&
+      agencies.length == 0 &&
+      !hasfetched
+    ) {
+      console.log("I Ran")
+      dispatch(
+        savedashboardDetailsThunk({
+          agencyid: user?.tenantId.toString(),
+          businessid: user?.id.toString(),
+          user,
+        }),
+      );
+    }
+  }, [user, agencies, hasfetched]);
 
- useEffect(() => {
-  if (user?.role == "business" &&
-    user.tenantId &&
-    user.id &&
-    agencies.length == 0 &&
-       !hasfetched
-  ) {
-     dispatch(savedashboardDetailsThunk({agencyid:user?.tenantId.toString(),businessid:user?.id.toString(),user}));
-
-  }
- }, [user,agencies, hasfetched]);
-  
   return null;
 };
 

@@ -26,7 +26,10 @@ export async function PUT(
       settings,
       status,
       subscriptionStatus,
+      website,
     } = await req.json();
+
+    const { name, serviceType, primaryDomain, lang, isComingSoon } = website;
 
     const businessColl = await getCollection("tenants");
 
@@ -42,6 +45,11 @@ export async function PUT(
           status,
           subscriptionStatus,
           updatedAt: new Date(),
+          "website.name": name,
+          "website.serviceType": serviceType,
+          "website.primaryDomain": primaryDomain,
+          "website.lang": lang,
+          "website.isComingSoon": isComingSoon,
         },
       },
     );
