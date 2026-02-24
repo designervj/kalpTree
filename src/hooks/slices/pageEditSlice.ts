@@ -6,7 +6,7 @@ import { AppDispatch, RootState } from '@/store/store';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { pageService } from '@/modules/website/page-service';
 import { fetchFooterById } from './footer/FooterThunk';
-import { ObjectId } from 'mongodb';
+import type { ObjectId } from 'mongodb';
 import { fetchCurrentHeaders } from './header/HeaderThunk';
 interface PageEditState {
   page: PageModel | null;

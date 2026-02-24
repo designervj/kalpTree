@@ -1,12 +1,12 @@
 
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { FooterState } from "./FooterSlice";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export const fetchFooters = createAsyncThunk<
     TemplateDocument[],
-    { websiteId?: string|ObjectId; tenantId?: string|ObjectId },
+    { websiteId?: string | ObjectId; tenantId?: string | ObjectId },
     { state: { footer: FooterState }; rejectValue: string }
 >(
     "footer/fetchFooters",

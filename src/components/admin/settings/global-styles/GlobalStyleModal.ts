@@ -1,5 +1,5 @@
 import { ThemeColors } from "@/components/editor/style-editor/GlobalStyelModel";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface GlobalStyleSettings {
   _id?: ObjectId | string;

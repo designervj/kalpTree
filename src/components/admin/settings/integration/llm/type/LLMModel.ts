@@ -1,13 +1,13 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
-export interface LLMModel{
-    _id?:string| ObjectId;
-    tenantId?:string|ObjectId;
+export interface LLMModel {
+    _id?: string | ObjectId;
+    tenantId?: string | ObjectId;
     // websiteId?:string|ObjectId;
-    name?:string
-    secreteKey?:string;
-    isActive?:boolean
-    model?:string
+    name?: string
+    secreteKey?: string;
+    isActive?: boolean
+    model?: string
 }
 
 

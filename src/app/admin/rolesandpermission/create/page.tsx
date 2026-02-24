@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   Users,
   Shield,
+  X,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -34,10 +35,13 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
+  clearCurrentRolePermission,
   fetchRolePermissions,
   setCurrentRolePermission,
   updateRolePermission,
 } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
+import { availablePermissions } from "@/components/admin/roles/util/AllPermissionLayout";
+import { toast } from "sonner";
 
 type RoleFormData = {
   name: string;
@@ -48,58 +52,58 @@ type RoleFormData = {
   canMultipleTenants: boolean;
 };
 
-const ALL_PERMISSIONS = [
-  "dashboard:read",
-  "dashboard:create",
-  "dashboard:update",
+// const ALL_PERMISSIONS = [
+//   "dashboard:read",
+//   "dashboard:create",
+//   "dashboard:update",
 
-  "analytics:read",
+//   "analytics:read",
 
-  "security:read",
-  "security:create",
-  "security:update",
+//   "security:read",
+//   "security:create",
+//   "security:update",
 
-  "websites:read",
-  "websites:create",
-  "websites:update",
-  "websites:delete",
+//   "websites:read",
+//   "websites:create",
+//   "websites:update",
+//   "websites:delete",
 
-  "media:read",
-  "media:create",
-  "media:update",
+//   "media:read",
+//   "media:create",
+//   "media:update",
 
-  "content:read",
-  "content:create",
-  "content:update",
-  "content:delete",
+//   "content:read",
+//   "content:create",
+//   "content:update",
+//   "content:delete",
 
-  "product:read",
-  "product:create",
-  "product:update",
-  "product:delete",
+//   "product:read",
+//   "product:create",
+//   "product:update",
+//   "product:delete",
 
-  "category:read",
-  "category:create",
-  "category:update",
-  "category:delete",
+//   "category:read",
+//   "category:create",
+//   "category:update",
+//   "category:delete",
 
-  "attribute:read",
-  "attribute:create",
-  "attribute:update",
-  "attribute:delete",
+//   "attribute:read",
+//   "attribute:create",
+//   "attribute:update",
+//   "attribute:delete",
 
-  "segment:read",
-  "segment:create",
-  "segment:update",
-  "segment:delete",
+//   "segment:read",
+//   "segment:create",
+//   "segment:update",
+//   "segment:delete",
 
-  "ai:read",
-  "ai:create",
-  "ai:update",
-  "ai:delete",
+//   "ai:read",
+//   "ai:create",
+//   "ai:update",
+//   "ai:delete",
 
-  "inventory:read",
-] as const;
+//   "inventory:read",
+// ] as const;
 
 type Action = "read" | "create" | "update" | "delete";
 const ACTIONS: Action[] = ["read", "create", "update", "delete"];
@@ -147,7 +151,7 @@ interface Rolesprops {
 export default function RolesPersmissionForm({ id }: Rolesprops) {
   const router = useRouter();
 
-  const { rolesPermissions: roles, current } = useSelector(
+  const { rolesPermissions: roles, current: currentRolePermission } = useSelector(
     (state: RootState) => state.rolePermission
   );
   const dispatch = useDispatch<AppDispatch>();
@@ -166,6 +170,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   const [actionFilter, setActionFilter] = useState<Set<Action>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
 
+  console.log("actionFilter", actionFilter)
   // Get available roles for canCreateRole (all roles with code)
   const availableRolesForCreation = useMemo(() => {
     return roles
@@ -178,7 +183,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
 
   useEffect(() => {
     setIsInitialLoading(true);
-    if (!current && roles.length > 0 && id) {
+    if (!currentRolePermission && roles.length > 0 && id) {
       const find = roles.find((d) => d._id == id);
       if (find && find.name && find.code) {
         dispatch(setCurrentRolePermission(find));
@@ -191,23 +196,23 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
           canMultipleTenants: find.canMultipleTenants || false,
         });
       }
-    } else if (current?.name && current?.code) {
+    } else if (currentRolePermission?.name && currentRolePermission?.code) {
       setFormData({
-        name: current.name,
-        code: current.code,
-        permissions: current.permissions || [],
-        canCreateRole: current.canCreateRole || [],
-        type: (current.type as "internal" | "external") || "internal",
-        canMultipleTenants: current.canMultipleTenants || false,
+        name: currentRolePermission.name,
+        code: currentRolePermission.code,
+        permissions: currentRolePermission.permissions || [],
+        canCreateRole: currentRolePermission.canCreateRole || [],
+        type: (currentRolePermission.type as "internal" | "external") || "internal",
+        canMultipleTenants: false,
       });
     }
 
     setTimeout(() => setIsInitialLoading(false), 300);
-  }, [roles, id, current, dispatch]);
+  }, [roles, id, currentRolePermission, dispatch]);
 
-  const categorized = useMemo(() => categorizePermissions(ALL_PERMISSIONS), []);
+  const categorized = useMemo(() => categorizePermissions(availablePermissions), []);
   const allSelectedCount = formData.permissions.length;
-  const totalCount = ALL_PERMISSIONS.length;
+  const totalCount = availablePermissions.length;
 
   const togglePermission = (permission: string) => {
     setFormData((prev) => ({
@@ -232,7 +237,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     setFormData((prev) => ({ ...prev, permissions: uniq }));
   };
 
-  const selectAll = () => setPermissionsBulk([...ALL_PERMISSIONS]);
+  const selectAll = () => setPermissionsBulk([...availablePermissions]);
   const clearAll = () => setPermissionsBulk([]);
 
   const isActionFilteredIn = (action: Action) => {
@@ -306,28 +311,20 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   };
 
   const saveRole = async () => {
-    if (!validate()) return false;
+    // if (!validate()) return false;
 
     setIsSaving(true);
     try {
-      if (id) {
-        dispatch(updateRolePermission(formData));
-      } else {
-        // const res = await fetch("/api/admin/roles", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify(formData),
-        // });
-
-        // if (!res.ok) {
-        //   const txt = await res.text().catch(() => "");
-        //   throw new Error(txt || "Save failed");
-        // }
-
-        miniToast("Role saved successfully ✅");
-        return true;
-      }
+      if (currentRolePermission?._id) {
+        const res = await dispatch(updateRolePermission({ ...formData, _id: currentRolePermission._id })).unwrap();
+        if (res) {
+        
+          toast.success("Role updated successfully ✅");
+          router.back()
+        }
+      } 
     } catch (e: any) {
+      console.log("error", e)
       miniToast(e?.message || "Something went wrong");
       return false;
     } finally {
@@ -365,6 +362,11 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     );
   }
 
+
+  const handleCancel = () => {
+    router.back()
+    dispatch(clearCurrentRolePermission())
+  }
   return (
     <div className="w-full pb-24">
       {/* HEADER */}
@@ -377,6 +379,19 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
             Selected: {allSelectedCount}/{totalCount}
           </Badge>
 
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCancel}
+          >
+
+            <>
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </>
+
+          </Button>
           <Button
             type="button"
             variant="secondary"
@@ -523,19 +538,19 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
 
           {/* Can Create Roles */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
+            {/* <div className="flex items-center gap-2 mb-4">
               <h3 className="text-lg font-semibold">
                 Role Creation Permissions
               </h3>
               <Badge variant="outline">
                 {formData.canCreateRole.length} selected
               </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground mb-4">
+            </div> */}
+            {/* <p className="text-sm text-muted-foreground mb-4">
               Select which roles this role can create. This determines what user
               roles can be assigned by someone with this role.
-            </p>
-
+            </p> */}
+            {/* 
             {availableRolesForCreation.length > 0 ? (
               <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                 {availableRolesForCreation.map((role) => {
@@ -571,7 +586,27 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
                   role creation permissions.
                 </p>
               </div>
-            )}
+            )} */}
+
+            {currentRolePermission && <label
+              key={currentRolePermission.code}
+              className={cn(
+                "flex items-center gap-3 rounded-lg border px-4 py-3",
+                "hover:bg-muted/40 transition cursor-pointer",
+                currentRolePermission?.code && "border-primary bg-primary/5"
+              )}
+            >
+              <Checkbox
+                checked={currentRolePermission?.code ? true : false}
+              // onCheckedChange={() => toggleCanCreateRole(currentRolePermission?.code)}
+              />
+              <div className="flex-1">
+                <div className="font-medium text-sm">{currentRolePermission?.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {currentRolePermission?.code}
+                </div>
+              </div>
+            </label>}
           </div>
 
           <Separator />

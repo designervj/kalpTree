@@ -49,7 +49,7 @@ export function extractStyleContent(htmlContent: string): string {
 export function extractFontLinks(htmlContent: string): string[] {
     if (!htmlContent) return [];
 
-    const fontLinkRegex = /<link[^>]*href=["']([^"']*fonts[^"']*)["'][^>]*>/gi;
+    const fontLinkRegex = /<link[^>]*href=["']([^"']*(?:fonts|font-awesome|all\.min\.css|css2\?family)[^"']*)["'][^>]*>/gi;
     const matches = htmlContent.matchAll(fontLinkRegex);
 
     const fontUrls: string[] = [];

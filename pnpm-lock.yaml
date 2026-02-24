@@ -146,12 +146,18 @@ importers:
       grapesjs-blocks-basic:
         specifier: ^1.0.2
         version: 1.0.2
+      grapesjs-carousel-component:
+        specifier: ^1.0.1
+        version: 1.0.1
       grapesjs-preset-webpage:
         specifier: ^1.0.3
         version: 1.0.3
       grapesjs-script-editor:
         specifier: ^1.0.4
         version: 1.0.4
+      grapesjs-swiper-slider:
+        specifier: ^0.0.5
+        version: 0.0.5(grapesjs@0.22.14)
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
@@ -230,6 +236,9 @@ importers:
       stripe:
         specifier: ^20.0.0
         version: 20.0.0(@types/node@20.19.25)
+      swiper:
+        specifier: ^12.1.2
+        version: 12.1.2
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -3300,11 +3309,19 @@ packages:
   grapesjs-blocks-basic@1.0.2:
     resolution: {integrity: sha512-SsPKf/CvQkZ+kABOsN01auAPHXh/2J20g0AWYF7fHR3Gw3TZLtdIxT1mk90Qzi76u/7sUYi3CTI+i3ZaTtXHRA==}
 
+  grapesjs-carousel-component@1.0.1:
+    resolution: {integrity: sha512-n0wKy4+gc0KjYScgMQQsAMu3X5jknn18VDAe7NOTjVU6w5B6AQMHZeoOu4HpLrjMgc3LrdrOV3RGBckHgZALDA==}
+
   grapesjs-preset-webpage@1.0.3:
     resolution: {integrity: sha512-C0VOKLAdhv0j1f81c6F2uk3JpJvxgXl5DeHUtDa5qGf/HZzaCmQxsvd8Re3Oh5Cah4uUCqoi9uB5FYx3hLND2w==}
 
   grapesjs-script-editor@1.0.4:
     resolution: {integrity: sha512-Ons7Fs2wCQCo4s4eLH5hc/hC4SeyUFrribUDxYkrjIJeTbjfabcqCxspunqZa+ZUaVw2blhdGGG9qkFC6AvwJA==}
+
+  grapesjs-swiper-slider@0.0.5:
+    resolution: {integrity: sha512-ESCqkASVvuKafn/r/AR9PmRC6HN5fjQpULiGTav1EuWeat2J/5ZLNjsXG/f6N5GHplKTvqZPSDLQYwcIaW5nRA==}
+    peerDependencies:
+      grapesjs: 0.x
 
   grapesjs@0.22.14:
     resolution: {integrity: sha512-UyHKGtB9YOQ4bmvhmwY3H7J6SO30qgIH4qRp1ucUlblS21btMxY90xwQuAVIi+EFGl0wi8v1NBEYvA52eIEfyg==}
@@ -4382,6 +4399,10 @@ packages:
   svg-pathdata@6.0.3:
     resolution: {integrity: sha512-qsjeeq5YjBZ5eMdFuUa4ZosMLxgr5RZ+F+Y1OrDhuOCEInRMA3x74XdBtggJcj9kOeInz0WE+LgCPDkZFlBYJw==}
     engines: {node: '>=12.0.0'}
+
+  swiper@12.1.2:
+    resolution: {integrity: sha512-4gILrI3vXZqoZh71I1PALqukCFgk+gpOwe1tOvz5uE9kHtl2gTDzmYflYCwWvR4LOvCrJi6UEEU+gnuW5BtkgQ==}
+    engines: {node: '>= 4.7.0'}
 
   tailwind-merge@3.4.0:
     resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
@@ -8667,11 +8688,17 @@ snapshots:
 
   grapesjs-blocks-basic@1.0.2: {}
 
+  grapesjs-carousel-component@1.0.1: {}
+
   grapesjs-preset-webpage@1.0.3: {}
 
   grapesjs-script-editor@1.0.4:
     dependencies:
       remeda: 2.32.0
+
+  grapesjs-swiper-slider@0.0.5(grapesjs@0.22.14):
+    dependencies:
+      grapesjs: 0.22.14
 
   grapesjs@0.22.14:
     dependencies:
@@ -9825,6 +9852,8 @@ snapshots:
 
   svg-pathdata@6.0.3:
     optional: true
+
+  swiper@12.1.2: {}
 
   tailwind-merge@3.4.0: {}
 

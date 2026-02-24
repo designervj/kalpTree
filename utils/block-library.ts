@@ -577,4 +577,239 @@ export const defaultBlocks: BlockConfig[] = [
     </div>`,
     attributes: { class: "gjs-block-progress-bar" },
   },
+  {
+    id: "custom-slider",
+    label: "Slider",
+    category: "Basic",
+    content: `
+      <section class="hero-section transition-all duration-500 overflow-hidden relative min-h-[640px] flex items-center justify-center text-center text-white bg-black">
+        <style>
+          .hero-section {
+            --primary: #fdb913;
+            --dark: #0a1128;
+            --white: #ffffff;
+            --transition: all 0.3s ease;
+          }
+          .hero-section .hero-slider {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+          }
+          .hero-section .slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.03);
+            opacity: 0;
+            transition: opacity 900ms ease;
+            will-change: opacity;
+          }
+          .hero-section .slide.is-active {
+            opacity: 1;
+          }
+          .hero-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background: linear-gradient(rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62));
+          }
+          .hero-section .hero-content {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+          }
+          .hero-section .hero-content h1 {
+            font-family: 'Merriweather', serif;
+            font-size: 3.5rem;
+            color: var(--white);
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+            font-weight: 900;
+          }
+          .hero-section .hero-content h1 span {
+            color: var(--primary);
+          }
+          .hero-section .hero-content p {
+            font-style: italic;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.92);
+          }
+          .hero-section .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: capitalize;
+            transition: var(--transition);
+          }
+          .hero-section .btn-yellow {
+            background: var(--primary);
+            color: var(--dark);
+          }
+          .hero-section .btn-yellow:hover {
+            background: #e0a710;
+            transform: translateY(-2px);
+          }
+          .hero-section .btn-outline {
+            border: 1px solid var(--white);
+            color: var(--white);
+            background: transparent;
+            margin-left: 15px;
+          }
+          .hero-section .btn-outline:hover {
+            background: var(--white);
+            color: var(--dark);
+          }
+          .hero-section .hero-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 4;
+            width: 46px;
+            height: 46px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(10, 17, 40, 0.35);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+          }
+          .hero-section .hero-nav:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.7);
+          }
+          .hero-section .hero-nav.prev {
+            left: 20px;
+          }
+          .hero-section .hero-nav.next {
+            right: 20px;
+          }
+          .hero-section .hero-dots {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 26px;
+            z-index: 4;
+            display: flex;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(10, 17, 40, 0.30);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(10px);
+          }
+          .hero-section .hero-dots button {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            border: 0;
+            background: rgba(255, 255, 255, 0.45);
+            cursor: pointer;
+            transition: var(--transition);
+          }
+          .hero-section .hero-dots button.is-active {
+            width: 22px;
+            background: var(--primary);
+          }
+          @media (max-width: 992px) {
+            .hero-section .hero-content h1 { font-size: 2.6rem; }
+            .hero-section .hero-nav { display: none; }
+          }
+          @media (max-width: 520px) {
+            .hero-section .btn { width: 100%; text-align: center; margin-left: 0 !important; margin-bottom: 10px; }
+          }
+        </style>
+        
+        <div class="hero-slider" aria-hidden="true">
+          <div class="slide is-active" style="background-image:url('https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?auto=format&fit=crop&w=1920&q=80');"></div>
+          <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1920&q=80');"></div>
+          <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1920&q=80');"></div>
+        </div>
+
+        <div class="hero-content">
+          <div class="container mx-auto px-4">
+            <h1>GLOBAL <span>INTERNATIONAL</span> SCHOOL</h1>
+            <p>"Shaping Confident Learners For A Global Future"</p>
+            <div class="flex flex-wrap justify-center gap-4">
+              <a href="#" class="btn btn-yellow">Apply Now</a>
+              <a href="#" class="btn btn-outline">Discover More &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+        <button class="hero-nav prev" type="button" aria-label="Previous slide"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="hero-nav next" type="button" aria-label="Next slide"><i class="fa-solid fa-chevron-right"></i></button>
+
+        <div class="hero-dots" aria-label="Hero slider pagination"></div>
+
+        <script>
+          (function() {
+            const hero = document.currentScript.closest('.hero-section');
+            const slides = Array.from(hero.querySelectorAll(".slide"));
+            const dotsWrap = hero.querySelector(".hero-dots");
+            const btnPrev = hero.querySelector(".hero-nav.prev");
+            const btnNext = hero.querySelector(".hero-nav.next");
+
+            if (!slides.length || !dotsWrap) return;
+
+            const AUTOPLAY_MS = 5500;
+            let index = 0;
+            let timer = null;
+            let isPaused = false;
+
+            dotsWrap.innerHTML = '';
+            const dots = slides.map((_, i) => {
+              const b = document.createElement("button");
+              b.type = "button";
+              b.setAttribute("aria-label", "Go to slide " + (i + 1));
+              b.onclick = () => goTo(i, true);
+              dotsWrap.appendChild(b);
+              return b;
+            });
+
+            function render() {
+              slides.forEach((s, i) => s.classList.toggle("is-active", i === index));
+              dots.forEach((d, i) => d.classList.toggle("is-active", i === index));
+            }
+
+            function goTo(nextIndex, userAction) {
+              index = (nextIndex + slides.length) % slides.length;
+              render();
+              if (userAction) restart();
+            }
+
+            function next(userAction) { goTo(index + 1, userAction); }
+            function prev(userAction) { goTo(index - 1, userAction); }
+
+            function start() {
+              stop();
+              timer = setInterval(() => { if (!isPaused) next(false); }, AUTOPLAY_MS);
+            }
+
+            function stop() { if (timer) clearInterval(timer); timer = null; }
+            function restart() { start(); }
+
+            hero.addEventListener("mouseenter", () => (isPaused = true));
+            hero.addEventListener("mouseleave", () => (isPaused = false));
+
+            if (btnNext) btnNext.onclick = () => next(true);
+            if (btnPrev) btnPrev.onclick = () => prev(true);
+
+            render();
+            start();
+          })();
+        </script>
+      </section>
+    `,
+    attributes: { class: "gjs-block-custom-slider" },
+  },
 ];

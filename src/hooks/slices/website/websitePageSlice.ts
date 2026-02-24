@@ -3,12 +3,12 @@ import axios from "axios";
 // Thunks for CRUD operations
 
 import { WebsitePageModel } from "../../../components/admin/website/websitePage/WebsitePageType";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { createWebsitePage, deleteWebsitePage, fetchWebsitePages, updateWebsitePage } from "./WebsitePageThunk";
 
 interface WebsitePageState {
   websitePages: WebsitePageModel[];
-  currentpage:WebsitePageModel|null;
+  currentpage: WebsitePageModel | null;
   hasFetched: boolean;
   isLoading: boolean;
   error: string | null;
@@ -16,7 +16,7 @@ interface WebsitePageState {
 
 const initialState: WebsitePageState = {
   websitePages: [],
-  currentpage:null,
+  currentpage: null,
   hasFetched: false,
   isLoading: false,
   error: null,
@@ -26,21 +26,21 @@ const websitePageSlice = createSlice({
   name: "websitePage",
   initialState,
   reducers: {
-    updateCurrentPage:(state, action)=>{
-        state.currentpage=action.payload
+    updateCurrentPage: (state, action) => {
+      state.currentpage = action.payload
     },
     setAllWebsitePages: (state, action) => {
       state.websitePages = action.payload
       state.hasFetched = true
     },
-     updateWebsitePages: (state, action) => {
+    updateWebsitePages: (state, action) => {
       state.websitePages.push(action.payload)
     },
-    clearWebsitePages:(state)=>{
-      state.websitePages=[]
-      state.hasFetched=false
-      state.isLoading=false
-      state.error=null
+    clearWebsitePages: (state) => {
+      state.websitePages = []
+      state.hasFetched = false
+      state.isLoading = false
+      state.error = null
     }
   },
   extraReducers: (builder) => {
@@ -95,10 +95,10 @@ const websitePageSlice = createSlice({
 });
 
 export const {
-updateCurrentPage,
- setAllWebsitePages,
- updateWebsitePages,
- clearWebsitePages
+  updateCurrentPage,
+  setAllWebsitePages,
+  updateWebsitePages,
+  clearWebsitePages
 } = websitePageSlice.actions;
 
 export default websitePageSlice.reducer;

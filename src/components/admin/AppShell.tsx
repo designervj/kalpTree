@@ -127,7 +127,7 @@ import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
 import { Label } from "../ui/label";
 import { UpperBar } from "./Sidebar/UpperBar";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
 import Link from "next/link";
@@ -860,7 +860,7 @@ export function AppShell({ children }: AppShellProps) {
   // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
+  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const params = useParams();
   const searchParams = useSearchParams();
@@ -1082,7 +1082,7 @@ export function AppShell({ children }: AppShellProps) {
                 <Settings className="mr-2 h-4 w-4" />
                 Account settings
               </DropdownMenuItem>
-              
+
 
               <DropdownMenuSeparator className="my-1" />
 
@@ -1119,7 +1119,7 @@ export function AppShell({ children }: AppShellProps) {
             />
           )}
 
-          {user && (user.role == "business"||businessid) && (
+          {user && (user.role == "business" || businessid) && (
             <Sidebar
               collapsed={false}
               onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -1185,10 +1185,10 @@ export function AppShell({ children }: AppShellProps) {
                       business={allBusiness}
                       currentBusiness={currentBusiness}
                       user={user}
-                      // onWebsiteChange={(websiteId) => {
-                      //   onWebsiteChange(websiteId);
-                      //   setMobileSidebarOpen(false);
-                      // }}
+                    // onWebsiteChange={(websiteId) => {
+                    //   onWebsiteChange(websiteId);
+                    //   setMobileSidebarOpen(false);
+                    // }}
                     />
                   )}
                 </div>

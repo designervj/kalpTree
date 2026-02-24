@@ -12,6 +12,7 @@ import {
   RolePermissionModel,
   setCurrentRolePermission,
 } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
+import { availablePermissions } from "./util/AllPermissionLayout";
 
 interface formData {
   _id?: string;
@@ -36,55 +37,7 @@ export default function RolesManagement() {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const availablePermissions = [
-    // Dashboard
-    "dashboard:create",
-    "dashboard:read",
-    "dashboard:update",
-    "dashboard:delete",
 
-    // Analytics
-    "analytics:create",
-    "analytics:read",
-    "analytics:update",
-    "analytics:delete",
-
-    // Security / System
-    "security:create",
-    "security:read",
-    "security:update",
-    "security:delete",
-
-    // Websites / CMS
-    "websites:create",
-    "websites:read",
-    "websites:update",
-    "websites:delete",
-
-    // Media
-    "media:create",
-    "media:read",
-    "media:update",
-    "media:delete",
-
-    // Content / Branding / Marketing / Users / Settings
-    "content:create",
-    "content:read",
-    "content:update",
-    "content:delete",
-
-    // Products & E-commerce core
-    "product:create",
-    "product:read",
-    "product:update",
-    "product:delete",
-
-    // AI Studio
-    "ai:create",
-    "ai:read",
-    "ai:update",
-    "ai:delete",
-  ];
 
   type PermissionGroups = Record<string, string[]>;
 
@@ -123,13 +76,13 @@ export default function RolesManagement() {
     return categories;
   };
 
-  const openModal = (
-    mode: "view" | "edit" | "create",
-    role?: RolePermissionModel
-  ) => {
-    dispatch(setCurrentRolePermission(role));
-    router.push(`/admin/rolesandpermission/${role?._id}`);
-  };
+  // const openModal = (
+  //   mode: "view" | "edit" | "create",
+  //   role?: RolePermissionModel
+  // ) => {
+  //   dispatch(setCurrentRolePermission(role));
+  //   router.push(`/admin/rolesandpermission/${role?._id}`);
+  // };
 
   const closeModal = () => {
     setModalMode(null);
@@ -193,6 +146,17 @@ export default function RolesManagement() {
     }
   };
 
+  const handleEdit=(role:RolePermissionModel)=>{
+   dispatch(setCurrentRolePermission(role));
+    router.push(`/admin/rolesandpermission/${role?._id}`);
+  }
+
+  const handleCreateRole=()=>{
+    // dispatch(setCurrentRolePermission(null));
+    router.push(`/admin/rolesandpermission/create`);
+  }
+    
+  
   const handleDelete = async (roleId: string) => {
     if (!confirm("Are you sure you want to delete this role?")) return;
 
@@ -228,7 +192,8 @@ export default function RolesManagement() {
 
           <Link href="/admin/rolesandpermission/create">
             <Button
-              onClick={() => openModal("create")}
+            onClick={handleCreateRole}
+              // onClick={() => openModal("create")}
               // className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
             >
               Create New Role
@@ -268,7 +233,8 @@ export default function RolesManagement() {
                   View
                 </Button> */}
                 <Button
-                  onClick={() => openModal("view", role)}
+                 // onClick={() => openModal("view", role)}
+                 onClick={() => handleEdit(role)}
                   className="flex-1"
                   // className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
                 >

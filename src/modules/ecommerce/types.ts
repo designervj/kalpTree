@@ -1,5 +1,5 @@
 import { BaseDocument } from '@/types';
-import { ObjectId } from 'mongodb';
+import type { ObjectId } from 'mongodb';
 
 // Universal Product Type
 export interface Product extends BaseDocument {
@@ -118,26 +118,26 @@ export interface BookingSlot {
 }
 
 
-export interface NewProductAttribute{
-  attributeId:string|ObjectId,
-  attributeName?:string,
-  value?:string,
-  weight?:number,
+export interface NewProductAttribute {
+  attributeId: string | ObjectId,
+  attributeName?: string,
+  value?: string,
+  weight?: number,
 
 }
 // Product Variant (for products with options like Size/Color)
-export interface ProductVariant  {
-  _id:string,
-  id?:number,
-  sku?:string,
-  stock?:number,
-  price?:string,
-  weight?:number,
-  productId?:string|ObjectId,
-  attributes?:NewProductAttribute[],
-createdAt?:Date,
-updatedAt?:Date,
-  
+export interface ProductVariant {
+  _id: string,
+  id?: number,
+  sku?: string,
+  stock?: number,
+  price?: string,
+  weight?: number,
+  productId?: string | ObjectId,
+  attributes?: NewProductAttribute[],
+  createdAt?: Date,
+  updatedAt?: Date,
+
   // productId: string;
   // sku?: string;
   // name: string; // "Large / Red"

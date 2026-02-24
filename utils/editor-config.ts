@@ -32,6 +32,7 @@ export function createEditorConfig(
     height: "100%",
     width: "100%",
     fromElement: false,
+    allowScripts: 1, // Enable script execution in canvas
     storageManager: {
       type: "local",
       autosave: true,

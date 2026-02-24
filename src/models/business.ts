@@ -2,7 +2,7 @@ import {
   colorModal,
   ColorPalletModal,
 } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface IBusiness {
   tagline: any;
@@ -11,21 +11,21 @@ export interface IBusiness {
   name?: string;
   email?: string;
   plan?:
-    | "trial"
-    | "free"
-    | "pro"
-    | "agency"
-    | "enterprise"
-    | "basic"
-    | undefined;
+  | "trial"
+  | "free"
+  | "pro"
+  | "agency"
+  | "enterprise"
+  | "basic"
+  | undefined;
   subscriptionStatus?:
-    | "active"
-    | "paused"
-    | "cancelled"
-    | "suspended"
-    | "inactive"
-    | "pending"
-    | undefined;
+  | "active"
+  | "paused"
+  | "cancelled"
+  | "suspended"
+  | "inactive"
+  | "pending"
+  | undefined;
   customDomainVerified?: boolean;
   branding?: {
     primary_color?: string;

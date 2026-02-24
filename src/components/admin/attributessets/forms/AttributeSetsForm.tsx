@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Button } from "@/components/ui/button";
 import { X, Plus } from "lucide-react";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { toast } from "sonner";
 
 type AttributeSetFormProps = {
