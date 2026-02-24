@@ -64,7 +64,8 @@ export default function GrapesJSEditor() {
     isLoading: isPageLoading,
   } = useSelector((state: RootState) => state.pageEdit);
 
-  console.log("======Page", page);
+  console.log("======allBlock", state.blocks
+  );
 
   const { currentHeader } = useSelector((state: RootState) => state.header);
   const { currentFooter } = useSelector((state: RootState) => state.footer);
@@ -173,14 +174,13 @@ export default function GrapesJSEditor() {
 
             // Combine bodies with wrappers
             body = `
-              ${
-                !isHeaderPresentInCurrentPage
-                  ? `
+              ${!isHeaderPresentInCurrentPage
+                ? `
               <div data-gjs-type="site-header" data-gjs-removable="false" data-gjs-draggable="false" data-gjs-copyable="false" data-gjs-badgable="false" data-gjs-stylable="false">
                 ${headerParts.body}
               </div>
               `
-                  : ""
+                : ""
               }
               <div data-gjs-type="page-body">
                 ${pageParts.body}
@@ -508,7 +508,7 @@ export default function GrapesJSEditor() {
     }
   };
 
-  const handleSaveTemplate = (name: string, content: string) => {};
+  const handleSaveTemplate = (name: string, content: string) => { };
 
   // ─────────────────────────────
   // Code editor sync
@@ -854,9 +854,8 @@ export default function GrapesJSEditor() {
           <div className="relative flex flex-1 flex-row-reverse overflow-hidden">
             {/* Canvas - Normal Editor */}
             <div
-              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${
-                pagetype !== "normal" ? "hidden" : ""
-              }`}
+              className={`flex-1 min-w-0 transition-all duration-300 ease-in-out relative ${pagetype !== "normal" ? "hidden" : ""
+                }`}
             >
               {(state.isLoading || isPageLoading) && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-900/80">
@@ -920,23 +919,23 @@ export default function GrapesJSEditor() {
                   options={
                     categoryStyleConfigs[pagetype]
                       ? {
-                          showHero:
-                            categoryStyleConfigs[pagetype].layoutConfig
-                              ?.showHeroSection,
-                          desktopColumns: (categoryStyleConfigs[pagetype]
-                            .layoutConfig?.gridColumns?.desktop ?? 3) as
-                            | 2
-                            | 3
-                            | 4,
-                          heroImageUrl:
-                            categoryStyleConfigs[pagetype].heroConfig
-                              ?.backgroundImage,
-                          categoryTitle:
-                            categoryStyleConfigs[pagetype].heroConfig?.title,
-                          layout:
-                            categoryStyleConfigs[pagetype].layoutConfig
-                              ?.filterPosition,
-                        }
+                        showHero:
+                          categoryStyleConfigs[pagetype].layoutConfig
+                            ?.showHeroSection,
+                        desktopColumns: (categoryStyleConfigs[pagetype]
+                          .layoutConfig?.gridColumns?.desktop ?? 3) as
+                          | 2
+                          | 3
+                          | 4,
+                        heroImageUrl:
+                          categoryStyleConfigs[pagetype].heroConfig
+                            ?.backgroundImage,
+                        categoryTitle:
+                          categoryStyleConfigs[pagetype].heroConfig?.title,
+                        layout:
+                          categoryStyleConfigs[pagetype].layoutConfig
+                            ?.filterPosition,
+                      }
                       : undefined
                   }
                 />
