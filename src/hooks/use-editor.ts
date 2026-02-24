@@ -241,6 +241,62 @@ export function useEditor(containerId: string) {
       tailwindScript.setAttribute("data-tailwind", "true");
       doc.head.appendChild(tailwindScript);
 
+      // Inject Swiper CSS
+      if (!doc.querySelector('[data-swiper-style="true"]')) {
+        const swiperStyle = doc.createElement("link");
+        swiperStyle.rel = "stylesheet";
+        swiperStyle.href = "https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css";
+        swiperStyle.setAttribute("data-swiper-style", "true");
+        doc.head.appendChild(swiperStyle);
+      }
+
+      // Inject FontAwesome and Slider Fonts
+      if (!doc.querySelector('[data-fontawesome="true"]')) {
+        const faStyle = doc.createElement("link");
+        faStyle.rel = "stylesheet";
+        faStyle.href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css";
+        faStyle.setAttribute("data-fontawesome", "true");
+        doc.head.appendChild(faStyle);
+
+        // Add Merriweather and Poppins for the new slider
+        const sliderFonts = doc.createElement("link");
+        sliderFonts.rel = "stylesheet";
+        sliderFonts.href = "https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Poppins:wght@300;400;500;600&display=swap";
+        sliderFonts.setAttribute("data-slider-fonts", "true");
+        doc.head.appendChild(sliderFonts);
+      }
+
+      // Inject AOS CSS
+      if (!doc.querySelector('[data-aos-style="true"]')) {
+        const aosStyle = doc.createElement("link");
+        aosStyle.rel = "stylesheet";
+        aosStyle.href = "https://unpkg.com/aos@2.3.1/dist/aos.css";
+        aosStyle.setAttribute("data-aos-style", "true");
+        doc.head.appendChild(aosStyle);
+      }
+
+      // Inject AOS JS
+      if (!doc.querySelector('[data-aos-script="true"]')) {
+        const aosScript = doc.createElement("script");
+        aosScript.src = "https://unpkg.com/aos@2.3.1/dist/aos.js";
+        aosScript.setAttribute("data-aos-script", "true");
+        doc.head.appendChild(aosScript);
+        aosScript.onload = () => {
+          if ((doc.defaultView as any).AOS) {
+            (doc.defaultView as any).AOS.init({
+              duration: 1000,
+              once: true,
+              offset: 100
+            });
+          }
+        };
+      } else {
+        // Re-init if it already exists (for dynamic content)
+        if ((doc.defaultView as any).AOS) {
+          (doc.defaultView as any).AOS.refresh();
+        }
+      }
+
       // Inject global styles from website settings
       if (globalStyle) {
         doc.querySelector('[data-global-styles="true"]')?.remove();
@@ -317,6 +373,16 @@ export function useEditor(containerId: string) {
           width: 18px;
           height: 18px;
           pointer-events: none;
+        }
+
+        /* Helper to make invisible slides selectable in the editor */
+        .slide {
+          opacity: 0.3 !important;
+          border: 1px dashed #ccc;
+        }
+        .slide.is-active {
+          opacity: 1 !important;
+          border: none;
         }
       `;
       doc.head.appendChild(addSectionStyle);
@@ -401,6 +467,10 @@ export function useEditor(containerId: string) {
         const gjsScriptEditor = await import("grapesjs-script-editor");
         if (!isMounted) return;
 
+
+        const gjsCarousel = await import("grapesjs-carousel-component");
+        if (!isMounted) return;
+
         // Wait for container element
         let containerEl = document.getElementById(containerId);
         if (!containerEl) {
@@ -427,9 +497,6 @@ export function useEditor(containerId: string) {
               exportOpts: {},
               aviaryOpts: false,
               filestackOpts: false,
-            },
-            [String(gjsBlocksBasic.default)]: {
-              // Don't override blocks - let editor-config.ts handle block registration
             },
             [String(gjsScriptEditor.default)]: {},
           },
@@ -2358,6 +2425,21 @@ export function useEditor(containerId: string) {
           }
 
           addComponentAboveFooter(editorRef.current, contentToAdd);
+
+          const frame = (editorRef.current as any).Canvas?.getFrameEl?.();
+          const doc = frame?.contentDocument;
+
+          // Handle external scripts
+          const { externalScripts: extScripts } = extractParts(content);
+          if (extScripts && extScripts.length > 0 && doc) {
+            extScripts.forEach(src => {
+              if (!doc.querySelector(`script[src="${src}"]`)) {
+                const s = doc.createElement('script');
+                s.src = src;
+                doc.head.appendChild(s);
+              }
+            });
+          }
 
           if (scripts && scripts.length > 0) {
             console.log(`Adding ${scripts.length} scripts from component`);

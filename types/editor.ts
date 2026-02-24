@@ -16,6 +16,7 @@ export interface EditorConfig {
   selectorManager?: SelectorManagerConfig;
   plugins?: Array<string | PluginOptions>;
   pluginsOpts?: Record<string, any>;
+  allowScripts?: boolean | number;
 }
 
 export interface StorageManagerConfig {
