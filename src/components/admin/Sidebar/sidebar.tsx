@@ -36,15 +36,11 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const params = useParams();
   const searchparams = Object.fromEntries(searchParams.entries());
 
-  /**
-   * ✅ IMPORTANT FIX:
-   * Always keep internal state so collapse works even if parent doesn't update prop.
-   */
+  // Keep internal collapse state (works even if parent doesn't control it)
   const [internalCollapsed, setInternalCollapsed] = React.useState<boolean>(
     typeof collapsed === "boolean" ? collapsed : false
   );
 
-  // If parent changes collapsed prop later, sync it.
   React.useEffect(() => {
     if (typeof collapsed === "boolean") setInternalCollapsed(collapsed);
   }, [collapsed]);
@@ -69,36 +65,14 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
           })),
       }))
       .filter((section) => section.items.length > 0);
-  }, [hasPermission, params, searchParams]);
+  }, [hasPermission, params, searchparams]);
 
-  // open/close groups
-  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(
-    () => {
-      const init: Record<string, boolean> = {};
-      filteredWebsiteSections.forEach((s, idx) => (init[s.id] = idx === 0));
-      return init;
-    }
-  );
-
-  React.useEffect(() => {
-    setOpenGroups((prev) => {
-      const next = { ...prev };
-      filteredWebsiteSections.forEach((s, idx) => {
-        if (typeof next[s.id] === "undefined") next[s.id] = idx === 0;
-      });
-      return next;
-    });
-  }, [filteredWebsiteSections]);
-
-  const toggleGroup = (id: string) =>
-    setOpenGroups((p) => ({ ...p, [id]: !p[id] }));
-
-  // ✅ Normalize path (remove query/hash)
+  // Normalize path (remove query/hash)
   const normalizePath = React.useCallback((href: string) => {
     return (href || "").split("?")[0].split("#")[0];
   }, []);
 
-  // ✅ Find ONLY one active item (longest matching path wins)
+  // Find ONLY one active item (longest matching path wins)
   const activeItemPath = React.useMemo(() => {
     const current = normalizePath(pathname || "");
     const allItems = filteredWebsiteSections.flatMap((s) => s.items);
@@ -109,11 +83,47 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
     if (matches.length === 0) return null;
 
-    // Most specific route wins (e.g. /notifications over /dashboard parent)
     return matches.sort((a, b) => b.length - a.length)[0];
   }, [pathname, filteredWebsiteSections, normalizePath]);
 
-  // ✅ Optional helper if you later want active parent section styling
+  // Find active section id from active item
+  const activeSectionId = React.useMemo(() => {
+    if (!activeItemPath) return null;
+    const found = filteredWebsiteSections.find((section) =>
+      section.items.some((item) => normalizePath(item.href) === activeItemPath)
+    );
+    return found?.id ?? null;
+  }, [filteredWebsiteSections, activeItemPath, normalizePath]);
+
+  /**
+   * ✅ Accordion behavior (only one section open at a time)
+   * - Default: active section (if any), otherwise first section
+   */
+  const [openGroupId, setOpenGroupId] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (!filteredWebsiteSections.length) {
+      setOpenGroupId(null);
+      return;
+    }
+
+    // If current openGroupId still exists, keep it
+    const stillExists = filteredWebsiteSections.some((s) => s.id === openGroupId);
+    if (stillExists) return;
+
+    // Otherwise open active section, else first section
+    setOpenGroupId(activeSectionId ?? filteredWebsiteSections[0].id);
+  }, [filteredWebsiteSections, openGroupId, activeSectionId]);
+
+  // Auto-open the section that contains active route
+  React.useEffect(() => {
+    if (activeSectionId) setOpenGroupId(activeSectionId);
+  }, [activeSectionId]);
+
+  const toggleGroup = React.useCallback((id: string) => {
+    setOpenGroupId((prev) => (prev === id ? null : id)); // click one opens it and closes others
+  }, []);
+
   const isSectionActive = React.useCallback(
     (section: (typeof filteredWebsiteSections)[number]) => {
       return section.items.some(
@@ -132,14 +142,14 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
         className={cn(
           "relative hidden md:flex h-screen max-h-[92vh] bg-[#f5f6f7]",
           "transition-[width] duration-300 ease-out",
-          "overflow-visible", // ✅ so purple button never gets clipped
+          "overflow-visible",
           isCollapsed ? "w-[92px]" : "w-[450px]"
         )}
       >
         {/* right edge hairline */}
-        <div className="absolute right-0 top-0 h-full w-px bg-black/10 " />
+        <div className="absolute right-0 top-0 h-full w-px bg-black/10" />
 
-        {/* ✅ Collapse button (purple circle) */}
+        {/* Collapse button */}
         <div className="absolute right-0 bottom-[78px] z-[1] translate-x-1/2">
           <button
             type="button"
@@ -160,7 +170,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
           </button>
         </div>
 
-        {/* ✅ Inner scroll container (only this scrolls) */}
+        {/* Inner scroll container */}
         <div className="w-full h-full overflow-hidden">
           <div className="h-full flex flex-col">
             <div
@@ -171,17 +181,11 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             >
               <div className="space-y-2">
                 {filteredWebsiteSections.map((section) => {
-                  const HeaderIcon =
-                    sectionIconMap[section.id] || LayoutDashboard;
-                  const isOpen = !!openGroups[section.id];
-                  const _sectionActive = isSectionActive(section); // currently not changing UI, just available
+                  const HeaderIcon = sectionIconMap[section.id] || LayoutDashboard;
+                  const isOpen = openGroupId === section.id;
+                  const sectionActive = isSectionActive(section);
 
-                  /**
-                   * ✅ COLLAPSED VIEW:
-                   * - icon only
-                   * - NO dropdown list shown
-                   * - hover shows floating panel
-                   */
+                  // COLLAPSED VIEW
                   if (isCollapsed) {
                     return (
                       <div
@@ -195,12 +199,18 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                             <button
                               type="button"
                               className={cn(
-                                "w-full h-[58px] rounded-2xl",
-                                "bg-white border border-black/10 shadow-sm",
-                                "grid place-items-center hover:bg-white/90 transition"
+                                "w-full h-[58px] rounded-2xl border shadow-sm grid place-items-center transition",
+                                sectionActive
+                                  ? "bg-[#eef2ff] border-[#dfe5ff]"
+                                  : "bg-white border-black/10 hover:bg-white/90"
                               )}
                             >
-                              <HeaderIcon className="h-5 w-5 text-black/70" />
+                              <HeaderIcon
+                                className={cn(
+                                  "h-5 w-5",
+                                  sectionActive ? "text-black" : "text-black/70"
+                                )}
+                              />
                             </button>
                           </TooltipPrimitive.Trigger>
 
@@ -248,11 +258,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                       normalizePath(item.href) === activeItemPath;
 
                                     return (
-                                      <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className="block"
-                                      >
+                                      <Link key={item.href} href={item.href} className="block">
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm",
@@ -264,9 +270,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                           <Icon
                                             className={cn(
                                               "h-4 w-4",
-                                              active
-                                                ? "text-black"
-                                                : "text-black/55"
+                                              active ? "text-black" : "text-black/55"
                                             )}
                                           />
                                           <span className="truncate flex-1">
@@ -298,10 +302,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                     );
                   }
 
-                  /**
-                   * ✅ EXPANDED VIEW:
-                   * group header + dropdown items
-                   */
+                  // EXPANDED VIEW (Accordion: one open at a time)
                   return (
                     <div key={section.id} className="rounded-2xl">
                       <button
@@ -309,11 +310,20 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                         onClick={() => toggleGroup(section.id)}
                         className={cn(
                           "w-full flex items-center gap-3 rounded-2xl px-3 py-2",
-                          "text-left bg-white border border-black/10 shadow-sm",
-                          "hover:bg-white/90 transition"
+                          "text-left border shadow-sm transition",
+                          sectionActive
+                            ? "bg-white border-[#dfe5ff]"
+                            : "bg-white border-black/10 hover:bg-white/90"
                         )}
                       >
-                        <div className="grid h-10 w-10 place-items-center rounded-2xl bg-white border border-black/10 shadow-sm">
+                        <div
+                          className={cn(
+                            "grid h-10 w-10 place-items-center rounded-2xl border shadow-sm",
+                            sectionActive
+                              ? "bg-[#eef2ff] border-[#dfe5ff]"
+                              : "bg-white border-black/10"
+                          )}
+                        >
                           <HeaderIcon className="h-5 w-5 text-black/70" />
                         </div>
 
@@ -359,11 +369,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                       normalizePath(item.href) === activeItemPath;
 
                                     return (
-                                      <Link
-                                        key={item.href}
-                                        href={item.href}
-                                        className="block"
-                                      >
+                                      <Link key={item.href} href={item.href} className="block">
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2",
@@ -375,9 +381,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                           <Icon
                                             className={cn(
                                               "h-4 w-4",
-                                              active
-                                                ? "text-black"
-                                                : "text-black/55"
+                                              active ? "text-black" : "text-black/55"
                                             )}
                                           />
 
