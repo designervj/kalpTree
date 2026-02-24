@@ -9,8 +9,8 @@ export interface RolePermissionModel {
   name?: string;
   permissions: string[];
   canCreateRole?: string[];
-  type: string;
-  canMultipleTenants: boolean;
+  type?: string;
+  canMultipleTenants?: boolean;
 }
 
 export interface RolePermissionState {

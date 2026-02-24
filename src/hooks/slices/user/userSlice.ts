@@ -3,12 +3,13 @@
 import { IUser } from "@/models/user";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RolePermissionModel, updateRolePermission } from "../RolePermissions/rolePermissionSlice";
 
 export const getAllUser = createAsyncThunk<IUser[]>(
   "user/getAllUser",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await  fetch("/api/admin/getAllUsers");
+      const response = await fetch("/api/admin/getAllUsers");
       const data = await response.json();
       // API returns { users: IUser[] } with superadmin filtered out
       return data.users;
@@ -50,7 +51,7 @@ export const updatePassword = createAsyncThunk<
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ password , email}),
+      body: JSON.stringify({ password, email }),
     });
     return response.json();
   } catch (error: any) {
@@ -131,7 +132,15 @@ const userSlice = createSlice({
       )
       .addCase(createCustomer.rejected, (state) => {
         state.isLoading = false;
-      });
+      })
+
+      // when permission update
+      .addCase(updateRolePermission.fulfilled, (state, action: PayloadAction<RolePermissionModel>) => {
+        const updatedRole = action.payload;
+        state.alluser = state.alluser.map((user) =>
+          user._id === updatedRole._id ? { ...user, permissions: updatedRole.permissions } : user
+        );
+      })
   },
 });
 
