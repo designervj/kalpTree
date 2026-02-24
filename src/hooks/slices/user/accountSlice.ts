@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface Branding {
   primaryColor: string;

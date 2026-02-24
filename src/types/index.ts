@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 // Base document with multi-tenant support
 export interface BaseDocument {

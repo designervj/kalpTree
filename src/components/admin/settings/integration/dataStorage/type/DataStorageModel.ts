@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 /**
  * S3 Bucket Credentials Model
@@ -8,48 +8,48 @@ export interface DataStorageModel {
   _id?: string | ObjectId;
   tenantId: string | ObjectId;
   websiteId?: string | ObjectId;
-  
+
   // S3 Configuration
   provider: 'aws-s3' | 'cloudflare-r2' | 'digitalocean-spaces' | 'backblaze-b2' | 'wasabi';
-  
+
   // AWS S3 / Compatible Storage Credentials
   region: string;
   bucket: string;
   accessKeyId: string;
   secretAccessKey: string;
   endpoint?: string; // For S3-compatible services
-  
+
   // Optional CloudFront or CDN
   cloudFrontDomain?: string;
   cdnEnabled?: boolean;
-  
+
   // Connection Settings
   forcePathStyle?: boolean; // Required for some S3-compatible services
   signatureVersion?: string; // Usually 'v4'
-  
+
   // Status and Metadata
   isActive: boolean;
   isDefault?: boolean; // Mark as default storage for tenant
   name?: string; // Friendly name for the configuration
   description?: string;
-  
+
   // Usage Statistics (optional)
   totalStorageUsed?: number; // in bytes
   totalFiles?: number;
   lastSyncedAt?: Date;
-  
+
   // Security
   encryption?: {
     enabled: boolean;
     type?: 'AES256' | 'aws:kms';
     kmsKeyId?: string;
   };
-  
+
   // Access Control
   publicAccess?: boolean;
   allowedFileTypes?: string[]; // ['image/*', 'video/*', 'application/pdf']
   maxFileSize?: number; // in bytes
-  
+
   // Timestamps
   createdAt: Date;
   updatedAt: Date;

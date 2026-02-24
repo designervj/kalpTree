@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface RolePermissionModel {
   id?: ObjectId | string;
-  _id?: string;
+  _id?: string | string;
   code?: string;
   name?: string;
   permissions: string[];
@@ -15,6 +15,7 @@ export interface RolePermissionModel {
 
 export interface RolePermissionState {
   rolesPermissions: RolePermissionModel[];
+  // currentRolePermission?: RolePermissionModel | null;
   hasFetched: boolean;
   current?: RolePermissionModel | null;
   loading: boolean;
@@ -25,7 +26,7 @@ const initialState: RolePermissionState = {
   rolesPermissions: [],
   loading: false,
   hasFetched: false,
-  current: null,
+  // currentRolePermission: null,
 };
 
 export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[]>(
@@ -57,9 +58,17 @@ export const updateRolePermission = createAsyncThunk<
   Partial<RolePermissionModel>
 >("rolePermission/update", async (data, { rejectWithValue }) => {
   try {
-    
-    const response = await axios.put("/api/role", data);
-    return response.data;
+
+    const response = await fetch("/api/roles", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const responseData = await response.json();
+  
+    return responseData?.updated;
   } catch (error: any) {
     return rejectWithValue(error.response?.data || error.message);
   }
@@ -86,6 +95,7 @@ const rolePermissionSlice = createSlice({
       action: PayloadAction<RolePermissionModel | undefined>
     ) {
       state.current = action.payload;
+      // state.currentRolePermission = action.payload;
     },
     updateRolePermissions: (state, action) => {
       state.rolesPermissions = action.payload;
@@ -93,6 +103,9 @@ const rolePermissionSlice = createSlice({
     },
     addRoles: (state, action) => {
       state.rolesPermissions.push(action.payload);
+    },
+    clearCurrentRolePermission: (state) => {
+      state.current = null;
     },
   },
   extraReducers: (builder) => {
@@ -113,19 +126,21 @@ const rolePermissionSlice = createSlice({
       .addCase(createRolePermission.fulfilled, (state, action) => {
         state.rolesPermissions.push(action.payload);
       })
-      .addCase(updateRolePermission.fulfilled, (state, action) => {
+      .addCase(updateRolePermission.fulfilled, (state, action: PayloadAction<any>) => {
+        const updatedRole = action.payload.updated || action.payload;
         state.rolesPermissions = state.rolesPermissions.map((item) =>
-          item.id === action.payload.id ? action.payload : item
+          item._id === updatedRole._id ? updatedRole : item
         );
+        state.current = null
       })
       .addCase(deleteRolePermission.fulfilled, (state, action) => {
         state.rolesPermissions = state.rolesPermissions.filter(
-          (item) => item.id !== action.payload.id
+          (item) => item._id !== action.payload.id && item.id !== action.payload.id
         );
       });
   },
 });
 
-export const { setCurrentRolePermission, addRoles, updateRolePermissions } =
+export const { setCurrentRolePermission, addRoles, updateRolePermissions, clearCurrentRolePermission } =
   rolePermissionSlice.actions;
 export default rolePermissionSlice.reducer;

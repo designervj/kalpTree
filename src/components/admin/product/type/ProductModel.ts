@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { MaterialBrandModel } from "../../brand/types/brandModel";
 import { MaterialCategory } from "../../category/types/CategoryModel";
 import { ProductVariant } from "@/modules/ecommerce/types";

@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface BlockManagerModel {
-  _id?: string| ObjectId;
-  id?:string;
+  _id?: string | ObjectId;
+  id?: string;
   label: string;
   category: string;
   content: string;

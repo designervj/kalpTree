@@ -1,23 +1,23 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { TranslationDictionary } from "@/components/editor/translation/TranslationPage";
 
 // WebsitePageModel interface for a website page document
 
 export interface CommentModel {
-	_id: string|ObjectId; // MongoDB ObjectId as string
-	comment:string;
-	
+  _id: string | ObjectId; // MongoDB ObjectId as string
+  comment: string;
+
 }
 
 export interface PageCommentModal {
-	_id?: string|ObjectId; // MongoDB ObjectId as string
-	component?:{
-		tagName:string;
-		content:string;		
-	}
-	allComments?:CommentModel[];
-	createdAt?:Date; // ISO date string
-	updatedAt?: Date; // ISO date string
+  _id?: string | ObjectId; // MongoDB ObjectId as string
+  component?: {
+    tagName: string;
+    content: string;
+  }
+  allComments?: CommentModel[];
+  createdAt?: Date; // ISO date string
+  updatedAt?: Date; // ISO date string
 }
 
 

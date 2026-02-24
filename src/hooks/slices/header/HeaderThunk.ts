@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { HeaderState } from "./HeaderSlice";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
 
 export const fetchHeaders = createAsyncThunk<

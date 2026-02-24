@@ -2,7 +2,7 @@
 import { Provider } from "react-redux";
 import { store } from "../store/store";
 import { useEffect } from "react";
-import { getSession } from "next-auth/react";
+import { getSession, SessionProvider } from "next-auth/react";
 import { setUser } from "@/hooks/slices/user/userSlice";
 
 export default function ReduxProvider({ children }: { children: React.ReactNode }) {
@@ -12,7 +12,7 @@ export default function ReduxProvider({ children }: { children: React.ReactNode 
     (async () => {
       try {
         const session = await getSession();
-       
+
         if (session?.user) {
           const mappedUser = {
             email: session.user.email,
@@ -48,5 +48,9 @@ export default function ReduxProvider({ children }: { children: React.ReactNode 
     })();
   }, []);
 
-  return <Provider store={store}>{children}</Provider>;
+  return (
+    <SessionProvider>
+      <Provider store={store}>{children}</Provider>
+    </SessionProvider>
+  );
 }

@@ -1,6 +1,6 @@
 import { PageSEOModel } from "@/components/admin/website_seo/PageSEOModel";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 // // PageSEO interface
 // export interface PageSEO {

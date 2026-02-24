@@ -1,7 +1,7 @@
 import { PageCommentModal, WebsitePageModel } from "@/components/admin/website/websitePage/WebsitePageType";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export const fetchWebsitePages = createAsyncThunk<
   WebsitePageModel[],

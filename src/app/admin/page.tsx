@@ -217,6 +217,7 @@ function PillButton({
    Page
 ------------------------------------------ */
 
+import BusinessPage from "../admin/websites/[website]/page";
 export default async function AdminIndex() {
   const session = await auth();
 
@@ -225,12 +226,18 @@ export default async function AdminIndex() {
     redirect("/auth/signin");
   }
 
+  console.log(session?.user);
+  
   return (
     <>
       <GetAllAgency />
       <GetAllBusiness />
       <GetAllWebsites />
-      <MinorComp sessionUser={session?.user} />
+     {session?.user &&
+     session?.user?.role != "business" ?
+      <MinorComp sessionUser={session?.user} /> : 
+      <BusinessPage/>
+      }
     </>
   );
 }

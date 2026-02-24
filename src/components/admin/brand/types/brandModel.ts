@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface MaterialBrandModel {
   id?: number;
@@ -8,6 +8,6 @@ export interface MaterialBrandModel {
   logo?: string;
   created_at?: string;
   updated_at?: string;
-    websiteId?: string | ObjectId;
-    tenantId?: string | ObjectId;
+  websiteId?: string | ObjectId;
+  tenantId?: string | ObjectId;
 }

@@ -1,7 +1,7 @@
-import { ObjectId } from "mongodb";
+import type { ObjectId } from "mongodb";
 
 export interface PageSEOModel {
-   
+
     // SEO Fields
     seo?: {
         title?: string;
