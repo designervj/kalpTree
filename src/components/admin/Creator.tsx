@@ -417,9 +417,10 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
     params.set("agencyid", curretAgency?._id?.toString() ?? "");
     params.set("businessid", currentBusiness?._id?.toString() ?? "");
     const primaryBusiness = currentWebsite?.primaryDomain?.[0] ?? null;
-    router.push(
-      `/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`,
-    );
+    router.back();
+    // router.push(
+    //   `/admin/websites/${primaryBusiness}/website/pages?${params.toString()}`,
+    // );
   };
 
   const onSubmit = (e: React.FormEvent) => {

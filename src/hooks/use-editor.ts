@@ -721,6 +721,43 @@ export function useEditor(containerId: string) {
           }
         });
 
+        // Register container types to ensure GrapesJS recognizes their attributes for DND
+        domc.addType("site-header", {
+          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'site-header' ? { type: 'site-header' } : false,
+          model: { defaults: { name: 'Header', draggable: false, droppable: true } }
+        });
+
+        domc.addType("site-footer", {
+          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'site-footer' ? { type: 'site-footer' } : false,
+          model: { defaults: { name: 'Footer', draggable: false, droppable: true } }
+        });
+
+        domc.addType("page-body", {
+          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'page-body' ? { type: 'page-body' } : false,
+          model: { defaults: { name: 'Page Body', draggable: false, droppable: true } }
+        });
+
+        // Register Section component type to prevent nesting
+        domc.addType("section", {
+          isComponent: (el: HTMLElement) => {
+            if (el.tagName === "SECTION") {
+              return { type: "section" };
+            }
+            return false;
+          },
+          model: {
+            defaults: {
+              name: "Section",
+              tagName: "section",
+              // Prevent other sections from being dropped inside this one
+              droppable: ":not(section)",
+              // Allow sections to be dropped into high-level containers
+              draggable: ':not(section)',
+              attributes: { class: "gjs-section" },
+            },
+          },
+        });
+
         domc.addType("form", {
           isComponent: (el: HTMLElement) => {
             if (el.tagName === 'FORM') {
