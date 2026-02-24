@@ -237,7 +237,9 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
   const { listAttributeSets } = useSelector(
     (state: RootState) => state.attributeSets,
   );
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
   const { listProduct, isProductLoading } = useSelector(
     (state: RootState) => state.product,
   );
@@ -511,7 +513,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
 
     try {
       const req = await fetch(
-        `/api/admin/product?tenantId=${currentWebsite?.tenantId}&websiteId=${currentWebsite?._id}`,
+        `/api/admin/product?tenantId=${currentBusiness?.tenantId}`,
         {
           method: "POST",
           body: JSON.stringify(finalObj),
@@ -544,8 +546,9 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
       name: "",
       icon: "",
       sort_order: 0,
-      websiteId: currentWebsite?._id,
-      tenantId: user?.tenantId,
+      // need to change category handling
+      websiteId: currentBusiness?._id,
+      tenantId: currentBusiness?._id,
       parentCategoryId: "",
     });
     setFieldErrors({});

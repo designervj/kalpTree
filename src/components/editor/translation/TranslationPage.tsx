@@ -146,8 +146,6 @@ export default function TranslationEditor({
 }: TranslationEditorProps) {
   const originalHtmlRef = React.useRef<string>(editorHtml ?? "");
   const isOwnUpdate = React.useRef(false);
-
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
 
@@ -301,47 +299,6 @@ export default function TranslationEditor({
     historyIndex,
   ]);
 
-  // const handleConvertAllWithAI = async () => {
-  //   try {
-  //     const finalData = {
-  //       sample_dictionary: sample_dictionary,
-  //       parsedTexts,
-  //       lang: websiteLangs,
-  //       apiKey: currentLLMSetting.secreteKey,
-  //       model: currentLLMSetting.model,
-  //     };
-
-  //     const array = parsedTexts.map((d: any) => d.text);
-  //     const finalText = [...new Set(array)];
-
-  //     console.log(finalText);
-
-  //     const req = await fetch("/api/admin/llm/translator", {
-  //       method: "POST",
-  //       body: JSON.stringify(finalData),
-  //     });
-
-  //     const res = await req.json();
-
-  //     if (res.success) {
-  //       const parseObj = JSON.parse(res.data);
-  //       console.log("=====>>>",parseObj)
-  //       const innerreq = await fetch(`/api/pages/${page?._id}`, {
-  //         method: "PUT",
-  //         body: JSON.stringify(parseObj),
-  //       });
-  //       const innerRes = await innerreq.json();
-
-  //       if (innerRes.success) {
-  //         setDictionary(parseObj);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     toast.error(String(error));
-  //   }
-  // };
-
-  // ── Discard ──
 
   const handleConvertAllWithAI = async () => {
     if (isConverting) return;

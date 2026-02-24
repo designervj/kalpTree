@@ -70,9 +70,15 @@ type HeaderUiStyle = {
 const FONT_OPTIONS = [
   { label: "Inter", value: "Inter, ui-sans-serif, system-ui, sans-serif" },
   { label: "Poppins", value: "Poppins, ui-sans-serif, system-ui, sans-serif" },
-  { label: "Montserrat", value: "Montserrat, ui-sans-serif, system-ui, sans-serif" },
+  {
+    label: "Montserrat",
+    value: "Montserrat, ui-sans-serif, system-ui, sans-serif",
+  },
   { label: "Roboto", value: "Roboto, ui-sans-serif, system-ui, sans-serif" },
-  { label: "Open Sans", value: "'Open Sans', ui-sans-serif, system-ui, sans-serif" },
+  {
+    label: "Open Sans",
+    value: "'Open Sans', ui-sans-serif, system-ui, sans-serif",
+  },
   { label: "Lora", value: "Lora, Georgia, serif" },
 ];
 
@@ -81,9 +87,9 @@ const isValidHexColor = (value: string) =>
 
 const ShowCurrentHeader = () => {
   const { websiteHeader, hasFetched } = useSelector(
-    (state: RootState) => state.header
+    (state: RootState) => state.header,
   );
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   const { curretAgency } = useSelector((state: RootState) => state.agency);
 
@@ -104,14 +110,16 @@ const ShowCurrentHeader = () => {
     );
   };
 
-  const updateHeaderStyle = (headerId: string, patch: Partial<HeaderUiStyle>) => {
+  const updateHeaderStyle = (
+    headerId: string,
+    patch: Partial<HeaderUiStyle>,
+  ) => {
     setHeaderStyleMap((prev) => {
-      const current =
-        prev[headerId] || {
-          titleColor: UI_THEME.colors.title,
-          subtitleColor: UI_THEME.colors.subtitle,
-          fontFamily: UI_THEME.fonts.primary,
-        };
+      const current = prev[headerId] || {
+        titleColor: UI_THEME.colors.title,
+        subtitleColor: UI_THEME.colors.subtitle,
+        fontFamily: UI_THEME.fonts.primary,
+      };
 
       return {
         ...prev,
@@ -130,13 +138,13 @@ const ShowCurrentHeader = () => {
       setPageEdit({
         page: header,
         type: "header",
-      })
+      }),
     );
 
     window.open(
       `/header?id=${header._id.toString()}&websiteId=${header.websiteId.toString()}`,
       "_blank",
-      "noopener,noreferrer"
+      "noopener,noreferrer",
     );
   };
 
@@ -152,7 +160,7 @@ const ShowCurrentHeader = () => {
     if (!header._id) return;
 
     router.push(
-      `/admin/websites/${currentWebsite?.primaryDomain?.[0]}/website/header/${header._id.toString()}?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`
+      `/admin/websites/${currentBusiness?.website?.primaryDomain?.[0]}/website/header/${header._id.toString()}?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`,
     );
   };
 
@@ -202,7 +210,7 @@ const ShowCurrentHeader = () => {
     <div className="space-y-6">
       {websiteHeader.map((header: TemplateDocument, index: number) => {
         const domain =
-          currentWebsite?.primaryDomain?.[0] ||
+          currentBusiness?.website?.primaryDomain?.[0] ||
           header?.websiteId?.toString() ||
           "website-domain";
 

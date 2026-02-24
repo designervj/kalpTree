@@ -9,20 +9,23 @@ import { savePageThunk } from "./slices/pageEditSlice";
 import { toast } from "sonner";
 import { updateFooter } from "./slices/footer/FooterThunk";
 import { updateHeader } from "./slices/header/HeaderThunk";
-import { createCanvasStyleString, extractFontLinks } from "@/utils/extract-css-variables";
+import {
+  createCanvasStyleString,
+  extractFontLinks,
+} from "@/utils/extract-css-variables";
 import { extractHtmlParts as extractParts } from "@/lib/utils";
-
 
 import {
   handleInteractivityChange,
   getGlobalInteractivityScript,
-  syncInteractivityScript,
 } from "@/hooks/editor-interactivity";
-import { openAddSectionModal } from "@/components/editor/utils/AddSectionModal";
+
 import { defaultBlocks } from "../../utils/block-library";
-import { applyHoverableRestriction, isComponentUnderSection } from "@/components/editor/utils/ApplyHoverableRestriction";
-import { Website } from "@/components/admin/AppShell";
-import { updateCurrentWebsiteGlobalStyle } from "./slices/websites/WebsiteSlice";
+import {
+  applyHoverableRestriction,
+  isComponentUnderSection,
+} from "@/components/editor/utils/ApplyHoverableRestriction";
+
 import { addComponentAboveFooter } from "@/components/editor/utils/InsertionUtils";
 import { cleanupComponentStylesAndScripts } from "@/components/editor/utils/CleanupComponentStylesAndScripts";
 import { generateGlobalStyleContent } from "@/components/editor/utils/generateGlobalStyleContent";
@@ -31,16 +34,12 @@ import { GrapesJSEditor } from "@/components/editor/GrapeJsType";
 /**
  * Generates the full CSS content for global styles, including variables and base rules.
  */
-;
-
 // Extend HTMLElement to include event handlers storage
 declare global {
   interface HTMLElement {
     __eventHandlers?: Record<string, EventListener>;
   }
 }
-
-
 
 // Update your EditorState interface in types/editor.ts to include editorJs
 // If you can't modify that file directly, you can extend it here:
@@ -50,7 +49,6 @@ interface ExtendedEditorState extends EditorState {
 
 export function useEditor(containerId: string) {
   const editorRef = useRef<GrapesJSEditor | null>(null);
-
 
   const [state, setState] = useState<ExtendedEditorState>({
     editor: null,
@@ -85,37 +83,40 @@ export function useEditor(containerId: string) {
         display: "block",
       },
     },
-
   });
 
+  const dispatch = useDispatch<AppDispatch>();
+  const { page, type } = useSelector((state: RootState) => state.pageEdit);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
-  const dispatch = useDispatch<AppDispatch>()
-  const { page, type } = useSelector((state: RootState) => state.pageEdit)
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const { style: globalStyleData } = useSelector((state: RootState) => state.globalStyle);
+  const { style: globalStyleData } = useSelector(
+    (state: RootState) => state.globalStyle,
+  );
 
   const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isCommentsOpen, setIsCommentsOpen] = useState(false);
-  const [selectedComponentForAi, setSelectedComponentForAi] = useState<any>(null);
+  const [selectedComponentForAi, setSelectedComponentForAi] =
+    useState<any>(null);
   const [editForm, setEditForm] = useState<any>(null);
 
   // Handle messages from GrapesJS modals (e.g., adding a section)
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (typeof event.data !== 'object' || !event.data.type) return;
+      if (typeof event.data !== "object" || !event.data.type) return;
 
       const { type, index, template } = event.data;
 
-      if (type === 'ADD_SECTION' && editorRef.current) {
+      if (type === "ADD_SECTION" && editorRef.current) {
         console.log(`➕ Adding ${template} section at index ${index}`);
 
-        let content: any = '<section class="py-16 bg-gray-50"><div class="container mx-auto px-4 max-w-6xl">New Section</div></section>';
+        let content: any =
+          '<section class="py-16 bg-gray-50"><div class="container mx-auto px-4 max-w-6xl">New Section</div></section>';
 
-        if (template === 'basic') {
-          const block = defaultBlocks.find(b => b.id === 'section');
+        if (template === "basic") {
+          const block = defaultBlocks.find((b) => b.id === "section");
           if (block) content = block.content;
-        } else if (template === 'feature') {
-          const block = defaultBlocks.find(b => b.id === 'cta');
+        } else if (template === "feature") {
+          const block = defaultBlocks.find((b) => b.id === "cta");
           if (block) content = block.content;
         }
 
@@ -123,7 +124,9 @@ export function useEditor(containerId: string) {
         if (wrapper) {
           wrapper.append(content, { at: index });
           editorRef.current.Modal.close();
-          toast.success(`${template.charAt(0).toUpperCase() + template.slice(1)} section added!`);
+          toast.success(
+            `${template.charAt(0).toUpperCase() + template.slice(1)} section added!`,
+          );
         }
       }
     };
@@ -133,19 +136,39 @@ export function useEditor(containerId: string) {
   }, [state.editor]);
 
   // Inject styles into canvas iframe
-  const injectCanvasStyles = (editor: any, pageContent?: string, globalStyle?: string, retryCount = 0): void => {
-    console.log("🔍 injectCanvasStyles called with globalStyle:", globalStyle ? "YES (length: " + globalStyle.length + ")" : "NO/UNDEFINED")
+  const injectCanvasStyles = (
+    editor: any,
+    pageContent?: string,
+    globalStyle?: string,
+    retryCount = 0,
+  ): void => {
+    console.log(
+      "🔍 injectCanvasStyles called with globalStyle:",
+      globalStyle ? "YES (length: " + globalStyle.length + ")" : "NO/UNDEFINED",
+    );
     if (globalStyle) {
-      console.log("📄 Global Style Content Preview:", globalStyle.substring(0, 100) + "...");
+      console.log(
+        "📄 Global Style Content Preview:",
+        globalStyle.substring(0, 100) + "...",
+      );
     }
     const MAX_RETRIES = 3;
     const frame = editor.Canvas?.getFrameEl?.();
     const doc = frame?.contentDocument;
 
     if (!doc) {
-      console.warn('Canvas iframe not available');
+      console.warn("Canvas iframe not available");
       if (retryCount < MAX_RETRIES) {
-        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+        setTimeout(
+          () =>
+            injectCanvasStyles(
+              editor,
+              pageContent,
+              globalStyle,
+              retryCount + 1,
+            ),
+          200,
+        );
       }
       return;
     }
@@ -153,30 +176,45 @@ export function useEditor(containerId: string) {
     const root = doc.documentElement;
     if (root && !root.getAttribute("data-theme")) {
       root.setAttribute("data-theme", "light");
-      console.log('✅ Canvas data-theme set to light');
+      console.log("✅ Canvas data-theme set to light");
     }
 
     if (!doc.head || !doc.body) {
-      console.warn('Canvas iframe head/body not ready');
+      console.warn("Canvas iframe head/body not ready");
       if (retryCount < MAX_RETRIES) {
-        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+        setTimeout(
+          () =>
+            injectCanvasStyles(
+              editor,
+              pageContent,
+              globalStyle,
+              retryCount + 1,
+            ),
+          200,
+        );
       }
       return;
     }
 
     // Check readyState
-    if (doc.readyState === 'loading') {
-      console.log('Waiting for iframe DOMContentLoaded...');
-      doc.addEventListener('DOMContentLoaded', () => {
-        injectCanvasStyles(editor, pageContent, globalStyle, retryCount);
-      }, { once: true });
+    if (doc.readyState === "loading") {
+      console.log("Waiting for iframe DOMContentLoaded...");
+      doc.addEventListener(
+        "DOMContentLoaded",
+        () => {
+          injectCanvasStyles(editor, pageContent, globalStyle, retryCount);
+        },
+        { once: true },
+      );
       return;
     }
 
     try {
       // Remove existing custom styles
       doc.querySelector('[data-root-vars="true"]')?.remove();
-      doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+      doc
+        .querySelectorAll('[data-font="true"]')
+        .forEach((el: Element) => el.remove());
       doc.querySelector('[data-tailwind="true"]')?.remove();
 
       // Inject Lucide Icons for icon hydration - avoid redundant reloads
@@ -219,7 +257,7 @@ export function useEditor(containerId: string) {
 
         gStyle.innerHTML = generateGlobalStyleContent(vars);
         doc.head.appendChild(gStyle);
-        console.log('✅ Global styles injected');
+        console.log("✅ Global styles injected");
       }
 
       if (pageContent) {
@@ -227,7 +265,9 @@ export function useEditor(containerId: string) {
         const style = doc.createElement("style");
         style.setAttribute("data-root-vars", "true");
         const styleString = createCanvasStyleString(pageContent);
-        style.innerHTML = globalStyle ? styleString.replace(/:root\s*{[\s\S]*?}/g, '') : styleString;
+        style.innerHTML = globalStyle
+          ? styleString.replace(/:root\s*{[\s\S]*?}/g, "")
+          : styleString;
         doc.head.appendChild(style);
 
         // Inject font links
@@ -239,9 +279,9 @@ export function useEditor(containerId: string) {
           doc.head.appendChild(link);
         });
 
-        console.log('✅ Canvas styles, fonts, and Tailwind CSS injected');
+        console.log("✅ Canvas styles, fonts, and Tailwind CSS injected");
       } else {
-        console.log('✅ Tailwind CSS injected');
+        console.log("✅ Tailwind CSS injected");
       }
 
       // Inject Floating Add Section Button Styles
@@ -281,9 +321,18 @@ export function useEditor(containerId: string) {
       `;
       doc.head.appendChild(addSectionStyle);
     } catch (error) {
-      console.error('❌ Error injecting canvas styles:', error);
+      console.error("❌ Error injecting canvas styles:", error);
       if (retryCount < MAX_RETRIES) {
-        setTimeout(() => injectCanvasStyles(editor, pageContent, globalStyle, retryCount + 1), 200);
+        setTimeout(
+          () =>
+            injectCanvasStyles(
+              editor,
+              pageContent,
+              globalStyle,
+              retryCount + 1,
+            ),
+          200,
+        );
       }
     }
   };
@@ -300,15 +349,15 @@ export function useEditor(containerId: string) {
         const doc = frame?.contentDocument;
 
         // Check if document is fully ready
-        if (doc && doc.readyState !== 'loading' && doc.head && doc.body) {
-          console.log('✅ Iframe fully loaded');
+        if (doc && doc.readyState !== "loading" && doc.head && doc.body) {
+          console.log("✅ Iframe fully loaded");
           resolve();
           return;
         }
 
         if (attempts >= maxAttempts) {
-          console.error('❌ Iframe failed to load within timeout');
-          reject(new Error('Iframe loading timeout'));
+          console.error("❌ Iframe failed to load within timeout");
+          reject(new Error("Iframe loading timeout"));
           return;
         }
 
@@ -371,7 +420,8 @@ export function useEditor(containerId: string) {
           plugins: [
             gjsPresetWebpage.default,
             gjsBlocksBasic.default,
-            gjsScriptEditor.default,],
+            gjsScriptEditor.default,
+          ],
           pluginsOpts: {
             [String(gjsPresetWebpage.default)]: {
               exportOpts: {},
@@ -397,12 +447,16 @@ export function useEditor(containerId: string) {
         // Add JS fallback methods if not present
         if (typeof (editor as any).setJs !== "function") {
           (editor as any).setJs = (js: string) => {
-            console.log("Setting JS in editor:", js ? js.substring(0, 50) + "..." : "empty");
+            console.log(
+              "Setting JS in editor:",
+              js ? js.substring(0, 50) + "..." : "empty",
+            );
             const wrapper = editor.Components.getWrapper();
             if (!wrapper) return;
 
             // Search for existing custom script component by ID or type
-            let script = wrapper.find('#interactivity-engine')[0] ||
+            let script =
+              wrapper.find("#interactivity-engine")[0] ||
               wrapper.find('script[data-gjs-type="custom-script"]')[0];
 
             if (!script) {
@@ -410,7 +464,10 @@ export function useEditor(containerId: string) {
               const added = wrapper.append({
                 tagName: "script",
                 type: "custom-script",
-                attributes: { id: "interactivity-engine", "data-gjs-type": "custom-script" },
+                attributes: {
+                  id: "interactivity-engine",
+                  "data-gjs-type": "custom-script",
+                },
                 content: js,
                 selectable: false,
                 hoverable: false,
@@ -425,7 +482,7 @@ export function useEditor(containerId: string) {
             }
 
             // Explicitly sync to state to ensure UI updates
-            setState(prev => ({ ...prev, editorJs: js }));
+            setState((prev) => ({ ...prev, editorJs: js }));
           };
         }
 
@@ -434,7 +491,8 @@ export function useEditor(containerId: string) {
             const wrapper = editor.Components.getWrapper();
             if (!wrapper) return "";
 
-            const script = wrapper.find('#interactivity-engine')[0] ||
+            const script =
+              wrapper.find("#interactivity-engine")[0] ||
               wrapper.find('script[data-gjs-type="custom-script"]')[0];
 
             return script?.get("content") || "";
@@ -446,18 +504,19 @@ export function useEditor(containerId: string) {
           if (!isMounted) return;
 
           try {
-
-
             // Get frames using GrapesJS API (if available)
             try {
-              if (editor.Canvas && typeof editor.Canvas.getFrames === 'function') {
+              if (
+                editor.Canvas &&
+                typeof editor.Canvas.getFrames === "function"
+              ) {
                 const frames = editor.Canvas.getFrames();
-                console.log('📊 Frames available:', frames?.length || 0);
+                console.log("📊 Frames available:", frames?.length || 0);
               } else {
-                console.log('📊 getFrames() not available, using fallback');
+                console.log("📊 getFrames() not available, using fallback");
               }
             } catch (frameError) {
-              console.warn('⚠️ Could not get frames:', frameError);
+              console.warn("⚠️ Could not get frames:", frameError);
             }
 
             // Wait for iframe to be ready
@@ -466,22 +525,21 @@ export function useEditor(containerId: string) {
 
             // Load page content if available
             if (page?.content) {
-              console.log('📄 Loading page content into editor');
+              console.log("📄 Loading page content into editor");
               try {
                 editor.setComponents(page.content);
               } catch (error) {
-                console.error('❌ Error setting components:', error);
+                console.error("❌ Error setting components:", error);
               }
             }
 
             // Small delay to let components render
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 100));
 
             // Inject canvas styles
             console.log("🚀 Triggering injectCanvasStyles...");
 
-            // Try to get global style from currentWebsite or fallback to globalStyle slice
-            let styleToInject = currentWebsite?.globalStyle;
+            let styleToInject = currentBusiness?.website?.globalStyle;
 
             if (!styleToInject) {
               // Find the style for the current tenant or just use the first one if only one exist
@@ -502,9 +560,16 @@ export function useEditor(containerId: string) {
             // Get blocks
             try {
               const blockManager = editor.BlockManager;
-              if (blockManager && blockManager.getAll && typeof blockManager.getAll === 'function') {
+              if (
+                blockManager &&
+                blockManager.getAll &&
+                typeof blockManager.getAll === "function"
+              ) {
                 const allBlocks = blockManager.getAll();
-                console.log('📦 Block Manager - Total blocks found:', allBlocks?.models?.length || 0);
+                console.log(
+                  "📦 Block Manager - Total blocks found:",
+                  allBlocks?.models?.length || 0,
+                );
 
                 if (allBlocks && allBlocks.models) {
                   const blockList = allBlocks.models.map((block: any) => {
@@ -514,7 +579,10 @@ export function useEditor(containerId: string) {
                       const blockCategory = block.attributes.category;
                       if (typeof blockCategory === "string") {
                         category = blockCategory;
-                      } else if (blockCategory && typeof blockCategory === "object") {
+                      } else if (
+                        blockCategory &&
+                        typeof blockCategory === "object"
+                      ) {
                         // Try to get the label or name property
                         category =
                           blockCategory.label ||
@@ -556,7 +624,7 @@ export function useEditor(containerId: string) {
                   // Update layers
                   updateLayers(editor as unknown as GrapesJSEditor);
                 } else {
-                  console.warn('Block models not available');
+                  console.warn("Block models not available");
                   setState((prev) => ({
                     ...prev,
                     editor,
@@ -564,7 +632,7 @@ export function useEditor(containerId: string) {
                   }));
                 }
               } else {
-                console.warn('BlockManager or getAll method not available');
+                console.warn("BlockManager or getAll method not available");
                 setState((prev) => ({
                   ...prev,
                   editor,
@@ -572,7 +640,7 @@ export function useEditor(containerId: string) {
                 }));
               }
             } catch (blockError) {
-              console.error('Error loading blocks:', blockError);
+              console.error("Error loading blocks:", blockError);
               setState((prev) => ({
                 ...prev,
                 editor,
@@ -580,13 +648,12 @@ export function useEditor(containerId: string) {
               }));
             }
 
-            console.log('✅ Editor fully initialized');
+            console.log("✅ Editor fully initialized");
           } catch (error) {
-            console.error('❌ Error in load event:', error);
+            console.error("❌ Error in load event:", error);
             setState((prev) => ({ ...prev, isLoading: false }));
           }
         });
-
 
         const domc = editor.DomComponents;
         const bm = editor.BlockManager;
@@ -595,8 +662,8 @@ export function useEditor(containerId: string) {
         // Register custom component types for form children to prevent selection
         domc.addType("form-input", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'INPUT' && el.closest('form')) {
-              return { type: 'form-input' };
+            if (el.tagName === "INPUT" && el.closest("form")) {
+              return { type: "form-input" };
             }
             return false;
           },
@@ -610,14 +677,14 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         domc.addType("form-textarea", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'TEXTAREA' && el.closest('form')) {
-              return { type: 'form-textarea' };
+            if (el.tagName === "TEXTAREA" && el.closest("form")) {
+              return { type: "form-textarea" };
             }
             return false;
           },
@@ -631,14 +698,14 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         domc.addType("form-select", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'SELECT' && el.closest('form')) {
-              return { type: 'form-select' };
+            if (el.tagName === "SELECT" && el.closest("form")) {
+              return { type: "form-select" };
             }
             return false;
           },
@@ -652,14 +719,14 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         domc.addType("form-label", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'LABEL' && el.closest('form')) {
-              return { type: 'form-label' };
+            if (el.tagName === "LABEL" && el.closest("form")) {
+              return { type: "form-label" };
             }
             return false;
           },
@@ -673,15 +740,15 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         // Add form-div component type to make divs inside forms non-selectable
         domc.addType("form-div", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'DIV' && el.closest('form')) {
-              return { type: 'form-div' };
+            if (el.tagName === "DIV" && el.closest("form")) {
+              return { type: "form-div" };
             }
             return false;
           },
@@ -695,15 +762,15 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         // Add form-button component type
         domc.addType("form-button", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'BUTTON' && el.closest('form')) {
-              return { type: 'form-button' };
+            if (el.tagName === "BUTTON" && el.closest("form")) {
+              return { type: "form-button" };
             }
             return false;
           },
@@ -717,24 +784,39 @@ export function useEditor(containerId: string) {
               layerable: false,
               highlightable: false,
               badgable: false,
-            }
-          }
+            },
+          },
         });
 
         // Register container types to ensure GrapesJS recognizes their attributes for DND
         domc.addType("site-header", {
-          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'site-header' ? { type: 'site-header' } : false,
-          model: { defaults: { name: 'Header', draggable: false, droppable: true } }
+          isComponent: (el: HTMLElement) =>
+            el.getAttribute?.("data-gjs-type") === "site-header"
+              ? { type: "site-header" }
+              : false,
+          model: {
+            defaults: { name: "Header", draggable: false, droppable: true },
+          },
         });
 
         domc.addType("site-footer", {
-          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'site-footer' ? { type: 'site-footer' } : false,
-          model: { defaults: { name: 'Footer', draggable: false, droppable: true } }
+          isComponent: (el: HTMLElement) =>
+            el.getAttribute?.("data-gjs-type") === "site-footer"
+              ? { type: "site-footer" }
+              : false,
+          model: {
+            defaults: { name: "Footer", draggable: false, droppable: true },
+          },
         });
 
         domc.addType("page-body", {
-          isComponent: (el: HTMLElement) => el.getAttribute?.('data-gjs-type') === 'page-body' ? { type: 'page-body' } : false,
-          model: { defaults: { name: 'Page Body', draggable: false, droppable: true } }
+          isComponent: (el: HTMLElement) =>
+            el.getAttribute?.("data-gjs-type") === "page-body"
+              ? { type: "page-body" }
+              : false,
+          model: {
+            defaults: { name: "Page Body", draggable: false, droppable: true },
+          },
         });
 
         // Register Section component type to prevent nesting
@@ -752,7 +834,7 @@ export function useEditor(containerId: string) {
               // Prevent other sections from being dropped inside this one
               droppable: ":not(section)",
               // Allow sections to be dropped into high-level containers
-              draggable: ':not(section)',
+              draggable: ":not(section)",
               attributes: { class: "gjs-section" },
             },
           },
@@ -760,53 +842,65 @@ export function useEditor(containerId: string) {
 
         domc.addType("form", {
           isComponent: (el: HTMLElement) => {
-            if (el.tagName === 'FORM') {
-              return { type: 'form' };
+            if (el.tagName === "FORM") {
+              return { type: "form" };
             }
             return false;
           },
           model: {
             defaults: {
-              name: 'Form',
+              name: "Form",
               tagName: "form",
-              droppable: ':not(form)',
-              draggable: ':not(form)',
+              droppable: ":not(form)",
+              draggable: ":not(form)",
               attributes: { class: "gjs-form" },
               traits: [
                 {
-                  type: 'text',
-                  name: 'action',
-                  label: 'Action',
+                  type: "text",
+                  name: "action",
+                  label: "Action",
                 },
                 {
-                  type: 'select',
-                  name: 'method',
-                  label: 'Method',
+                  type: "select",
+                  name: "method",
+                  label: "Method",
                   options: [
-                    { id: 'get', value: 'get', name: 'GET' },
-                    { id: 'post', value: 'post', name: 'POST' },
+                    { id: "get", value: "get", name: "GET" },
+                    { id: "post", value: "post", name: "POST" },
                   ],
                 },
                 {
-                  type: 'select',
-                  name: 'enctype',
-                  label: 'Encoding',
+                  type: "select",
+                  name: "enctype",
+                  label: "Encoding",
                   options: [
-                    { id: 'application/x-www-form-urlencoded', value: 'application/x-www-form-urlencoded', name: 'URL Encoded' },
-                    { id: 'multipart/form-data', value: 'multipart/form-data', name: 'Multipart' },
-                    { id: 'text/plain', value: 'text/plain', name: 'Text Plain' },
+                    {
+                      id: "application/x-www-form-urlencoded",
+                      value: "application/x-www-form-urlencoded",
+                      name: "URL Encoded",
+                    },
+                    {
+                      id: "multipart/form-data",
+                      value: "multipart/form-data",
+                      name: "Multipart",
+                    },
+                    {
+                      id: "text/plain",
+                      value: "text/plain",
+                      name: "Text Plain",
+                    },
                   ],
-                }
-              ]
+                },
+              ],
             },
             init() {
               // Recursively disable selection on all children when form is initialized
-              this.on('component:add', (component: any) => {
+              this.on("component:add", (component: any) => {
                 this.disableChildrenSelection(component);
               });
 
               // Disable selection on existing children
-              this.get('components')?.forEach((child: any) => {
+              this.get("components")?.forEach((child: any) => {
                 this.disableChildrenSelection(child);
               });
             },
@@ -826,13 +920,13 @@ export function useEditor(containerId: string) {
               });
 
               // Recursively disable children
-              const children = component.get('components');
+              const children = component.get("components");
               if (children && children.length > 0) {
                 children.forEach((child: any) => {
                   this.disableChildrenSelection(child);
                 });
               }
-            }
+            },
           },
           view: {
             events: {
@@ -841,22 +935,24 @@ export function useEditor(containerId: string) {
             onRender() {
               if (this.el) {
                 // Disable all form inputs at DOM level
-                const inputs = this.el.querySelectorAll('input, textarea, select, button');
+                const inputs = this.el.querySelectorAll(
+                  "input, textarea, select, button",
+                );
                 inputs.forEach((input) => {
                   (input as any).disabled = true;
-                  (input as HTMLElement).style.pointerEvents = 'none';
-                  (input as HTMLElement).style.userSelect = 'none';
+                  (input as HTMLElement).style.pointerEvents = "none";
+                  (input as HTMLElement).style.userSelect = "none";
                 });
 
                 // Make all children non-selectable via CSS
-                const allChildren = this.el.querySelectorAll('*');
+                const allChildren = this.el.querySelectorAll("*");
                 allChildren.forEach((child) => {
-                  (child as HTMLElement).style.pointerEvents = 'none';
-                  (child as HTMLElement).style.userSelect = 'none';
+                  (child as HTMLElement).style.pointerEvents = "none";
+                  (child as HTMLElement).style.userSelect = "none";
                 });
               }
             },
-          }
+          },
         });
 
         domc.addType("product-list", {
@@ -916,7 +1012,7 @@ export function useEditor(containerId: string) {
               };
               this.on(
                 "change:apiUrl change:collection change:limit change:layout",
-                updateFromTraits
+                updateFromTraits,
               );
             },
           },
@@ -956,24 +1052,24 @@ export function useEditor(containerId: string) {
               return `
         <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
           ${products
-                  .slice(0, limit)
-                  .map(
-                    (p: any) => `
+            .slice(0, limit)
+            .map(
+              (p: any) => `
             <div class="product-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; text-align: center;">
               <img src="${p.thumbnail}" alt="${p.title}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 12px;">
               <h3 style="font-size: 16px; margin: 8px 0;">${p.title}</h3>
               <p style="color: #666; margin: 4px 0; font-size: 14px;">$${p.price}</p>
             </div>
-          `
-                  )
-                  .join("")}
+          `,
+            )
+            .join("")}
         </div>
       `;
             },
 
             async updateProducts(category: string) {
               const productsContainer = this.el.querySelector(
-                ".products-container"
+                ".products-container",
               );
               if (!productsContainer) return;
 
@@ -993,19 +1089,21 @@ export function useEditor(containerId: string) {
         <div style="font-family: Arial, sans-serif;">
           <div class="category-tabs" style="display: flex; gap: 8px; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px;">
             ${this.categories
-                  .map(
-                    (cat: string) => `
+              .map(
+                (cat: string) => `
               <button 
                 class="tab-btn" 
                 data-category="${cat}"
                 style="
                   padding: 12px 24px;
-                  background: ${cat === this.activeCategory ? "#007bff" : "transparent"
-                      };
+                  background: ${
+                    cat === this.activeCategory ? "#007bff" : "transparent"
+                  };
                   color: ${cat === this.activeCategory ? "white" : "#333"};
                   border: none;
-                  border-bottom: 3px solid ${cat === this.activeCategory ? "#007bff" : "transparent"
-                      };
+                  border-bottom: 3px solid ${
+                    cat === this.activeCategory ? "#007bff" : "transparent"
+                  };
                   cursor: pointer;
                   font-size: 14px;
                   text-transform: capitalize;
@@ -1014,9 +1112,9 @@ export function useEditor(containerId: string) {
               >
                 ${cat}
               </button>
-            `
-                  )
-                  .join("")}
+            `,
+              )
+              .join("")}
           </div>
           <div class="products-container">
             <div style="text-align: center; padding: 40px;">Loading products...</div>
@@ -1069,8 +1167,6 @@ export function useEditor(containerId: string) {
             type: "product-list",
           },
         });
-
-
       } catch (error) {
         console.error("Error initializing GrapesJS:", error);
         setState((prev) => ({ ...prev, isLoading: false }));
@@ -1086,7 +1182,6 @@ export function useEditor(containerId: string) {
   }, [containerId]); // Only re-initialize when container changes
 
   // Function to clean up styles and scripts when a component is deleted
-
 
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
@@ -1108,7 +1203,9 @@ export function useEditor(containerId: string) {
       };
 
       // Tag name or type check for section
-      const isSection = component?.get?.('tagName') === 'section' || component?.get?.('type') === 'section';
+      const isSection =
+        component?.get?.("tagName") === "section" ||
+        component?.get?.("type") === "section";
 
       if (isSection) {
         const el = component.getEl();
@@ -1118,9 +1215,9 @@ export function useEditor(containerId: string) {
         removeBtn();
 
         // Inject button styles once into the iframe head
-        const STYLE_ID = 'gjs-add-section-style';
+        const STYLE_ID = "gjs-add-section-style";
         if (!doc.getElementById(STYLE_ID)) {
-          const styleEl = doc.createElement('style');
+          const styleEl = doc.createElement("style");
           styleEl.id = STYLE_ID;
           styleEl.textContent = `
             .gjs-add-section-btn {
@@ -1152,41 +1249,42 @@ export function useEditor(containerId: string) {
         }
 
         // Measure the real visible width of the iframe
-        const docWidth = doc.documentElement.clientWidth || doc.body.clientWidth || 800;
+        const docWidth =
+          doc.documentElement.clientWidth || doc.body.clientWidth || 800;
         const scrollY = doc.defaultView?.scrollY || 0;
         const rect = el.getBoundingClientRect();
 
         // Wrapper: absolutely centered across the full document width
-        const wrapper = doc.createElement('div');
+        const wrapper = doc.createElement("div");
         Object.assign(wrapper.style, {
-          position: 'absolute',
+          position: "absolute",
           top: `${rect.bottom + scrollY}px`,
-          left: '0',
+          left: "0",
           width: `${docWidth}px`,
-          height: '0px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          pointerEvents: 'none',
-          zIndex: '9999',
+          height: "0px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          pointerEvents: "none",
+          zIndex: "9999",
         });
 
         // Horizontal divider line (full width behind the button)
-        const line = doc.createElement('div');
+        const line = doc.createElement("div");
         Object.assign(line.style, {
-          position: 'absolute',
-          top: '50%',
-          left: '0',
-          right: '0',
-          height: '2px',
-          background: '#4F6EF7',
-          transform: 'translateY(-50%)',
+          position: "absolute",
+          top: "50%",
+          left: "0",
+          right: "0",
+          height: "2px",
+          background: "#4F6EF7",
+          transform: "translateY(-50%)",
         });
 
         // The pill button
-        const btn = doc.createElement('button');
-        btn.className = 'gjs-add-section-btn';
-        btn.style.pointerEvents = 'all';
+        const btn = doc.createElement("button");
+        btn.className = "gjs-add-section-btn";
+        btn.style.pointerEvents = "all";
         btn.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -1202,7 +1300,10 @@ export function useEditor(containerId: string) {
         btn.onclick = (e) => {
           e.stopPropagation();
           const targetIndex = component.index() + 1;
-          window.parent.postMessage({ type: 'OPEN_TEMPLATE_MANAGER', index: targetIndex }, '*');
+          window.parent.postMessage(
+            { type: "OPEN_TEMPLATE_MANAGER", index: targetIndex },
+            "*",
+          );
         };
 
         doc.body.appendChild(addSectionBtn);
@@ -1219,63 +1320,67 @@ export function useEditor(containerId: string) {
     });
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component.nes s --->", component)
+      console.log("component.nes s --->", component);
 
-      if (component?.attributes?.tagName === 'form') {
-        console.log("form selected")
+      if (component?.attributes?.tagName === "form") {
+        console.log("form selected");
         // how to know the child of form
         const componentHtml = component.toHTML();
 
         //editForm
-        setEditForm(componentHtml)
-
-      } else if (component?.attributes?.tagName === 'header') {
-        console.log("header selected")
+        setEditForm(componentHtml);
+      } else if (component?.attributes?.tagName === "header") {
+        console.log("header selected");
         // const componentHtml = component.toHTML();
         // setEditForm(componentHtml)
       } else {
-        setEditForm(null)
+        setEditForm(null);
       }
       // Validate component exists before processing
       if (!component) {
-        console.warn('component:selected fired with no component');
+        console.warn("component:selected fired with no component");
         return;
       }
 
       // Get the hierarchy path to auto-expand parent layers
       const hierarchy = getComponentHierarchy(component);
-      console.log('Component hierarchy for auto-expand:', hierarchy);
+      console.log("Component hierarchy for auto-expand:", hierarchy);
 
       setState((prev) => ({
         ...prev,
         selectedElement: component,
         autoExpandedLayers: hierarchy, // Expand all parents
-        selectedLayerId: typeof component.getId === 'function' ? component.getId() : component.cid, // Highlight the selected layer
+        selectedLayerId:
+          typeof component.getId === "function"
+            ? component.getId()
+            : component.cid, // Highlight the selected layer
       }));
       updateStylesFromComponent(component);
 
       // Initialize interactions if not already present
 
-      console.log("interaction", component.get("interactions"))
+      console.log("interaction", component.get("interactions"));
 
       try {
-        if (component.get && typeof component.get === 'function' && !component.get("interactions")) {
-          console.log("interaction", component.get("interactions"))
-          if (component.set && typeof component.set === 'function') {
+        if (
+          component.get &&
+          typeof component.get === "function" &&
+          !component.get("interactions")
+        ) {
+          console.log("interaction", component.get("interactions"));
+          if (component.set && typeof component.set === "function") {
             component.set("interactions", []);
           }
         }
       } catch (error) {
-        console.error('Error initializing interactions:', error);
+        console.error("Error initializing interactions:", error);
       }
 
-
-
       // Custom Toolbar Logic: Clean up & Add Features
-      let toolbar = component.get('toolbar') || [];
+      let toolbar = component.get("toolbar") || [];
 
       // 1. Remove "Move" (Drag) and "Script" (Edit Code) icons
-      // 'tlb-move' is the standard drag handle. 
+      // 'tlb-move' is the standard drag handle.
       // 'open-code', 'script-editor', or anything with title 'Script' often comes from plugins.
       toolbar = toolbar.filter((btn: any) => {
         const cmd = btn.command;
@@ -1283,20 +1388,25 @@ export function useEditor(containerId: string) {
         const id = btn.id || "";
 
         // Remove standard "Move" (Drag), "Script", and potentially the first icon if it's "Info"/"View"
-        // User specifically asked to "remove first icon". 
+        // User specifically asked to "remove first icon".
         // In many setups, the first icon is 'tlb-move', but we filter that by command.
         // If it's something else, let's look for common unwanted starters.
-        if (cmd === 'tlb-move') return false;
-        if (title.toLowerCase().includes('script') || cmd === 'open-code') return false;
-        if (cmd === 'core:preview' || title === 'View') return false; // often the eye/first icon
-        if (id === 'arrow-up') return false; // sometimes the up arrow is first
+        if (cmd === "tlb-move") return false;
+        if (title.toLowerCase().includes("script") || cmd === "open-code")
+          return false;
+        if (cmd === "core:preview" || title === "View") return false; // often the eye/first icon
+        if (id === "arrow-up") return false; // sometimes the up arrow is first
         return true;
       });
 
       // Force remove the very first icon if it's still there and looks like a generic file/page icon (as seen in image 1)
       // The image 1 shows: [FileIcon] [UpArrow] ...
       // If we filtered correctly, it might catch it, but to be sure matching the "remove first icon" request:
-      if (toolbar.length > 0 && (toolbar[0].command === 'tlb-info' || toolbar[0].id === 'icon-fa-file-o')) {
+      if (
+        toolbar.length > 0 &&
+        (toolbar[0].command === "tlb-info" ||
+          toolbar[0].id === "icon-fa-file-o")
+      ) {
         toolbar.shift();
       }
       // Or just blindly shift if they insist, but let's try to be smart first.
@@ -1305,23 +1415,32 @@ export function useEditor(containerId: string) {
         const first = toolbar[0];
         // If the first icon is NOT Clone, Delete, or our custom ones... remove it.
         // Common first icons: Move, Up Arrow, Select Parent, Info.
-        const keepCommands = ['tlb-clone', 'tlb-delete', 'tlb-edit'];
-        const keepTitles = ['AI Chat', 'Comments', 'Duplicate', 'Delete', 'Edit'];
+        const keepCommands = ["tlb-clone", "tlb-delete", "tlb-edit"];
+        const keepTitles = [
+          "AI Chat",
+          "Comments",
+          "Duplicate",
+          "Delete",
+          "Edit",
+        ];
 
-        const isKeeper = keepCommands.includes(first.command) ||
-          keepTitles.some(t => first.attributes?.title?.includes(t));
+        const isKeeper =
+          keepCommands.includes(first.command) ||
+          keepTitles.some((t) => first.attributes?.title?.includes(t));
 
-        if (!isKeeper && !first.label?.includes('AI Chat')) {
+        if (!isKeeper && !first.label?.includes("AI Chat")) {
           // It's likely the unwanted "Page/File" icon or "Select Parent"
           toolbar.shift();
         }
       }
 
       // 2. Add "AI Chat" if missing
-      const hasAiChat = toolbar.some((btn: any) => btn.attributes?.title === 'AI Chat');
+      const hasAiChat = toolbar.some(
+        (btn: any) => btn.attributes?.title === "AI Chat",
+      );
       if (!hasAiChat) {
         toolbar.push({
-          attributes: { title: 'AI Chat', class: 'gjs-tlb-btn-ai' }, // Add class for potential styling
+          attributes: { title: "AI Chat", class: "gjs-tlb-btn-ai" }, // Add class for potential styling
           // Purple Sparkle Icon
           label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <path d="M12 8V4H8"></path>
@@ -1337,8 +1456,8 @@ export function useEditor(containerId: string) {
               component,
               html: componentHtml,
               css: editorRef?.current?.getCss?.() || "",
-              type: component.get('type'),
-              tagName: component.get('tagName')
+              type: component.get("type"),
+              tagName: component.get("tagName"),
             });
             setIsAiChatOpen(true);
           },
@@ -1346,10 +1465,12 @@ export function useEditor(containerId: string) {
       }
 
       // 3. Add "Comments" if missing
-      const hasComments = toolbar.some((btn: any) => btn.attributes?.title === 'Comments');
+      const hasComments = toolbar.some(
+        (btn: any) => btn.attributes?.title === "Comments",
+      );
       if (!hasComments) {
         toolbar.push({
-          attributes: { title: 'Comments' },
+          attributes: { title: "Comments" },
           label: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path fill="transparent" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
             </svg>`,
@@ -1359,18 +1480,16 @@ export function useEditor(containerId: string) {
               component,
               html: componentHtml,
               css: editorRef?.current?.getCss?.() || "",
-              type: component.get('type'),
-              tagName: component.get('tagName')
+              type: component.get("type"),
+              tagName: component.get("tagName"),
             });
             setIsCommentsOpen(true);
           },
         });
       }
 
-      component.set('toolbar', toolbar);
-
+      component.set("toolbar", toolbar);
     });
-
 
     editor.on("component:deselected", () => {
       setState((prev) => ({
@@ -1382,21 +1501,25 @@ export function useEditor(containerId: string) {
     // Device change
     editor.on("change:device", () => {
       try {
-        if (editor && typeof editor.getDevice === 'function') {
+        if (editor && typeof editor.getDevice === "function") {
           setState((prev) => ({
             ...prev,
             currentDevice: editor.getDevice(),
           }));
         }
       } catch (error) {
-        console.error('Error handling device change:', error);
+        console.error("Error handling device change:", error);
       }
     });
 
     // Script-related events
     editor.on("script:update", () => {
       try {
-        if (editor && (editor as any).getJs && typeof (editor as any).getJs === 'function') {
+        if (
+          editor &&
+          (editor as any).getJs &&
+          typeof (editor as any).getJs === "function"
+        ) {
           const js = (editor as any).getJs() || "";
           setState((prev) => ({
             ...prev,
@@ -1404,13 +1527,13 @@ export function useEditor(containerId: string) {
           }));
         }
       } catch (error) {
-        console.error('Error handling script update:', error);
+        console.error("Error handling script update:", error);
       }
     });
 
     editor.on("script:add", () => {
       try {
-        if (editor && editor.getJs && typeof editor.getJs === 'function') {
+        if (editor && editor.getJs && typeof editor.getJs === "function") {
           const js = editor.getJs() || "";
           setState((prev) => ({
             ...prev,
@@ -1418,7 +1541,7 @@ export function useEditor(containerId: string) {
           }));
         }
       } catch (error) {
-        console.error('Error handling script add:', error);
+        console.error("Error handling script add:", error);
       }
     });
 
@@ -1441,12 +1564,12 @@ export function useEditor(containerId: string) {
       if (!doc || !doc.defaultView) return;
       const win = doc.defaultView as any;
 
-      if (win.lucide && typeof win.lucide.createIcons === 'function') {
+      if (win.lucide && typeof win.lucide.createIcons === "function") {
         win.lucide.createIcons();
       } else {
         // Fallback in case lucide is not yet available in the iframe window
         const interval = setInterval(() => {
-          if (win.lucide && typeof win.lucide.createIcons === 'function') {
+          if (win.lucide && typeof win.lucide.createIcons === "function") {
             win.lucide.createIcons();
             clearInterval(interval);
           }
@@ -1456,9 +1579,9 @@ export function useEditor(containerId: string) {
     };
 
     editor.on("component:add", (component: any) => {
-      const tagName = component.get('tagName');
-      if (tagName === 'div' && isComponentUnderSection(component)) {
-        component.set('hoverable', false);
+      const tagName = component.get("tagName");
+      if (tagName === "div" && isComponentUnderSection(component)) {
+        component.set("hoverable", false);
       }
       updateLayers(editor);
       hydrateIcons();
@@ -1469,8 +1592,11 @@ export function useEditor(containerId: string) {
 
     editor.on("component:remove", (component: any) => {
       // Clean up styles and scripts associated with the deleted component
-      const currentJs = cleanupComponentStylesAndScripts(editor as unknown as GrapesJSEditor, component);
-      if (typeof currentJs === 'string') {
+      const currentJs = cleanupComponentStylesAndScripts(
+        editor as unknown as GrapesJSEditor,
+        component,
+      );
+      if (typeof currentJs === "string") {
         setState((prev) => ({ ...prev, editorJs: currentJs }));
       }
       updateLayers(editor);
@@ -1484,9 +1610,12 @@ export function useEditor(containerId: string) {
 
       if (wrapper && !wrapper.find(`#${INTERACTIVITY_SCRIPT_ID}`).length) {
         editor.addComponents({
-          tagName: 'script',
-          type: 'custom-script',
-          attributes: { id: INTERACTIVITY_SCRIPT_ID, 'data-gjs-type': 'custom-script' },
+          tagName: "script",
+          type: "custom-script",
+          attributes: {
+            id: INTERACTIVITY_SCRIPT_ID,
+            "data-gjs-type": "custom-script",
+          },
           content: getGlobalInteractivityScript(),
           layerable: false, // Keep it out of the layers panel for a cleaner UI
           removable: false,
@@ -1497,13 +1626,13 @@ export function useEditor(containerId: string) {
         console.log("✅ Unified Interactivity Engine Injected");
 
         // Sync existing interactions after injection
-        const { syncInteractivityScript } = require("@/hooks/editor-interactivity");
+        const {
+          syncInteractivityScript,
+        } = require("@/hooks/editor-interactivity");
         setTimeout(() => syncInteractivityScript(editor), 200);
       }
     });
   };
-
-
 
   // Helper function to get the full hierarchy path of a component
   const getComponentHierarchy = (component: any): string[] => {
@@ -1512,15 +1641,19 @@ export function useEditor(containerId: string) {
 
     while (current) {
       // Use getId() to match the ID format used in PageLayer.tsx
-      const id = typeof current.getId === 'function' ? current.getId() : current.cid;
+      const id =
+        typeof current.getId === "function" ? current.getId() : current.cid;
       if (id) {
         hierarchy.unshift(id); // Add to beginning of array
       }
       // Different ways to access parent depending on GrapesJS version
-      current = typeof current.parent === 'function' ? current.parent() : current.parent;
+      current =
+        typeof current.parent === "function"
+          ? current.parent()
+          : current.parent;
     }
 
-    console.log('📊 Component hierarchy (IDs):', hierarchy);
+    console.log("📊 Component hierarchy (IDs):", hierarchy);
     return hierarchy;
   };
 
@@ -1533,9 +1666,7 @@ export function useEditor(containerId: string) {
       // Get the wrapper component first, then get its children
       const wrapper = editor.Components.getWrapper();
 
-
       if (!wrapper) {
-
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -1546,22 +1677,24 @@ export function useEditor(containerId: string) {
       // Get components from the wrapper
       let components = [];
 
-
-      if (typeof wrapper.components === 'function') {
+      if (typeof wrapper.components === "function") {
         components = wrapper.components();
-      } else if (wrapper.get && typeof wrapper.get === 'function') {
-        const comps = wrapper.get('components');
+      } else if (wrapper.get && typeof wrapper.get === "function") {
+        const comps = wrapper.get("components");
 
-        if (comps && typeof comps.models !== 'undefined') {
+        if (comps && typeof comps.models !== "undefined") {
           components = comps.models;
         } else if (Array.isArray(comps)) {
           components = comps;
         }
       }
 
-
       // Verify components is valid before mapping
-      if (!components || !Array.isArray(components) || components.length === 0) {
+      if (
+        !components ||
+        !Array.isArray(components) ||
+        components.length === 0
+      ) {
         setState((prev) => ({
           ...prev,
           layers: [],
@@ -1585,7 +1718,7 @@ export function useEditor(containerId: string) {
 
   const mapComponentsToLayers = (
     components: any[] | undefined,
-    level = 0
+    level = 0,
   ): LayerItem[] => {
     // Return empty array if components is undefined or not an array
     if (!components || !Array.isArray(components)) {
@@ -1607,7 +1740,10 @@ export function useEditor(containerId: string) {
       let children = [];
       try {
         // Check if component has a components method
-        if (component.components && typeof component.components === "function") {
+        if (
+          component.components &&
+          typeof component.components === "function"
+        ) {
           children = component.components();
         } else if (component.get && typeof component.get === "function") {
           const componentsMethod = component.get("components");
@@ -1655,7 +1791,7 @@ export function useEditor(containerId: string) {
 
           // Filter out empty parts that might come from extra spaces
           textShadowParts = textShadowParts.filter(
-            (part: string) => part.trim() !== ""
+            (part: string) => part.trim() !== "",
           );
 
           if (textShadowParts.length >= 3) {
@@ -1781,14 +1917,21 @@ export function useEditor(containerId: string) {
 
   // Editor actions
   const actions = {
-    setGlobalStyles: (globalStyle?: string, theme: 'light' | 'dark' = 'light') => {
+    setGlobalStyles: (
+      globalStyle?: string,
+      theme: "light" | "dark" = "light",
+    ) => {
       if (editorRef.current) {
         const frame = editorRef.current.Canvas?.getFrameEl?.();
         const doc = frame?.contentDocument;
         if (doc) {
-          doc.documentElement.setAttribute('data-theme', theme);
+          doc.documentElement.setAttribute("data-theme", theme);
         }
-        injectCanvasStyles(editorRef.current, page?.content, globalStyle || currentWebsite?.globalStyle);
+        injectCanvasStyles(
+          editorRef.current,
+          page?.content,
+          globalStyle || currentBusiness?.website?.globalStyle,
+        );
       }
     },
     setDevice: (device: string) => {
@@ -1845,23 +1988,27 @@ export function useEditor(containerId: string) {
     // Manually refresh canvas styles
     refreshCanvasStyles: () => {
       if (!editorRef.current || !page?.content) {
-        console.warn('Cannot refresh styles: editor or page content not available');
+        console.warn(
+          "Cannot refresh styles: editor or page content not available",
+        );
         return;
       }
 
-      console.log('🔄 Manually refreshing canvas styles');
+      console.log("🔄 Manually refreshing canvas styles");
       const frame = editorRef.current.Canvas?.getFrameEl?.();
       const doc = frame?.contentDocument;
 
       if (!doc || !doc.head || !doc.body) {
-        console.warn('Canvas iframe not ready for style refresh');
+        console.warn("Canvas iframe not ready for style refresh");
         return;
       }
 
       try {
         // Remove existing custom styles
         doc.querySelector('[data-root-vars="true"]')?.remove();
-        doc.querySelectorAll('[data-font="true"]').forEach((el: Element) => el.remove());
+        doc
+          .querySelectorAll('[data-font="true"]')
+          .forEach((el: Element) => el.remove());
         doc.querySelector('[data-tailwind="true"]')?.remove();
 
         // Inject Tailwind CSS CDN
@@ -1885,14 +2032,13 @@ export function useEditor(containerId: string) {
           doc.head.appendChild(link);
         });
 
-        console.log('✅ Canvas styles manually refreshed');
+        console.log("✅ Canvas styles manually refreshed");
       } catch (error) {
-        console.error('❌ Error refreshing canvas styles:', error);
+        console.error("❌ Error refreshing canvas styles:", error);
       }
     },
 
     savePage: async () => {
-
       if (!page?._id) {
         toast.error("No page ID found. Cannot save.");
         return;
@@ -1908,7 +2054,9 @@ export function useEditor(containerId: string) {
       let js = "";
 
       try {
-        const wrapper = editorRef.current.Components?.getWrapper() || (editorRef.current as any).getWrapper?.();
+        const wrapper =
+          editorRef.current.Components?.getWrapper() ||
+          (editorRef.current as any).getWrapper?.();
         const pageBody = wrapper?.find('[data-gjs-type="page-body"]')[0];
 
         // If we found a page-body wrapper, it means we are in the combined mode
@@ -1938,7 +2086,8 @@ export function useEditor(containerId: string) {
             const tagName = comp.get("tagName")?.toLowerCase();
             const compType = comp.get("type");
             if (tagName === "script" || compType === "script") {
-              const isGlobal = comp.getAttributes()?.["data-gjs-type"] === "custom-script";
+              const isGlobal =
+                comp.getAttributes()?.["data-gjs-type"] === "custom-script";
               // If it's the global script, we already got it via getJs()
               if (!isGlobal) {
                 allFoundScripts.push(comp);
@@ -1988,7 +2137,8 @@ export function useEditor(containerId: string) {
               const compType = comp.get("type");
 
               if (tagName === "script" || compType === "script") {
-                const isGlobal = comp.getAttributes()?.["data-gjs-type"] === "custom-script";
+                const isGlobal =
+                  comp.getAttributes()?.["data-gjs-type"] === "custom-script";
                 // If it's the global script, we already got it via getJs()
                 if (!isGlobal) {
                   allFoundScripts.push(comp);
@@ -2025,7 +2175,7 @@ export function useEditor(containerId: string) {
           }
         }
         try {
-          if (typeof editorRef.current.getCss === 'function') {
+          if (typeof editorRef.current.getCss === "function") {
             css = editorRef.current.getCss() || "";
           }
         } catch (error) {
@@ -2044,34 +2194,37 @@ export function useEditor(containerId: string) {
   `;
       // console.log("Saving page", page._id, html);
       if (type === "footer") {
-        const response = await dispatch(updateFooter({
-          ...page,
-          _id: page._id?.toString() ?? "",
-          tenantId: page.tenantId ?? "",
-          content: fullHtml
-        })).unwrap();
+        const response = await dispatch(
+          updateFooter({
+            ...page,
+            _id: page._id?.toString() ?? "",
+            tenantId: page.tenantId ?? "",
+            content: fullHtml,
+          }),
+        ).unwrap();
         if (response) {
           toast.success("Footer content updated successfully!");
         }
       } else if (type === "header") {
-
-
-        const response = await dispatch(updateHeader({
-          ...page,
-          _id: page._id?.toString() ?? "",
-          tenantId: page.tenantId ?? "",
-          content: fullHtml
-        })).unwrap();
+        const response = await dispatch(
+          updateHeader({
+            ...page,
+            _id: page._id?.toString() ?? "",
+            tenantId: page.tenantId ?? "",
+            content: fullHtml,
+          }),
+        ).unwrap();
         if (response) {
           toast.success("Header content updated successfully!");
         }
-      }
-      else {
-        const response = await dispatch(savePageThunk({
-          id: page._id ?? "",
-          tenantId: page.tenantId ?? "",
-          content: fullHtml
-        })).unwrap();
+      } else {
+        const response = await dispatch(
+          savePageThunk({
+            id: page._id ?? "",
+            tenantId: page.tenantId ?? "",
+            content: fullHtml,
+          }),
+        ).unwrap();
         // console.log("console.log", response)
         if (response) {
           toast.success("Page content updated successfully!");
@@ -2088,11 +2241,11 @@ export function useEditor(containerId: string) {
         // Safely get CSS with fallback
         let css = "";
         try {
-          if (typeof editorRef.current.getCss === 'function') {
+          if (typeof editorRef.current.getCss === "function") {
             css = editorRef.current.getCss() || "";
           }
         } catch (error) {
-          console.warn('Error getting CSS:', error);
+          console.warn("Error getting CSS:", error);
         }
 
         // Get JavaScript with better error handling
@@ -2189,8 +2342,8 @@ export function useEditor(containerId: string) {
 
     addComponent: (content: any) => {
       if (!editorRef.current) return;
-      console.log("calling add function")
-      console.log("content", content)
+      console.log("calling add function");
+      console.log("content", content);
       try {
         // Enhanced handling for different content types
         if (typeof content === "string") {
@@ -2211,12 +2364,14 @@ export function useEditor(containerId: string) {
             scripts.forEach((scriptContent: string) => {
               if (scriptContent.trim()) {
                 // Use actions.updateJs or directly setJs
-                const currentJs = editorRef.current!.getJs ? editorRef.current!.getJs() : "";
+                const currentJs = editorRef.current!.getJs
+                  ? editorRef.current!.getJs()
+                  : "";
                 if (!currentJs.includes(scriptContent.trim())) {
                   const newJs = currentJs + "\n" + scriptContent.trim();
                   if (typeof (editorRef.current as any).setJs === "function") {
                     (editorRef.current as any).setJs(newJs);
-                    setState(prev => ({ ...prev, editorJs: newJs }));
+                    setState((prev) => ({ ...prev, editorJs: newJs }));
                   }
                 }
               }
@@ -2243,7 +2398,7 @@ export function useEditor(containerId: string) {
         else {
           console.warn("Unrecognized content format", content);
           editorRef.current.addComponents(
-            `<div>Error: Invalid content format</div>`
+            `<div>Error: Invalid content format</div>`,
           );
         }
       } catch (error) {
@@ -2251,7 +2406,7 @@ export function useEditor(containerId: string) {
         // Try with a safer fallback
         try {
           editorRef.current.addComponents(
-            "<div>Component could not be added</div>"
+            "<div>Component could not be added</div>",
           );
         } catch (fallbackError) {
           console.error("Fallback error:", fallbackError);
@@ -2271,17 +2426,15 @@ export function useEditor(containerId: string) {
 
     updateStyle: (property: string, value: string) => {
       try {
-
-
         // Check if this is a global CSS variable (starts with --)
-        if (property.startsWith('--')) {
+        if (property.startsWith("--")) {
           // Handle global CSS variables
           if (editorRef.current) {
             const canvas = editorRef.current.Canvas;
 
             // Check if Canvas module and getDocument method exist
-            if (!canvas || typeof canvas.getDocument !== 'function') {
-              console.warn('Canvas module or getDocument method not available');
+            if (!canvas || typeof canvas.getDocument !== "function") {
+              console.warn("Canvas module or getDocument method not available");
               return;
             }
 
@@ -2290,22 +2443,24 @@ export function useEditor(containerId: string) {
 
             if (canvasHead) {
               // Find or create the global styles element
-              let globalStyleEl = canvasDoc.querySelector('[data-global-styles="true"]');
-              console.log("globalStyleEl--->", globalStyleEl)
+              let globalStyleEl = canvasDoc.querySelector(
+                '[data-global-styles="true"]',
+              );
+              console.log("globalStyleEl--->", globalStyleEl);
               if (!globalStyleEl) {
-                globalStyleEl = canvasDoc.createElement('style');
-                globalStyleEl.setAttribute('data-global-styles', 'true');
+                globalStyleEl = canvasDoc.createElement("style");
+                globalStyleEl.setAttribute("data-global-styles", "true");
                 canvasHead.appendChild(globalStyleEl);
               }
 
               // Get existing global styles
               const existingStyles = globalStyleEl.innerHTML;
 
-              console.log("existingStyles--->", existingStyles)
+              console.log("existingStyles--->", existingStyles);
               // Standard CSS variable regex
               const cssVars: Record<string, string> = {};
 
-              console.log("cssVars--->", cssVars)
+              console.log("cssVars--->", cssVars);
               // Parse all variables from the content
               const declRegex = /(--[\w-]+)\s*:\s*([^;]+)/g;
               let match;
@@ -2321,9 +2476,11 @@ export function useEditor(containerId: string) {
 
               // Do not change the value of redux on edit.
               // Instead, trigger a local state update to ensure UI re-renders and reflects canvas changes.
-              setState(prev => ({ ...prev }));
+              setState((prev) => ({ ...prev }));
 
-              console.log(`✅ Global CSS variable ${property} set to ${value} (Canvas only)`);
+              console.log(
+                `✅ Global CSS variable ${property} set to ${value} (Canvas only)`,
+              );
 
               // Force editor refresh to apply variables if needed
               editorRef.current?.refresh();
@@ -2365,7 +2522,7 @@ export function useEditor(containerId: string) {
                 },
               };
             } else if (property === "font-size") {
-              console.log("Font Size", value)
+              console.log("Font Size", value);
               return {
                 ...prev,
                 styles: {
@@ -2622,7 +2779,7 @@ export function useEditor(containerId: string) {
 
           // Trigger editor refresh to update the view
           if (editorRef.current) {
-            console.log("editorRef.current", editorRef.current)
+            console.log("editorRef.current", editorRef.current);
             try {
               // Use a timeout to ensure the state is updated first
               setTimeout(() => {
@@ -2695,7 +2852,7 @@ export function useEditor(containerId: string) {
     selectComponent: (componentId: string) => {
       if (editorRef.current) {
         const component = editorRef.current.Components.getById(componentId);
-        console.log("component---", component)
+        console.log("component---", component);
         if (component) {
           editorRef.current.select(component);
         }
@@ -2707,15 +2864,19 @@ export function useEditor(containerId: string) {
       event: string,
       action: string,
       target?: string,
-      options?: any
+      options?: any,
     ) => {
-      handleInteractivityChange(state.selectedElement, {
-        type,
-        event,
-        action,
-        target,
-        options,
-      }, editorRef.current);
+      handleInteractivityChange(
+        state.selectedElement,
+        {
+          type,
+          event,
+          action,
+          target,
+          options,
+        },
+        editorRef.current,
+      );
     },
 
     refreshLayers: () => {
@@ -2725,7 +2886,6 @@ export function useEditor(containerId: string) {
     },
   };
 
-
   return {
     state,
     actions,
@@ -2734,6 +2894,6 @@ export function useEditor(containerId: string) {
     selectedComponentForAi,
     editForm,
     isCommentsOpen,
-    setIsCommentsOpen
+    setIsCommentsOpen,
   };
 }

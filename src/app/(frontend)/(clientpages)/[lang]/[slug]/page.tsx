@@ -187,25 +187,6 @@ export default async function PageTemplate({
           headerData={serializedHeaderData}
           footerData={serializedFooterData}
         />
-
-        {/* <EditButton
-        {session && session.user && (
-          <EditButton
-            pageData={website}
-            currentWebsite={currentWebsite}
-            user={session?.user || {}}
-            type="page"
-          />
-     
-
-        <RenderHtml
-          html={processedHtml}
-          currentWebsite={currentWebsite}
-          user={session?.user || {}}
-          html={processedHtml}
-          headerData={headerData || {}}
-          footerData={footerData || {}}
-        /> */}
       </>
     );
   } catch (error) {

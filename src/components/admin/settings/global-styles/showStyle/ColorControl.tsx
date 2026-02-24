@@ -7,8 +7,6 @@ import HexInput from "./HexInput";
 import ColorPallet from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { updateCurrentWebsiteGlobalStyle } from "@/hooks/slices/websites/WebsiteSlice";
-import { colorModal } from "@/components/admin/branding/color_pallet/Color_Pallet_Modal";
 import { updateCssWithColors } from "@/components/editor/style-editor/GlobalStyelModel";
 import { updateCurrentBusinessWebsiteGlobalStyle } from "@/hooks/slices/business/BusinessSlice";
 
@@ -27,7 +25,7 @@ const ColorControl = ({
   setC,
   setButtonColors,
 }: ColorControlProps) => {
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const dispatch = useDispatch();

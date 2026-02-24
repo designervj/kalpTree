@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { deleteAgency } from "@/hooks/slices/user/agencySlice";
 
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +45,13 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { HiDotsVertical } from "react-icons/hi";
 
 type Agency = {
@@ -74,19 +79,19 @@ function Pill({
     variant === "green"
       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
       : variant === "amber"
-      ? "bg-amber-50 text-amber-700 border-amber-200"
-      : variant === "red"
-      ? "bg-rose-50 text-rose-700 border-rose-200"
-      : variant === "blue"
-      ? "bg-sky-50 text-sky-700 border-sky-200"
-      : "bg-slate-50 text-slate-700 border-slate-200";
+        ? "bg-amber-50 text-amber-700 border-amber-200"
+        : variant === "red"
+          ? "bg-rose-50 text-rose-700 border-rose-200"
+          : variant === "blue"
+            ? "bg-sky-50 text-sky-700 border-sky-200"
+            : "bg-slate-50 text-slate-700 border-slate-200";
 
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold",
         cls,
-        className
+        className,
       )}
     >
       {children}
@@ -111,10 +116,9 @@ export default function AgencyList() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
 
-
   const { user } = useSelector((state: RootState) => state.user);
   const { allAgencies, isAgencyLoading } = useSelector(
-    (state: RootState) => state.agency
+    (state: RootState) => state.agency,
   );
   const { allBusiness } = useSelector((state: RootState) => state.business);
 
@@ -133,32 +137,34 @@ export default function AgencyList() {
   const [itemsPerPage, setItemsPerPage] = useState(30);
 
   const filtered = useMemo(() => {
-      let list = [...(allAgencies || [])] as Agency[];
-  
-      const query = q.trim().toLowerCase();
-      if (query) {
-        list = list.filter((a: Agency) => {
-          const name = (a.name || "").toLowerCase();
-          const email = (a.email || "").toLowerCase();
-          return name.includes(query) || email.includes(query);
-        });
-      }
-  
-      if (status !== "__all__") {
-        list = list.filter((a: Agency) => (a.status || "").toLowerCase() === status);
-      }
-  
-      list.sort((a: Agency, b: Agency) => {
-        if (sortBy === "name") {
-          return String(a.name || "").localeCompare(String(b.name || ""));
-        }
-        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return sortBy === "newest" ? bTime - aTime : aTime - bTime;
+    let list = [...(allAgencies || [])] as Agency[];
+
+    const query = q.trim().toLowerCase();
+    if (query) {
+      list = list.filter((a: Agency) => {
+        const name = (a.name || "").toLowerCase();
+        const email = (a.email || "").toLowerCase();
+        return name.includes(query) || email.includes(query);
       });
-  
-      return list;
-    }, [allAgencies, q, status, sortBy]);
+    }
+
+    if (status !== "__all__") {
+      list = list.filter(
+        (a: Agency) => (a.status || "").toLowerCase() === status,
+      );
+    }
+
+    list.sort((a: Agency, b: Agency) => {
+      if (sortBy === "name") {
+        return String(a.name || "").localeCompare(String(b.name || ""));
+      }
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return sortBy === "newest" ? bTime - aTime : aTime - bTime;
+    });
+
+    return list;
+  }, [allAgencies, q, status, sortBy]);
 
   // =========================
   // Pagination derived values
@@ -170,9 +176,6 @@ export default function AgencyList() {
 
     const startIndex0 = totalCount === 0 ? 0 : (safePage - 1) * itemsPerPage;
     const endIndex0 = Math.min(startIndex0 + itemsPerPage, totalCount);
-
-
-
 
     return {
       page: safePage,
@@ -186,7 +189,8 @@ export default function AgencyList() {
     };
   }, [filtered.length, itemsPerPage, page]);
 
-  const startIndex = pagination.totalCount === 0 ? 0 : pagination.startIndex0 + 1;
+  const startIndex =
+    pagination.totalCount === 0 ? 0 : pagination.startIndex0 + 1;
   const endIndex = pagination.endIndex0;
 
   const paginatedList = useMemo(() => {
@@ -233,7 +237,7 @@ export default function AgencyList() {
   const handleCreate = () => {
     if (user?.role === "superadmin") router.push("/admin/agencies/create");
     else {
-      toast.error("Not allowed",{
+      toast.error("Not allowed", {
         description: "Only Super Admin can create agencies.",
       });
     }
@@ -246,20 +250,20 @@ export default function AgencyList() {
   const handleDelete = async (row: Agency) => {
     const id = row?._id;
     if (!id) {
-      toast.error("Delete failed",{description: "Missing id" });
+      toast.error("Delete failed", { description: "Missing id" });
       return;
     }
     const ok = confirm(`Delete agency "${row?.name ?? id}"?`);
     if (!ok) return;
 
     try {
-     const response= await dispatch(deleteAgency(String(id))).unwrap();
-     if(response && response.success){
-     toast.success("Agency deleted successfully");
-     }
+      const response = await dispatch(deleteAgency(String(id))).unwrap();
+      if (response && response.success) {
+        toast.success("Agency deleted successfully");
+      }
     } catch (err: any) {
       console.error(err);
-      toast.error("Delete failed",{
+      toast.error("Delete failed", {
         description: String(err?.message || err),
       });
     }
@@ -270,10 +274,6 @@ export default function AgencyList() {
     setSortBy("newest");
     setPage(1);
   };
-
-
-
-    
 
   return (
     <div className="w-full space-y-4">
@@ -298,7 +298,7 @@ export default function AgencyList() {
             {/* Filters */}
             <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
               <SheetTrigger asChild>
-                <Button 
+                <Button
                   variant="outline"
                   className="h-11 rounded-md px-6 text-base font-semibold"
                 >
@@ -358,7 +358,6 @@ export default function AgencyList() {
 
                   <div className="flex items-center gap-2">
                     <Button
-                    
                       className="flex-1"
                       onClick={() => setFiltersOpen(false)}
                     >
@@ -390,7 +389,10 @@ export default function AgencyList() {
         {isAgencyLoading ? (
           <>
             {Array.from({ length: 3 }).map((_, i) => (
-              <Card key={i} className="rounded-xl border bg-white shadow-sm py-0 p-0">
+              <Card
+                key={i}
+                className="rounded-xl border bg-white shadow-sm py-0 p-0"
+              >
                 <CardContent className="p-6">
                   <div className="h-6 w-52 rounded bg-muted" />
                   <div className="mt-3 h-4 w-80 rounded bg-muted" />
@@ -427,14 +429,19 @@ export default function AgencyList() {
           // ✅ Only change here: use paginatedList instead of filtered
           paginatedList.map((a, idx) => {
             const tone = idx % 2 === 0 ? "bg-[#0b6d8e]" : "bg-slate-900";
-            const created = a.createdAt ? new Date(a.createdAt).toLocaleString() : "-";
+            const created = a.createdAt
+              ? new Date(a.createdAt).toLocaleString()
+              : "-";
 
             const totalBusiness = (allBusiness || []).filter((d: any) => {
               return d.tenantId == a._id;
             }).length;
 
             return (
-              <Card key={a._id} className="rounded-xl border bg-white shadow-sm">
+              <Card
+                key={a._id}
+                className="rounded-xl border bg-white shadow-sm"
+              >
                 <CardContent className="p-6">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                     {/* LEFT */}
@@ -442,7 +449,7 @@ export default function AgencyList() {
                       <div
                         className={cn(
                           "h-16 w-16 rounded-xl grid place-items-center text-white",
-                          tone
+                          tone,
                         )}
                       >
                         <UsersRound className="h-7 w-7" />
@@ -504,7 +511,9 @@ export default function AgencyList() {
                       <Button
                         variant="outline"
                         className="h-11 rounded-xl px-5 text-sm font-semibold"
-                        onClick={() => router.push(`/admin/agencies/${a._id}/settings`)}
+                        onClick={() =>
+                          router.push(`/admin/agencies/${a._id}/settings`)
+                        }
                       >
                         Settings
                       </Button>
@@ -529,27 +538,30 @@ export default function AgencyList() {
                         
                       </Button> */}
 
-
-                       <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="outline"><HiDotsVertical /></Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-10 me-6" align="start">
-      
-                            <DropdownMenuGroup>
-                              <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
-                                >
-                                  {/* onClick={() => handleEditBusiness(b)} */}
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer"
-                                 onClick={() => handleDelete(a)}>
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuGroup>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                                        
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline">
+                            <HiDotsVertical />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          className="w-10 me-6"
+                          align="start"
+                        >
+                          <DropdownMenuGroup>
+                            <DropdownMenuItem className="text-[#ff0000] hover:bg-transparent cursor-pointer">
+                              {/* onClick={() => handleEditBusiness(b)} */}
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-[#ff0000] hover:bg-transparent cursor-pointer"
+                              onClick={() => handleDelete(a)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </div>
                 </CardContent>
@@ -564,7 +576,10 @@ export default function AgencyList() {
         <div className="flex items-center justify-between pt-2">
           <div className="flex items-center gap-2">
             <span className="text-sm text-muted-foreground">Show</span>
-            <Select value={String(itemsPerPage)} onValueChange={handleItemsPerPageChange}>
+            <Select
+              value={String(itemsPerPage)}
+              onValueChange={handleItemsPerPageChange}
+            >
               <SelectTrigger className="w-[90px] bg-white">
                 <SelectValue />
               </SelectTrigger>
@@ -611,7 +626,10 @@ export default function AgencyList() {
               {getPageNumbers().map((p, idx) => {
                 if (p === "...") {
                   return (
-                    <span key={`ellipsis-${idx}`} className="px-2 text-muted-foreground">
+                    <span
+                      key={`ellipsis-${idx}`}
+                      className="px-2 text-muted-foreground"
+                    >
                       ...
                     </span>
                   );

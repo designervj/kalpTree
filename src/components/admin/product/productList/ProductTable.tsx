@@ -40,8 +40,8 @@ const ProductTable = () => {
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listBrand } = useSelector((state: RootState) => state.brand);
 
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const { user } = useSelector((state: RootState) => state.user);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
@@ -232,7 +232,7 @@ const ProductTable = () => {
   const handleImport = async (data: any) => {
     try {
       const res = await fetch(
-        `/api/admin/product/bulk?websiteId=${currentWebsite?._id}&tenantId=${user?.tenantId}`,
+        `/api/admin/product/bulk?tenantId=${currentBusiness?._id}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

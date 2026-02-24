@@ -2,7 +2,7 @@
 
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import {
-  currentWebsiteSections,
+  currenBusinessSections,
   FiCloseHint,
   sectionIconMap,
   useHasPermission,
@@ -38,7 +38,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   // Keep internal collapse state (works even if parent doesn't control it)
   const [internalCollapsed, setInternalCollapsed] = React.useState<boolean>(
-    typeof collapsed === "boolean" ? collapsed : false
+    typeof collapsed === "boolean" ? collapsed : false,
   );
 
   React.useEffect(() => {
@@ -54,7 +54,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   // Build sections + permission filter
   const filteredWebsiteSections = React.useMemo(() => {
-    return currentWebsiteSections
+    return currenBusinessSections
       .map((section) => ({
         ...section,
         items: section.items
@@ -90,7 +90,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const activeSectionId = React.useMemo(() => {
     if (!activeItemPath) return null;
     const found = filteredWebsiteSections.find((section) =>
-      section.items.some((item) => normalizePath(item.href) === activeItemPath)
+      section.items.some((item) => normalizePath(item.href) === activeItemPath),
     );
     return found?.id ?? null;
   }, [filteredWebsiteSections, activeItemPath, normalizePath]);
@@ -108,7 +108,9 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
     }
 
     // If current openGroupId still exists, keep it
-    const stillExists = filteredWebsiteSections.some((s) => s.id === openGroupId);
+    const stillExists = filteredWebsiteSections.some(
+      (s) => s.id === openGroupId,
+    );
     if (stillExists) return;
 
     // Otherwise open active section, else first section
@@ -127,10 +129,10 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const isSectionActive = React.useCallback(
     (section: (typeof filteredWebsiteSections)[number]) => {
       return section.items.some(
-        (item) => normalizePath(item.href) === activeItemPath
+        (item) => normalizePath(item.href) === activeItemPath,
       );
     },
-    [activeItemPath, normalizePath]
+    [activeItemPath, normalizePath],
   );
 
   // collapsed hover floating panel
@@ -143,7 +145,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
           "relative hidden md:flex h-screen max-h-[92vh] bg-[#f5f6f7]",
           "transition-[width] duration-300 ease-out",
           "overflow-visible",
-          isCollapsed ? "w-[92px]" : "w-[450px]"
+          isCollapsed ? "w-[92px]" : "w-[450px]",
         )}
       >
         {/* right edge hairline */}
@@ -157,7 +159,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             className={cn(
               "h-10 w-10 rounded-full bg-[#6D28D9] text-white shadow-lg",
               "grid place-items-center hover:bg-[#5B21B6] active:scale-[0.98] transition",
-              "focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0"
+              "focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0",
             )}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={isCollapsed ? "Expand" : "Collapse"}
@@ -176,12 +178,13 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             <div
               className={cn(
                 "mt-3 flex-1 overflow-y-auto pb-3",
-                isCollapsed ? "px-2" : "px-2"
+                isCollapsed ? "px-2" : "px-2",
               )}
             >
               <div className="space-y-2">
                 {filteredWebsiteSections.map((section) => {
-                  const HeaderIcon = sectionIconMap[section.id] || LayoutDashboard;
+                  const HeaderIcon =
+                    sectionIconMap[section.id] || LayoutDashboard;
                   const isOpen = openGroupId === section.id;
                   const sectionActive = isSectionActive(section);
 
@@ -202,13 +205,15 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                 "w-full h-[58px] rounded-2xl border shadow-sm grid place-items-center transition",
                                 sectionActive
                                   ? "bg-[#eef2ff] border-[#dfe5ff]"
-                                  : "bg-white border-black/10 hover:bg-white/90"
+                                  : "bg-white border-black/10 hover:bg-white/90",
                               )}
                             >
                               <HeaderIcon
                                 className={cn(
                                   "h-5 w-5",
-                                  sectionActive ? "text-black" : "text-black/70"
+                                  sectionActive
+                                    ? "text-black"
+                                    : "text-black/70",
                                 )}
                               />
                             </button>
@@ -255,22 +260,29 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
                                     const active =
-                                      normalizePath(item.href) === activeItemPath;
+                                      normalizePath(item.href) ===
+                                      activeItemPath;
 
                                     return (
-                                      <Link key={item.href} href={item.href} className="block">
+                                      <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="block"
+                                      >
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm",
                                             active
                                               ? "bg-[#eef2ff] text-black shadow-sm border border-[#dfe5ff]"
-                                              : "text-black/70 hover:bg-[#f6f7f8]"
+                                              : "text-black/70 hover:bg-[#f6f7f8]",
                                           )}
                                         >
                                           <Icon
                                             className={cn(
                                               "h-4 w-4",
-                                              active ? "text-black" : "text-black/55"
+                                              active
+                                                ? "text-black"
+                                                : "text-black/55",
                                             )}
                                           />
                                           <span className="truncate flex-1">
@@ -286,7 +298,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                               "h-4 w-4 transition-opacity",
                                               active
                                                 ? "opacity-60 text-black"
-                                                : "opacity-0 group-hover:opacity-40"
+                                                : "opacity-0 group-hover:opacity-40",
                                             )}
                                           />
                                         </div>
@@ -313,7 +325,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                           "text-left border shadow-sm transition",
                           sectionActive
                             ? "bg-white border-[#dfe5ff]"
-                            : "bg-white border-black/10 hover:bg-white/90"
+                            : "bg-white border-black/10 hover:bg-white/90",
                         )}
                       >
                         <div
@@ -321,7 +333,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                             "grid h-10 w-10 place-items-center rounded-2xl border shadow-sm",
                             sectionActive
                               ? "bg-[#eef2ff] border-[#dfe5ff]"
-                              : "bg-white border-black/10"
+                              : "bg-white border-black/10",
                           )}
                         >
                           <HeaderIcon className="h-5 w-5 text-black/70" />
@@ -366,22 +378,29 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
                                     const active =
-                                      normalizePath(item.href) === activeItemPath;
+                                      normalizePath(item.href) ===
+                                      activeItemPath;
 
                                     return (
-                                      <Link key={item.href} href={item.href} className="block">
+                                      <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="block"
+                                      >
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2",
                                             active
                                               ? "bg-[#eef2ff] text-black shadow-sm border border-[#dfe5ff]"
-                                              : "text-black/70 hover:bg-[#f6f7f8]"
+                                              : "text-black/70 hover:bg-[#f6f7f8]",
                                           )}
                                         >
                                           <Icon
                                             className={cn(
                                               "h-4 w-4",
-                                              active ? "text-black" : "text-black/55"
+                                              active
+                                                ? "text-black"
+                                                : "text-black/55",
                                             )}
                                           />
 
@@ -400,7 +419,7 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                               "h-4 w-4 transition-opacity",
                                               active
                                                 ? "opacity-60 text-black"
-                                                : "opacity-0 group-hover:opacity-40"
+                                                : "opacity-0 group-hover:opacity-40",
                                             )}
                                           />
                                         </div>

@@ -27,7 +27,7 @@ const ListProductType = () => {
   );
 
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
 

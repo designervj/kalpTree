@@ -60,20 +60,18 @@ export const RightColumn = ({
     listProductTypeCategory,
   } = useSelector((state: RootState) => state.category);
 
-  const { currentBusiness } = useSelector((state: RootState) => state.business);
-
-  const handleProductTypeCategory = (e: string) => {
-    setProductTypeCategory(e);
-  };
+  // const handleProductTypeCategory = (e: string) => {
+  //   setProductTypeCategory(e);
+  // };
 
   const handleSetChange = (e: string) => {
     setAttributeSetId(e);
   };
 
   // helper: make Select work like your handleInputChange
-  const handleSelectChange = (name: string, value: string) => {
-    handleInputChange({ target: { name, value } });
-  };
+  // const handleSelectChange = (name: string, value: string) => {
+  //   handleInputChange({ target: { name, value } });
+  // };
 
   const NestedCategories = useMemo(() => {
     return buildCategoryTree(listCategory);
@@ -115,8 +113,7 @@ export const RightColumn = ({
     setSelectedCategories(copied);
   };
 
-
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const { user } = useSelector((state: RootState) => state.user);
 
   const [newCategory, setNewCategory] = useState<MaterialCategory | null>(null);
@@ -170,7 +167,7 @@ export const RightColumn = ({
       name: "",
       icon: "",
       sort_order: 0,
-      websiteId: currentWebsite?._id,
+      websiteId: currentBusiness?._id,
       tenantId: user?.tenantId,
       parentCategoryId: "",
     });
@@ -311,7 +308,7 @@ export const RightColumn = ({
       categoryId: "",
       attributes: [],
       sort_order: 0,
-      websiteId: String(currentWebsite?._id),
+      websiteId: String(currentBusiness?._id),
       tenantId: user?.tenantId,
     });
     setFieldErrors({});
@@ -510,7 +507,7 @@ export const RightColumn = ({
                 <SelectContent>
                   {listAttributeSets
                     .filter((d: any) => {
-                      return currentBusiness?.businessdetails.businessType.includes(
+                      return currentBusiness?.businessdetails?.businessType?.includes(
                         d._id,
                       );
                     })

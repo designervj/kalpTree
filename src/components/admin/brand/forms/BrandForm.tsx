@@ -21,8 +21,6 @@ export default function BrandForm({
   handleLogoFile,
 }: BrandFormProps) {
   const [imageLoading, setImageLoading] = useState(false);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
-  const { user } = useSelector((state: RootState) => state.user);
 
   const CheckJobImageUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {

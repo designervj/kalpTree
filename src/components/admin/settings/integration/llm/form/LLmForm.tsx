@@ -28,7 +28,6 @@ const LLmForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof LLMModel, string>>>({});
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentLLMSetting } = useSelector((state: RootState) => state.llmSetting);
   // Test API Key states
   const [testPrompt, setTestPrompt] = useState("");

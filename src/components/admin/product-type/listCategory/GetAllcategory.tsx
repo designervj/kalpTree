@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect } from "react";
 import { fetchCategories } from "@/hooks/slices/category/CategorySlice";
 import { AppDispatch, RootState } from "@/store/store";
@@ -7,20 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 
 const GetAllcategory = () => {
   const { isCategoryLoading, hasFetched } = useSelector(
-    (state: RootState) => state.category
+    (state: RootState) => state.category,
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (!hasFetched && 
+    if (
+      !hasFetched &&
       !isCategoryLoading &&
-    currentWebsite &&
-  currentWebsite._id) {
-      dispatch(fetchCategories({websiteId:currentWebsite._id}));
+      currentBusiness &&
+      currentBusiness._id
+    ) {
+      dispatch(fetchCategories({ tenantId: String(currentBusiness._id) }));
     }
-  }, [hasFetched, isCategoryLoading, user,dispatch,currentWebsite]);
+  }, [hasFetched, isCategoryLoading, user, dispatch, currentBusiness]);
 
   return null;
 };

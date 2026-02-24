@@ -26,7 +26,7 @@ const AttributeTable = () => {
   const { listProductTypeCategory } = useSelector(
     (state: RootState) => state.category,
   );
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch<AppDispatch>();
   const { toast } = useToast();
@@ -48,13 +48,11 @@ const AttributeTable = () => {
       type: "",
       possible_values: [],
       data_type: undefined,
-      websiteId: currentWebsite?._id,
-      tenantId: user?.tenantId,
+      tenantId: currentBusiness?._id,
     });
     setFieldErrors({});
     setIsAddDialogOpen(true);
   };
-
 
   const handleSaveAdd = async () => {
     if (!newAttribute) return;
@@ -108,7 +106,6 @@ const AttributeTable = () => {
   };
 
   const currentUser = useSelector((state: RootState) => state.user.user);
-
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;

@@ -238,7 +238,8 @@ export default function TemplateForm({
   const [isPending, startTransition] = useTransition();
   const dispatch = useDispatch<AppDispatch>();
   const [imgPreview, setImgPreview] = React.useState<string>("");
-  const { currentWebsite } = useSelector((state: RootState) => state.websites)
+  const { currentBusiness } = useSelector((state: RootState) => state.business)
+
   const form = useForm<TemplateFormData>({
     resolver: zodResolver(PostSchema),
     defaultValues: {
@@ -340,7 +341,7 @@ export default function TemplateForm({
     const data = {
       ...values,
       category: values.templateType,
-      websiteId: currentWebsite?._id?.toString(),
+      websiteId: currentBusiness?._id?.toString(),
       tags:
         typeof values.tags === "string"
           ? values.tags.split(",").map((t: string) => t.trim()).filter(Boolean)
@@ -666,7 +667,7 @@ export default function TemplateForm({
 
                 <div className="space-y-2">
                   <Label>Website Id (optional)</Label>
-                  <Input placeholder="website name" value={currentWebsite?.name} disabled />
+                  <Input placeholder="website name" value={currentBusiness?.website?.name} disabled />
                 </div>
               </div>
 

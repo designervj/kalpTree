@@ -58,7 +58,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { deleteBusiness } from "@/hooks/slices/business/BusinessThunk";
 import { toast } from "sonner";
-import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
+
 import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
 import { IndustryOption } from "../../users/IndustryRadioList";
 import { getIndustryIcon } from "./util/GetIcon";
@@ -250,7 +250,6 @@ const ShowBusiness = () => {
     }
 
     dispatch(setCurretAgency(agency));
-    dispatch(setCurrentWebsite(website));
     dispatch(setEditBusiness(business));
     router.push(`/admin/businesses/edit`);
   };
@@ -308,7 +307,11 @@ const ShowBusiness = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" className="rounded-xl border-slate-200">
+          <Button
+            asChild
+            variant="outline"
+            className="rounded-xl border-slate-200"
+          >
             <Link href="/admin/rolesandpermission">
               <ShieldCheck className="mr-2 h-4 w-4" />
               Roles & Permissions
@@ -371,7 +374,10 @@ const ShowBusiness = () => {
 
               <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" className="h-10 rounded-xl border-slate-200 px-4">
+                  <Button
+                    variant="outline"
+                    className="h-10 rounded-xl border-slate-200 px-4"
+                  >
                     <SlidersHorizontal className="mr-2 h-4 w-4" />
                     Filters
                   </Button>
@@ -468,10 +474,10 @@ const ShowBusiness = () => {
 
             const joinedDate = b?.createdAt
               ? new Date(b.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                })
               : null;
 
             const website = b.website;
@@ -522,7 +528,6 @@ const ShowBusiness = () => {
                   {/* top strip */}
                   <div className="border-b border-slate-100 bg-slate-50/70 px-4 py-2.5">
                     <div className="flex justify-between items-center gap-2">
-
                       <div className="flex items-center gap-2">
                         <span
                           className={cn(
@@ -567,7 +572,10 @@ const ShowBusiness = () => {
                             </Button>
                           </DropdownMenuTrigger>
 
-                          <DropdownMenuContent className="mr-2 w-36" align="end">
+                          <DropdownMenuContent
+                            className="mr-2 w-36"
+                            align="end"
+                          >
                             <DropdownMenuGroup>
                               <DropdownMenuItem
                                 className="cursor-pointer text-sm"
@@ -585,7 +593,6 @@ const ShowBusiness = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </div>
-
                     </div>
                   </div>
 
@@ -677,15 +684,16 @@ const ShowBusiness = () => {
                                   color="amber"
                                 />
                               </div>
-
-
-
                             </div>
                           </div>
 
                           <div className="grid grid-cols-3 h-full flex-wrap items-start gap-2">
                             {b?._id && (
-                              <Link href={`/builder/${b._id}`} target="_blank" className="flex-1 xl:flex-none">
+                              <Link
+                                href={`/builder/${b._id}`}
+                                target="_blank"
+                                className="flex-1 xl:flex-none"
+                              >
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -698,7 +706,11 @@ const ShowBusiness = () => {
                             )}
 
                             {href !== "#" && (
-                              <Link href={href} target="_blank" className="flex-1 xl:flex-none">
+                              <Link
+                                href={href}
+                                target="_blank"
+                                className="flex-1 xl:flex-none"
+                              >
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -710,7 +722,7 @@ const ShowBusiness = () => {
                               </Link>
                             )}
 
-                             <Button
+                            <Button
                               size="sm"
                               className="h-9 cursor-pointer flex-1 rounded-xl px-3 xl:w-full xl:flex-none"
                               onClick={() => handleOpenDashboard(b)}
@@ -719,7 +731,6 @@ const ShowBusiness = () => {
                             </Button>
 
                             {/* <div className="flex gap-2"> */}
-
 
                             {/* <DropdownMenu>
                               <DropdownMenuTrigger asChild>
@@ -751,7 +762,6 @@ const ShowBusiness = () => {
                             </DropdownMenu> */}
                             {/* </div> */}
                           </div>
-
                         </div>
 
                         {/* domain card */}

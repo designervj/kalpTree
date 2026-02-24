@@ -9,17 +9,19 @@ const GetAllProduct = ({ websiteId }: any) => {
     (state: RootState) => state.product,
   );
 
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (!hasFetched && !isProductLoading && (currentWebsite || websiteId)) {
+    if (!hasFetched && !isProductLoading && (currentBusiness || websiteId)) {
       let idtoPass =
-        currentWebsite && currentWebsite._id ? currentWebsite._id : websiteId;
+        currentBusiness && currentBusiness._id
+          ? currentBusiness._id
+          : websiteId;
       dispatch(fetchProducts({ websiteId: String(idtoPass) }));
     }
-  }, [hasFetched, isProductLoading, currentWebsite, dispatch, websiteId]);
+  }, [hasFetched, isProductLoading, currentBusiness, dispatch, websiteId]);
   return null;
 };
 

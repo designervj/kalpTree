@@ -18,7 +18,6 @@ import ProductForm from "./product/forms/ProductForm";
 type Props = { entity: string };
 
 export default function EntityCreateModal({ entity }: Props) {
-
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -27,30 +26,25 @@ export default function EntityCreateModal({ entity }: Props) {
   const { listCategory } = useSelector((state: RootState) => state.category);
   const { listBrand } = useSelector((state: RootState) => state.brand);
 
-  // read tenant and website from redux store so we can include them in payloads
-  const currentWebsite = useSelector(
-    (state: RootState) => state.websites.currentWebsite
-  );
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const currentUser = useSelector((state: RootState) => state.user.user);
 
   const filterCategory = listCategory.filter(
-    (item) => item.websiteId === currentWebsite?._id
+    (item) => item.tenantId === currentBusiness?._id,
   );
+
   const filterBrand = listBrand.filter(
-    (item) => (item as any).websiteId === currentWebsite?._id
+    (item) => (item as any).websiteId === currentBusiness?._id,
   );
- 
+
   const dispatch = useDispatch();
 
-  // Category-specific state derived from MaterialCategory
   const [category, setCategory] = useState<MaterialCategory>({
     name: "",
     icon: "",
     sort_order: 0,
   });
 
-
-  // Brand-specific state derived from MaterialBrandModel
   const [brand, setBrand] = useState<MaterialBrandModel>({
     name: "",
     url: "",
@@ -65,19 +59,6 @@ export default function EntityCreateModal({ entity }: Props) {
     category_id: null,
   });
 
-  const [product, setProduct] = useState<ProductModel>({
-    name: "",
-    description: "",
-    brand_id: undefined,
-    product_category_id: undefined,
-    material_segment_id: undefined,
-    base_price: null,
-    photo: "",
-    ai_summary: null,
-  });
-
-
-  
   // Generic simple state for other entities
   const [name, setName] = useState("");
   const [extra, setExtra] = useState("");
@@ -88,7 +69,7 @@ export default function EntityCreateModal({ entity }: Props) {
     setLoading(false);
     // reset
     setCategory({ name: "", icon: "", sort_order: 0 });
-   
+
     setBrand({ name: "", url: "", description: "", logo: "" });
     setAttribute({
       name: "",
@@ -96,16 +77,6 @@ export default function EntityCreateModal({ entity }: Props) {
       possible_values: [],
       type: undefined,
       category_id: null,
-    });
-    setProduct({
-      name: "",
-      description: "",
-      brand_id: undefined,
-      product_category_id: undefined,
-      material_segment_id: undefined,
-      base_price: null,
-      photo: "",
-      ai_summary: null,
     });
     setName("");
     setExtra("");
@@ -117,7 +88,7 @@ export default function EntityCreateModal({ entity }: Props) {
     setLoading(false);
     setCategory({ name: "", icon: "", sort_order: 0 });
     setBrand({ name: "", url: "", description: "", logo: "" });
-  
+
     setAttribute({
       name: "",
       unit: "",
@@ -125,16 +96,7 @@ export default function EntityCreateModal({ entity }: Props) {
       type: undefined,
       category_id: null,
     });
-    setProduct({
-      name: "",
-      description: "",
-      brand_id: undefined,
-      product_category_id: undefined,
-      material_segment_id: undefined,
-      base_price: null,
-      photo: "",
-      ai_summary: null,
-    });
+
     setName("");
     setExtra("");
     // Auto-open modal when entity prop changes
@@ -152,7 +114,7 @@ export default function EntityCreateModal({ entity }: Props) {
         errs.name = "Name is required";
       if (Number.isNaN(Number(category.sort_order)) || category.sort_order! < 0)
         errs.sort_order = "Sort order must be >= 0";
-    }else if (entity === "brand") {
+    } else if (entity === "brand") {
       if (!brand.name || brand.name.trim() === "")
         errs.name = "Name is required";
       if (brand.url && brand.url.trim() !== "") {
@@ -171,9 +133,6 @@ export default function EntityCreateModal({ entity }: Props) {
       }
     } else if (entity === "attribute") {
       if (!attribute.name || attribute.name.trim() === "")
-        errs.name = "Name is required";
-    } else if (entity === "products") {
-      if (!product.name || product.name.trim() === "")
         errs.name = "Name is required";
     } else {
       if (!name || name.trim() === "") errs.name = "Name is required";
@@ -208,24 +167,13 @@ export default function EntityCreateModal({ entity }: Props) {
     if (entity === "category") {
       // include websiteId and tenantId for multi-tenant scoping
       payload = { ...category } as any;
-      const websiteId = currentWebsite?.websiteId ?? currentWebsite?._id;
-      if (websiteId) payload.websiteId = websiteId;
-      if (currentUser?.tenantId) payload.tenantId = currentUser.tenantId;
-    }  else if (entity === "brand") {
+      if (currentBusiness?._id) payload.tenantId = currentBusiness?._id;
+    } else if (entity === "brand") {
       payload = { ...brand } as any;
-      const websiteId = currentWebsite?.websiteId ?? currentWebsite?._id;
-      if (websiteId) payload.websiteId = websiteId;
-      if (currentUser?.tenantId) payload.tenantId = currentUser.tenantId;
+      if (currentBusiness?._id) payload.tenantId = currentBusiness?._id;
     } else if (entity === "attribute") {
       payload = { ...attribute } as any;
-      const websiteId = currentWebsite?.websiteId ?? currentWebsite?._id;
-      if (websiteId) payload.websiteId = websiteId;
-      if (currentUser?.tenantId) payload.tenantId = currentUser.tenantId;
-    } else if (entity === "products") {
-      payload = { ...product } as any;
-      const websiteId = currentWebsite?.websiteId ?? currentWebsite?._id;
-      if (websiteId) payload.websiteId = websiteId;
-      if (currentUser?.tenantId) payload.tenantId = currentUser.tenantId;
+      if (currentBusiness?._id) payload.tenantId = currentBusiness?._id;
     } else payload = { name, extra };
 
     try {
@@ -253,36 +201,32 @@ export default function EntityCreateModal({ entity }: Props) {
           // backend may return the created item directly or under keys like `item` or `category`
           const created = data?.item ?? data?.category ?? data;
           if (created) {
-            const { addCategory } = await import(
-              "@/hooks/slices/category/CategorySlice"
-            );
+            const { addCategory } =
+              await import("@/hooks/slices/category/CategorySlice");
             dispatch(addCategory(created));
           }
         } else if (entity === "brand") {
           // backend may return the created item directly or under keys like `item` or `brand`
           const created = data?.item ?? data?.brand ?? data;
           if (created) {
-            const { addBrand } = await import(
-              "@/hooks/slices/brand/BrandSlice"
-            );
+            const { addBrand } =
+              await import("@/hooks/slices/brand/BrandSlice");
             dispatch(addBrand(created));
           }
         } else if (entity === "attribute") {
           // backend may return the created item directly or under keys like `item` or `brand`
           const created = data?.item ?? data?.brand ?? data;
           if (created) {
-            const { addAttribute } = await import(
-              "@/hooks/slices/attribute/AttributeSlice"
-            );
+            const { addAttribute } =
+              await import("@/hooks/slices/attribute/AttributeSlice");
             dispatch(addAttribute(created));
           }
         } else if (entity === "products") {
           // backend may return the created item directly or under keys like `item` or `product`
           const created = data?.item ?? data?.product ?? data;
           if (created) {
-            const { addProduct } = await import(
-              "@/hooks/slices/product/ProductSlice"
-            );
+            const { addProduct } =
+              await import("@/hooks/slices/product/ProductSlice");
             dispatch(addProduct(created));
           }
         }
@@ -319,59 +263,54 @@ export default function EntityCreateModal({ entity }: Props) {
             </div>
             <form onSubmit={submit} className="flex flex-col flex-1 min-h-0">
               <div className="px-6 py-4 space-y-4 overflow-y-auto flex-1">
-              {entity === "category" ? (
-                <CategoryForm
-                  category={category}
-                  setCategory={setCategory}
-                  fieldErrors={fieldErrors}
-                />
-              )  : entity === "brand" ? (
-                <BrandForm
-                  brand={brand}
-                  setBrand={setBrand}
-                  fieldErrors={fieldErrors}
-                  handleLogoFile={handleLogoFile}
-                />
-              ) : entity === "attribute" ? (
-                <AttributeForm
-                  attribute={attribute}
-                  setAttribute={setAttribute}
-                  fieldErrors={fieldErrors}
-                  filterCategory={filterCategory}
-                />
-              ) : entity === "products" ? (
-                <ProductForm
-                  product={product}
-                  setProduct={setProduct}
-                  fieldErrors={fieldErrors}
-                  filterCategory={filterCategory}
-                  listBrand={filterBrand}
-                 
-                />
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium">Name</label>
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="mt-1 block w-full rounded-md border p-2"
-                    />
-                  </div>
+                {entity === "category" ? (
+                  <CategoryForm
+                    category={category}
+                    setCategory={setCategory}
+                    fieldErrors={fieldErrors}
+                  />
+                ) : entity === "brand" ? (
+                  <BrandForm
+                    brand={brand}
+                    setBrand={setBrand}
+                    fieldErrors={fieldErrors}
+                    handleLogoFile={handleLogoFile}
+                  />
+                ) : entity === "attribute" ? (
+                  <AttributeForm
+                    attribute={attribute}
+                    setAttribute={setAttribute}
+                    fieldErrors={fieldErrors}
+                    filterCategory={filterCategory}
+                  />
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium">Name</label>
+                      <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="mt-1 block w-full rounded-md border p-2"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium">Extra</label>
-                    <input
-                      value={extra}
-                      onChange={(e) => setExtra(e.target.value)}
-                      className="mt-1 block w-full rounded-md border p-2"
-                    />
-                  </div>
-                </>
-              )}
+                    <div>
+                      <label className="block text-sm font-medium">Extra</label>
+                      <input
+                        value={extra}
+                        onChange={(e) => setExtra(e.target.value)}
+                        className="mt-1 block w-full rounded-md border p-2"
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
-              {error && <div className="px-6 py-2 text-sm text-destructive">{error}</div>}
+              {error && (
+                <div className="px-6 py-2 text-sm text-destructive">
+                  {error}
+                </div>
+              )}
 
               <div className="px-6 py-4 border-t flex items-center gap-2 bg-gray-50">
                 <button
@@ -381,7 +320,11 @@ export default function EntityCreateModal({ entity }: Props) {
                 >
                   {loading ? "Creating…" : "Create"}
                 </button>
-                <button type="button" className="text-sm hover:underline" onClick={close}>
+                <button
+                  type="button"
+                  className="text-sm hover:underline"
+                  onClick={close}
+                >
                   Cancel
                 </button>
               </div>

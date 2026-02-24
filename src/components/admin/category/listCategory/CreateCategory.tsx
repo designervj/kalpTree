@@ -146,7 +146,9 @@ const SectionCard = ({
         )}
         <div>
           <h2 className="text-sm font-semibold text-slate-900">{title}</h2>
-          {subtitle ? <p className="text-xs text-slate-500">{subtitle}</p> : null}
+          {subtitle ? (
+            <p className="text-xs text-slate-500">{subtitle}</p>
+          ) : null}
         </div>
       </div>
     </div>
@@ -165,7 +167,9 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
   return (
     <div>
       <div className="mb-3 flex items-center justify-between">
-        <label className="text-sm font-medium text-slate-700">Category Layout</label>
+        <label className="text-sm font-medium text-slate-700">
+          Category Layout
+        </label>
         <span className="text-xs text-slate-500">Pick one layout style</span>
       </div>
 
@@ -184,7 +188,7 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
                 "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                 isSelected
                   ? "border-primary/40 bg-primary/[0.04] shadow-sm ring-1 ring-primary/10"
-                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm",
               )}
             >
               {/* Preview */}
@@ -193,7 +197,7 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
                   "mb-3 h-20 w-full overflow-hidden rounded-lg border transition-colors",
                   isSelected
                     ? "border-primary/20 bg-primary/10 text-primary"
-                    : "border-slate-200 bg-slate-50 text-slate-400 group-hover:bg-slate-100"
+                    : "border-slate-200 bg-slate-50 text-slate-400 group-hover:bg-slate-100",
                 )}
               >
                 {layout.preview}
@@ -204,7 +208,7 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
                 <span
                   className={cn(
                     "transition-colors",
-                    isSelected ? "text-primary" : "text-slate-500"
+                    isSelected ? "text-primary" : "text-slate-500",
                   )}
                 >
                   {layout.icon}
@@ -212,14 +216,16 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
                 <span
                   className={cn(
                     "text-sm font-semibold",
-                    isSelected ? "text-primary" : "text-slate-800"
+                    isSelected ? "text-primary" : "text-slate-800",
                   )}
                 >
                   {layout.label}
                 </span>
               </div>
 
-              <p className="text-xs leading-snug text-slate-500">{layout.description}</p>
+              <p className="text-xs leading-snug text-slate-500">
+                {layout.description}
+              </p>
 
               {/* selected badge */}
               {isSelected && (
@@ -239,7 +245,7 @@ const LayoutSelector = ({ selected, onChange }: LayoutSelectorProps) => {
 
 const CreateCategory = () => {
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
@@ -249,8 +255,7 @@ const CreateCategory = () => {
     name: "",
     icon: "",
     sort_order: 0,
-    websiteId: currentWebsite?._id,
-    tenantId: user?.tenantId,
+    tenantId: currentBusiness?._id,
     parentCategoryId: "",
   });
 
@@ -260,7 +265,7 @@ const CreateCategory = () => {
 
   const selectedLayoutMeta = useMemo(
     () => LAYOUT_OPTIONS.find((l) => l.id === selectedLayout),
-    [selectedLayout]
+    [selectedLayout],
   );
 
   const handleSave = async () => {
@@ -372,7 +377,10 @@ const CreateCategory = () => {
             subtitle="This controls how category items will be shown"
             icon={<PanelTop className="h-4 w-4" />}
           >
-            <LayoutSelector selected={selectedLayout} onChange={setSelectedLayout} />
+            <LayoutSelector
+              selected={selectedLayout}
+              onChange={setSelectedLayout}
+            />
           </SectionCard>
 
           {/* Preview Summary */}

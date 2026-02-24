@@ -6,18 +6,19 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const GetAllWebsiteHeader = () => {
        const { currentHeader, hasFetched } = useSelector((state: RootState) => state.header);
-    const { currentWebsite } = useSelector((state: RootState) => state.websites);
+    const { currentBusiness } = useSelector((state: RootState) => state.business);
+    
    
     const dispatch = useDispatch<AppDispatch>();
     // fetch the current header based on tenantId
     useEffect(() => {
         if (currentHeader == null &&
-            currentWebsite &&
-            currentWebsite._id &&
-            currentWebsite.tenantId) {
-            dispatch(fetchWebsiteCurrentHeaders({ tenantId: currentWebsite.tenantId, websiteId: currentWebsite._id }));
+            currentBusiness &&
+            currentBusiness._id &&
+            currentBusiness.tenantId) {
+            dispatch(fetchWebsiteCurrentHeaders({ tenantId: currentBusiness.tenantId}));
         }
-    }, [currentHeader, currentWebsite]);
+    }, [currentHeader, currentBusiness]);
   return (
    null
   )

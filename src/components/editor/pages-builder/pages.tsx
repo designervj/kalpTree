@@ -146,7 +146,6 @@ export default function Pages({
   const [comingSoon, setComingSoon] = React.useState(false);
   const { websitePages } = useSelector((state: RootState) => state.websitePage);
   const dispatch = useDispatch<AppDispatch>();
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const { listCategory } = useSelector((state: RootState) => state.category);

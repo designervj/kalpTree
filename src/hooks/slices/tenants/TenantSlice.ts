@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Website } from "@/components/admin/AppShell";
 
 interface TenantState {
   tenants: any[];
@@ -17,7 +16,6 @@ const tenantsSlice = createSlice({
   reducers: {
     setTenants(state, action: PayloadAction<any[]>) {
       state.tenants = action.payload;
-      // If currentWebsite is not set, pick the first one
       if (!state.currentTenants && action.payload.length > 0) {
         state.currentTenants = action.payload[0];
       }

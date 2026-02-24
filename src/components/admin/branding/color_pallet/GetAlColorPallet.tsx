@@ -12,7 +12,7 @@ const GetAlColorPallet = () => {
   const { colorPallets, isFetched } = useSelector(
     (state: RootState) => state.colorPallet,
   );
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const dispatch = useDispatch<AppDispatch>();

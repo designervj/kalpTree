@@ -456,13 +456,13 @@ function SidebarNav({
 
 function ProductsPage() {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const { user } = useSelector((state: RootState) => state.user);
   const handleImport = async (data: any) => {
     try {
       const res = await fetch(
-        `/api/admin/product/bulk?websiteId=${currentWebsite?._id}&tenantId=${currentWebsite?.tenantId}`,
+        `/api/admin/product/bulk?tenantId=${currentBusiness?._id}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

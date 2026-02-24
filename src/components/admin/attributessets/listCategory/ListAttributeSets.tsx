@@ -25,7 +25,7 @@ const ListAttributeSets = () => {
     (state: RootState) => state.attributeSets,
   );
   const { user } = useSelector((state: RootState) => state.user);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const dispatch = useDispatch<AppDispatch>();
   // const { toast } = useToast();
   const router = useRouter();
@@ -46,8 +46,7 @@ const ListAttributeSets = () => {
       categoryId: "",
       attributes: [],
       sort_order: 0,
-      websiteId: String(currentWebsite?._id),
-      tenantId: user?.tenantId,
+      tenantId: String(currentBusiness?._id),
     });
     setFieldErrors({});
     setIsAddDialogOpen(true);
@@ -120,18 +119,18 @@ const ListAttributeSets = () => {
 
   const filteredAttributeSets = useMemo(() => {
     if (
-      currentWebsite &&
-      currentWebsite._id &&
+      currentBusiness &&
+      currentBusiness._id &&
       listAttributeSets &&
       listAttributeSets.length > 0
     ) {
       const list = listAttributeSets.filter(
-        (item: any) => item.websiteId === currentWebsite._id,
+        (item: any) => item.tenantId === currentBusiness._id,
       );
       return list.length > 0 ? list : listAttributeSets;
     }
     return [];
-  }, [currentWebsite, listAttributeSets]);
+  }, [currentBusiness, listAttributeSets]);
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;

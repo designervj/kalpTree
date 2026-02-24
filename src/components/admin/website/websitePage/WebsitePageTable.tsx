@@ -77,12 +77,6 @@ const WebsitePageTable = () => {
     if (!currentBusiness?.website?.primaryDomain) {
       return;
     }
-    // const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
-    //   ? currentWebsite?.primaryDomain[0]
-    //   : currentWebsite?.primaryDomain;
-
-    // const localsub =
-    //   typeof currentSubdomain === "string" ? currentSubdomain.split(".")[0] : "";
     const isLocalHost = window.location.hostname.includes("localhost");
 
     if (isLocalHost) {

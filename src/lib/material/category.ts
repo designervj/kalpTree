@@ -17,12 +17,6 @@ export async function createCategory(
   const db = await getDatabase();
   const col = db.collection<MaterialCategory>(COLLECTION);
 
-  // prevent duplicate name (case-insensitive)
-  // const exists = await col.findOne({
-  //   name: { $regex: `^${escapeRegExp(data.name)}$`, $options: "i" },
-  // });
-  // if (exists) throw new Error("Category with same name already exists");
-
   const now = new Date();
 
   const doc: MaterialCategory = {

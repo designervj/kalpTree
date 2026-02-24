@@ -24,7 +24,6 @@ import ShowHeaderHtml from "./ShowHeaderHtml";
 const ShowHeader = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { allHeader } = useSelector((state: RootState) => state.header);
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
   const { curretAgency } = useSelector((state: RootState) => state.agency);
 
@@ -35,7 +34,7 @@ const ShowHeader = () => {
 
   // ✅ this will control: list vs focused preview
   const [selectedHeader, setSelectedHeader] = useState<TemplateDocument | null>(
-    null
+    null,
   );
 
   const totalTemplates = useMemo(() => allHeader?.length || 0, [allHeader]);
@@ -68,7 +67,7 @@ const ShowHeader = () => {
   }, [isModalOpen]);
 
   const handleSaveHeader = async (header: TemplateDocument) => {
-    if (!currentWebsite?._id || !currentWebsite?.tenantId) {
+    if (!currentBusiness?._id) {
       toast.error("Please select a website first");
       return;
     }
@@ -82,8 +81,7 @@ const ShowHeader = () => {
 
     const data = {
       slug: header.slug,
-      tenantId: currentWebsite.tenantId,
-      websiteId: currentWebsite._id,
+      tenantId: currentBusiness._id,
       content: header.content,
     };
 
@@ -105,7 +103,7 @@ const ShowHeader = () => {
 
   const handleAddHeader = () => {
     router.push(
-      `/admin/websites/${currentWebsite?.primaryDomain?.[0]}/website/header/create?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`
+      `/admin/websites/${currentBusiness?.website?.primaryDomain?.[0]}/website/header/create?businessid=${currentBusiness?._id}&agencyid=${curretAgency?._id}`,
     );
   };
 
@@ -167,7 +165,8 @@ const ShowHeader = () => {
                     <p className="mt-1 text-sm text-slate-600">
                       Browse and apply a header template to{" "}
                       <span className="font-medium text-slate-800">
-                        {currentWebsite?.primaryDomain?.[0] || "selected website"}
+                        {currentBusiness?.website?.primaryDomain?.[0] ||
+                          "selected website"}
                       </span>
                     </p>
                   </div>
@@ -324,7 +323,9 @@ const ShowHeader = () => {
                                   </div>
 
                                   <div className="h-[220px] overflow-auto bg-white">
-                                    <ShowHeaderHtml html={header?.content || ""} />
+                                    <ShowHeaderHtml
+                                      html={header?.content || ""}
+                                    />
                                   </div>
                                 </div>
 

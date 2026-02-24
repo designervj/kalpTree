@@ -4,12 +4,9 @@ import { Website } from "../admin/AppShell";
 import { WebsitePageModel } from "../admin/website/websitePage/WebsitePageType";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
-import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 import { setAllWebsitePages } from "@/hooks/slices/website/websitePageSlice";
 import GrapesJSEditor from "../editor";
 import { setPageEdit } from "@/hooks/slices/pageEditSlice";
-import { fetchHeaders } from "@/hooks/slices/header/HeaderThunk";
-import { fetchFooters } from "@/hooks/slices/footer/FooterThunk";
 import GetGlobalStyle from "../admin/settings/global-styles/GetGlobalStyle";
 import { HeaderDataModel } from "../admin/header/HeaderType";
 import { TemplateDocument } from "../admin/templates/TemplateType";
@@ -30,9 +27,6 @@ const WebsiteBuilder = ({
   search,
   headerData,
 }: WebsiteBuilderProps) => {
-  const { currentWebsite: currentWebsiteData } = useSelector(
-    (state: RootState) => state.websites,
-  );
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const { websitePages } = useSelector((state: RootState) => state.websitePage);
@@ -48,7 +42,6 @@ const WebsiteBuilder = ({
 
   // add pages to redux
   useEffect(() => {
-
     // Set pages to redux if not already set
     if (websitePages.length == 0 && pages.length > 0) {
       dispatch(setAllWebsitePages(pages));
@@ -93,28 +86,18 @@ const WebsiteBuilder = ({
     }
   }, [websitePages, pages, search, dispatch]);
 
-
   // get Header
   useEffect(() => {
-    if (currentWebsiteData && currentHeader == null) {
+    if (currentBusiness && currentHeader == null) {
       dispatch(setCurrentHeader(headerData));
-      // dispatch(fetchHeaders({ websiteId: currentWebsiteData._id }))
     }
-  }, [currentWebsiteData, currentHeader, dispatch]);
+  }, [currentBusiness, currentHeader, dispatch]);
 
-  // get  footer
-  // useEffect(() => {
-  //     if (currentWebsiteData && currentFooter == null) {
-  //        dispatch(setCurrentFooter(footerData))
-  //         // dispatch(fetchFooters({ websiteId: currentWebsiteData._id }))
-  //     }
-  // }, [currentWebsiteData, currentFooter, dispatch])
 
   return (
     <>
       <GetGlobalStyle />
       <GrapesJSEditor />
-      {/* <GetGlobalStyle /> */}
     </>
   );
 };

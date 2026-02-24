@@ -1,6 +1,6 @@
 import { usePathname } from "next/navigation";
 import {
-  currentWebsiteSections,
+  currenBusinessSections,
   sectionIconMap,
   useHasPermission,
   User,
@@ -26,25 +26,26 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { IUser } from "@/models/user";
+import { IBusiness } from "@/models/business";
 
 type MobileSidebarProps = {
-  websites: Website[];
-  currentWebsite: Website | null;
+  business: IBusiness[];
+  currentBusiness: IBusiness | null;
   user: User | IUser | null;
 };
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function MobileSidebar({
-  websites,
-  currentWebsite,
+  business,
+  currentBusiness,
   user,
 }: MobileSidebarProps) {
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
 
   const filteredWebsiteSections = React.useMemo(() => {
-    return currentWebsiteSections
+    return currenBusinessSections
       .map((section) => ({
         ...section,
         items: section.items.filter((item) => hasPermission(item.permission)),
@@ -62,17 +63,17 @@ export function MobileSidebar({
 
   return (
     <div className="flex flex-col h-full">
-      {websites.length > 0 && (
+      {business.length > 0 && (
         <div className="p-3 border-b">
           <Select
-            value={currentWebsite?._id?.toString() || ""}
+            value={currentBusiness?._id?.toString() || ""}
             // onValueChange={onWebsiteChange}
           >
             <SelectTrigger className="h-10 w-full rounded-md">
               <SelectValue placeholder="Select website" />
             </SelectTrigger>
             <SelectContent>
-              {websites.map((site) => (
+              {business.map((site) => (
                 <SelectItem
                   key={site._id?.toString()}
                   value={site._id?.toString() || ""}
@@ -80,7 +81,8 @@ export function MobileSidebar({
                   <div className="flex flex-col">
                     <span className="text-xs font-medium">{site.name}</span>
                     <span className="text-[11px] text-muted-foreground">
-                      {site.primaryDomain || site.systemSubdomain}
+                      {site.website?.primaryDomain ||
+                        site.website?.systemSubdomain}
                     </span>
                   </div>
                 </SelectItem>
@@ -92,7 +94,7 @@ export function MobileSidebar({
 
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-3">
-          {!currentWebsite ? (
+          {!currentBusiness ? (
             <div className="text-sm text-muted-foreground px-2 py-4">
               Select website
             </div>

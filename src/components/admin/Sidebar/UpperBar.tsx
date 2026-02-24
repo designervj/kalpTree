@@ -2,14 +2,12 @@
 
 import { AppDispatch, RootState } from "@/store/store";
 import { useDispatch, useSelector } from "react-redux";
-import { cn } from "@/lib/utils";
 
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "@/components/ui/select";
 
 import { Building2, ChevronDown, Globe2 } from "lucide-react";
@@ -19,11 +17,7 @@ import {
   setCurrentBusiness,
   setSelectedBusiness,
 } from "@/hooks/slices/business/BusinessSlice";
-import {
-  setCurrentWebsite,
-  setSelectedWebsite,
-} from "@/hooks/slices/websites/WebsiteSlice";
-import { IBusiness } from "@/models/business";
+
 import { useEffect, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
@@ -45,15 +39,13 @@ export const UpperBar = () => {
   const { allBusiness, currentBusiness, allSelectedBusiness } = useSelector(
     (state: RootState) => state.business,
   );
-  const { websites, currentWebsite, selectedWebsites } = useSelector(
-    (state: RootState) => state.websites,
-  );
+
   const dispatch = useDispatch<AppDispatch>();
 
   const router = useRouter();
   const pathName = usePathname();
 
-  console.log(currentBusiness)
+  console.log(currentBusiness);
 
   const searchParams = useSearchParams();
   const agencyId = searchParams.get("agencyid");
@@ -66,9 +58,7 @@ export const UpperBar = () => {
       agencies.length > 0 &&
       businessId &&
       allBusiness &&
-      allBusiness.length > 0 &&
-      websites &&
-      websites.length > 0
+      allBusiness.length > 0
     ) {
       const currentAgency = agencies.find((a) => a._id === agencyId);
 
@@ -79,28 +69,13 @@ export const UpperBar = () => {
         if (currentBusiness) {
           dispatch(setCurrentBusiness(currentBusiness));
         }
-        // const currentWebsite = websites.find(
-        //   (w) => w.tenantId === currentBusiness?._id,
-        // );
-
-        // if (currentWebsite) {
-        //   dispatch(setCurrentWebsite(currentWebsite));
-        // }
       }
     }
-  }, [agencyId, agencies, businessId, allBusiness, websites]);
+  }, [agencyId, agencies, businessId, allBusiness]);
 
   const updatedAllBusiness = useMemo(() => {
     return allSelectedBusiness;
   }, [allSelectedBusiness]);
-
-  const updatedAllWebsites = useMemo(() => {
-    return selectedWebsites;
-  }, [selectedWebsites]);
-
-  const updatedCurrentWebsite = useMemo(() => {
-    return currentWebsite;
-  }, [currentWebsite]);
 
   const handleAgencyChange = (agencyId: string) => {
     handleResetRedux();
@@ -112,18 +87,8 @@ export const UpperBar = () => {
 
     if (allBus.length === 1) {
       dispatch(setSelectedBusiness(allBus));
-      // dispatch(setCurrentBusiness(allBus[0]))
-      const allWeb = websites.filter(
-        (item) => item.tenantId === allBus[0]?._id,
-      );
-      if (allWeb) {
-        dispatch(setSelectedWebsite(allWeb));
 
-        //dispatch(setCurrentWebsite(allWeb[0]))
-      }
-
-      // Update URL search params
-      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null;
+      const primaryBusiness = allBus[0]?.website?.primaryDomain?.[0] ?? null;
 
       const params = new URLSearchParams(searchParams.toString());
       params.set("agencyid", agencyId);
@@ -132,15 +97,8 @@ export const UpperBar = () => {
       router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
     } else if (allBus.length > 1) {
       dispatch(setSelectedBusiness(allBus));
-      // dispatch(setCurrentBusiness(allBus[0]))
-      const allWeb = websites.filter(
-        (item) => item.tenantId === allBus[0]?.tenantId,
-      );
-      if (allWeb) {
-        dispatch(setSelectedWebsite(allWeb));
-        // dispatch(setCurrentWebsite(allWeb[0]))
-      }
-      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null;
+
+      const primaryBusiness = allBus[0]?.website?.primaryDomain?.[0] ?? null;
       // Update URL search params
       const params = new URLSearchParams(searchParams.toString());
       params.set("agencyid", agencyId);
@@ -156,23 +114,11 @@ export const UpperBar = () => {
     params.set("businessid", business?._id?.toString() || "");
     params.set("agencyid", business?.tenantId?.toString() || "");
     dispatch(setCurrentBusiness(business || null));
-    const allWeb = websites.filter((item) => item.tenantId === business?._id);
-    if (allWeb) {
-      dispatch(setSelectedWebsite(allWeb));
-      dispatch(setCurrentWebsite(allWeb[0]));
-      const primaryBusiness = allWeb[0]?.primaryDomain?.[0] ?? null;
+
+    if (business) {
+      const primaryBusiness = business?.website?.primaryDomain?.[0] ?? null;
       router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
     }
-  };
-
-  const handleWebsiteChange = (websiteId: string) => {
-    const website = websites.find((w) => w._id?.toString() === websiteId);
-    dispatch(setCurrentWebsite(website || null));
-    const params = new URLSearchParams(searchParams.toString());
-    const primaryBusiness = website?.primaryDomain?.[0] ?? null;
-    params.set("businessid", currentBusiness?._id?.toString() || "");
-    params.set("agencyid", curretAgency?._id?.toString() || "");
-    router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
   };
 
   const handleResetRedux = () => {
@@ -267,45 +213,6 @@ export const UpperBar = () => {
             </SelectContent>
           </Select>
         )}
-
-      {/* {updatedAllWebsites.length > 0 && (
-        <Select
-          value={updatedCurrentWebsite?._id?.toString() ?? ""}
-          onValueChange={(websiteId) => {
-            handleWebsiteChange(websiteId);
-          }}
-        >
-          <SelectTrigger className="h-10 min-w-[260px] rounded-md border border-gray-300 bg-white px-3 focus:ring-2 focus:ring-gray-600">
-            <div className="flex items-center justify-between w-full gap-2">
-              <div className="flex items-center gap-2 truncate">
-                <Globe2 className="h-4 w-4 text-muted-foreground" />
-                <span className="truncate font-medium">
-                  {currentWebsite?.name || "Select Website"}
-                </span>
-              </div>
-            </div>
-          </SelectTrigger>
-
-          <SelectContent className="w-auto">
-            <div className="px-3 py-2 text-xs text-muted-foreground">
-              Websites
-            </div>
-            {selectedWebsites.map((site) => (
-              <SelectItem
-                key={site._id?.toString()}
-                value={site._id?.toString() ?? ""}
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium">{site.name} a</span>
-                  <span className="text-xs text-muted-foreground">
-                    {site.primaryDomain || site.systemSubdomain}
-                  </span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )} */}
     </div>
   );
 };

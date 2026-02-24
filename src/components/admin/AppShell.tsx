@@ -190,7 +190,7 @@ type NavSection = {
   permission?: string;
 };
 
-export const currentWebsiteSections: NavSection[] = [
+export const currenBusinessSections: NavSection[] = [
   {
     id: "dashboard-overview",
     label: "Overview",
@@ -871,11 +871,9 @@ export function AppShell({ children }: AppShellProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  const { websites, currentWebsite } = useSelector(
-    (state: RootState) => state.websites,
-  );
-  const { currentBusiness } = useSelector((state: RootState) => state.business);
-  // const {currentbusiness,currentAgency} = useSelector((state: RootState) => state.dashboardDetails);
+
+  const { currentBusiness, allBusiness } = useSelector((state: RootState) => state.business);
+
   const router = useRouter();
 
   const param = useParams();
@@ -1184,8 +1182,8 @@ export function AppShell({ children }: AppShellProps) {
 
                   {isHighLevelCollapsed && (
                     <MobileSidebar
-                      websites={websites}
-                      currentWebsite={currentWebsite}
+                      business={allBusiness}
+                      currentBusiness={currentBusiness}
                       user={user}
                       // onWebsiteChange={(websiteId) => {
                       //   onWebsiteChange(websiteId);

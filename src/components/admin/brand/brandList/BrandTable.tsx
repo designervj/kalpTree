@@ -1,40 +1,47 @@
 "use client";
 
-import React, { useMemo, useState } from 'react'
-import { MaterialBrandModel } from '../types/brandModel';
-import { DataTableExt } from '../../DataTableExt';
+import React, { useMemo, useState } from "react";
+import { MaterialBrandModel } from "../types/brandModel";
+import { DataTableExt } from "../../DataTableExt";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import BrandForm from '../forms/BrandForm';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store/store';
-import { useToast } from '@/hooks/use-toast';
-import { useRouter } from 'next/navigation';
-import { addBrand } from '@/hooks/slices/brand/BrandSlice';
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import BrandForm from "../forms/BrandForm";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
+import { addBrand } from "@/hooks/slices/brand/BrandSlice";
 
 const BrandTable = () => {
-
   const dispatch = useDispatch<AppDispatch>();
-    const { toast } = useToast();
+  const { toast } = useToast();
   const router = useRouter();
   const { user } = useSelector((state: RootState) => state.user);
- const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingBrand, setEditingBrand] = useState<MaterialBrandModel | null>(null);
+  const [editingBrand, setEditingBrand] = useState<MaterialBrandModel | null>(
+    null,
+  );
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newBrand, setNewBrand] = useState<MaterialBrandModel | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
-    const { listBrand, isBrandLoading } = useSelector(
-    (state: RootState) => state.brand
+  const { listBrand, isBrandLoading } = useSelector(
+    (state: RootState) => state.brand,
   );
   const handleAdd = () => {
-    setNewBrand({ name: '', url: '', description: '', logo: '',websiteId:currentWebsite?._id,tenantId:user?.tenantId });
+    setNewBrand({
+      name: "",
+      url: "",
+      description: "",
+      logo: "",
+      tenantId: currentBusiness?._id,
+    });
     setFieldErrors({});
     setIsAddDialogOpen(true);
   };
@@ -44,28 +51,28 @@ const BrandTable = () => {
     setFieldErrors({});
     const errors: Record<string, string> = {};
     if (!newBrand.name?.trim()) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
     }
     if (!newBrand.url?.trim()) {
-      errors.url = 'URL is required';
+      errors.url = "URL is required";
     }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
       return;
     }
     setIsSaving(true);
-    const data= {...newBrand,
-      websiteId:currentWebsite?._id,
-      tenantId:user?.tenantId
-    }
+    const data = {
+      ...newBrand,
+      tenantId: user?.tenantId,
+    };
     try {
       const res = await fetch(`/api/admin/brand`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newBrand),
       });
-        const data = await res.json().catch(() => null);
- if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
         const msg =
           data?.error ??
           data?.message ??
@@ -73,15 +80,22 @@ const BrandTable = () => {
           "Failed to create";
         throw new Error(msg);
       }
-         const created = data?.item ?? data;
-      toast({ title: 'Created', description: `Brand ${newBrand.name} created successfully` });
+      const created = data?.item ?? data;
+      toast({
+        title: "Created",
+        description: `Brand ${newBrand.name} created successfully`,
+      });
       setIsAddDialogOpen(false);
       setNewBrand(null);
-       dispatch(addBrand(created));
+      dispatch(addBrand(created));
       // window.location.reload();
     } catch (err: any) {
-      console.error('Failed to create brand', err);
-      toast({ title: 'Create failed', description: String(err?.message || err), variant: 'destructive' });
+      console.error("Failed to create brand", err);
+      toast({
+        title: "Create failed",
+        description: String(err?.message || err),
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -100,10 +114,10 @@ const BrandTable = () => {
     setFieldErrors({});
     const errors: Record<string, string> = {};
     if (!editingBrand.name?.trim()) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
     }
     if (!editingBrand.url?.trim()) {
-      errors.url = 'URL is required';
+      errors.url = "URL is required";
     }
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors);
@@ -114,12 +128,12 @@ const BrandTable = () => {
       const id = (editingBrand as any)._id ?? (editingBrand as any).id;
       const { _id, ...updateData } = editingBrand as any;
       const res = await fetch(`/api/admin/brand`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...updateData, id }),
       });
-          const data = await res.json().catch(() => null);
- if (!res.ok) {
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
         const msg =
           data?.error ??
           data?.message ??
@@ -127,15 +141,22 @@ const BrandTable = () => {
           "Failed to create";
         throw new Error(msg);
       }
-         const created = data?.item ?? data;
-      toast({ title: 'Updated', description: `Brand ${editingBrand.name} updated successfully` });
+      const created = data?.item ?? data;
+      toast({
+        title: "Updated",
+        description: `Brand ${editingBrand.name} updated successfully`,
+      });
       setIsEditDialogOpen(false);
       setEditingBrand(null);
-       dispatch(addBrand(created));
+      dispatch(addBrand(created));
       // window.location.reload();
     } catch (err: any) {
-      console.error('Failed to update brand', err);
-      toast({ title: 'Update failed', description: String(err?.message || err), variant: 'destructive' });
+      console.error("Failed to update brand", err);
+      toast({
+        title: "Update failed",
+        description: String(err?.message || err),
+        variant: "destructive",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -143,23 +164,23 @@ const BrandTable = () => {
 
   const product_brand = useMemo(() => {
     if (
-      currentWebsite &&
-      currentWebsite._id &&
+      currentBusiness &&
+      currentBusiness._id &&
       listBrand &&
       listBrand.length > 0
     ) {
       const list = listBrand.filter(
-        (item) => item.websiteId === currentWebsite._id
+        (item) => item.tenantId === currentBusiness._id,
       );
       return list.length > 0 ? list : listBrand;
     }
     return [];
-  }, [currentWebsite, listBrand]);
+  }, [currentBusiness, listBrand]);
 
   const handleDelete = async (row: any) => {
     const id = row?._id ?? row?.id;
     if (!id) {
-      toast({ title: 'Delete failed', description: 'Missing id' });
+      toast({ title: "Delete failed", description: "Missing id" });
       return;
     }
 
@@ -168,33 +189,37 @@ const BrandTable = () => {
 
     try {
       const res = await fetch(`/api/admin/brand?id=${id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error || `HTTP ${res.status}`);
       }
-     // dispatch(removeCategory(id));
-      toast({ title: 'Deleted', description: `Brand ${row?.name ?? id} removed` });
+      // dispatch(removeCategory(id));
+      toast({
+        title: "Deleted",
+        description: `Brand ${row?.name ?? id} removed`,
+      });
     } catch (err: any) {
-      console.error('Failed to delete category', err);
-      toast({ title: 'Delete failed', description: String(err?.message || err) });
+      console.error("Failed to delete category", err);
+      toast({
+        title: "Delete failed",
+        description: String(err?.message || err),
+      });
     }
   };
 
-
-
   const initialColumns = [
-    { key: '_id', label: 'ID', hidden: true },
-    { key: 'id', label: 'ID', hidden: true },
-    { key: 'name', label: 'Name' },
-    { key: 'url', label: 'URL' },
-    { key: 'description', label: 'Description' },
-    { key: 'logo', label: 'Logo' },
-    { key: 'websiteId', label: 'Website ID' },
-    { key: 'tenantId', label: 'Tenant ID' },
-    { key: 'created_at', label: 'Created' },
-    { key: 'updated_at', label: 'Updated' },
+    { key: "_id", label: "ID", hidden: true },
+    { key: "id", label: "ID", hidden: true },
+    { key: "name", label: "Name" },
+    { key: "url", label: "URL" },
+    { key: "description", label: "Description" },
+    { key: "logo", label: "Logo" },
+    { key: "websiteId", label: "Website ID" },
+    { key: "tenantId", label: "Tenant ID" },
+    { key: "created_at", label: "Created" },
+    { key: "updated_at", label: "Updated" },
   ];
   return (
     <div>
@@ -218,9 +243,9 @@ const BrandTable = () => {
             <div className="space-y-4">
               <BrandForm
                 brand={newBrand}
-                setBrand={value => {
-                  if (typeof value === 'function') {
-                    setNewBrand(prev => prev ? value(prev) : prev);
+                setBrand={(value) => {
+                  if (typeof value === "function") {
+                    setNewBrand((prev) => (prev ? value(prev) : prev));
                   } else {
                     setNewBrand(value);
                   }
@@ -239,11 +264,8 @@ const BrandTable = () => {
                 >
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleSaveAdd}
-                  disabled={isSaving}
-                >
-                  {isSaving ? 'Saving...' : 'Add Brand'}
+                <Button onClick={handleSaveAdd} disabled={isSaving}>
+                  {isSaving ? "Saving..." : "Add Brand"}
                 </Button>
               </div>
             </div>
@@ -261,9 +283,9 @@ const BrandTable = () => {
             <div className="space-y-4">
               <BrandForm
                 brand={editingBrand}
-                setBrand={value => {
-                  if (typeof value === 'function') {
-                    setEditingBrand(prev => prev ? value(prev) : null);
+                setBrand={(value) => {
+                  if (typeof value === "function") {
+                    setEditingBrand((prev) => (prev ? value(prev) : null));
                   } else {
                     setEditingBrand(value);
                   }
@@ -282,11 +304,8 @@ const BrandTable = () => {
                 >
                   Cancel
                 </Button>
-                <Button
-                  onClick={handleSaveEdit}
-                  disabled={isSaving}
-                >
-                  {isSaving ? 'Saving...' : 'Save Changes'}
+                <Button onClick={handleSaveEdit} disabled={isSaving}>
+                  {isSaving ? "Saving..." : "Save Changes"}
                 </Button>
               </div>
             </div>
@@ -294,7 +313,7 @@ const BrandTable = () => {
         </DialogContent>
       </Dialog>
     </div>
-  )
-}
+  );
+};
 
-export default BrandTable
+export default BrandTable;
