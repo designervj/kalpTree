@@ -45,32 +45,29 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
   onToggleFavorite,
   editor,
 }) => {
+  console.log("block--->", block);
   const blockId = block?.id ?? "";
 
   const handleDragStart = (e: React.DragEvent) => {
     if (!editor) return;
 
-    // Use editor.Blocks or editor.BlockManager (aliases)
     const blockManager = editor.Blocks || editor.BlockManager;
     const blockModel = blockManager?.get(blockId);
 
-    if (blockModel) {
-      // 1. Set as the current dragging block in GrapesJS
+    if (blockModel && blockManager.startDrag) {
+      // Use native GrapesJS startDrag which manages the command and engine
+      blockManager.startDrag(blockModel, e.nativeEvent);
+    } else if (blockModel) {
+      // Fallback for older versions
       if (typeof (editor as any).setDragBlock === "function") {
         (editor as any).setDragBlock(blockModel);
-      } else if (typeof blockManager?.setDragBlock === "function") {
-        blockManager.setDragBlock(blockModel);
       }
-
-      // 2. Start the drag command (common in v0.17+)
       try {
         editor.runCommand("block:drag", {
           block: blockModel,
           event: e.nativeEvent,
         });
       } catch (err) {
-        // Fallback for older versions or different command naming
-        console.warn("GrapesJS: 'block:drag' command failed, falling back to events");
         editor.trigger("block:drag:start", blockModel, e.nativeEvent);
       }
     }
@@ -79,37 +76,29 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
   const handleDragEnd = (e: React.DragEvent) => {
     if (!editor) return;
     const blockManager = editor.Blocks || editor.BlockManager;
-    const blockId = block?.id ?? "";
     const blockModel = blockManager?.get(blockId);
 
-    // Clean up drag state
-    try {
-      editor.stopCommand("block:drag");
-    } catch (err) {
-      // Ignore
-    }
-    editor.trigger("block:drag:stop", blockModel, e.nativeEvent);
-
-    if (blockModel) {
-      const content = blockModel.get("content");
-      if (content) {
-        // Get the drop position from the canvas
-        const position = editor.Canvas.getDropPosition(e);
-        const { target, index } = position;
-
-        // Add the component at the drop position
-        editor.addComponents(content, {
-          at: index,
-          target: target || editor.getWrapper(),
-        });
-
-        console.log("Block added at position:", position);
+    if (blockManager.endDrag) {
+      // Native GrapesJS endDrag (handles drop automatically if over canvas)
+      blockManager.endDrag();
+    } else {
+      // Fallback cleanup
+      try {
+        editor.stopCommand("block:drag");
+      } catch (err) { }
+      editor.trigger("block:drag:stop", blockModel, e.nativeEvent);
+      if (typeof (editor as any).setDragBlock === "function") {
+        (editor as any).setDragBlock(null);
       }
     }
 
-    if (typeof (editor as any).setDragBlock === "function") {
-      (editor as any).setDragBlock(null);
-    }
+    console.log("Drag ended for block:", blockId);
+  };
+
+  const handleMouseDown = () => {
+    if (!editor) return;
+    // Refresh canvas to ensure offsets are correct before drag starts
+    editor.refresh();
   };
 
 
@@ -129,6 +118,7 @@ const BlockListItem: React.FC<BlockListItemProps> = ({
       role="button"
       tabIndex={0}
       draggable="true"
+      onMouseDown={handleMouseDown}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onClick={(e) => onToggleSelection(blockId, e)}
