@@ -40,9 +40,9 @@ export const authConfig: NextAuthConfig = {
           let tenantdetail
           if (user.role != "superadmin" ) {
                 const gettenant= await tenantService.getTenantById(user.tenantId?.toString() as string)
-                console.log("gettenant",gettenant)
+               
                  const getWebsite= await tenantService.getWebsiteByDomain(credentials?.domain as string)
-                 console.log("getWebsite",getWebsite)
+             
                  if(!getWebsite){
                   throw new Error("Invalid domain for this user");
                  }
