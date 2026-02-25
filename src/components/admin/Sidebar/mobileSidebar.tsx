@@ -1,6 +1,6 @@
 import { usePathname } from "next/navigation";
 import {
-  currenBusinessSections,
+
   sectionIconMap,
   useHasPermission,
   User,
@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { IUser } from "@/models/user";
 import { IBusiness } from "@/models/business";
+import { currenBusinessSections } from "./util/currenBusinessSections";
 
 type MobileSidebarProps = {
   business: IBusiness[];

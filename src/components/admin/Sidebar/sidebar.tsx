@@ -2,7 +2,6 @@
 
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import {
-  currenBusinessSections,
   FiCloseHint,
   sectionIconMap,
   useHasPermission,
@@ -20,6 +19,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { RootState } from "@/store/store";
 import { useSelector } from "react-redux";
+import { currenBusinessSections } from "./util/currenBusinessSections";
 
 type SidebarProps = {
   collapsed?: boolean;
