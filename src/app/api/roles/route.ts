@@ -6,7 +6,16 @@ import { ObjectId } from "mongodb";
 export async function GET(req: NextRequest) {
   const db = await getDatabase();
   const collection = db.collection("roles");
-  const roles = await collection.find().toArray();
+  const businessid = req.nextUrl.searchParams.get("businessid");
+  if (!businessid) {
+    throw new Error("Business ID is required");
+  }
+  const roles = await collection.find({
+    $or: [
+      { tenantId: businessid },
+      { tenantId: new ObjectId(businessid) }
+    ]
+  }).toArray();
   return NextResponse.json({ items: roles });
 }
 
@@ -15,7 +24,9 @@ export async function POST(req: NextRequest) {
   const collection = db.collection("roles");
   const body = await req.json();
   const roles = await collection.insertOne(body);
-  return NextResponse.json({ items: roles });
+  //  get full object
+  const fullRole = await collection.findOne({ _id: new ObjectId(roles.insertedId) });
+  return NextResponse.json({ items: fullRole });
 }
 // update role  
 export async function PUT(req: NextRequest) {

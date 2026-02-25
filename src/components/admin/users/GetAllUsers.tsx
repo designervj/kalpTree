@@ -1,5 +1,6 @@
 "use client";
-import { getAllUser } from "@/hooks/slices/user/userSlice";
+
+import { getAllUser } from "@/hooks/slices/user/UserThunk";
 import { AppDispatch, RootState } from "@/store/store";
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";

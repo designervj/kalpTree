@@ -10,8 +10,8 @@ export default async function ({
   const id = param.id;
   return (
     <>
-      <GetAllRolePermission />
       <RolesPersmissionForm id={id} />
+      <GetAllRolePermission />
     </>
   );
 }

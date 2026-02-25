@@ -30,6 +30,8 @@ import { clearCategories } from "@/hooks/slices/category/CategorySlice";
 import { clearFooters } from "@/hooks/slices/footer/FooterSlice";
 import { clearProducts } from "@/hooks/slices/product/ProductSlice";
 import { clearWebsitePages } from "@/hooks/slices/website/websitePageSlice";
+import { clearAllUser } from "@/hooks/slices/user/userSlice";
+import { resetFetchAllRolePermission } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 
 export const UpperBar = () => {
   const { user } = useSelector((state: RootState) => state.user);
@@ -45,7 +47,6 @@ export const UpperBar = () => {
   const router = useRouter();
   const pathName = usePathname();
 
-  console.log(currentBusiness);
 
   const searchParams = useSearchParams();
   const agencyId = searchParams.get("agencyid");
@@ -122,8 +123,9 @@ export const UpperBar = () => {
   };
 
   const handleResetRedux = () => {
+    dispatch(clearAllUser());   // clear all associalte all users
     dispatch(clearAttributes());
-
+    dispatch(resetFetchAllRolePermission());  // clear all role permission
     dispatch(clearBrands());
     dispatch(clearCategories());
     dispatch(clearFooters());

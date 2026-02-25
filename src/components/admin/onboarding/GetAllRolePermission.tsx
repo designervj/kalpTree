@@ -1,7 +1,8 @@
 "use client";
 import { fetchRolePermissions } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 import { AppDispatch, RootState } from "@/store/store";
-import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const GetAllRolePermission = () => {
@@ -9,12 +10,26 @@ const GetAllRolePermission = () => {
   const { rolesPermissions, hasFetched, current } = useSelector(
     (state: RootState) => state.rolePermission
   );
+  const {currentBusiness  } = useSelector(
+    (state: RootState) => state.business
+  );
+  const getParams = useSearchParams();
+  const businessid = getParams.get("businessid");
 
+ const {user} = useSelector(
+  (state: RootState) => state.user
+ );
+
+ const isApi= useRef<boolean>(true)
   useEffect(() => {
-    if (rolesPermissions && rolesPermissions.length == 0 && !hasFetched) {
-      dispatch(fetchRolePermissions());
+    if (businessid && !hasFetched && isApi.current) {
+      console.log("called fetch role permission",businessid)
+      dispatch(fetchRolePermissions(businessid));
+      isApi.current=false
+    }else{
+      isApi.current=true
     }
-  }, [rolesPermissions, hasFetched]);
+  }, [hasFetched, businessid]);
   return null;
 };
 

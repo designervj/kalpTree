@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import GetAllAccount from "@/components/admin/accounts/GetAllAccount";
 import GetAllRolePermission from "@/components/admin/onboarding/GetAllRolePermission";
 import GetAllUsers from "@/components/admin/users/GetAllUsers";
+import GetBusinessUsers from "@/components/admin/users/GetBusinessUsers";
 import { UserForm } from "@/components/admin/users/UserForm";
 import { TenantModel } from "@/hooks/slices/user/accountSlice";
 import { cookies } from "next/headers";
@@ -56,7 +57,8 @@ export default async function UpdateUserPage() {
       <UserForm />
       <GetAllUsers />
       <GetAllAccount allaccounts={allaccounts || []} />
-      <GetAllRolePermission />
+      {/* <GetAllRolePermission /> */}
+      <GetBusinessUsers />
     </div>
   );
 }
