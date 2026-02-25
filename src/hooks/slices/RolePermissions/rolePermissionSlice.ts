@@ -11,6 +11,7 @@ export interface RolePermissionModel {
   canCreateRole?: string[];
   type?: string;
   canMultipleTenants?: boolean;
+  tenantId?: string;
 }
 
 export interface RolePermissionState {
@@ -29,11 +30,12 @@ const initialState: RolePermissionState = {
   // currentRolePermission: null,
 };
 
-export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[]>(
+export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[], string | null | undefined>(
   "rolePermission/fetchAll",
-  async (_, { rejectWithValue }) => {
+  async (businessid, { rejectWithValue }) => {
     try {
-      const response = await axios.get("/api/roles");
+      const url = `/api/roles?businessid=${businessid}`;
+      const response = await axios.get(url);
       return response.data.items;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
@@ -46,8 +48,17 @@ export const createRolePermission = createAsyncThunk<
   Partial<RolePermissionModel>
 >("rolePermission/create", async (data, { rejectWithValue }) => {
   try {
-    const response = await axios.post("/api/roles", data);
-    return response.data;
+    const response = await fetch("/api/roles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+    const responseData = await response.json();
+
+    console.log("responseData", responseData?.items)
+    return responseData
   } catch (error: any) {
     return rejectWithValue(error.response?.data || error.message);
   }
@@ -67,7 +78,7 @@ export const updateRolePermission = createAsyncThunk<
       body: JSON.stringify(data),
     });
     const responseData = await response.json();
-  
+
     return responseData?.updated;
   } catch (error: any) {
     return rejectWithValue(error.response?.data || error.message);
@@ -107,6 +118,10 @@ const rolePermissionSlice = createSlice({
     clearCurrentRolePermission: (state) => {
       state.current = null;
     },
+    resetFetchAllRolePermission: (state) => {
+      state.rolesPermissions = [];
+      state.hasFetched = false;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -141,6 +156,8 @@ const rolePermissionSlice = createSlice({
   },
 });
 
-export const { setCurrentRolePermission, addRoles, updateRolePermissions, clearCurrentRolePermission } =
+export const { setCurrentRolePermission, 
+  addRoles, updateRolePermissions, 
+  clearCurrentRolePermission, resetFetchAllRolePermission } =
   rolePermissionSlice.actions;
 export default rolePermissionSlice.reducer;

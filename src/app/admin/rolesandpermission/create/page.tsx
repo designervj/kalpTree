@@ -36,6 +36,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
   clearCurrentRolePermission,
+  createRolePermission,
   fetchRolePermissions,
   setCurrentRolePermission,
   updateRolePermission,
@@ -44,6 +45,7 @@ import { availablePermissions } from "@/components/admin/roles/util/AllPermissio
 import { toast } from "sonner";
 
 type RoleFormData = {
+  tenantId?: string;
   name: string;
   code: string;
   permissions: string[];
@@ -154,10 +156,13 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   const { rolesPermissions: roles, current: currentRolePermission } = useSelector(
     (state: RootState) => state.rolePermission
   );
+
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
   const dispatch = useDispatch<AppDispatch>();
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [formData, setFormData] = useState<RoleFormData>({
+    tenantId: "",
     name: "",
     code: "",
     permissions: [],
@@ -310,7 +315,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     return true;
   };
 
-  const saveRole = async () => {
+  const handleUpdate = async () => {
     // if (!validate()) return false;
 
     setIsSaving(true);
@@ -318,11 +323,11 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
       if (currentRolePermission?._id) {
         const res = await dispatch(updateRolePermission({ ...formData, _id: currentRolePermission._id })).unwrap();
         if (res) {
-        
+
           toast.success("Role updated successfully ✅");
           router.back()
         }
-      } 
+      }
     } catch (e: any) {
       console.log("error", e)
       miniToast(e?.message || "Something went wrong");
@@ -332,14 +337,29 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     }
   };
 
-  const onSave = async () => {
-    await saveRole();
+  const handleSave = async () => {
+    if (!currentBusiness?._id) {
+      miniToast("Business not found");
+      return false;
+    }
+    setIsSaving(true);
+    try {
+      console.log("formData", formData)
+      const res = await dispatch(createRolePermission({ ...formData, tenantId: currentBusiness?._id?.toString() ?? "" })).unwrap();
+      if (res) {
+        toast.success("Role created successfully ✅");
+        router.back()
+      }
+    } catch (e: any) {
+      console.log("error", e)
+      miniToast(e?.message || "Something went wrong");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const onSaveAndClose = async () => {
-    const ok = await saveRole();
-    if (ok) router.push("/admin/rolesandpermission");
-  };
+
 
   if (isInitialLoading) {
     return (
@@ -390,13 +410,14 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
               <X className="mr-2 h-4 w-4" />
               Cancel
             </>
-
           </Button>
-          <Button
+
+          {currentRolePermission?._id ? <Button
             type="button"
             variant="secondary"
-            onClick={onSave}
+            onClick={handleUpdate}
             disabled={isSaving}
+
           >
             {isSaving ? (
               <>
@@ -406,21 +427,41 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
             ) : (
               <>
                 <Save className="mr-2 h-4 w-4" />
-                Save Role
+                Update Role
               </>
             )}
-          </Button>
+          </Button> : (
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="mr-2 h-4 w-4" />
+                  Save Role
+                </>
+              )}
+            </Button>
+          )}
 
-          <Button type="button" onClick={onSaveAndClose} disabled={isSaving}>
-            {isSaving ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save & Close"
-            )}
-          </Button>
+          {/* 
+            <Button type="button" onClick={onSaveAndClose} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save & Close"
+              )}
+            </Button> */}
 
           <Button
             type="button"

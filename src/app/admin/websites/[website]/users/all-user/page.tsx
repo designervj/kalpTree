@@ -21,6 +21,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DataTableExt } from "@/components/admin/DataTableExt";
 import GetAllUsers from "@/components/admin/users/GetAllUsers";
+import GetBusinessUsers from "@/components/admin/users/GetBusinessUsers";
 
 export default function Page() {
   const { user, hasFetchedAllUsers, alluser } = useSelector(
@@ -67,7 +68,10 @@ export default function Page() {
   return (
     <>
       {/* get all users */}
-      <GetAllUsers />
+      {/* <GetAllUsers /> */}
+      {/* get business users */}
+      <GetBusinessUsers />
+
       <DataTableExt
         title=""
         data={alluser ?? []}

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Eye, Router } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import {
@@ -16,20 +16,33 @@ import { availablePermissions } from "./util/AllPermissionLayout";
 
 interface formData {
   _id?: string;
+  tenantId?: string;
   code: string;
   name: string;
   permissions: string[];
 }
 
-export default function RolesManagement() {
+type Props = {
+  businessid?: string
+}
+export default function RolesManagement({ businessid }: Props) {
+
+  const { user } = useSelector((state: RootState) => state.user)
   const { rolesPermissions: roles } = useSelector(
     (state: RootState) => state.rolePermission
   );
   const [modalMode, setModalMode] = useState<"view" | "edit" | "create" | null>(
     null
   );
+
+  const getParams = useSearchParams();
+  const businessId = getParams.get("businessid");
+  const agencyid = getParams.get("agencyid");
+
+  const { currentBusiness } = useSelector((state: RootState) => state.business)
   const [selectedRole, setSelectedRole] = useState<formData | null>(null);
   const [formData, setFormData] = useState<formData>({
+    tenantId: "",
     code: "",
     name: "",
     permissions: [],
@@ -58,11 +71,11 @@ export default function RolesManagement() {
     {} as PermissionGroups
   );
 
-  useEffect(() => {
-    if (roles.length <= 0) {
-      dispatch(fetchRolePermissions());
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (roles.length <= 0) {
+  //     dispatch(fetchRolePermissions());
+  //   }
+  // }, []);
 
   const router = useRouter();
 
@@ -76,18 +89,13 @@ export default function RolesManagement() {
     return categories;
   };
 
-  // const openModal = (
-  //   mode: "view" | "edit" | "create",
-  //   role?: RolePermissionModel
-  // ) => {
-  //   dispatch(setCurrentRolePermission(role));
-  //   router.push(`/admin/rolesandpermission/${role?._id}`);
-  // };
+
 
   const closeModal = () => {
     setModalMode(null);
     setSelectedRole(null);
     setFormData({
+      tenantId: "",
       code: "",
       name: "",
       permissions: [],
@@ -122,6 +130,10 @@ export default function RolesManagement() {
       alert("Please fill in all required fields");
       return;
     }
+    setFormData((prev) => ({
+      ...prev,
+      tenantId: businessid ?? user?.tenantId,
+    }));
 
     try {
       const url = selectedRole
@@ -146,17 +158,45 @@ export default function RolesManagement() {
     }
   };
 
-  const handleEdit=(role:RolePermissionModel)=>{
-   dispatch(setCurrentRolePermission(role));
-    router.push(`/admin/rolesandpermission/${role?._id}`);
+  const handleEdit = (role: RolePermissionModel) => {
+    dispatch(setCurrentRolePermission(role));
+    // router.push(`/admin/rolesandpermission/${role?._id}`);
+       const finalBusinessId = businessid || businessId;
+    const finalAgencyId = agencyid || currentBusiness?.tenantId;
+
+    if (
+      finalBusinessId &&
+      finalAgencyId &&
+      currentBusiness?.website?.primaryDomain &&
+      currentBusiness.website.primaryDomain.length > 0
+    ) {
+      router.push(
+        `/admin/websites/${currentBusiness.website.primaryDomain[0]}/users/roles-permissions/${role?._id}?businessid=${finalBusinessId}&agencyid=${finalAgencyId}`
+      );
+    } else {
+      router.push(`/admin/rolesandpermission/${role?._id}`);
+    }
   }
 
-  const handleCreateRole=()=>{
-    // dispatch(setCurrentRolePermission(null));
-    router.push(`/admin/rolesandpermission/create`);
-  }
-    
-  
+  const handleCreateRole = () => {
+    const finalBusinessId = businessid || businessId;
+    const finalAgencyId = agencyid || currentBusiness?.tenantId;
+
+    if (
+      finalBusinessId &&
+      finalAgencyId &&
+      currentBusiness?.website?.primaryDomain &&
+      currentBusiness.website.primaryDomain.length > 0
+    ) {
+      router.push(
+        `/admin/websites/${currentBusiness.website.primaryDomain[0]}/users/roles-permissions/create?businessid=${finalBusinessId}&agencyid=${finalAgencyId}`
+      );
+    } else {
+      router.push(`/admin/rolesandpermission/create`);
+    }
+  };
+
+
   const handleDelete = async (roleId: string) => {
     if (!confirm("Are you sure you want to delete this role?")) return;
 
@@ -190,15 +230,11 @@ export default function RolesManagement() {
             </p>
           </div>
 
-          <Link href="/admin/rolesandpermission/create">
-            <Button
+          <Button
             onClick={handleCreateRole}
-              // onClick={() => openModal("create")}
-              // className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-            >
-              Create New Role
-            </Button>
-          </Link>
+          >
+            Create New Role
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -218,7 +254,7 @@ export default function RolesManagement() {
 
               <div className="mb-4">
                 <p className="text-xs text-gray-500 mb-1">
-                  {role.permissions.length} Permissions
+                  {role?.permissions?.length} Permissions
                 </p>
               </div>
 
@@ -233,10 +269,10 @@ export default function RolesManagement() {
                   View
                 </Button> */}
                 <Button
-                 // onClick={() => openModal("view", role)}
-                 onClick={() => handleEdit(role)}
+                  // onClick={() => openModal("view", role)}
+                  onClick={() => handleEdit(role)}
                   className="flex-1"
-                  // className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
+                // className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-md text-sm font-medium flex items-center justify-center gap-1"
                 >
                   <Edit2 className="w-4 h-4" />
                   Edit

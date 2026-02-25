@@ -4,60 +4,8 @@ import { IUser } from "@/models/user";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RolePermissionModel, updateRolePermission } from "../RolePermissions/rolePermissionSlice";
+import { createBusinessUser, createCustomer, deleteBusinessUser, getAllUser, getBusinessUser, updateBusinessUser } from "./UserThunk";
 
-export const getAllUser = createAsyncThunk<IUser[]>(
-  "user/getAllUser",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch("/api/admin/getAllUsers");
-      const data = await response.json();
-      // API returns { users: IUser[] } with superadmin filtered out
-      return data.users;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || error.message);
-    }
-  }
-);
-
-export const createCustomer = createAsyncThunk<
-  IUser,
-  Partial<IUser>,
-  { rejectValue: any }
->("user/createCustomer", async (userData, { rejectWithValue }) => {
-  try {
-    const payload = {
-      ...userData,
-      password: userData.passwordHash,
-    };
-    delete payload.passwordHash;
-    const response = await axios.post("/api/admin/customer", payload, {
-      withCredentials: true,
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data || error.message);
-  }
-});
-
-export const updatePassword = createAsyncThunk<
-  IUser,
-  { email: string; password: string },
-  { rejectValue: any }
->("user/updatePassword", async ({ email, password }, { rejectWithValue }) => {
-  try {
-    const response = await fetch(`/api/user/createwithemail`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ password, email }),
-    });
-    return response.json();
-  } catch (error: any) {
-    return rejectWithValue(error.response?.data || error.message);
-  }
-});
 
 interface UserState {
   user: IUser | null;
@@ -102,6 +50,10 @@ const userSlice = createSlice({
     setCurrentUser: (state, action: PayloadAction<IUser | null>) => {
       state.currentUser = action.payload;
     },
+    clearAllUser: (state) => {
+      state.alluser = [];
+      state.hasFetchedAllUsers = false;
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -141,8 +93,81 @@ const userSlice = createSlice({
           user._id === updatedRole._id ? { ...user, permissions: updatedRole.permissions } : user
         );
       })
+
+      // get businessd Users
+      .addCase(getBusinessUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        getBusinessUser.fulfilled,
+        (state, action: PayloadAction<IUser[]>) => {
+          state.isLoading = false;
+          state.hasFetchedAllUsers = true;
+          state.alluser = action.payload;
+        }
+      )
+      .addCase(getBusinessUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+
+      // create business user
+      .addCase(createBusinessUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        createBusinessUser.fulfilled,
+        (state, action: PayloadAction<IUser>) => {
+          state.isLoading = false;
+          // Optionally add the new user to alluser
+          state.alluser.unshift(action.payload);
+        }
+      )
+      .addCase(createBusinessUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+
+      // update business user
+      .addCase(updateBusinessUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        updateBusinessUser.fulfilled,
+        (state, action: PayloadAction<IUser>) => {
+          state.isLoading = false;
+          // Optionally add the new user to alluser
+          state.alluser = state.alluser.map((user) =>
+            user._id === action.payload._id ? action.payload : user
+          );
+        }
+      )
+      .addCase(updateBusinessUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+
+      // delete business user
+      .addCase(deleteBusinessUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(
+        deleteBusinessUser.fulfilled,
+        (state, action: PayloadAction<IUser>) => {
+          state.isLoading = false;
+          // Optionally add the new user to alluser
+          state.alluser = state.alluser.filter((user) => user._id !== action.payload._id);
+        }
+      )
+      .addCase(deleteBusinessUser.rejected, (state) => {
+        state.isLoading = false;
+      })
   },
 });
 
-export const { setUser, clearUser, updateUser, updateIsSecondDashBoard, setCurrentUser } = userSlice.actions;
+export const { 
+  setUser,  
+  clearUser, 
+  updateUser, 
+  updateIsSecondDashBoard, 
+  setCurrentUser,
+  clearAllUser 
+} = userSlice.actions;
 export default userSlice.reducer;

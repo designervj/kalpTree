@@ -67,7 +67,7 @@ export default function Page() {
   return (
     <>
       {/* get all users */}
-      <GetAllUsers />
+      {/* <GetAllUsers /> */}
       <DataTableExt
         title=""
         data={alluser ?? []}

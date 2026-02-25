@@ -11,7 +11,7 @@ import { IBusiness } from '@/models/business'
 import { updateBusiness } from '@/hooks/slices/business/BusinessThunk'
 import { toast } from 'sonner'
 import { redirect } from 'next/navigation'
-import { updatePassword } from '@/hooks/slices/user/userSlice'
+import { updatePassword } from '@/hooks/slices/user/UserThunk'
 
 
 type business = {

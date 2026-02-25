@@ -1,6 +1,5 @@
 "use client";
 import { savedashboardDetailsThunk } from "@/hooks/slices/dashboardSlice/dashBoardSlice";
-import { getAllUser } from "@/hooks/slices/user/userSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useParams, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
