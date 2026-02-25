@@ -258,7 +258,133 @@ const CustomSlot = (props: any) => {
 // ---------- Config ----------
 
 export const config = {
+  root: {
+    fields: {
+      navbar: {
+        type: "slot",
+        allowed: ["NavbarBlock"],
+      },
+    },
+
+    render: ({ children, puck, ...props }: any) => {
+      return (
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <props.navbar />
+
+          {/* Page content */}
+          <main className="h-[90vh]" style={{ flex: 1 }}>
+            {children}
+          </main>
+
+          {/* Optional global footer */}
+          {props.showFooter && (
+            <footer
+              style={{
+                padding: "24px",
+                textAlign: "center",
+                borderTop: "1px solid #e5e7eb",
+                color: "#6b7280",
+                fontSize: 14,
+              }}
+            >
+              {props.footerText}
+            </footer>
+          )}
+        </div>
+      );
+    },
+  },
+
   components: {
+    NavbarBlock: {
+      fields: {
+        logo: { type: "text", label: "Logo Text", defaultValue: "My Brand" },
+        logoHref: { type: "text", label: "Logo URL", defaultValue: "/" },
+        links: {
+          type: "textarea",
+          label: "Links (label|url, one per line)",
+          defaultValue: "Home|/\nAbout|/about\nContact|/contact",
+        },
+        textColor: {
+          type: "text",
+          label: "Text Color",
+          defaultValue: "#111111",
+        },
+        padding: { type: "number", label: "Padding (px)", defaultValue: 16 },
+        sticky: {
+          type: "radio",
+          label: "Sticky",
+          options: [
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ],
+          defaultValue: false,
+        },
+        ...boxStyleFields,
+        ...commonFields,
+      },
+      render: (props: any) => {
+        const links = String(props.links || "")
+          .split("\n")
+          .map((line) => {
+            const [label, href] = line.split("|");
+            return { label: label?.trim(), href: href?.trim() || "#" };
+          })
+          .filter((l) => l.label);
+
+        return (
+          <nav
+            id={props.id || undefined}
+            className={props.className || undefined}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: `${props.padding ?? 16}px`,
+              backgroundColor: props.backgroundColor || "#ffffff",
+              borderBottom: `1px solid ${props.borderColor || "#e5e7eb"}`,
+              position: props.sticky ? "sticky" : "relative",
+              top: props.sticky ? 0 : undefined,
+              zIndex: props.sticky ? 1000 : undefined,
+              ...getBoxStyle(props),
+            }}
+          >
+            <a
+              href={props.logoHref || "/"}
+              style={{
+                fontWeight: 700,
+                fontSize: 20,
+                color: props.textColor || "#111",
+                textDecoration: "none",
+              }}
+            >
+              {props.logo || "My Brand"}
+            </a>
+            <div style={{ display: "flex", gap: 24 }}>
+              {links.map((link, i) => (
+                <a
+                  key={i}
+                  href={link.href}
+                  style={{
+                    color: props.textColor || "#111",
+                    textDecoration: "none",
+                    fontSize: 15,
+                  }}
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </nav>
+        );
+      },
+    },
     // --------------------------------------------------
     // Heading
     // --------------------------------------------------
