@@ -194,7 +194,7 @@ export function PreviewButton({
 }) {
   return (
     <button
-      className="h-11 px-5 rounded-xl border text-[13px] font-extrabold transition"
+      className="h-11 px-5 rounded-xl border text-[13px] font-bold transition"
       style={{
         background: normal.bg,
         color: normal.text,

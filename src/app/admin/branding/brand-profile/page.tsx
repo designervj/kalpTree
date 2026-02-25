@@ -2,17 +2,17 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Building2, 
-  Mail, 
-  Phone, 
-  Globe, 
-  Save, 
-  MapPin, 
-  Facebook, 
-  Instagram, 
-  Linkedin, 
-  Twitter 
+import {
+  Building2,
+  Mail,
+  Phone,
+  Globe,
+  Save,
+  MapPin,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 // Scaffold Data
 const initialProfileData = {
@@ -57,16 +58,13 @@ export default function BrandProfilePage() {
   };
 
   return (
-    <div className="space-y-6 max-w-6xl mx-auto pb-10">
+    <div className="mx-auto min-h-screen p-6  pt-2">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-black">Brand Profile</h1>
+          <BreadCrumbPage />
           <p className="text-muted-foreground">Manage your brand's core identity and contact information.</p>
         </div>
-
-        
-
         <Button onClick={handleSave} className="gap-2">
           <Save className="w-4 h-4" /> Save Changes
         </Button>
@@ -87,19 +85,19 @@ export default function BrandProfilePage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="brandName">Brand Name</Label>
-              <Input 
-                id="brandName" 
-                value={formData.brandName} 
-                onChange={(e) => setFormData({...formData, brandName: e.target.value})} 
+              <Input
+                id="brandName"
+                value={formData.brandName}
+                onChange={(e) => setFormData({ ...formData, brandName: e.target.value })}
               />
             </div>
-            
+
             <div className="space-y-2">
               <Label htmlFor="tagline">Tagline / Slogan</Label>
-              <Input 
-                id="tagline" 
+              <Input
+                id="tagline"
                 value={formData.tagline}
-                onChange={(e) => setFormData({...formData, tagline: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
               />
             </div>
 
@@ -120,21 +118,21 @@ export default function BrandProfilePage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="founded">Founded Year 1</Label>
-                <Input 
-                  id="founded" 
+                <Input
+                  id="founded"
                   value={formData.foundedYear}
-                  onChange={(e) => setFormData({...formData, foundedYear: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, foundedYear: e.target.value })}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="description">About / Bio</Label>
-              <Textarea 
-                id="description" 
+              <Textarea
+                id="description"
                 className="h-32 resize-none"
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
               <p className="text-[11px] text-muted-foreground text-right">
                 {formData.description.length}/500 characters
@@ -155,24 +153,24 @@ export default function BrandProfilePage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label className="flex items-center gap-2"><Globe className="w-3.5 h-3.5" /> Website URL</Label>
-                <Input value={formData.website} onChange={(e) => setFormData({...formData, website: e.target.value})} />
+                <Input value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2"><Mail className="w-3.5 h-3.5" /> Public Email</Label>
-                  <Input value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                  <Input value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2"><Phone className="w-3.5 h-3.5" /> Phone</Label>
-                  <Input value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                  <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label>Headquarters Address</Label>
-                <Textarea 
+                <Textarea
                   className="h-20 resize-none"
                   value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})} 
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 />
               </div>
             </CardContent>

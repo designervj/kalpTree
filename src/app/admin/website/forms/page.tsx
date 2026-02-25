@@ -2,20 +2,24 @@
 
 import React from "react";
 import { Mail, User, Phone, MessageSquare } from "lucide-react";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 export default function Page() {
   return (
-    <div className="min-h-screen  p-8">
+    <div className="min-h-screen  p-6">
       {/* PAGE HEADER */}
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold text-black">Forms</h1>
+        {/* <h1 className="text-3xl font-semibold text-black">Forms</h1>
         <p className="text-gray-500 mt-1">
           Create and manage your form submissions
-        </p>
+        </p> */}
+         <BreadCrumbPage />
       </div>
 
+         
+
       {/* FORM CARD */}
-      <div className="max-w-3xl bg-white rounded-2xl border shadow-sm p-8">
+      <div className=" bg-white rounded-2xl border shadow-sm p-8">
         <h2 className="text-xl font-semibold mb-6">
           Contact Form
         </h2>

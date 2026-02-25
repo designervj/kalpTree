@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 
 export default function Page() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen p-6 pt-2">
       {/* Page Header */}
       <div className="mb-6">
         {/* <h1 className="text-3xl font-semibold">General Settings</h1> */}
          <BreadCrumbPage />
         <p className="text-gray-500 mt-1">
-          Manage your application general configuration
+          Manage your application general configuration 
         </p>
       </div>
 

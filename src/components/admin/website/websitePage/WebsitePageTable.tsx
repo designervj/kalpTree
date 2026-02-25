@@ -103,9 +103,10 @@ const WebsitePageTable = () => {
 
   return (
     <>
-      <Button onClick={handleWebsiteBuilder} className="mb-4">
+    
+      {/* <Button onClick={handleWebsiteBuilder} className="mb-4">
         Website Builder
-      </Button>
+      </Button> */}
       <div>
         <DataTableExt
           title="Pages"

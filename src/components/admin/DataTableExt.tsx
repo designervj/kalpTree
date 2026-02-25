@@ -526,7 +526,7 @@ export function DataTableExt({
   const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
 
   return (
-    <div className="space-y-4 ">
+    <div className="min-h-screen p-6 pt-2">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -554,7 +554,7 @@ export function DataTableExt({
       </div>
 
       {/* Search + menus */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 my-4">
         <div className="flex-1 min-w-[220px]">
           <Input
             placeholder="Search pages..."
@@ -1080,7 +1080,7 @@ export function DataTableExt({
         </div>
       </div>
 
-      <div className="text-xs text-slate-500">
+      <div className="text-xs text-slate-500 pt-3">
         ✅ SEO Title / Meta Description / Focus Keyword columns are hidden by default (removed from main table).
       </div>
     </div>

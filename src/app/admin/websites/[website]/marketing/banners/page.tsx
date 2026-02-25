@@ -48,6 +48,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type BannerStatus = "active" | "scheduled" | "paused" | "expired";
 
@@ -191,17 +192,25 @@ export default function BannersPage() {
   }, [items]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-6xl p-6">
+    <div className="min-h-screen bg-transparent  p-6 pt-2">
+      <div className="mx-auto w-full ">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
+          {/* <div>
             <p className="text-sm text-muted-foreground">Marketing / Banners</p>
             <h1 className="text-3xl font-semibold tracking-tight">Banners</h1>
+           
+          </div> */}
+
+          <div>
+            <BreadCrumbPage />
             <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
               Manage placements, scheduling, tracking and click-through performance.
             </p>
           </div>
+
+
+
 
           <div className="flex items-center gap-2">
             <Button variant="outline">

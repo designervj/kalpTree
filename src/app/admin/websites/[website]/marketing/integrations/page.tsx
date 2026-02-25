@@ -27,6 +27,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type Integration = {
   id: string;
@@ -109,13 +110,20 @@ export default function IntegrationsPage() {
   }, [items, q, cat]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-6xl p-6">
+    <div className="min-h-screen p-6 pt-2">
+      <div className="mx-auto w-full ">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
+          {/* <div>
             <p className="text-sm text-muted-foreground">Marketing / Integrations</p>
             <h1 className="text-3xl font-semibold tracking-tight">Integrations</h1>
             <p className="mt-1 text-sm text-muted-foreground">
+              Connect external services. Control sync, tokens, webhooks and delivery providers.
+            </p>
+          </div> */}
+          
+            <div>
+            <BreadCrumbPage />
+                   <p className="mt-1 text-sm text-muted-foreground">
               Connect external services. Control sync, tokens, webhooks and delivery providers.
             </p>
           </div>

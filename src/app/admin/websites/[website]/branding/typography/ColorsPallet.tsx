@@ -131,7 +131,7 @@ export default function ColorPaletteStudio() {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
         html, body { height: 100%; }
-        body { margin: 0; overflow: hidden; font-family: 'DM Sans', sans-serif; background: #F3F5F9; color: #111827; }
+        body { margin: 0; overflow: hidden; font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"; background: #F3F5F9; color: #111827; }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.18); border-radius: 999px; }
@@ -185,15 +185,15 @@ export default function ColorPaletteStudio() {
               </div>
 
               <div className="min-w-0">
-                <div className="text-[14px] font-extrabold tracking-tight">
+                <div className="text-[14px] font-medium tracking-tight">
                   Loading workspace
                 </div>
-                <div className="text-[12px] text-slate-500 font-mono">
+                <div className="text-[12px] text-slate-500 font-medium">
                   fetching currentWebsite • syncing branding
                 </div>
               </div>
 
-              <div className="ml-auto text-[11px] font-mono text-slate-400">
+              <div className="ml-auto text-[11px] font-medium text-slate-400">
                 palette<span style={{ color: "#16A34A" }}>.</span>studio
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function ColorPaletteStudio() {
               <div className="text-[12px] text-slate-600">
                 Preparing palettes & editor…
               </div>
-              <div className="text-[11px] font-mono text-slate-400">
+              <div className="text-[11px] font-medium text-slate-400">
                 please wait
               </div>
             </div>
@@ -241,14 +241,14 @@ export default function ColorPaletteStudio() {
       )}
 
       {/* MAIN APP */}
-      <div className="h-screen flex flex-col">
+      <div className="h-screen flex flex-col p-6 pt-2 ">
         {/* TOP BAR */}
         <div
-          className="px-5 py-3 border-b flex items-center gap-3"
+          className="px-5 py-3 border-b flex items-center gap-3 rounded-t-lg"
           style={{ background: "#FFFFFF", borderColor: "rgba(0,0,0,0.08)" }}
         >
-          <div className="text-[15px] font-extrabold tracking-tight">
-            palette<span style={{ color: "#16A34A" }}>.</span>studio
+          <div className="text-[15px] font-medium tracking-tight">
+            Palette<span style={{ color: "#16A34A" }}>.</span>studio
           </div>
 
           <div
@@ -265,7 +265,7 @@ export default function ColorPaletteStudio() {
                 setTab("all");
                 setEditing(null);
               }}
-              className="h-9 px-4 rounded-lg text-[12px] font-extrabold transition"
+              className="h-9 px-4 rounded-lg text-[12px] font-bold transition"
               style={{
                 background: tab === "all" ? "#111827" : "transparent",
                 color: tab === "all" ? "#FFFFFF" : "#111827",
@@ -276,7 +276,7 @@ export default function ColorPaletteStudio() {
 
             <button
               onClick={handleNew}
-              className="h-9 px-4 rounded-lg text-[12px] font-extrabold transition"
+              className="h-9 px-4 rounded-lg text-[12px] font-medium transition"
               style={{
                 background: tab === "edit" ? "#111827" : "transparent",
                 color: tab === "edit" ? "#FFFFFF" : "#111827",
@@ -289,7 +289,7 @@ export default function ColorPaletteStudio() {
           </div>
 
           <div className="ml-auto flex items-center gap-3">
-            <div className="text-[11px] font-mono text-slate-500">
+            <div className="text-[11px] font-medium text-slate-500">
               {palettes.length} saved (local state)
             </div>
 
@@ -299,7 +299,7 @@ export default function ColorPaletteStudio() {
               style={{ borderColor: "rgba(0,0,0,0.10)" }}
             >
               <Plus size={16} />
-              <span className="text-[12px] font-extrabold">New</span>
+              <span className="text-[12px] font-medium">New</span>
             </button>
           </div>
         </div>
@@ -319,12 +319,12 @@ export default function ColorPaletteStudio() {
                   >
                     🎨
                   </div>
-                  <div className="text-slate-700 font-extrabold text-[14px]">
+                  <div className="text-slate-700 font-medium text-[14px]">
                     No palettes yet
                   </div>
                   <button
                     onClick={handleNew}
-                    className="h-11 px-6 rounded-xl border bg-white hover:bg-slate-50 text-[12px] font-extrabold"
+                    className="h-11 px-6 rounded-xl border bg-white hover:bg-slate-50 text-[12px] font-medium"
                     style={{ borderColor: "rgba(0,0,0,0.10)" }}
                   >
                     + Create First Palette

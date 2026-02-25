@@ -36,6 +36,7 @@ import { RootState } from "@/store/store";
 import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor/GlobalStyelModel";
 import { toast } from "sonner";
 import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColorPallet";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 /* -----------------------------
   Types
@@ -2347,7 +2348,10 @@ export default function TypographyPage({
   return (
     <>
       <GetAlColorPallet />
-
+      <div className="min-h-screen p-6">
+      <div className="pb-6">
+        <BreadCrumbPage />
+      </div>
       <div className="space-y-6 max-w-6xl mx-auto pb-10">
         {/* TOP BAR */}
         <div className="flex justify-between items-center gap-3">
@@ -2473,6 +2477,7 @@ export default function TypographyPage({
             </Card>
           </div>
         </div>
+      </div>
       </div>
     </>
   );

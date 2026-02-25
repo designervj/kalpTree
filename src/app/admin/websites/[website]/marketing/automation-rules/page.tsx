@@ -39,6 +39,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type Rule = {
   id: string;
@@ -101,13 +102,20 @@ export default function AutomationRulesPage() {
   }, [items, q]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-6xl p-6">
+    <div className="min-h-screen p-6 pt-2">
+      <div className="mx-auto w-full  ">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
+          {/* <div>
             <p className="text-sm text-muted-foreground">Marketing / Automation Rules</p>
             <h1 className="text-3xl font-semibold tracking-tight">Automation Rules</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Build “if this then that” rules for marketing flows, quotes, coupons and integrations.
+            </p>
+          </div> */}
+
+          <div>
+            <BreadCrumbPage />
             <p className="mt-1 text-sm text-muted-foreground">
               Build “if this then that” rules for marketing flows, quotes, coupons and integrations.
             </p>

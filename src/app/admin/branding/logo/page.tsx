@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 // --- Types & Scaffold ---
 type LogoVariant = {
@@ -118,16 +119,17 @@ export default function LogoSettingsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-10">
+    <div className="min-h-screen p-6 pt-2 ">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-black">Logo Settings</h1>
-          <p className="text-muted-foreground">Manage your brand marks across different themes and devices.</p>
+          {/* <h1 className="text-2xl font-bold tracking-tight text-black">Logo Settings</h1> */}
+           <BreadCrumbPage />
+          <p className="text-muted-foreground pb-2">Manage your brand marks across different themes and devices.</p>
         </div>
       </div>
 
       <Tabs defaultValue="primary" value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 max-w-[500px] mb-6">
+        <TabsList className="grid w-full grid-cols-3 max-w-[500px] mb-6 ">
           <TabsTrigger value="primary">Primary</TabsTrigger>
           <TabsTrigger value="theme">Dark / Light</TabsTrigger>
           <TabsTrigger value="favicon">Favicon</TabsTrigger>

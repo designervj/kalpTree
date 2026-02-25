@@ -43,7 +43,7 @@ export default function Page() {
   ];
 
   return (
-    <div className=" min-h-screen p-6">
+    <div className=" min-h-screen p-6 pt-2">
       {/* Page Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6 gap-4">
         {/* <h1 className="text-3xl font-bold text-gray-800">Posts 1</h1> */}

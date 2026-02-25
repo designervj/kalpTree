@@ -51,14 +51,12 @@ export default function DashboardPage() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b pb-6">
         <div>
-
           <BreadCrumbPage />
-
-
           <p className="text-muted-foreground mt-1">
             Overview of your store's performance and AI usage.
           </p>
         </div>
+
         <div className="flex items-center gap-3">
           <Select defaultValue="7d">
             <SelectTrigger className="w-[160px] bg-white">

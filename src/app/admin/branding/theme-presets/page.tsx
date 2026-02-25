@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type SimpleTheme = {
   id: "cyber-dark" | "cyber-light" | "brand-modern";
@@ -244,7 +245,7 @@ function ThemeCard({
             ) : (
               <Sun className="h-4 w-4 text-emerald-900" />
             )}
-            <CardTitle className="text-[20px] leading-tight text-emerald-950">
+            <CardTitle className="text-[20px] leading-tight text-black">
               {preview.name}
             </CardTitle>
           </div>
@@ -257,7 +258,7 @@ function ThemeCard({
           )}
         </div>
 
-        <CardDescription className="min-h-[64px] pt-2 text-base leading-7 text-emerald-900">
+        <CardDescription className="min-h-[64px] pt-2 text-sm text-muted-foreground leading-7">
           {preview.description}
         </CardDescription>
       </CardHeader>
@@ -290,7 +291,7 @@ function ThemeCard({
         {isActive ? (
           <Button
             variant="outline"
-            className="h-11 w-full rounded-xl border-emerald-100 bg-white text-lg font-semibold text-emerald-900"
+            className="h-11 w-full rounded-xl border-primary bg-white text-sm font-semibold text-black"
             disabled
           >
             Applied
@@ -298,7 +299,7 @@ function ThemeCard({
         ) : (
           <Button
             onClick={() => onApply(theme.id)}
-            className="h-11 w-full rounded-xl bg-emerald-700 text-lg font-semibold text-white hover:bg-emerald-800"
+            className="h-11 w-full rounded-xl  text-sm font-semibold text-white cursor-pointer "
           >
             Apply Theme
           </Button>
@@ -347,8 +348,10 @@ export default function ThemePresetsPage() {
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-4 md:px-6">
         {/* Header */}
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-emerald-950">Theme Mode</h1>
-          <p className="text-[15px] text-black">
+          {/* <h1 className="text-2xl font-bold tracking-tight text-emerald-950">Theme Mode</h1> */}
+          <BreadCrumbPage />
+
+          <p className="text-[15px] text-muted-foreground mt-1">
             Choose only one theme mode for your admin workspace:{" "}
             <span className="font-semibold text-dark">Dark</span> or{" "}
             <span className="font-semibold text-dark">Light</span>.
@@ -356,18 +359,8 @@ export default function ThemePresetsPage() {
         </div>
 
         {/* Only 2 theme cards */}
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {THEMES.map((theme) => (
-            <ThemeCard
-              key={theme.id}
-              theme={theme}
-              isActive={currentTheme === theme.id}
-              onApply={handleApplyTheme}
-            />
-          ))}
-        </div>
 
-        {/* Live preview */}
+            {/* Live preview */}
         <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
           <h2 className="mb-3 text-lg font-semibold text-emerald-950">Selected Theme Preview</h2>
 
@@ -432,6 +425,19 @@ export default function ThemePresetsPage() {
             </div>
           </div>
         </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          {THEMES.map((theme) => (
+            <ThemeCard
+              key={theme.id}
+              theme={theme}
+              isActive={currentTheme === theme.id}
+              onApply={handleApplyTheme}
+            />
+          ))}
+        </div>
+
+    
       </div>
     </div>
   );

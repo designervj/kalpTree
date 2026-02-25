@@ -26,6 +26,7 @@ import {
 import { ChevronLeft, Copy, LayoutGrid, Lock, Unlock } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { Button } from "@/components/ui/button";
 
 export function EditorTab({
   editingPalette,
@@ -253,15 +254,15 @@ export function EditorTab({
           className="h-9 px-3 rounded-xl border bg-white hover:bg-slate-50 flex items-center gap-2"
           style={{ borderColor: "rgba(0,0,0,0.10)", color: "#111827" }}
         >
-          <ChevronLeft size={16} />
-          <span className="text-[12px] font-extrabold">Back</span>
+          <ChevronLeft size={18} />
+          <span className="text-sm font-semibold">Back</span>
         </button>
 
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Palette name…"
-          className="h-10 flex-1 rounded-xl border px-4 text-[14px] font-extrabold outline-none"
+          className="h-10 flex-1 rounded-xl border px-4 text-[14px] font-medium outline-none"
           style={{
             background: "#F8FAFC",
             borderColor: "rgba(0,0,0,0.10)",
@@ -289,22 +290,22 @@ export function EditorTab({
               className="absolute inset-0 opacity-0 cursor-pointer"
             />
           </div>
-          <div className="hidden md:block font-mono text-[11px] text-slate-600">
+          <div className="hidden md:block font-medium text-[11px] text-slate-600">
             {hexSeed.toUpperCase()}
           </div>
           <button
             onClick={() => autoDerive(hexSeed)}
-            className="h-8 px-3 rounded-lg border bg-white hover:bg-slate-50 text-[11px] font-extrabold"
+            className="h-8 px-3 rounded-lg border bg-white hover:bg-slate-50 text-[11px] font-bold"
             style={{ borderColor: "rgba(0,0,0,0.10)", color: "#111827" }}
           >
             ↺ Derive
           </button>
         </div>
 
-        <button
+        <Button
           onClick={handleSave}
           disabled={saving}
-          className="h-10 px-4 rounded-xl border text-[12px] font-extrabold"
+          className="h-10 px-4 rounded-xl border text-[12px] font-bold"
           style={{
             background: msg.includes("✓") ? "#ECFDF5" : "#111827",
             borderColor: msg.includes("✓")
@@ -316,7 +317,7 @@ export function EditorTab({
           }}
         >
           {msg || (saving ? "Saving…" : "Save")}
-        </button>
+        </Button>
       </div>
 
       {/* Sub Tabs */}
@@ -336,7 +337,7 @@ export function EditorTab({
             <button
               key={id}
               onClick={() => setSection(id as EditorSection)}
-              className="h-9 px-4 rounded-lg text-[12px] font-extrabold transition"
+              className="h-9 px-4 rounded-lg text-[12px] font-bold transition"
               style={{
                 background: section === id ? "#111827" : "transparent",
                 color: section === id ? "#FFFFFF" : "#111827",
@@ -360,7 +361,7 @@ export function EditorTab({
           {section === "buttons" && (
             <button
               onClick={() => syncButtonsNow(brand)}
-              className="h-9 px-3 rounded-xl border bg-white hover:bg-slate-50 text-[12px] font-extrabold"
+              className="h-9 px-3 rounded-xl border bg-white hover:bg-slate-50 text-[12px] font-bold"
               style={{ borderColor: "rgba(0,0,0,0.10)" }}
             >
               Sync now
@@ -370,7 +371,7 @@ export function EditorTab({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-h-0 p-5" style={{ background: "#F3F5F9" }}>
+      <div className="flex-1 h-auto p-5 rounded-b-lg" style={{ background: "#F3F5F9" }}>
         {/* BRAND */}
         {section === "brand" && (
           <div
@@ -466,7 +467,7 @@ export function EditorTab({
                             onKeyDown={(e) => {
                               if (e.key === "Enter") setEnabledInput("");
                             }}
-                            className="w-[78px] rounded-lg border px-2 py-1 text-center font-mono text-xs font-extrabold outline-none"
+                            className="w-[78px] rounded-lg border px-2 py-1 text-center font-medium text-xs font-extrabold outline-none"
                             style={{
                               background: "rgba(255,255,255,0.92)",
                               borderColor: "rgba(0,0,0,0.18)",
@@ -476,7 +477,7 @@ export function EditorTab({
                         ) : (
                           <span
                             onDoubleClick={() => setEnabledInput(tokenKey)}
-                            className="cursor-pointer font-mono text-xs font-extrabold tracking-wide"
+                            className="cursor-pointer font-medium text-xs font-extrabold tracking-wide"
                             style={{ color: labelColor }}
                           >
                             {color.replace("#", "").toUpperCase()}
@@ -485,7 +486,7 @@ export function EditorTab({
                       </div>
 
                       <div
-                        className="font-mono text-[10px] opacity-70"
+                        className="font-medium text-[10px] opacity-70"
                         style={{ color: labelColor }}
                       >
                         {String(key)}
@@ -599,7 +600,7 @@ export function EditorTab({
                               onKeyDown={(e) => {
                                 if (e.key === "Enter") setEnabledInput("");
                               }}
-                              className="w-[78px] rounded-lg border px-2 py-1 text-center font-mono text-xs font-extrabold outline-none"
+                              className="w-[78px] rounded-lg border px-2 py-1 text-center font-medium text-xs font-extrabold outline-none"
                               style={{
                                 background: "rgba(255,255,255,0.92)",
                                 borderColor: "rgba(0,0,0,0.18)",
@@ -609,7 +610,7 @@ export function EditorTab({
                           ) : (
                             <span
                               onDoubleClick={() => setEnabledInput(tokenKey)}
-                              className="cursor-pointer font-mono text-xs font-extrabold tracking-wide"
+                              className="cursor-pointer font-medium text-xs font-extrabold tracking-wide"
                               style={{ color: getContrastColor(color) }}
                             >
                               {color.replace("#", "").toUpperCase()}
@@ -617,7 +618,7 @@ export function EditorTab({
                           )}
                         </div>
                         <div
-                          className="font-mono text-[10px] opacity-70 text-center px-2"
+                          className="font-medium text-[10px] opacity-70 text-center px-2"
                           style={{ color: getContrastColor(color) }}
                         >
                           {t.label}
@@ -638,13 +639,13 @@ export function EditorTab({
               className="rounded-2xl border bg-white p-4"
               style={{ borderColor: "rgba(0,0,0,0.08)" }}
             >
-              <div className="text-[13px] font-extrabold text-slate-900 mb-3">
+              <div className="text-[13px] font-semibold text-slate-900 mb-3">
                 Live Buttons Preview
               </div>
 
               <div className="flex flex-wrap gap-12">
                 <div>
-                  <div className="text-[11px] font-mono text-slate-500 mb-2">
+                  <div className="text-[11px] font-medium text-slate-500 mb-2">
                     Primary
                   </div>
                   <PreviewButton
@@ -663,7 +664,7 @@ export function EditorTab({
                 </div>
 
                 <div>
-                  <div className="text-[11px] font-mono text-slate-500 mb-2">
+                  <div className="text-[11px] font-medium text-slate-500 mb-2">
                     Secondary
                   </div>
                   <PreviewButton
@@ -682,7 +683,7 @@ export function EditorTab({
                 </div>
 
                 <div>
-                  <div className="text-[11px] font-mono text-slate-500 mb-2">
+                  <div className="text-[11px] font-medium text-slate-500 mb-2">
                     Outline
                   </div>
                   <PreviewButton
@@ -715,7 +716,7 @@ export function EditorTab({
                 className="px-4 py-3 border-b"
                 style={{ borderColor: "rgba(0,0,0,0.08)" }}
               >
-                <div className="text-[13px] font-extrabold text-slate-900">
+                <div className="text-[13px] font-semibold text-slate-900">
                   Brand Tokens
                 </div>
               </div>
@@ -728,10 +729,10 @@ export function EditorTab({
                   >
                     <div className="h-14" style={{ background: v }} />
                     <div className="p-3">
-                      <div className="text-[11px] font-mono text-slate-500">
+                      <div className="text-[11px] font-medium text-slate-500">
                         {String(k)}
                       </div>
-                      <div className="mt-1 font-mono text-[12px] font-extrabold text-slate-900">
+                      <div className="mt-1 font-medium text-[13px]  font-medium text-slate-900">
                         {v.toUpperCase()}
                       </div>
                     </div>
@@ -744,7 +745,7 @@ export function EditorTab({
               className="rounded-2xl border bg-white p-4"
               style={{ borderColor: "rgba(0,0,0,0.08)" }}
             >
-              <div className="text-[13px] font-extrabold text-slate-900 mb-3">
+              <div className="text-[13px] font-semibold text-slate-900 mb-3">
                 Buttons Preview
               </div>
               <div className="flex flex-wrap gap-12">

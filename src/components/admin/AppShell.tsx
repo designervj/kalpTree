@@ -313,10 +313,17 @@ export function AppShell({ children }: AppShellProps) {
     router.push(`/admin`);
   };
 
+  
+  const handleWebsiteBuilder = () => {
+    const url = `/builder/${currentBusiness?._id}`;
+    window.open(url, "_blank");
+  };
+
   return (
     <>
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
         {/* LEFT */}
+
         <div className="flex items-center gap-4">
           {/* Mobile menu button */}
           <Button
@@ -346,6 +353,11 @@ export function AppShell({ children }: AppShellProps) {
         {/* RIGHT */}
         <div className="flex items-center gap-3">
           {/* Search */}
+
+             <Button onClick={handleWebsiteBuilder} size="sm" className="text-xs tracking-wide cursor-pointer">
+                  Website Builder
+              </Button>
+
           <div className="relative hidden md:block">
             <FiSearch className="absolute left-3 top-[9px] text-gray-400 text-sm" />
             <Input

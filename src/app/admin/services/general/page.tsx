@@ -13,7 +13,7 @@ export default function Page() {
         {/* <h1 className="text-3xl font-semibold">General Settings</h1> */}
          <BreadCrumbPage />
         <p className="text-gray-500 mt-1">
-          Manage your application general configuration
+          Manage your application general configuration 
         </p>
       </div>
 

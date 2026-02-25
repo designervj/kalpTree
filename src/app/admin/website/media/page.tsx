@@ -36,6 +36,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 /* ─────────────────────────────────────────────
    Types
@@ -1151,7 +1152,7 @@ export default function Page() {
 
   return (
     <div
-      className="min-h-screen flex flex-col relative "
+      className="min-h-screen flex flex-col relative p-6 pt-0"
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
@@ -1176,9 +1177,10 @@ export default function Page() {
         </div>
       )}
 
-      <div className="mb-5 flex items-center justify-between px-8 pt-5 pb-2 border-b border-gray-200">
+      <div className="mb-5 flex items-center justify-between  pt-5 pb-2 border-b border-gray-200">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Media Library </h1>
+          {/* <h1 className="text-xl font-semibold text-slate-900">Media Library </h1> */}
+           <BreadCrumbPage />
           <p className="text-sm text-gray-500 mt-0.5">
             Manage images, documents and files
           </p>
@@ -1211,7 +1213,7 @@ export default function Page() {
         </div>
       </div>
 
-      <div className="bg-gray-50 rounded-xl max-w-[95%] mx-auto   space-y-8 w-full">
+      <div className="bg-gray-50 rounded-xl mx-auto   space-y-8 w-full">
         <div className="flex items-center gap-8 px-8 bg-white border-b border-slate-200 py-1 rounded-sm mb-0">
           <TabButton active={tab === "my"} onClick={() => setTab("my")}>
             My library
