@@ -67,7 +67,7 @@ const ShowTropography = () => {
   const [selectedBtn, setSelectedBtn] = useState<BtnKey>("primary");
   const [hoveredBtn, setHoveredBtn] = useState<BtnKey | null>(null);
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
-
+  const [bodyFontFamily, setBodyFontFamily] = useState("Inter");
   const dispatch = useDispatch<AppDispatch>();
   const headingPx = (k: HeadingKey) => {
     if (!headings) return 0;
@@ -257,6 +257,7 @@ const ShowTropography = () => {
         setButtonBase(updatedStyle.buttonBase);
         setHeadingFontFamily(updatedStyle.fonts.heading);
         setGlobalFontFamily(updatedStyle.fonts.body);
+        // setBodyFontFamily(updatedStyle.fonts.body);
       }
       setCurrentStyle(updatedStyle);
     }
@@ -309,14 +310,6 @@ const ShowTropography = () => {
       };
     });
 
-    //    Object.entries(v).forEach(([key, value]) => {
-    //      if (value) {
-    //        const prop = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-    //        console.log("prop--->", prop)
-    //        console.log("value--->", value)
-    //        onStyleChange(prop, value);
-    //      }
-    //    });
   };
 
   const handleHeadingChange = (patch: Partial<HeadingStyle>) => {
@@ -328,12 +321,7 @@ const ShowTropography = () => {
       };
     });
 
-    //    console.log("patch--->", patch)
-    //    console.log("selectedHeading--->", selectedHeading)
-    //    if (patch.scale !== undefined) onStyleChange(`--${selectedHeading}-size`, `${patch.scale}px`);
-    //    if (patch.weight !== undefined) onStyleChange(`--${selectedHeading}-weight`, patch.weight.toString());
-    //    if (patch.lineHeight !== undefined) onStyleChange(`--${selectedHeading}-lh`, patch.lineHeight.toString());
-    //    if (patch.letterSpacingEm !== undefined) onStyleChange(`--${selectedHeading}-ls`, `${patch.letterSpacingEm}em`);
+
   };
 
   const handleBodyChange = (patch: Partial<BodyStyle>) => {
@@ -341,13 +329,6 @@ const ShowTropography = () => {
       if (!prev) return prev;
       return { ...prev, ...patch } as BodyStyle;
     });
-
-    //    if (patch.sizePx !== undefined) onStyleChange("--body-size", `${patch.sizePx}px`);
-    //    if (patch.weight !== undefined) onStyleChange("--body-weight", patch.weight.toString());
-    //    if (patch.lineHeight !== undefined) onStyleChange("--body-lh", patch.lineHeight.toString());
-    //    if (patch.letterSpacingEm !== undefined) onStyleChange("--body-ls", `${patch.letterSpacingEm}em`);
-    //    if (patch.maxWidthCh !== undefined) onStyleChange("--body-maxw", `${patch.maxWidthCh}ch`);
-    //    if (patch.paragraphGapPx !== undefined) onStyleChange("--body-paragraph-gap", `${patch.paragraphGapPx}px`);
   };
 
   const handleButtonBaseChange = (patch: Partial<ButtonBaseStyle>) => {
@@ -356,16 +337,7 @@ const ShowTropography = () => {
       return { ...prev, ...patch };
     });
 
-    //    if (patch.sizePx !== undefined) onStyleChange("--btn-size", `${patch.sizePx}px`);
-    //    if (patch.weight !== undefined) onStyleChange("--btn-weight", patch.weight.toString());
-    //    if (patch.radiusPx !== undefined) onStyleChange("--btn-radius", `${patch.radiusPx}px`);
-    //    if (patch.heightPx !== undefined) onStyleChange("--btn-height", `${patch.heightPx}px`);
-    //    if (patch.paddingXPx !== undefined) onStyleChange("--btn-padding-x", `${patch.paddingXPx}px`);
-    //    if (patch.borderWidthPx !== undefined) onStyleChange("--btn-border-width", `${patch.borderWidthPx}px`);
-    //    if (patch.transitionMs !== undefined) onStyleChange("--btn-transition", `${patch.transitionMs}ms`);
-    //    if (patch.fontFamily !== undefined) onStyleChange("--font-button", patch.fontFamily);
-    //    if (patch.transform !== undefined) onStyleChange("--btn-transform", patch.transform);
-    //    if (patch.shadow !== undefined) onStyleChange("--btn-shadow", patch.shadow);
+   
   };
 
   const handleButtonColorChange = (patch: any) => {

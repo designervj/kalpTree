@@ -59,11 +59,11 @@ export async function GET(req: NextRequest) {
   if (user?.role == "superadmin") {
     agencies = await agencyColl
       .find({ type: "agency" })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-      })
+      // .project({
+      //   _id: 1,
+      //   name: 1,
+      //   tenantId: 1,
+      // })
       .toArray();
 
     business = await agencyColl
@@ -80,20 +80,20 @@ export async function GET(req: NextRequest) {
   } else if (user?.role == "agency") {
     agencies = await agencyColl
       .find({ type: "agency", _id: new ObjectId(user.tenantId) })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-      })
+      // .project({
+      //   _id: 1,
+      //   name: 1,
+      //   tenantId: 1,
+      // })
       .toArray();
 
     business = await agencyColl
       .find({ tenantId: new ObjectId(user.tenantId) })
-      .project({
-        name: 1,
-        _id: 1,
-        tenantId: 1,
-      })
+      // .project({
+      //   name: 1,
+      //   _id: 1,
+      //   tenantId: 1,
+      // })
       .toArray();
 
     console.log("allbusiness", business);
@@ -107,22 +107,22 @@ export async function GET(req: NextRequest) {
   } else if (user?.role == "business") {
     business = await agencyColl
       .find({ _id: new ObjectId(user.tenantId) })
-      .project({
-        name: 1,
-        _id: 1,
-        tenantId: 1,
-        email: 1,
-      })
+      // .project({
+      //   name: 1,
+      //   _id: 1,
+      //   tenantId: 1,
+      //   email: 1,
+      // })
       .toArray();
 
     agencies = await agencyColl
       .find({ type: "agency", _id: new ObjectId(business[0].tenantId) })
-      .project({
-        _id: 1,
-        name: 1,
-        tenantId: 1,
-        email: 1,
-      })
+      // .project({
+      //   _id: 1,
+      //   name: 1,
+      //   tenantId: 1,
+      //   email: 1,
+      // })
       .toArray();
 
     websites = await websiteColl
