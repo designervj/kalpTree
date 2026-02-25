@@ -116,7 +116,7 @@ const handlePreviewBrand = (data: TemplateDocument) => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen p-6 pt-2">
       <div className="flex justify-between mb-4">
         <BreadCrumbPage />
         <Link href="/admin/website/templates/create">
