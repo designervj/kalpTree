@@ -250,12 +250,7 @@ export const currenBusinessSections: NavSection[] = [
         icon: Newspaper,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      {
-        label: "Media",
-        href: "/admin/website/media",
-        icon: ImageIcon,
-        permission: ["media:update", "media:read", "media:delete"],
-      },
+      
       // {
       //   label: "Templates",
       //   href: "/admin/website/templates",
@@ -322,6 +317,12 @@ export const currenBusinessSections: NavSection[] = [
         href: "/admin/branding/colors",
         icon: Palette,
         permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Media",
+        href: "/admin/website/media",
+        icon: ImageIcon,
+        permission: ["media:update", "media:read", "media:delete"],
       },
       {
         label: "Typography",
@@ -662,6 +663,8 @@ export const currenBusinessSections: NavSection[] = [
       },
     ],
   },
+
+
   {
     id: "users",
     label: "Users",
@@ -785,18 +788,19 @@ export const currenBusinessSections: NavSection[] = [
   //       permission: ["media:update", "media:read", "media:delete"],
   //     },
 
-  {
-    id: "domains",
-    label: "Domain & Hosting",
-    items: [
-      {
-        label: "Domains",
-        href: "/admin/domain",
-        icon: Globe,
-        permission: ["content:read", "content:update", "content:delete"],
-      },
-    ],
-  },
+  // {
+  //   id: "domains",
+  //   label: "Domain & Hosting",
+  //   items: [
+  //     {
+  //       label: "Domains",
+  //       href: "/admin/domain",
+  //       icon: Globe,
+  //       permission: ["content:read", "content:update", "content:delete"],
+  //     },
+  //   ],
+  // },
+
 ];
 
 export const getRoleAvatarClass = (role?: string) => {

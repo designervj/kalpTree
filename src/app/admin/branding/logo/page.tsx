@@ -121,7 +121,7 @@ export default function LogoSettingsPage() {
     <div className="space-y-6 max-w-5xl mx-auto pb-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Logo Settings</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-black">Logo Settings</h1>
           <p className="text-muted-foreground">Manage your brand marks across different themes and devices.</p>
         </div>
       </div>

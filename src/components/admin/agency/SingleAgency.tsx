@@ -546,8 +546,7 @@ export default function AdminIndex() {
               Action center
             </h3>
             <p className="text-sm text-muted-foreground">
-              Set up the most important parts of your website.
-            </p>
+              Set up the most important parts of your website.             </p>
           </div>
 
           <Link href="/admin/settings/general">

@@ -1178,7 +1178,7 @@ export default function Page() {
 
       <div className="mb-5 flex items-center justify-between px-8 pt-5 pb-2 border-b border-gray-200">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">Media Library</h1>
+          <h1 className="text-xl font-semibold text-slate-900">Media Library </h1>
           <p className="text-sm text-gray-500 mt-0.5">
             Manage images, documents and files
           </p>

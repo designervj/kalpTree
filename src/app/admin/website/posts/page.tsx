@@ -81,7 +81,7 @@ export default function Page() {
                 <Button className="flex-1 px-3 py-1  flex items-center justify-center gap-1 ">
                   <Edit2 className="h-4 w-4" /> Edit
                 </Button>
-                <Button className="flex-1 px-3 py-1 bg-secondary text-black hover:bg-accent-foreground flex items-center justify-center gap-1 ">
+                <Button className="flex-1 px-3 py-1 bg-secondary text-white hover:text-black hover:bg-accent-foreground flex items-center justify-center gap-1 ">
                   <Trash2 className="h-4 w-4" /> Delete
                 </Button>
               </div>

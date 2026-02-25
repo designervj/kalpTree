@@ -526,7 +526,7 @@ export function DataTableExt({
   const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
 
   return (
-    <div className="space-y-4 w-[1160px]">
+    <div className="space-y-4 ">
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -563,7 +563,7 @@ export function DataTableExt({
               setQuery(e.target.value);
               setPage(1);
             }}
-            className="bg-white h-10"
+            className="bg-white h-10 text-black"
           />
         </div>
 
@@ -769,7 +769,7 @@ export function DataTableExt({
                   >
                     <button
                       type="button"
-                      className="inline-flex items-center gap-1 select-none hover:text-slate-900"
+                      className="inline-flex items-center gap-1 select-none hover:text-slate-900 text-sm"
                       onClick={() => toggleSort(c.key)}
                     >
                       <span>{c.label || c.key}</span>
@@ -784,7 +784,7 @@ export function DataTableExt({
                   </TableHead>
                 ))}
 
-                <TableHead className="whitespace-nowrap text-right text-[12.5px] font-semibold text-slate-700">
+                <TableHead className="whitespace-nowrap text-right text-sm font-semibold text-slate-700 ">
                   Actions
                 </TableHead>
               </TableRow>
@@ -1038,7 +1038,7 @@ export function DataTableExt({
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="h-9 w-[110px] bg-white rounded-xl">
+                <SelectTrigger className="h-9 w-[110px] bg-white text-black rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

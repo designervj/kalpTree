@@ -57,11 +57,11 @@ export default function BrandProfilePage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-10">
+    <div className="space-y-6 max-w-6xl mx-auto pb-10">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Brand Profile</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-black">Brand Profile</h1>
           <p className="text-muted-foreground">Manage your brand's core identity and contact information.</p>
         </div>
 

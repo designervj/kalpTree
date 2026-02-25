@@ -72,7 +72,7 @@ const BreadCrumbPage = () => {
 
                 {/* <h1 className="text-2xl font-bold tracking-tight border-r  pe-4">{urlPath[urlPath.length - 1]?.charAt(0).toUpperCase() + urlPath[urlPath.length - 1]?.slice(1)}</h1> */}
                 {urlPath.length > 0 && urlPath[urlPath.length - 1] && (
-                    <h1 className="text-2xl font-bold tracking-tight  pe-4">
+                    <h1 className="text-2xl font-bold tracking-tight  pe-4 text-black">
                         {urlPath[urlPath.length - 1].charAt(0).toUpperCase() + urlPath[urlPath.length - 1].slice(1)}
                     </h1>
                 )}

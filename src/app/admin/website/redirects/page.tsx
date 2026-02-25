@@ -40,8 +40,8 @@ export default function Page() {
       </div>
 
       {/* ADD REDIRECT FORM */}
-      <div className="bg-white border rounded-xl p-6 mb-8 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 mb-8 shadow-sm">
+        <h2 className="text-lg font-semibold mb-4 text-black">
           Create New Redirect
         </h2>
 
@@ -49,7 +49,7 @@ export default function Page() {
           <input
             type="text"
             placeholder="/from-url"
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
           />
 
           <div className="flex items-center justify-center text-gray-400">
@@ -59,10 +59,10 @@ export default function Page() {
           <input
             type="text"
             placeholder="/to-url"
-            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black "
           />
 
-          <select className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <select className="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black ">
             <option>301 Permanent</option>
             <option>302 Temporary</option>
           </select>
@@ -76,14 +76,14 @@ export default function Page() {
       </div>
 
       {/* REDIRECTS TABLE */}
-      <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-100 text-gray-600">
-            <tr>
-              <th className="text-left px-4 py-3">From</th>
-              <th className="text-left px-4 py-3">To</th>
-              <th className="text-left px-4 py-3">Type</th>
-              <th className="text-right px-4 py-3">Action</th>
+          <thead className="bg-gray-100 text-gray-600 h-12 ">
+            <tr >
+              <th className="text-left px-4 py-3 text-sm">From</th>
+              <th className="text-left px-4 py-3 text-sm">To</th>
+              <th className="text-left px-4 py-3 text-sm">Type</th>
+              <th className="text-right px-4 py-3 text-sm">Action</th>``
             </tr>
           </thead>
 
@@ -91,7 +91,7 @@ export default function Page() {
             {redirects.map((item) => (
               <tr
                 key={item.id}
-                className="border-t hover:bg-gray-50"
+                className="border-t border-gray-200 hover:bg-gray-50"
               >
                 <td className="px-4 py-3 text-gray-700">
                   {item.from}
