@@ -34,7 +34,7 @@ const GetDashBoardDetails = () => {
       agencies.length == 0 &&
       !hasfetched
     ) {
-      console.log("I Ran")
+ 
       dispatch(
         savedashboardDetailsThunk({
           agencyid: user?.tenantId.toString(),

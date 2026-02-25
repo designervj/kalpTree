@@ -33,6 +33,7 @@ export interface IBusiness {
     tertiary_color?: string;
     typography?: string;
     logo?: string;
+    favicon?: string;
     colors?: {
       primary?: string;
       secondary?: string;

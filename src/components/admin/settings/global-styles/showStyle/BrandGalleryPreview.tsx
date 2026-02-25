@@ -65,9 +65,11 @@ const BrandGalleryPreview = ({
                 brand={brand}
                 headingFontFamily={headingFontFamily}
                 headings={headings}
+                globalFontFamily={globalFontFamily}
                 headingPx={headingPx}
                 leftTab={leftTab}
                 onLeftTab={onLeftTab}
+                buttonBase={buttonBase}
             />
 
             <div className="mt-6">
