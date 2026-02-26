@@ -19,7 +19,7 @@ const GetAllUsers = () => {
       !hasFetchedAllUsers &&
       alluser.length == 0
     ) {
-      dispatch(getAllUser());
+     // dispatch(getAllUser());
     }
   }, [user]);
 

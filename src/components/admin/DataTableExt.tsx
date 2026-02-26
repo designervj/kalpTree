@@ -81,6 +81,7 @@ export type DataTableExtProps = {
   onDelete?: (row: any) => void;
   onView?: (row: any) => void;
   opentab?: (row: any) => void;
+  onEditPermissions?: (row: any) => void;
 };
 
 type SortDir = "asc" | "desc";
@@ -191,6 +192,7 @@ export function DataTableExt({
   onDelete,
   onView,
   opentab,
+  onEditPermissions,
 }: DataTableExtProps) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -202,7 +204,7 @@ export function DataTableExt({
   const pageName = pathname.split("/")[5];
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
+  const {alluser} = useSelector((state: RootState) => state.user);
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({
     content: false,
     _id: false,
@@ -303,7 +305,10 @@ export function DataTableExt({
     > = {};
 
     for (const c of normalizedColumns) {
-      const values = data.map((r) => r[c.key]).filter((v) => v !== undefined);
+      const values = (data || [])
+        .filter((r) => r !== undefined && r !== null)
+        .map((r) => r[c.key])
+        .filter((v) => v !== undefined);
       const type = inferType(values);
 
       const uniques: any[] = [];
@@ -498,10 +503,10 @@ export function DataTableExt({
   ///admin/websites extract website
 
   // const pageName = pathname.split("/")[5];
-  console.log("pageName", pageName);
+
 
   const handleBuilderEdit = async (row: WebsitePageModel) => {
-    if(!currentWebsite?.primaryDomain){
+    if (!currentWebsite?.primaryDomain) {
       return
     }
     // const currentSubdomain = Array.isArray(currentWebsite?.primaryDomain)
@@ -524,6 +529,11 @@ export function DataTableExt({
   };
 
   const visibleColumns = normalizedColumns.filter((c) => columnVisibility[c.key] !== false);
+ 
+  const handleEditPermissions = (row: any) => {
+    if (!onEditPermissions) return;
+    onEditPermissions(row);
+  };
 
   return (
     <div className="min-h-screen p-6 pt-2">
@@ -613,6 +623,7 @@ export function DataTableExt({
               const uniques = m.uniques;
               const lowCardinality = uniques.length > 0 && uniques.length <= 10;
 
+  
               return (
                 <div key={c.key} className="px-2 py-2 border-b last:border-0">
                   <div className="text-xs font-medium mb-1">
@@ -951,7 +962,7 @@ export function DataTableExt({
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" className="w-44">
-                            <DropdownMenuItem onClick={() => opentab?.(row)}>
+                          <DropdownMenuItem onClick={() => opentab?.(row)}>
                             <Eye className="h-4 w-4 mr-2 text-emerald-600" />
                             Set is homepage
                           </DropdownMenuItem>
@@ -968,12 +979,17 @@ export function DataTableExt({
                             View
                           </DropdownMenuItem>
 
-                          
+
 
                           <DropdownMenuItem onClick={() => onView?.(row)}>
                             <Edit2 className="h-4 w-4 mr-2" />
                             Edit
                           </DropdownMenuItem>
+                        {alluser.length>0 ? <DropdownMenuItem onClick={() => handleEditPermissions(row)}>
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit Permissions
+                          </DropdownMenuItem> : null}
+
 
                           <DropdownMenuItem
                             onClick={async () => {

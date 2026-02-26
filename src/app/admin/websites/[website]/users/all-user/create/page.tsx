@@ -52,6 +52,7 @@ export default async function Page() {
 
   return (
     <div>
+      <GetAllRolePermission />
       <UserForm />
       <GetAllUsers />
       <GetAllAccount allaccounts={allaccounts || []} />

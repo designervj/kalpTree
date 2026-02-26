@@ -15,19 +15,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 
 import { toast } from "sonner";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { da } from "zod/v4/locales";
 import { RolePermissionModel } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 import { TenantModel } from "@/hooks/slices/user/accountSlice";
+import { IUser } from "@/models/user";
+import type { ObjectId } from "mongodb";
+import { createBusinessUser, updateBusinessUser } from "@/hooks/slices/user/UserThunk";
+import { setCurrentUser } from "@/hooks/slices/user/userSlice";
 
-interface FormData {
-  email: string;
-  password: string;
-  name: string;
-  role: string;
-  status: string;
-  tenantId: string | string[];
-}
 
 // Helper function to categorize permissions
 const categorizePermissions = (permissions: string[]) => {
@@ -55,8 +51,8 @@ const formatPermission = (permission: string) => {
 
 export function UserForm() {
   const params = useParams();
-  const id = params.id;
-
+  const id = params.id as string;
+  console.log("id", id);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
@@ -64,21 +60,32 @@ export function UserForm() {
     user,
     alluser,
     hasFetched: alluserfetched,
+    currentUser: reduxCurrentUser,
   } = useSelector((state: RootState) => state.user);
 
+  const currentUser = useMemo(() => {
+    if (reduxCurrentUser) return reduxCurrentUser;
+    if (id && alluser.length > 0) {
+      return alluser.find((u) => u._id === id || u.id === id);
+    }
+    return null;
+  }, [reduxCurrentUser, id, alluser]);
+
+  const { rolesPermissions } = useSelector(
+    (state: RootState) => state.rolePermission
+  );
   const [availableRoles, setAvailableRoles] = useState<RolePermissionModel[]>(
     []
   );
-  const { rolesPermissions, hasFetched } = useSelector(
-    (state: RootState) => state.rolePermission
-  );
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const { allAccounts, hasFetched: allaccountsfetched } = useSelector(
     (state: RootState) => state.account
   );
 
-  
-
+  const dispatch = useDispatch<AppDispatch>();
+  const isInitialLoad = useRef(true);
+  const router = useRouter();
   const [showTenantDropdown, setShowTenantDropdown] = useState(false);
   const [tenantSearchQuery, setTenantSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<
@@ -87,56 +94,53 @@ export function UserForm() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (user?.role == "superadmin") {
+    if (rolesPermissions.length > 0) {
       setAvailableRoles(rolesPermissions);
-    } else {
-      const find = rolesPermissions.find(
-        (d) => d.code == user?.role
-      )?.canCreateRole;
-      const filteredRoles = rolesPermissions.filter((d) => {
-        return find?.includes(d.code!);
-      });
-      setAvailableRoles(filteredRoles);
     }
-  }, [user, rolesPermissions]);
+  }, [rolesPermissions]);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<IUser>({
     email: "",
     password: "",
     name: "",
     role: "",
     status: "active",
-    tenantId: [],
+    tenantId: "",
+    permissions: [],
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    // createdById:new ObjectId()
+
   });
 
-  useEffect(() => {
-    if (alluser.length > 0 && id) {
-      const dataifId = alluser.find((d) => d._id == id);
-      if (
-        dataifId &&
-        dataifId.email &&
-        dataifId.name &&
-        dataifId.role &&
-        dataifId.status &&
-        dataifId.tenantId
-      ) {
-        setFormData({
-          email: dataifId?.email,
-          name: dataifId.name,
-          role: dataifId?.role,
-          status: dataifId?.status,
-          tenantId: dataifId?.tenantId,
-          password: "",
-        });
-      }
-    }
-  }, [alluser]);
+
 
   const [rolePermissions, setRolePermissions] = useState<string[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [canSelectMultipleTenants, setCanSelectMultipleTenants] =
     useState(false);
+
+  // update forma as per current user
+  useEffect(() => {
+    if (currentUser?._id || currentUser?.id) {
+      const userId = currentUser._id || currentUser.id;
+      setFormData({
+        _id: userId,
+        email: currentUser.email || "",
+        name: currentUser.name || "",
+        role: currentUser.role || "",
+        status: currentUser.status || "active",
+        tenantId: currentUser.tenantId || "",
+        permissions: currentUser.permissions || [],
+        createdAt: currentUser.createdAt || new Date(),
+        updatedAt: currentUser.updatedAt || new Date(),
+      });
+      if (currentUser.permissions) {
+        setSelectedPermissions(currentUser.permissions);
+      }
+    }
+  }, [currentUser]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -159,8 +163,8 @@ export function UserForm() {
 
       if (selectedRole) {
         setRolePermissions(selectedRole.permissions || []);
-        setSelectedPermissions(selectedRole.permissions || []);
-        setCanSelectMultipleTenants(selectedRole.canMultipleTenants);
+        // setSelectedPermissions(selectedRole.permissions || []); // Removed: this should only happen if not initial load
+        setCanSelectMultipleTenants(false);
 
         // Initialize all categories as expanded
         const categories = categorizePermissions(
@@ -174,15 +178,15 @@ export function UserForm() {
 
         // Reset tenantId based on canMultipleTenants
         if (selectedRole.canMultipleTenants) {
-          setFormData((prev) => ({
-            ...prev,
-            tenantId: Array.isArray(prev.tenantId)
-              ? prev.tenantId
-              : prev.tenantId
-              ? [prev.tenantId]
-              : [],
-          }));
+          // ... (existing commented out code)
         } else {
+          // Prevent overwriting permissions on initial load if we're editing a user
+          if (isInitialLoad.current && id) {
+            isInitialLoad.current = false;
+          } else {
+            setSelectedPermissions(selectedRole.permissions || []);
+          }
+
           setFormData((prev) => ({
             ...prev,
             tenantId: Array.isArray(prev.tenantId)
@@ -195,10 +199,15 @@ export function UserForm() {
       setRolePermissions([]);
       setSelectedPermissions([]);
       setCanSelectMultipleTenants(false);
-      setFormData((prev) => ({ ...prev, tenantId: [] }));
+      // setFormData((prev) => ({ ...prev, tenantId: [] }));
       setExpandedCategories({});
     }
   }, [formData.role, availableRoles]);
+
+  // Sync selectedPermissions back to formData
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, permissions: selectedPermissions }));
+  }, [selectedPermissions]);
 
   const toggleCategory = (category: string) => {
     setExpandedCategories((prev) => ({
@@ -255,7 +264,7 @@ export function UserForm() {
 
     if (!id && !formData.password) {
       newErrors.password = "Password is required";
-    } else if (!id && formData.password.length < 8) {
+    } else if (!id && formData.password && formData.password.length < 8) {
       newErrors.password = "Password must be at least 8 characters";
     }
 
@@ -274,7 +283,10 @@ export function UserForm() {
 
   const handleSubmit = async () => {
     setMessage({ type: "", text: "" });
-
+    if (!currentBusiness?._id) {
+      toast.error("Business not found");
+      return;
+    }
     if (!validateForm()) {
       return;
     }
@@ -283,52 +295,38 @@ export function UserForm() {
 
     try {
       const userData = {
-        email: formData.email,
-        passwordHash: formData.password,
-        name: formData.name,
-        role: formData.role,
-        permissions: selectedPermissions,
-        status: formData.status,
-        tenantId: formData.tenantId,
+        email: formData.email ?? "  ",
+        password: formData.password ?? "",
+        name: formData.name ?? "",
+        role: formData.role ?? "",
+        permissions: formData.permissions ?? [],
+        status: formData.status ?? "active",
+        tenantId: currentBusiness?._id.toString(),
         createdAt: new Date(),
         updatedAt: new Date(),
+        createdById: user?._id
       };
 
-      let result;
-      if (!id) {
-        let response = await fetch("/api/admin/users", {
-          method: "POST",
-          body: JSON.stringify(userData),
+
+      const result = await dispatch(createBusinessUser(userData)).unwrap();
+      if (result) {
+        toast.success("User created successfully");
+        setFormData({
+          email: "",
+          password: "",
+          name: "",
+          role: "",
+          status: "active",
+          tenantId: "",
         });
-        result = await response.json();
-      } else {
-        let response = await fetch(`/api/admin/users/${id}`, {
-          method: "PUT",
-          body: JSON.stringify(userData),
-        });
-        result = await response.json();
+        setSelectedPermissions([]);
+        setRolePermissions([]);
+        setErrors({});
+        setCanSelectMultipleTenants(false);
+        router.back()
       }
 
-      if (result.success) {
-        toast.success(result.message);
-        if (!id) {
-          setMessage({ type: "success", text: result.message });
-          setFormData({
-            email: "",
-            password: "",
-            name: "",
-            role: "",
-            status: "active",
-            tenantId: [],
-          });
-          setSelectedPermissions([]);
-          setRolePermissions([]);
-          setErrors({});
-          setCanSelectMultipleTenants(false);
-        }
-      } else {
-        toast.error(result.message || "Not Possible");
-      }
+
     } catch (error) {
       setMessage({
         type: "error",
@@ -339,24 +337,111 @@ export function UserForm() {
     }
   };
 
+  const handleUpdate = async () => {
+    setMessage({ type: "", text: "" });
+    if (!currentBusiness?._id) {
+      toast.error("Business not found");
+      return;
+    }
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const userData = {
+        _id: formData._id,
+        email: formData.email ?? "  ",
+        password: formData.password ?? "",
+        name: formData.name ?? "",
+        role: formData.role ?? "",
+        permissions: formData.permissions ?? [],
+        status: formData.status ?? "active",
+        tenantId: currentBusiness?._id.toString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        createdById: user?._id
+      };
+
+
+      const result = await dispatch(updateBusinessUser(userData)).unwrap();
+      if (result) {
+        toast.success("User updated successfully");
+        setFormData({
+          email: "",
+          password: "",
+          name: "",
+          role: "",
+          status: "active",
+          tenantId: "",
+        });
+        setSelectedPermissions([]);
+        setRolePermissions([]);
+        setErrors({});
+        setCanSelectMultipleTenants(false);
+        dispatch(setCurrentUser(null))
+        router.back()
+      }
+
+
+    } catch (error) {
+      setMessage({
+        type: "error",
+        text: "Failed to update user. Please try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+
+    console.log("name", name);
+    console.log("value", value);
+
+    const selectedPermission = availableRoles.find((role) => role.name === value);
+    // console.log("selectedPermission", selectedPermission);
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
+
+  const handleSelectedRole = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    console.log("name", name);
+    console.log("value", value);
+
+    const selectedPermission = availableRoles.find((role) => role.name === value);
+    // console.log("selectedPermission", selectedPermission);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+      permissions: selectedPermission?.permissions
+
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
   const handleReset = () => {
+
+    dispatch(setCurrentUser(null))
     setFormData({
       email: "",
       password: "",
       name: "",
       role: "",
       status: "active",
-      tenantId: [],
+      tenantId: "",
     });
     setErrors({});
     setMessage({ type: "", text: "" });
@@ -364,43 +449,7 @@ export function UserForm() {
     setCanSelectMultipleTenants(false);
     setSelectedPermissions([]);
     setRolePermissions([]);
-  };
-
-  const toggleTenantSelection = (tenantId: string) => {
-    if (canSelectMultipleTenants) {
-      // Multiple selection mode (array)
-      setFormData((prev) => {
-        const currentIds = Array.isArray(prev.tenantId) ? prev.tenantId : [];
-        const isSelected = currentIds.includes(tenantId);
-        return {
-          ...prev,
-          tenantId: isSelected
-            ? currentIds.filter((id) => id !== tenantId)
-            : [...currentIds, tenantId],
-        };
-      });
-    } else {
-      // Single selection mode (string)
-      setFormData((prev) => ({
-        ...prev,
-        tenantId: tenantId,
-      }));
-      setShowTenantDropdown(false);
-    }
-  };
-
-  const removeTenant = (tenantId: string) => {
-    if (canSelectMultipleTenants && Array.isArray(formData.tenantId)) {
-      setFormData((prev) => ({
-        ...prev,
-        tenantId: (prev.tenantId as string[]).filter((id) => id !== tenantId),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        tenantId: "",
-      }));
-    }
+    router.back()
   };
 
   // Cast allAccounts to Tenant[] to resolve type mismatch
@@ -412,22 +461,7 @@ export function UserForm() {
       tenant.slug?.toLowerCase().includes(tenantSearchQuery.toLowerCase())
   );
 
-  console.log(allAccounts)
 
-
-  const selectedTenants = tenants.filter((tenant) => {
-    if (Array.isArray(formData.tenantId) && typeof tenant._id == "string") {
-      return formData.tenantId.includes(tenant._id);
-    }
-    return formData.tenantId === tenant._id;
-  });
-
-  const isTenantSelected = (tenantId: string): boolean => {
-    if (Array.isArray(formData.tenantId)) {
-      return formData.tenantId.includes(tenantId);
-    }
-    return formData.tenantId === tenantId;
-  };
 
   const categorizedPermissions = categorizePermissions(rolePermissions);
 
@@ -461,11 +495,10 @@ export function UserForm() {
 
           {message.text && (
             <div
-              className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${
-                message.type === "success"
-                  ? "bg-green-50 text-green-800"
-                  : "bg-red-50 text-red-800"
-              }`}
+              className={`mb-6 p-4 rounded-lg flex items-start gap-3 ${message.type === "success"
+                ? "bg-green-50 text-green-800"
+                : "bg-red-50 text-red-800"
+                }`}
             >
               {message.type === "success" ? (
                 <CheckCircle className="w-5 h-5 mt-0.5 flex-shrink-0" />
@@ -487,9 +520,8 @@ export function UserForm() {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.name ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="John Doe"
               />
               {errors.name && (
@@ -506,10 +538,10 @@ export function UserForm() {
                 type="email"
                 name="email"
                 value={formData.email}
+                disabled={currentUser?._id ? true : false}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.email ? "border-red-500" : "border-gray-300"
+                  }`}
                 placeholder="john@example.com"
               />
               {errors.email && (
@@ -529,9 +561,8 @@ export function UserForm() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                      errors.password ? "border-red-500" : "border-gray-300"
-                    }`}
+                    className={`w-full px-4 py-2 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.password ? "border-red-500" : "border-gray-300"
+                      }`}
                     placeholder="Minimum 8 characters"
                   />
                   <button
@@ -560,17 +591,16 @@ export function UserForm() {
               <select
                 name="role"
                 value={formData.role}
-                onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.role ? "border-red-500" : "border-gray-300"
-                }`}
+                onChange={handleSelectedRole}
+                className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.role ? "border-red-500" : "border-gray-300"
+                  }`}
               >
                 <option value="">Select a role</option>
-                {availableRoles.map((role) => (
-                  <option key={role._id} value={role.code}>
+                {availableRoles && availableRoles.length > 0 ? availableRoles.map((role) => (
+                  <option key={role._id} value={role.name}>
                     {role.name}
                   </option>
-                ))}
+                )) : <option value="">No roles available  </option>}
               </select>
               {errors.role && (
                 <p className="mt-1 text-sm text-red-500">{errors.role}</p>
@@ -578,7 +608,7 @@ export function UserForm() {
             </div>
 
             {/* Permissions Selection with Categories */}
-            {rolePermissions.length > 0 && (
+            {/* {rolePermissions.length > 0 && (
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-sm font-medium text-gray-700">
@@ -683,119 +713,8 @@ export function UserForm() {
                   )}
                 </div>
               </div>
-            )}
+            )} */}
 
-            {/* Tenant Selection */}
-            {formData.role && user?.role == "superadmin" && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Tenant{canSelectMultipleTenants ? "s" : ""}
-                  {canSelectMultipleTenants && (
-                    <span className="ml-2 text-xs text-blue-600 font-normal">
-                      (Multiple selection enabled)
-                    </span>
-                  )}
-                </label>
-                <div className="relative" ref={dropdownRef}>
-                  <div
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                    onClick={() => setShowTenantDropdown(!showTenantDropdown)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Search className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-500">
-                        {selectedTenants.length > 0
-                          ? canSelectMultipleTenants
-                            ? `${selectedTenants.length} tenant(s) selected`
-                            : selectedTenants[0]?.name
-                          : canSelectMultipleTenants
-                          ? "Search and select tenants"
-                          : "Search and select a tenant"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {showTenantDropdown && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-64 overflow-hidden">
-                      <div className="p-2 border-b">
-                        <input
-                          type="text"
-                          value={tenantSearchQuery}
-                          onChange={(e) => setTenantSearchQuery(e.target.value)}
-                          placeholder="Search tenants..."
-                          className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
-                      <div className="max-h-48 overflow-y-auto">
-                        {filteredTenants.length > 0 ? (
-                          filteredTenants.map((tenant) => (
-                            <div
-                              key={String(tenant._id)}
-                              className="px-4 py-2 hover:bg-gray-50 cursor-pointer flex items-center gap-3"
-                              onClick={() =>
-                                toggleTenantSelection(String(tenant._id))
-                              }
-                            >
-                              {canSelectMultipleTenants ? (
-                                <input
-                                  type="checkbox"
-                                  checked={isTenantSelected(String(tenant._id))}
-                                  onChange={() => {}}
-                                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                                />
-                              ) : (
-                                <input
-                                  type="radio"
-                                  checked={isTenantSelected(String(tenant._id))}
-                                  onChange={() => {}}
-                                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                                />
-                              )}
-                              <div>
-                                <div className="font-medium text-gray-900">
-                                  {tenant.name}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {tenant.slug}
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="px-4 py-3 text-sm text-gray-500 text-center">
-                            No tenants found
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Selected Tenants Display */}
-                {selectedTenants.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {selectedTenants.map((tenant) => (
-                      <div
-                        key={String(tenant._id)}
-                        className="inline-flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-full border border-blue-200"
-                      >
-                        <span className="text-sm font-medium">
-                          {tenant.name}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeTenant(String(tenant._id))}
-                          className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Status */}
             <div>
@@ -816,13 +735,19 @@ export function UserForm() {
 
             {/* Submit Button */}
             <div className="flex gap-4 pt-4">
-              <button
+              {id ? <button
+                onClick={handleUpdate}
+                disabled={loading}
+                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {loading ? "Updating..." : "Update User"}
+              </button> : <button
                 onClick={handleSubmit}
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create User"}
-              </button>
+              </button>}
               <button
                 onClick={handleReset}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"

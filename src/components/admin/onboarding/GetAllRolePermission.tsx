@@ -1,5 +1,5 @@
 "use client";
-import { fetchRolePermissions } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
+import { fetchRolePermissions, resetFetchAllRolePermission } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
@@ -20,6 +20,12 @@ const GetAllRolePermission = () => {
   (state: RootState) => state.user
  );
 
+
+ useEffect(()=>{
+  dispatch(resetFetchAllRolePermission());
+ },[])
+
+ 
  const isApi= useRef<boolean>(true)
   useEffect(() => {
     if (businessid && !hasFetched && isApi.current) {

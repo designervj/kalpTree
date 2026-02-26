@@ -138,6 +138,7 @@ const userSlice = createSlice({
           state.alluser = state.alluser.map((user) =>
             user._id === action.payload._id ? action.payload : user
           );
+          state.currentUser=null
         }
       )
       .addCase(updateBusinessUser.rejected, (state) => {
@@ -162,12 +163,12 @@ const userSlice = createSlice({
   },
 });
 
-export const { 
-  setUser,  
-  clearUser, 
-  updateUser, 
-  updateIsSecondDashBoard, 
+export const {
+  setUser,
+  clearUser,
+  updateUser,
+  updateIsSecondDashBoard,
   setCurrentUser,
-  clearAllUser 
+  clearAllUser
 } = userSlice.actions;
 export default userSlice.reducer;

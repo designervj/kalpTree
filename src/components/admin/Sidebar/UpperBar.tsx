@@ -79,14 +79,18 @@ export const UpperBar = () => {
   }, [allSelectedBusiness]);
 
   const handleAgencyChange = (agencyId: string) => {
+    // 1. Reset Redux state first
     handleResetRedux();
-    const agency = agencies.find((a) => a._id?.toString() === agencyId);
+
+    // 2. Clear current header specifically (part of reset but explicit here)
     dispatch(setCurrentHeader(null));
+
+    const agency = agencies.find((a) => a._id?.toString() === agencyId);
     dispatch(setCurretAgency(agency || null));
 
     const allBus = allBusiness.filter((item) => item.tenantId === agency?._id);
 
-    if (allBus.length === 1) {
+    if (allBus.length > 0) {
       dispatch(setSelectedBusiness(allBus));
 
       const primaryBusiness = allBus[0]?.website?.primaryDomain?.[0] ?? null;
@@ -95,29 +99,7 @@ export const UpperBar = () => {
       params.set("agencyid", agencyId);
       params.set("businessid", allBus[0]._id?.toString() || "");
 
-      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
-    } else if (allBus.length > 1) {
-      dispatch(setSelectedBusiness(allBus));
-
-      const primaryBusiness = allBus[0]?.website?.primaryDomain?.[0] ?? null;
-      // Update URL search params
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("agencyid", agencyId);
-      params.set("businessid", allBus[0]._id?.toString() || "");
-      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
-    }
-  };
-
-  const handleBusinessChange = (tenantId: string) => {
-    handleResetRedux();
-    const params = new URLSearchParams(searchParams.toString());
-    const business = allBusiness.find((b) => b._id?.toString() === tenantId);
-    params.set("businessid", business?._id?.toString() || "");
-    params.set("agencyid", business?.tenantId?.toString() || "");
-    dispatch(setCurrentBusiness(business || null));
-
-    if (business) {
-      const primaryBusiness = business?.website?.primaryDomain?.[0] ?? null;
+      // 3. Initiate navigation after all state updates are dispatched
       router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
     }
   };
@@ -133,6 +115,27 @@ export const UpperBar = () => {
     // dispatch(clearMenus())
     dispatch(clearProducts());
     dispatch(clearWebsitePages());
+  };
+
+
+  const handleBusinessChange = (tenantId: string) => {
+    // 1. Reset Redux state first
+    handleResetRedux();
+
+    const params = new URLSearchParams(searchParams.toString());
+    const business = allBusiness.find((b) => b._id?.toString() === tenantId);
+
+    params.set("businessid", business?._id?.toString() || "");
+    params.set("agencyid", business?.tenantId?.toString() || "");
+
+    // 2. Set current business in Redux
+    dispatch(setCurrentBusiness(business || null));
+
+    if (business) {
+      const primaryBusiness = business?.website?.primaryDomain?.[0] ?? "";
+      // 3. Initiate navigation after state updates
+      router.push(`/admin/websites/${primaryBusiness}?${params.toString()}`);
+    }
   };
 
   return (

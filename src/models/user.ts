@@ -1,10 +1,11 @@
-import type { ObjectId } from "mongodb";
 
+ import type { ObjectId } from "mongodb";
 export interface IUser {
   _id?: string | ObjectId;
   id?: string | ObjectId;
   email?: string;
   passwordHash?: string;
+  password?:string;
   name?: string;
   role?: string;
   status?: string;
@@ -13,4 +14,5 @@ export interface IUser {
   updatedAt?: Date;
   lastLoginAt?: Date;
   permissions?: string[];
+   createdById?:ObjectId |string
 }
