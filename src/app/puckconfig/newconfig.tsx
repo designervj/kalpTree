@@ -42,6 +42,181 @@ import {
 
 import HeroSlider from "@/components/puckcomponents/DirectComps/Hero";
 import * as React from "react";
+import { createPortal } from "react-dom";
+
+const HoverButtonWrapper = ({ children }: { children: React.ReactNode }) => {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const handleAddSection = (e: React.MouseEvent) => {
+    console.log("Add section");
+    e.stopPropagation();
+    setIsModalOpen(true);
+  };
+
+  return (
+    <>
+      <div
+        className="puck-hover-wrapper"
+        style={{
+          position: "relative",
+          width: "100%",
+          zIndex: isModalOpen ? 10000 : 1,
+        }}
+      >
+        <style>{`
+          .puck-hover-wrapper:hover {
+            z-index: 1000 !important;
+          }
+          .puck-hover-wrapper::after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 0;
+            right: 0;
+            height: 20px;
+            z-index: 999;
+          }
+          .puck-hover-wrapper .add-section-btn {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease-in-out;
+            z-index: 10000 !important;
+          }
+          .puck-hover-wrapper:hover .add-section-btn {
+            opacity: 1;
+            pointer-events: auto;
+          }
+        `}</style>
+        {children}
+        <div
+          className="add-section-btn"
+          style={{
+            position: "absolute",
+            bottom: "-15px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 10000,
+          }}
+        >
+          <button
+            style={{
+              backgroundColor: "#2563eb",
+              color: "white",
+              padding: "6px 16px",
+              borderRadius: "20px",
+              border: "none",
+              fontSize: "12px",
+              fontWeight: 600,
+              cursor: "pointer",
+              boxShadow:
+                "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              pointerEvents: "auto", // Explicitly ensure pointer events
+            }}
+            onClick={handleAddSection}
+          >
+            <span style={{ fontSize: "16px" }}>+</span> Add section
+          </button>
+        </div>
+      </div>
+
+      {isModalOpen &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              backdropFilter: "blur(4px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 99999, // Extremely high z-index
+            }}
+            onClick={() => setIsModalOpen(false)}
+          >
+            <div
+              style={{
+                backgroundColor: "white",
+                padding: "32px",
+                borderRadius: "16px",
+                width: "90%",
+                maxWidth: "500px",
+                boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+                position: "relative",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  position: "absolute",
+                  top: "16px",
+                  right: "16px",
+                  border: "none",
+                  background: "none",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  color: "#6b7280",
+                }}
+              >
+                &times;
+              </button>
+              <h2
+                style={{
+                  margin: "0 0 16px 0",
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  color: "#111827",
+                }}
+              >
+                Add New Section
+              </h2>
+              <p style={{ color: "#4b5563", marginBottom: "24px" }}>
+                Select a section type to add it below this component.
+              </p>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: "12px",
+                }}
+              >
+                {["Hero", "Features", "Pricing", "Testimonials"].map((type) => (
+                  <button
+                    key={type}
+                    style={{
+                      padding: "12px",
+                      borderRadius: "8px",
+                      border: "1px solid #e5e7eb",
+                      backgroundColor: "#f9fafb",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      fontWeight: 500,
+                    }}
+                    onClick={() => {
+                      console.log(`Adding ${type} section...`);
+                      setIsModalOpen(false);
+                    }}
+                  >
+                    {type}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
+    </>
+  );
+};
 
 export const sizingFields = {
   type: "custom",
@@ -233,16 +408,18 @@ export const newconfig = {
         const backgroundstyle = getBackgroundCSS(background);
 
         return (
-          <props.content
-            style={{
-              ...sizestyle,
-              ...borderstyle,
-              ...spacingstyle,
-              ...boxshadowstyle,
-              ...layoutstyle,
-              ...backgroundstyle,
-            }}
-          />
+          <HoverButtonWrapper>
+            <props.content
+              style={{
+                ...sizestyle,
+                ...borderstyle,
+                ...spacingstyle,
+                ...boxshadowstyle,
+                ...layoutstyle,
+                ...backgroundstyle,
+              }}
+            />
+          </HoverButtonWrapper>
         );
       },
     },
@@ -260,13 +437,21 @@ export const newconfig = {
 
         console.log(text, textstyle);
 
-        return <h1 style={{ ...textstyle }}>Himanshu</h1>;
+        return (
+          <HoverButtonWrapper>
+            <h1 style={{ ...textstyle }}>Himanshu</h1>
+          </HoverButtonWrapper>
+        );
       },
     },
 
     HeroSection: {
       render: (props: any) => {
-        return <HeroSlider />;
+        return (
+          <HoverButtonWrapper>
+            <HeroSlider />
+          </HoverButtonWrapper>
+        );
       },
     },
 
@@ -289,7 +474,11 @@ export const newconfig = {
       },
       render: (props: any) => {
         // compute CSS from field values and render your accordion UI
-        return <AccordionComponent {...props} />;
+        return (
+          <HoverButtonWrapper>
+            <AccordionComponent {...props} />
+          </HoverButtonWrapper>
+        );
       },
     },
   },
