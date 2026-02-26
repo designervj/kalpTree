@@ -234,7 +234,7 @@ export default async function AdminIndex() {
       <GetAllBusiness />
       <GetAllWebsites />
      {session?.user &&
-     session?.user?.role != "business" ?
+     (session?.user?.role ==="superadmin" || session?.user?.role ==="agency") ?
       <MinorComp sessionUser={session?.user} /> : 
       <BusinessPage/>
       }

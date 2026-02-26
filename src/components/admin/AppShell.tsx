@@ -463,7 +463,7 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       ) : (
         <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-          {user && user.role != "business" && !isHighLevelCollapsed && (
+          {user && (user.role == "superadmin" || user.role == "agency") && !isHighLevelCollapsed && (
             <HighLevelSidebar
               user={user}
               collapsed={collapsed}
@@ -473,7 +473,7 @@ export function AppShell({ children }: AppShellProps) {
             />
           )}
 
-          {user && (user.role == "business" || businessid) && (
+          {user && (user.role != "superadmin" && user.role != "agency") && (
             <Sidebar
               collapsed={false}
               onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
