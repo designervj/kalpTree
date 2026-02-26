@@ -280,3 +280,55 @@ export function SizingPanel({
     </div>
   );
 }
+
+type SizeField = {
+  value: string | number;
+  unit: string;
+};
+
+type SectionStyle = {
+  width?: SizeField;
+  maxWidth?: SizeField;
+  minHeight?: SizeField;
+  height?: SizeField;
+  maxHeight?: SizeField;
+  sectionAlignment?: string;
+};
+
+export function generateCSS(styles: SectionStyle): React.CSSProperties {
+  const css: React.CSSProperties = {};
+
+  const applySize = (key: keyof React.CSSProperties, field?: SizeField) => {
+    if (!field) return;
+
+    const { value, unit } = field;
+
+    // Skip if unit is none
+    if (unit === "none") return;
+
+    // Handle auto
+    if (unit === "auto") {
+      css[key] = "auto";
+      return;
+    }
+
+    // Skip empty values
+    if (value === "" || value === null || value === undefined) return;
+
+    css[key] = `${value}${unit}`;
+  };
+
+  applySize("width", styles.width);
+  applySize("maxWidth", styles.maxWidth);
+  applySize("minHeight", styles.minHeight);
+  applySize("height", styles.height);
+  applySize("maxHeight", styles.maxHeight);
+
+  // Section alignment (example mapping)
+  if (styles.sectionAlignment === "center") {
+    css.marginLeft = "auto";
+    css.marginRight = "auto";
+  }
+
+  return css;
+}

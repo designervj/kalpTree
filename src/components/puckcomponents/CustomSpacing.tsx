@@ -3,7 +3,7 @@ import { SizeInput } from "./CustomSIzing";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const DEFAULT_SPACING = {
+export const DEFAULT_SPACING = {
   marginTop: { value: "0", unit: "px" },
   marginBottom: { value: "0", unit: "px" },
   marginLeft: { value: "", unit: "px" },
@@ -300,4 +300,47 @@ export function SpacingPanel({
       )}
     </div>
   );
+}
+
+export function generateSpacingCSS(
+  spacing?: SpacingState,
+): React.CSSProperties {
+  if (!spacing) return {};
+
+  const css: React.CSSProperties = {};
+
+  const getSize = (field?: SpacingValue) => {
+    if (!field) return undefined;
+    const { value, unit } = field;
+
+    if (value === "" || value === null || value === undefined) {
+      return undefined;
+    }
+
+    return `${value}${unit}`;
+  };
+
+  // Margin
+  const mt = getSize(spacing.marginTop);
+  const mb = getSize(spacing.marginBottom);
+  const ml = getSize(spacing.marginLeft);
+  const mr = getSize(spacing.marginRight);
+
+  if (mt) css.marginTop = mt;
+  if (mb) css.marginBottom = mb;
+  if (ml) css.marginLeft = ml;
+  if (mr) css.marginRight = mr;
+
+  // Padding
+  const pt = getSize(spacing.paddingTop);
+  const pb = getSize(spacing.paddingBottom);
+  const pl = getSize(spacing.paddingLeft);
+  const pr = getSize(spacing.paddingRight);
+
+  if (pt) css.paddingTop = pt;
+  if (pb) css.paddingBottom = pb;
+  if (pl) css.paddingLeft = pl;
+  if (pr) css.paddingRight = pr;
+
+  return css;
 }

@@ -1,0 +1,182 @@
+---
+heading: "Build Faster. Ship Smarter."
+subheading: "The modern platform for teams who want to move fast without breaking things."
+primaryBtn: "Get Started"
+primaryHref: "#"
+secondaryBtn: "Learn More"
+background: "linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%)"
+---
+
+export default function Hero({
+  heading,
+  subheading,
+  primaryButtonLabel,
+  primaryButtonHref,
+  secondaryButtonLabel,
+  background,
+  // ✅ motion is injected from outside — no import needed
+  motion,
+}) {
+  const fadeUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: (delay = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut", delay },
+    }),
+  };
+
+  return (
+    <section
+      style={{
+        background: background ?? "linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%)",
+        color: "white",
+        padding: "6rem 2rem",
+        textAlign: "center",
+        minHeight: "80vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        position: "relative",
+      }}
+    >
+      {/* Animated glow blob */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.6 }}
+        animate={{ opacity: 0.15, scale: 1.2 }}
+        transition={{ duration: 2, ease: "easeOut" }}
+        style={{
+          position: "absolute",
+          width: "600px",
+          height: "600px",
+          borderRadius: "50%",
+          background: "radial-gradient(circle, #0070f3, transparent 70%)",
+          pointerEvents: "none",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+
+      {/* Badge */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        custom={0}
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "0.4rem",
+          background: "rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          borderRadius: "999px",
+          padding: "0.35rem 1rem",
+          fontSize: "0.8rem",
+          color: "#aaa",
+          marginBottom: "1.5rem",
+          backdropFilter: "blur(8px)",
+        }}
+      >
+        <span style={{ color: "#0070f3", fontWeight: 700 }}>New</span>
+        &nbsp;Drag-and-drop builder is live →
+      </motion.div>
+
+      {/* Heading */}
+      <motion.h1
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        custom={0.15}
+        style={{
+          fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+          fontWeight: 900,
+          lineHeight: 1.1,
+          marginBottom: "1.25rem",
+          maxWidth: "800px",
+          letterSpacing: "-0.03em",
+        }}
+      >
+        {heading ?? "Build Faster. Ship Smarter."}
+      </motion.h1>
+
+      {/* Subheading */}
+      <motion.p
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        custom={0.3}
+        style={{
+          fontSize: "1.2rem",
+          color: "#888",
+          maxWidth: "560px",
+          lineHeight: 1.7,
+          marginBottom: "2.5rem",
+        }}
+      >
+        {subheading ?? "The modern platform for teams who want to move fast."}
+      </motion.p>
+
+      {/* Buttons */}
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="visible"
+        custom={0.45}
+        style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}
+      >
+        <motion.a
+          href={primaryButtonHref ?? "#"}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
+          style={{
+            background: "#0070f3",
+            color: "white",
+            padding: "0.85rem 2.25rem",
+            borderRadius: "10px",
+            fontWeight: 700,
+            fontSize: "1rem",
+            textDecoration: "none",
+            boxShadow: "0 0 30px rgba(0,112,243,0.4)",
+          }}
+        >
+          {primaryButtonLabel ?? "Get Started"}
+        </motion.a>
+
+        <motion.a
+          href="#"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.97 }}
+          style={{
+            border: "1px solid rgba(255,255,255,0.15)",
+            color: "white",
+            padding: "0.85rem 2.25rem",
+            borderRadius: "10px",
+            fontWeight: 600,
+            fontSize: "1rem",
+            textDecoration: "none",
+            background: "rgba(255,255,255,0.04)",
+            backdropFilter: "blur(8px)",
+          }}
+        >
+          {secondaryButtonLabel ?? "Learn More"}
+        </motion.a>
+      </motion.div>
+
+      {/* Bottom fade */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: "120px",
+          background: "linear-gradient(to top, rgba(0,0,0,0.4), transparent)",
+          pointerEvents: "none",
+        }}
+      />
+    </section>
+  );
+}

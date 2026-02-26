@@ -1,131 +1,60 @@
 import {
+  BackgroundPanel,
+  DEFAULT_BACKGROUND,
+  getBackgroundCSS,
+} from "@/components/puckcomponents/CustomBackground";
+import {
   BorderPanel,
   DEFAULT_BORDER,
+  generateBorderCSS,
 } from "@/components/puckcomponents/CustomBorder";
 import {
   BoxShadowPanel,
   BoxShadowState,
   DEFAULT_BOX_SHADOW,
+  generateBoxShadowCSS,
 } from "@/components/puckcomponents/CustomBoxShadow";
 import {
   DEFAULT_LAYOUT,
+  generateLayoutCSS,
   LayoutPanel,
 } from "@/components/puckcomponents/CustomLayout";
 import {
   DEFAULT_SIZING,
+  generateCSS,
   SizingPanel,
 } from "@/components/puckcomponents/CustomSIzing";
-import { SpacingPanel } from "@/components/puckcomponents/CustomSpacing";
+import {
+  DEFAULT_SPACING,
+  generateSpacingCSS,
+  SpacingPanel,
+} from "@/components/puckcomponents/CustomSpacing";
+import {
+  DEFAULT_TEXT,
+  generateTextCSS,
+  TextPanel,
+} from "@/components/puckcomponents/CustomText";
+import {
+  AccordionComponent,
+  accordionContentFields,
+  DEFAULT_ACCORDION_CONTENT,
+} from "@/components/puckcomponents/DirectComps/AccordianBlock";
+
+import HeroSlider from "@/components/puckcomponents/DirectComps/Hero";
 import * as React from "react";
-
-const px = (v: any, fallback = 0) => {
-  if (v === undefined || v === null || v === "") return `${fallback}px`;
-  if (typeof v === "number") return `${v}px`;
-  return String(v);
-};
-
-const safeNum = (v: any, fallback: number) => {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : fallback;
-};
-
-const getSpacingStyle = (props: any): React.CSSProperties => ({
-  marginTop: px(props.marginTop, 0),
-  marginRight: px(props.marginRight, 0),
-  marginBottom: px(props.marginBottom, 0),
-  marginLeft: px(props.marginLeft, 0),
-  paddingTop: px(props.paddingTop, 0),
-  paddingRight: px(props.paddingRight, 0),
-  paddingBottom: px(props.paddingBottom, 0),
-  paddingLeft: px(props.paddingLeft, 0),
-});
-
-const getTypographyStyle = (props: any): React.CSSProperties => ({
-  fontSize: px(props.fontSize, 16),
-  fontWeight: props.fontWeight || 400,
-  lineHeight: props.lineHeight || 1.5,
-  letterSpacing: props.letterSpacing ?? 0,
-  fontFamily: props.fontFamily || "inherit",
-  textAlign: props.textAlign || "left",
-  color: props.color || "#111111",
-});
-
-const getBoxStyle = (props: any): React.CSSProperties => ({
-  backgroundColor: props.backgroundColor || "transparent",
-  borderWidth: px(props.borderWidth, 0),
-  borderStyle: props.borderStyle || "none",
-  borderColor: props.borderColor || "#e5e7eb",
-  borderRadius: px(props.borderRadius, 0),
-  boxShadow: props.boxShadow || "none",
-  opacity: props.opacity !== undefined ? safeNum(props.opacity, 1) : 1,
-});
-
-const getSizeStyle = (props: any): React.CSSProperties => ({
-  width: props.widthMode === "full" ? "100%" : props.width || "auto",
-  maxWidth: props.maxWidth || (props.widthMode === "full" ? "100%" : "100%"),
-  minWidth: px(props.minWidth, 0),
-  height: props.heightAuto ? "auto" : px(props.height, 0),
-  minHeight: px(props.minHeight, 0),
-  maxHeight: props.maxHeight || "none",
-});
-
-const getFlexStyle = (props: any): React.CSSProperties => {
-  const isFlex = props.display === "flex";
-  return {
-    display: props.display || "block",
-    flexDirection: isFlex ? props.flexDirection || "row" : undefined,
-    justifyContent: isFlex ? props.justifyContent || "flex-start" : undefined,
-    alignItems: isFlex ? props.alignItems || "stretch" : undefined,
-    flexWrap: isFlex ? props.flexWrap || "nowrap" : undefined,
-    gap: isFlex ? px(props.gap, 0) : undefined,
-  };
-};
-
-const combine = (...styles: React.CSSProperties[]): React.CSSProperties =>
-  Object.assign({}, ...styles);
-
-// const layout = {
-//   type: "object",
-//   objectFields: {
-//     display: {
-//       type: "select",
-//       options: [
-//         {
-//           value: "flex",
-//           label: "Flex",
-//         },
-//         {
-//           value: "grid",
-//           label: "Grid",
-//         },
-//       ],
-//     },
-//   },
-//   label: "Layout",
-//   defaultExpanded: false,
-// };
 
 export const sizingFields = {
   type: "custom",
   label: "Sizing",
-  defaultValue: {
-    width: { value: "", unit: "auto" },
-    maxWidth: { value: "", unit: "none" },
-    sectionAlignment: "center",
-    minHeight: { value: "", unit: "auto" },
-    height: { value: "", unit: "auto" },
-    maxHeight: { value: "", unit: "none" },
-  },
+  defaultValue: DEFAULT_SIZING,
   render: (data: any) => {
-    const { field, id, label, name, onChange, value } = data;
+    const { field, onChange, value } = data;
 
     const update = (key: string, val: string) => {
       onChange({ ...value, [key]: val });
     };
 
-    const safeValue = value
-      ? { ...field.defaultValue, ...value }
-      : field.defaultValue;
+    const safeValue = value ? { ...DEFAULT_SIZING, ...value } : DEFAULT_SIZING;
 
     return <SizingPanel updateField={update} sizing={safeValue} />;
   },
@@ -134,104 +63,24 @@ export const sizingFields = {
 export const spacingFields = {
   type: "custom",
   label: "Spacing",
-  defaultValue: {
-    marginTop: { value: "0", unit: "px" },
-    marginBottom: { value: "0", unit: "px" },
-    marginLeft: { value: "", unit: "px" },
-    marginRight: { value: "", unit: "px" },
-    paddingTop: { value: "", unit: "px" },
-    paddingBottom: { value: "", unit: "px" },
-    paddingLeft: { value: "", unit: "px" },
-    paddingRight: { value: "", unit: "px" },
-  },
+  defaultValue: DEFAULT_SPACING,
   render: (data: any) => {
     const { onChange, field, value } = data;
 
     const safeValue = value
-      ? { ...field.defaultValue, ...value }
-      : field.defaultValue;
+      ? { ...DEFAULT_SPACING, ...value }
+      : DEFAULT_SPACING;
 
     return <SpacingPanel onChange={onChange} spacing={safeValue} />;
   },
 };
-
-// export const flexFields = {
-//   flexDirection: {
-//     type: "radio",
-//     label: "Direction",
-//     options: [
-//       { label: "Row", value: "row" },
-//       { label: "Column", value: "column" },
-//       { label: "Row Reverse", value: "row-reverse" },
-//       { label: "Column Reverse", value: "column-reverse" },
-//     ],
-//     defaultValue: "row",
-//   },
-
-//   justifyContent: {
-//     type: "radio",
-//     label: "Justify Content",
-//     options: [
-//       { label: "Start", value: "flex-start" },
-//       { label: "Center", value: "center" },
-//       { label: "End", value: "flex-end" },
-//       { label: "Between", value: "space-between" },
-//       { label: "Around", value: "space-around" },
-//       { label: "Evenly", value: "space-evenly" },
-//     ],
-//     defaultValue: "flex-start",
-//   },
-
-//   alignItems: {
-//     type: "radio",
-//     label: "Align Items",
-//     options: [
-//       { label: "Stretch", value: "stretch" },
-//       { label: "Start", value: "flex-start" },
-//       { label: "Center", value: "center" },
-//       { label: "End", value: "flex-end" },
-//       { label: "Baseline", value: "baseline" },
-//     ],
-//     defaultValue: "stretch",
-//   },
-
-//   alignContent: {
-//     type: "radio",
-//     label: "Align Content",
-//     options: [
-//       { label: "Start", value: "flex-start" },
-//       { label: "Center", value: "center" },
-//       { label: "End", value: "flex-end" },
-//       { label: "Between", value: "space-between" },
-//       { label: "Around", value: "space-around" },
-//       { label: "Stretch", value: "stretch" },
-//     ],
-//   },
-
-//   flexWrap: {
-//     type: "radio",
-//     label: "Wrap",
-//     options: [
-//       { label: "No Wrap", value: "nowrap" },
-//       { label: "Wrap", value: "wrap" },
-//       { label: "Wrap Reverse", value: "wrap-reverse" },
-//     ],
-//     defaultValue: "nowrap",
-//   },
-
-//   gap: {
-//     type: "number",
-//     label: "Gap",
-//     defaultValue: 0,
-//   },
-// };
 
 export const borderFields = {
   type: "custom",
   label: "Border",
   defaultValue: DEFAULT_BORDER,
   render: (data: any) => {
-    const { onChange, value } = data;
+    const { onChange, value, field } = data;
 
     const safeValue = value ? { ...DEFAULT_BORDER, ...value } : DEFAULT_BORDER;
 
@@ -277,10 +126,6 @@ export const boxShadowFields = {
       ? { ...DEFAULT_BOX_SHADOW, ...value }
       : DEFAULT_BOX_SHADOW;
 
-    React.useEffect(() => {
-      onChange({ ...safeValue });
-    }, []);
-
     const updateField = (key: string, val: any) => {
       onChange({ ...safeValue, [key]: val });
     };
@@ -295,11 +140,37 @@ export const boxShadowFields = {
   },
 };
 
-const CustomSlot = (props: any) => {
-  return <span {...props} />;
+export const makeTextFields = {
+  type: "custom",
+  label: "Text",
+  defaultValue: DEFAULT_TEXT,
+  render: (data: any) => {
+    const { onChange, value } = data;
+
+    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
+
+    const updateField = (key: string, val: any) => {
+      onChange({ ...safeValue, [key]: val });
+    };
+
+    return <TextPanel updateField={updateField} text={safeValue} />;
+  },
 };
 
-// ---------- Config ----------
+export const backgroundFields = {
+  type: "custom" as const,
+  label: "Background",
+  defaultValue: DEFAULT_BACKGROUND,
+  render: (data: any) => {
+    const { onChange, value } = data;
+    const safeValue = value
+      ? { ...DEFAULT_BACKGROUND, ...value }
+      : DEFAULT_BACKGROUND;
+    const updateField = (key: string, val: any) =>
+      onChange({ ...safeValue, [key]: val });
+    return <BackgroundPanel updateField={updateField} background={safeValue} />;
+  },
+};
 
 export const newconfig = {
   root: {
@@ -330,52 +201,95 @@ export const newconfig = {
   },
 
   components: {
-    // --------------------------------------------------
-    // Grid Container (NEW) - droppable grid wrapper
-    // --------------------------------------------------
     Container: {
       fields: {
-        layoutFields: layoutFields,
-        sizingFields: sizingFields,
-        spacingFields: spacingFields,
-        borderFields: borderFields,
-        boxShadowFields: boxShadowFields,
+        layout: layoutFields,
+        sizing: sizingFields,
+        spacing: spacingFields,
+        border: borderFields,
+        boxShadow: boxShadowFields,
         content: {
           type: "slot",
         },
+        background: backgroundFields,
       },
-      //   resolveFields: (data: any, { fields }: any) => {
-      //     const baseFields = {
-      //       layout: fields.layout,
-      //       content: fields.content,
-      //       sizingFields: fields.sizingFields,
-      //       spacingFields: fields.spacingFields,
-      //       borderFields: fields.borderFields,
-      //       boxShadowFields: fields.boxShadowFields,
-      //     };
-
-      //     if (data.props.layout && data.props.layout.display == "flex") {
-      //       const cloned = structuredClone(baseFields);
-      //       cloned.layout.objectFields = {
-      //         ...cloned.layout.objectFields,
-      //         ...flexFields,
-      //       };
-      //       return cloned;
-      //     }
-
-      //     return baseFields;
-      //   },
+      defaultProps: {
+        boxShadow: DEFAULT_BOX_SHADOW,
+        layout: DEFAULT_LAYOUT,
+        sizing: DEFAULT_SIZING,
+        spacing: DEFAULT_SPACING,
+        border: DEFAULT_BORDER,
+        background: DEFAULT_BACKGROUND,
+      },
 
       render: (props: any) => {
+        const { layout, sizing, spacing, border, boxShadow, background } =
+          props;
+        const sizestyle = generateCSS(sizing);
+        const borderstyle = generateBorderCSS(border);
+        const spacingstyle = generateSpacingCSS(spacing);
+        const boxshadowstyle = generateBoxShadowCSS(boxShadow);
+        const layoutstyle = generateLayoutCSS(layout);
+        const backgroundstyle = getBackgroundCSS(background);
+
         return (
-          <section>
-            <props.content
-              id={props.id || undefined}
-              className={props.className || undefined}
-              as={CustomSlot}
-            />
-          </section>
+          <props.content
+            style={{
+              ...sizestyle,
+              ...borderstyle,
+              ...spacingstyle,
+              ...boxshadowstyle,
+              ...layoutstyle,
+              ...backgroundstyle,
+            }}
+          />
         );
+      },
+    },
+
+    HeadingBlock: {
+      fields: {
+        text: makeTextFields,
+      },
+      defaultProps: {
+        text: DEFAULT_TEXT,
+      },
+      render: (props: any) => {
+        const { text } = props;
+        const textstyle = generateTextCSS(text[text.activeTag.toLowerCase()]);
+
+        console.log(text, textstyle);
+
+        return <h1 style={{ ...textstyle }}>Himanshu</h1>;
+      },
+    },
+
+    HeroSection: {
+      render: (props: any) => {
+        return <HeroSlider />;
+      },
+    },
+
+    Accordion: {
+      fields: {
+        layout: layoutFields,
+        sizing: sizingFields,
+        spacing: spacingFields,
+        border: borderFields,
+        boxShadow: boxShadowFields,
+        accordion: accordionContentFields,
+      },
+      defaultProps: {
+        boxShadow: DEFAULT_BOX_SHADOW,
+        layout: DEFAULT_LAYOUT,
+        sizing: DEFAULT_SIZING,
+        spacing: DEFAULT_SPACING,
+        border: DEFAULT_BORDER,
+        accordion: DEFAULT_ACCORDION_CONTENT,
+      },
+      render: (props: any) => {
+        // compute CSS from field values and render your accordion UI
+        return <AccordionComponent {...props} />;
       },
     },
   },

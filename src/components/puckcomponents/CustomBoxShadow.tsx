@@ -333,3 +333,53 @@ export function BoxShadowPanel({
     </div>
   );
 }
+
+
+export function generateBoxShadowCSS(
+  shadow?: BoxShadowState
+): React.CSSProperties {
+  if (!shadow || shadow.presetIndex === 0) {
+    return { boxShadow: "none" };
+  }
+
+  const getSize = (field?: SizeVal) => {
+    if (!field) return "0px";
+    const { value, unit } = field;
+    if (value === "" || value === null || value === undefined) {
+      return "0px";
+    }
+    return `${value}${unit}`;
+  };
+
+  const h = getSize(shadow.horizontal);
+  const v = getSize(shadow.vertical);
+  const blur = getSize(shadow.blur);
+  const spread = getSize(shadow.spread);
+
+  const hex = shadow.color || "#000000";
+
+  // Convert hex → rgb
+  const hexToRgb = (hex: string) => {
+    const cleaned = hex.replace("#", "");
+    const bigint = parseInt(cleaned, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return { r, g, b };
+  };
+
+  const { r, g, b } = hexToRgb(hex);
+
+  const opacity =
+    shadow.colorOpacity && !isNaN(Number(shadow.colorOpacity))
+      ? Number(shadow.colorOpacity) / 100
+      : 1;
+
+  const inset = shadow.position === "Inner Shadow" ? "inset " : "";
+
+  const boxShadowValue = `${inset}${h} ${v} ${blur} ${spread} rgba(${r}, ${g}, ${b}, ${opacity})`;
+
+  return {
+    boxShadow: boxShadowValue,
+  };
+}
