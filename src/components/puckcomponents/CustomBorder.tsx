@@ -458,3 +458,109 @@ export function BorderPanel({
     </div>
   );
 }
+
+type SizeField = {
+  value: string | number;
+  unit: string;
+};
+
+type BorderConfig = {
+  radiusTopLeft?: SizeField;
+  radiusTopRight?: SizeField;
+  radiusBottomLeft?: SizeField;
+  radiusBottomRight?: SizeField;
+
+  activeSide?: "all" | "individual";
+
+  allWidth?: SizeField;
+  allColor?: string;
+  allStyle?: string;
+
+  topWidth?: SizeField;
+  topColor?: string;
+  topStyle?: string;
+
+  rightWidth?: SizeField;
+  rightColor?: string;
+  rightStyle?: string;
+
+  bottomWidth?: SizeField;
+  bottomColor?: string;
+  bottomStyle?: string;
+
+  leftWidth?: SizeField;
+  leftColor?: string;
+  leftStyle?: string;
+};
+
+export function generateBorderCSS(config: BorderConfig): React.CSSProperties {
+  const css: React.CSSProperties = {};
+
+  const getSize = (field?: SizeField) => {
+    if (!field) return undefined;
+    const { value, unit } = field;
+    if (!value || value === "0") return undefined;
+    return `${value}${unit}`;
+  };
+
+  // -----------------------
+  // Border Radius
+  // -----------------------
+  const tl = getSize(config.radiusTopLeft);
+  const tr = getSize(config.radiusTopRight);
+  const br = getSize(config.radiusBottomRight);
+  const bl = getSize(config.radiusBottomLeft);
+
+  if (tl || tr || br || bl) {
+    css.borderRadius = `${tl || 0} ${tr || 0} ${br || 0} ${bl || 0}`;
+  }
+
+  const activeSide = config.activeSide;
+
+  // -----------------------
+  // Border - All
+  // -----------------------
+  if (activeSide == "all") {
+    const width = getSize(config.allWidth);
+    const color = config.allColor;
+    const style = config.allStyle?.toLowerCase();
+
+    if (width) {
+      css.borderWidth = width;
+      css.borderStyle = style || "solid";
+      if (color) css.borderColor = color;
+    }
+  } else {
+    const applySide = (activeSide: string) => {
+      const width = getSize(
+        config[
+          `${activeSide.toLowerCase()}Width` as keyof BorderConfig
+        ] as SizeField,
+      );
+      const color = config[
+        `${activeSide.toLowerCase()}Color` as keyof BorderConfig
+      ] as string;
+      const style = (
+        config[
+          `${activeSide.toLowerCase()}Style` as keyof BorderConfig
+        ] as string
+      )?.toLowerCase();
+
+      if (width) {
+        css[`border${activeSide}Width` as keyof React.CSSProperties] = width;
+        css[`border${activeSide}Style` as keyof React.CSSProperties] =
+          style || "solid";
+        if (color) {
+          css[`border${activeSide}Color` as keyof React.CSSProperties] = color;
+        }
+      }
+    };
+
+    applySide("Top");
+    applySide("Right");
+    applySide("Bottom");
+    applySide("Left");
+  }
+
+  return css;
+}

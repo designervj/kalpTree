@@ -1,0 +1,19 @@
+{
+  "blocks": [
+    {
+      "slug": "hero-block",
+      "title": "Hero Section",
+      "category": "Hero"
+    },
+    {
+      "slug": "features-block",
+      "title": "Features Grid",
+      "category": "Sections"
+    },
+    {
+      "slug": "cta-block",
+      "title": "Call to Action",
+      "category": "Sections"
+    }
+  ]
+}
