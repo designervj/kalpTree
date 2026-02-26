@@ -19,6 +19,7 @@ import { useParams } from "next/navigation";
 import { da } from "zod/v4/locales";
 import { RolePermissionModel } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 import { TenantModel } from "@/hooks/slices/user/accountSlice";
+import { Button } from "@/components/ui/button";
 
 interface FormData {
   email: string;
@@ -451,9 +452,9 @@ export function UserForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
+    <div className="min-h-screen p-6 pt-2">
+      <div className=" mx-auto">
+        <div className="bg-white rounded-lg  p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {id ? "Update User" : "Create User"}
           </h1>
@@ -816,19 +817,19 @@ export function UserForm() {
 
             {/* Submit Button */}
             <div className="flex gap-4 pt-4">
-              <button
+              <Button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                // className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create User"}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleReset}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>
