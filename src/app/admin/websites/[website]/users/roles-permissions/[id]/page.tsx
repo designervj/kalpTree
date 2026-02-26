@@ -8,7 +8,7 @@ import { RootState } from "@/store/store";
  const page=()=> {
   
     const {current:currentrRolePermission}=useSelector((state:RootState)=>state.rolePermission)
-    console.log("currentrRolePermission",currentrRolePermission)
+  
   return (
     <>
      {currentrRolePermission?._id &&

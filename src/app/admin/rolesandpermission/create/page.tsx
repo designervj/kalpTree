@@ -39,10 +39,14 @@ import {
   createRolePermission,
   fetchRolePermissions,
   setCurrentRolePermission,
+  setIsUserRole,
   updateRolePermission,
 } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
 import { availablePermissions } from "@/components/admin/roles/util/AllPermissionLayout";
 import { toast } from "sonner";
+import { IUser } from "@/models/user";
+import { updateBusinessUser } from "@/hooks/slices/user/UserThunk";
+import { setCurrentUser } from "@/hooks/slices/user/userSlice";
 
 type RoleFormData = {
   tenantId?: string;
@@ -174,8 +178,8 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState<Set<Action>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
-
-  console.log("actionFilter", actionFilter)
+  const {currentUser}=useSelector((state:RootState)=>state.user)
+  const {isUserRole}=useSelector((state:RootState)=>state.rolePermission)
   // Get available roles for canCreateRole (all roles with code)
   const availableRolesForCreation = useMemo(() => {
     return roles
@@ -201,10 +205,10 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
           canMultipleTenants: find.canMultipleTenants || false,
         });
       }
-    } else if (currentRolePermission?.name && currentRolePermission?.code) {
+    } else if (currentRolePermission?.name ) {
       setFormData({
         name: currentRolePermission.name,
-        code: currentRolePermission.code,
+        code: currentRolePermission.code??"",
         permissions: currentRolePermission.permissions || [],
         canCreateRole: currentRolePermission.canCreateRole || [],
         type: (currentRolePermission.type as "internal" | "external") || "internal",
@@ -215,7 +219,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     setTimeout(() => setIsInitialLoading(false), 300);
   }, [roles, id, currentRolePermission, dispatch]);
 
-  const categorized = useMemo(() => categorizePermissions(availablePermissions), []);
+  const categorized = useMemo(() => categorizePermissions(formData.permissions), [formData.permissions]);
   const allSelectedCount = formData.permissions.length;
   const totalCount = availablePermissions.length;
 
@@ -316,9 +320,10 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   };
 
   const handleUpdate = async () => {
-    // if (!validate()) return false;
-
-    setIsSaving(true);
+      if(isUserRole){
+        handleUpdateUserRolesPermission()
+      }else{
+  setIsSaving(true);
     try {
       if (currentRolePermission?._id) {
         const res = await dispatch(updateRolePermission({ ...formData, _id: currentRolePermission._id })).unwrap();
@@ -335,6 +340,8 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     } finally {
       setIsSaving(false);
     }
+      }
+  
   };
 
   const handleSave = async () => {
@@ -359,6 +366,35 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     }
   };
 
+
+  const handleUpdateUserRolesPermission=async()=>{
+
+    const data:IUser={
+      ...currentUser,
+      permissions:formData.permissions,
+      
+    }
+    if(!currentUser){
+      miniToast("User not found");
+      return false;
+    }
+    setIsSaving(true);
+    try {
+      const res = await dispatch(updateBusinessUser(data)).unwrap();
+      if (res) {
+        dispatch(clearCurrentRolePermission())
+        dispatch(setIsUserRole(false))
+        toast.success("User roles updated successfully ✅");
+        router.back()
+      }
+    } catch (e: any) {
+      console.log("error", e)
+      miniToast(e?.message || "Something went wrong");
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
 
   if (isInitialLoading) {
@@ -630,15 +666,15 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
             )} */}
 
             {currentRolePermission && <label
-              key={currentRolePermission.code}
+              key={currentRolePermission.name}
               className={cn(
                 "flex items-center gap-3 rounded-lg border px-4 py-3",
                 "hover:bg-muted/40 transition cursor-pointer",
-                currentRolePermission?.code && "border-primary bg-primary/5"
+                currentRolePermission?.name && "border-primary bg-primary/5"
               )}
             >
               <Checkbox
-                checked={currentRolePermission?.code ? true : false}
+                checked={currentRolePermission?.name ? true : false}
               // onCheckedChange={() => toggleCanCreateRole(currentRolePermission?.code)}
               />
               <div className="flex-1">

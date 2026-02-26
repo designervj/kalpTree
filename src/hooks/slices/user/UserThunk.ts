@@ -44,7 +44,7 @@ export const createBusinessUser = createAsyncThunk<IUser, Partial<IUser>, { reje
         body: JSON.stringify(userData),
       });
       const data = await response.json();
-      return data;
+      return data?.user;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }
@@ -65,7 +65,7 @@ export const updateBusinessUser = createAsyncThunk<IUser, Partial<IUser>, { reje
         body: JSON.stringify(userData),
       });
       const data = await response.json();
-      return data;
+      return data?.user;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
     }

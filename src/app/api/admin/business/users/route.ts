@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     const db = await getDatabase();
     const userColl = db.collection("users");
-    const users = await userColl.find({ tenantId: new ObjectId(tenantId) }).toArray();
+    const users = await userColl.find({ tenantId: new ObjectId(tenantId) }).sort({ updatedAt: 1 }).toArray();
     return NextResponse.json({ users });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -40,11 +40,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-
-
     const body = await request.json();
-    const { email, passwordHash, permissions } = body;
-
+    const { email, password, permissions } = body;
+    const passwordHash = await bcrypt.hash(password, 10);
     if (!email || !passwordHash || permissions.length <= 0) {
       return NextResponse.json({
         message: "Please Enter Details Correctly",
@@ -64,7 +62,14 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const createdUser = await userColl.insertOne(body);
+    const now = new Date();
+    const createdUser = await userColl.insertOne({
+      ...body,
+      passwordHash,
+      tenantId: new ObjectId(body.tenantId),
+      createdAt: now,
+      updatedAt: now,
+    });
 
     if (createdUser.insertedId) {
       return NextResponse.json({
@@ -72,6 +77,8 @@ export async function POST(request: NextRequest) {
         success: true,
         user: {
           ...body,
+          passwordHash,
+          tenantId: new ObjectId(body.tenantId),
           _id: createdUser.insertedId,
         },
       });
@@ -101,7 +108,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-  
+
     if (!body.email || body.permissions.length <= 0) {
       return NextResponse.json({
         message: "Please Enter Details Correctly",
@@ -116,7 +123,11 @@ export async function PUT(request: NextRequest) {
 
     if (check?._id) {
       // update all user permission
-      const updatedUser = await userColl.updateOne({ email: body.email }, { $set: { permissions: body.permissions } });
+      const updatedUser = await userColl.updateOne({ email: body.email }, { $set: { permissions: body.permissions,
+        name: body.name,
+        role: body.role,
+        status: body.status,
+         updatedAt: new Date() } });
       if (updatedUser.modifiedCount > 0) {
         return NextResponse.json({
           message: "User updated successfully",
@@ -151,7 +162,7 @@ export async function DELETE(request: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    const id=request.nextUrl.searchParams.get("id");
+    const id = request.nextUrl.searchParams.get("id");
     if (!id) {
       return NextResponse.json({
         message: "Please Enter Details Correctly",
