@@ -23,6 +23,7 @@ import { IUser } from "@/models/user";
 import type { ObjectId } from "mongodb";
 import { createBusinessUser, updateBusinessUser } from "@/hooks/slices/user/UserThunk";
 import { setCurrentUser } from "@/hooks/slices/user/userSlice";
+import { Button } from "@/components/ui/button";
 
 
 // Helper function to categorize permissions
@@ -485,9 +486,9 @@ export function UserForm() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-lg shadow-md p-8">
+    <div className="min-h-screen p-6 pt-2">
+      <div className=" mx-auto">
+        <div className="bg-white rounded-lg  p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             {id ? "Update User" : "Create User"}
           </h1>
@@ -744,7 +745,7 @@ export function UserForm() {
               </button> : <button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                // className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating..." : "Create User"}
               </button>}
@@ -753,7 +754,7 @@ export function UserForm() {
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>
