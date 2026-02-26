@@ -112,7 +112,7 @@ export default function AIToolsHostingerStylePage() {
   const credits = 0;
 
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-transparent ">
       <div className="mx-auto max-w-7xl px-4 md:px-6 py-6">
         {/* Top bar: title + breadcrumb + credits pill */}
         <div className="flex items-center gap-3 text-sm text-slate-500">

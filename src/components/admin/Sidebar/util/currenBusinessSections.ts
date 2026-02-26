@@ -500,60 +500,60 @@ export const currenBusinessSections: NavSection[] = [
     ],
   },
 
-  {
-    id: "ai-studio",
-    label: "AI Studio",
-    items: [
-      {
-        label: "Image Uploads",
-        href: "/admin/ai-studio/image-uploads",
-        icon: ImagePlus,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Segment Detection",
-        href: "/admin/ai-studio/segment-detection",
-        icon: ScanSearch,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Material Application",
-        href: "/admin/ai-studio/material-application",
-        icon: Paintbrush,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Prompt Library",
-        href: "/admin/ai-studio/prompt-library",
-        icon: Terminal,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Render History",
-        href: "/admin/ai-studio/render-history",
-        icon: History,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Saved Designs",
-        href: "/admin/ai-studio/saved-designs",
-        icon: Heart,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "Reference Images",
-        href: "/admin/ai-studio/reference-images",
-        icon: GalleryVerticalEnd,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-      {
-        label: "AI Settings",
-        href: "/admin/ai-studio/ai-settings",
-        icon: Cpu,
-        permission: ["ai:read", "ai:update", "ai:delete"],
-      },
-    ],
-  },
+  // {
+  //   id: "ai-studio",
+  //   label: "AI Studio",
+  //   items: [
+  //     {
+  //       label: "Image Uploads",
+  //       href: "/admin/ai-studio/image-uploads",
+  //       icon: ImagePlus,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Segment Detection",
+  //       href: "/admin/ai-studio/segment-detection",
+  //       icon: ScanSearch,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Material Application",
+  //       href: "/admin/ai-studio/material-application",
+  //       icon: Paintbrush,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Prompt Library",
+  //       href: "/admin/ai-studio/prompt-library",
+  //       icon: Terminal,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Render History",
+  //       href: "/admin/ai-studio/render-history",
+  //       icon: History,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Saved Designs",
+  //       href: "/admin/ai-studio/saved-designs",
+  //       icon: Heart,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "Reference Images",
+  //       href: "/admin/ai-studio/reference-images",
+  //       icon: GalleryVerticalEnd,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //     {
+  //       label: "AI Settings",
+  //       href: "/admin/ai-studio/ai-settings",
+  //       icon: Cpu,
+  //       permission: ["ai:read", "ai:update", "ai:delete"],
+  //     },
+  //   ],
+  // },
 
 
   {

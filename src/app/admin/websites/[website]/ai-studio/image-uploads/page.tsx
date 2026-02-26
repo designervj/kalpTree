@@ -5,7 +5,7 @@ import React from "react";
 
 export default function ImageUploadsPage() {
   return (
-    <div className=" space-y-6  min-h-screen">
+    <div className=" space-y-6  min-h-screen px-3 pt-1">
 
       {/* Page Title */}
       <div className="mb-6">
@@ -33,6 +33,7 @@ export default function ImageUploadsPage() {
           </button>
         </div>
       </div>
+      
 
       {/* Uploaded Images */}
       <div className="bg-white rounded-xl shadow-sm p-6">

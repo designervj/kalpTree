@@ -10,7 +10,7 @@ export default function Page() {
   const [contentGen, setContentGen] = useState(false);
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen px-3 pt-1">
       {/* PAGE TITLE */}
       <div className="mb-8">
         {/* <h1 className="text-3xl font-semibold flex items-center gap-2">

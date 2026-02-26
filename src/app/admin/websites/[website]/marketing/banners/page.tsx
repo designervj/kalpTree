@@ -192,7 +192,7 @@ export default function BannersPage() {
   }, [items]);
 
   return (
-    <div className="min-h-screen bg-transparent  p-6 pt-2">
+    <div className="min-h-screen bg-transparent  px-3 pt-1">
       <div className="mx-auto w-full ">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

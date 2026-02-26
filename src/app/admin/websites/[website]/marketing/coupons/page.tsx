@@ -131,7 +131,7 @@ export default function CouponsPage() {
   }, [items, q, status]);
 
   return (
-    <div className="min-h-screen p-6 pt-2">
+    <div className="min-h-screen px-3 pt-1">
       <div className="mx-auto w-full ">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

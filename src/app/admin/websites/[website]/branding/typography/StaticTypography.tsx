@@ -2348,7 +2348,7 @@ export default function TypographyPage({
   return (
     <>
       <GetAlColorPallet />
-      <div className="min-h-screen p-6">
+      <div className="min-h-screen px-3 pt-1">
       <div className="pb-6">
         <BreadCrumbPage />
       </div>

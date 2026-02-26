@@ -58,7 +58,7 @@ export default function BrandProfilePage() {
   };
 
   return (
-    <div className="mx-auto min-h-screen p-6  pt-2">
+    <div className="mx-auto min-h-screen px-3 pt-1">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

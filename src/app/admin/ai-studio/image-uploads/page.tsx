@@ -5,7 +5,7 @@ import React from "react";
 
 export default function ImageUploadsPage() {
   return (
-    <div className=" space-y-6  min-h-screen">
+    <div className=" space-y-6  min-h-screen px-3 pt-1">
 
       {/* Page Title */}
       <div className="mb-6">

@@ -24,7 +24,7 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen">
+ <div className="min-h-screen px-3 pt-1">
       {/* PAGE HEADER */}
       <div className="mb-6">
         <BreadCrumbPage />

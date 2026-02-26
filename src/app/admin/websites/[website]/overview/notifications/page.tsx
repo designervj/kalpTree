@@ -55,7 +55,7 @@ export default function page() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto pb-10">
+    <div className="space-y-6  mx-auto pb-10">
       <div className="flex justify-between items-center">
         <div>
           {/* <h1 className="text-2xl font-bold tracking-tight">Notifications</h1> */}

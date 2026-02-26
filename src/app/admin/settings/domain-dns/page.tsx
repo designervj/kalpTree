@@ -24,7 +24,7 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen p-6 pt-2">
+    <div className="min-h-screen px-3 pt-1">
       {/* PAGE HEADER */}
       <div className="mb-6">
         <BreadCrumbPage />
@@ -37,7 +37,7 @@ export default function Page() {
       <div className="bg-white rounded-xl border shadow-sm p-6 mb-8">
         <div className="flex items-center gap-3 mb-4">
           <Globe className="text-purple-600" />
-          <h2 className="text-2xl font-bold tracking-tight">Connected Domain</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Connected Domain </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

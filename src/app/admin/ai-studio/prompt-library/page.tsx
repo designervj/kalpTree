@@ -20,7 +20,7 @@ export default function Page() {
   ];
 
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen px-3 pt-1">
       {/* PAGE TITLE */}
       <div className="mb-6">
         {/* <h1 className="text-3xl font-semibold">Promat Library</h1> */}

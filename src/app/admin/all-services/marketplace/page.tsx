@@ -337,7 +337,7 @@ export default function MarketplaceHostingerStyle() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen px-3 pt-1">
       <div className="mx-auto max-w-7xl px-4 md:px-6 py-6 space-y-6">
         {/* Top header (breadcrumb + search) */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">

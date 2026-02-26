@@ -28,6 +28,7 @@ import { CodeEditor } from "../../code-editor/code-editor";
 import { TemplateManager } from "../../template-manager/template-manager";
 import { EditSection } from "../../sectionEdit/EditSection";
 import HeaderEditForm from "../../sectionEdit/HeaderEditForm";
+import { InsertModuleOrRowModal } from "../../sectionEdit/InsertModuleOrRowModal";
 
 type TopToolbarProps = {
   editor: any;
@@ -104,6 +105,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
   isAddPage
 }) => {
   const [theme, setTheme] = React.useState<ThemeMode>("dark");
+  const [insertModalOpen, setInsertModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     const initial = getInitialTheme();
@@ -155,6 +157,7 @@ const TopToolbar: React.FC<TopToolbarProps> = ({
             Edit
           </Button> */}
 
+          <InsertModuleOrRowModal open={insertModalOpen} onOpenChange={setInsertModalOpen} />
 
           <EditSection />
           <HeaderEditForm />

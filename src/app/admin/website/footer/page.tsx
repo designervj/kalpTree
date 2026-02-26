@@ -169,7 +169,7 @@ export default function Page() {
   };
 
   return (
-    <div className="min-h-screen p-6 pt-2 flex flex-col">
+    <div className="min-h-screen px-3 pt-1 flex flex-col">
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="mb-6">

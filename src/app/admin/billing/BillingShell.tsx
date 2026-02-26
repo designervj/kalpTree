@@ -71,7 +71,7 @@ export default function BillingShell({ children }: { children: React.ReactNode }
   return (
 
     
-    <div className="min-h-screen ">
+    <div className="min-h-screen px-3 pt-1">
       {/* subtle background */}
       <div className="pointer-events-none fixed inset-0 opacity-[0.35]">
         <div className="absolute -top-40 left-1/2 h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-slate-200 blur-3xl" />

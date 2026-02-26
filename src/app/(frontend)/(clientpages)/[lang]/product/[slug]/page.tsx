@@ -82,7 +82,9 @@ export default async function SingleProductPage({
         : serializedFooterData?.content;
 
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen px-3 pt-1 flex flex-col">
+
+
         {/* Header */}
         {headerContent && (
           <header dangerouslySetInnerHTML={{ __html: headerContent }} />

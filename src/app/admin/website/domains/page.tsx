@@ -11,7 +11,7 @@ import {
 
 export default function Page() {
   return (
-    <div className="min-h-screen  p-8">
+    <div className="min-h-screen  px-3 pt-1">
       {/* PAGE HEADER */}
       <div className="mb-6">
         <h1 className="text-3xl font-semibold">Domain Settings</h1>

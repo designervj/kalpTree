@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Page() {
   return (
-    <div className="min-h-screen p-6 pt-2">
+    <div className="min-h-screen px-3 pt-1">
       {/* Page Header */}
       <div className="mb-6">
         {/* <h1 className="text-3xl font-semibold">General Settings</h1> */}

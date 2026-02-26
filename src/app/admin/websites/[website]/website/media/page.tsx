@@ -4,9 +4,14 @@ import pageupdate from './pageupdate'
 import PageUpdate from './pageupdate'
 const page = () => {
   return (
+    <>
   <MediaHome/>
-// <PageUpdate/>
+ {/* <PageUpdate/> */}
+</>
   )
 }
 
 export default page
+
+
+

@@ -119,7 +119,7 @@ export default function LogoSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen p-6 pt-2 ">
+    <div className="min-h-screen px-3 pt-1 ">
       <div className="flex items-center justify-between">
         <div>
           {/* <h1 className="text-2xl font-bold tracking-tight text-black">Logo Settings</h1> */}

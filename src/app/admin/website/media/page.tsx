@@ -1152,7 +1152,7 @@ export default function Page() {
 
   return (
     <div
-      className="min-h-screen flex flex-col relative p-6 pt-0"
+      className="min-h-screen flex flex-col relative px-3 pt-1"
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}

@@ -28,7 +28,7 @@ const ShowMedia = () => {
     return (
         <>
             <div
-                className="min-h-screen flex flex-col relative"
+                className="min-h-screen flex flex-col relative px-3 pt-0"
             //   onDragEnter={onDragEnter}
             //   onDragOver={onDragOver}
             //   onDragLeave={onDragLeave}
@@ -53,7 +53,7 @@ const ShowMedia = () => {
                     </div>
                 )}
 
-                <div className="mb-5 flex items-center justify-between px-8 pt-5 pb-2 border-b border-gray-200">
+                <div className="mb-5 flex items-center justify-between px-0 pt-5 pb-2 border-b border-gray-200">
                     <div>
                         <h1 className="text-xl font-semibold text-slate-900">Media Library </h1>
                         <p className="text-sm text-gray-500 mt-0.5">
@@ -89,6 +89,26 @@ const ShowMedia = () => {
           /> */}
                     </div>
 
+                </div>
+
+
+                <div className="bg-white rounded-xl shadow-sm p-6 mb-5"      >
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-10 text-center">
+                        <p className="text-gray-500 mb-4">
+                            Drag & drop images here
+                        </p>
+                        <p className="text-gray-400 text-sm mb-6">
+                            PNG, JPG up to 10MB
+                        </p>
+
+                        <Button 
+                        //  onClick={openPicker}
+                            // variant="outline"
+                            className="cursor-pointer"
+                        >
+                            Browse Files
+                        </Button>
+                    </div>
                 </div>
 
 
