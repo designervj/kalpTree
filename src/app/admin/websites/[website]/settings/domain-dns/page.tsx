@@ -34,7 +34,7 @@ export default function Page() {
       </div>
 
       {/* DOMAIN INFO CARD */}
-      <div className="bg-white rounded-xl border shadow-sm p-6 mb-8">
+      <div className="bg-white rounded-xl border shadow-none p-6 mb-8">
         <div className="flex items-center gap-3 mb-4">
           <Globe className="text-purple-600" />
           <h2 className="text-2xl font-bold tracking-tight">Connected Domain</h2>
@@ -61,9 +61,9 @@ export default function Page() {
       </div>
 
       {/* DNS RECORDS */}
-      <div className="bg-white rounded-xl border shadow-sm p-6">
+      <div className="bg-white rounded-xl border shadow-none p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-2xl font-bold tracking-tight">DNS Records</h2>
+          <h2 className="text-xl font-semibold tracking-tight">DNS Records</h2>
           <Button >
             <Plus size={18} />
             Add Record
@@ -86,7 +86,7 @@ export default function Page() {
               {dnsRecords.map((record) => (
                 <tr
                   key={record.id}
-                  className="border-t hover:bg-gray-50"
+                  className="border-t hover:bg-gray-50 text-sm"
                 >
                   <td className="p-3 font-medium">{record.type}</td>
                   <td className="p-3">{record.name}</td>

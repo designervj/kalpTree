@@ -72,12 +72,10 @@ const ShowMedia = () => {
                             Create Folder
                         </Button>
 
-                        <Button type="button" className="cursor-pointer"
-                        //onClick={openPicker}
-                        >
+                        {/* <Button type="button" className="cursor-pointer">
                             <Upload className="mr-2 h-4 w-4" />
                             Upload Files
-                        </Button>
+                        </Button> */}
 
                         {/* <input
             ref={fileRef}
@@ -87,6 +85,7 @@ const ShowMedia = () => {
             accept="image/*,application/pdf,.doc,.docx"
             onChange={(e) => handleFiles(e.target.files)}
           /> */}
+          
                     </div>
 
                 </div>
@@ -101,8 +100,8 @@ const ShowMedia = () => {
                             PNG, JPG up to 10MB
                         </p>
 
-                        <Button 
-                        //  onClick={openPicker}
+                        <Button
+                            //  onClick={openPicker}
                             // variant="outline"
                             className="cursor-pointer"
                         >

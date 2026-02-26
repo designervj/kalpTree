@@ -43,6 +43,7 @@ import { ObjectId } from "mongodb";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { toast } from "sonner";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 const COUNTRIES_WITH_STATES = {
   India: [
@@ -523,9 +524,11 @@ export default function ShippingPage() {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-10 p-6">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
+        {/* <h1 className="text-2xl font-semibold tracking-tight">
           Shipping & Delivery
-        </h1>
+        </h1> */}
+        <BreadCrumbPage />
+
         <p className="text-muted-foreground">
           Manage where you ship and how much you charge.
         </p>

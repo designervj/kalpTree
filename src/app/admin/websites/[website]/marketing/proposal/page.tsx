@@ -1448,7 +1448,7 @@ export default function Page() {
                 <div className="rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-semibold">Add Sections</div>
-                    <div className="text-xs font-bold text-[var(--ui-muted)]">Adds to selected page</div>
+                    <div className="text-xs font-bold text-[var(--ui-muted)]">Adds to selected page </div>
                   </div>
                   <div className="mt-3 grid gap-2">
                     {SECTIONS.map((s) => (
@@ -1517,6 +1517,7 @@ export default function Page() {
     </div>
   );
 }
+
 
 /**
  * Install:

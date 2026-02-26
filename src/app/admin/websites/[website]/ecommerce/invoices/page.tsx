@@ -27,7 +27,6 @@ export default function InvoicesPage() {
           {/* <h1 className="text-2xl font-bold tracking-tight text-gray-900">Invoices</h1> */}
           <BreadCrumbPage/>
           <p className="text-sm text-muted-foreground mt-1">History of all generated invoices and their payment status.</p>
-          <p className="text-sm text-muted-foreground mt-1">History of all generated invoices and their payment status.</p>
         </div>
         <Button ><Download className="mr-2 h-4 w-4" /> Export Report</Button>
       </div>
