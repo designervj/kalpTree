@@ -136,15 +136,17 @@ export default function Page() {
       <GetAllRolePermission />
       <GetBusinessUsers />
 
-      <DataTableExt
+    { updatedAllUser.length > 0 ? <DataTableExt
         title=""
-        data={updatedAllUser ?? []}
+        data={updatedAllUser ?? []} 
         onCreate={handleAdd}
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
         onEditPermissions={(row) => handleEditPermissions(row)}
-      />
+      /> : <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">No users found</p>
+      </div>}
     </>
   );
 }

@@ -238,7 +238,7 @@ export default function RolesManagement({ businessid }: Props) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {roles.map((role: RolePermissionModel) => (
+          {roles && roles.length > 0 ?roles.map((role: RolePermissionModel) => (
             <div
               key={role._id}
               className="bg-white rounded-lg border border-gray-200 p-6"
@@ -279,7 +279,9 @@ export default function RolesManagement({ businessid }: Props) {
                 </Button>
               </div>
             </div>
-          ))}
+          )) : <div className="flex items-center justify-center h-64">
+            <p className="text-gray-500">No roles found</p>
+          </div>}
         </div>
       </div>
 
