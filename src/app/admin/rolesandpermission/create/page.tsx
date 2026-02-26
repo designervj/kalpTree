@@ -178,8 +178,8 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   const [search, setSearch] = useState("");
   const [actionFilter, setActionFilter] = useState<Set<Action>>(new Set());
   const [isSaving, setIsSaving] = useState(false);
-  const {currentUser}=useSelector((state:RootState)=>state.user)
-  const {isUserRole}=useSelector((state:RootState)=>state.rolePermission)
+  const { currentUser } = useSelector((state: RootState) => state.user)
+  const { isUserRole } = useSelector((state: RootState) => state.rolePermission)
   // Get available roles for canCreateRole (all roles with code)
   const availableRolesForCreation = useMemo(() => {
     return roles
@@ -205,10 +205,10 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
           canMultipleTenants: find.canMultipleTenants || false,
         });
       }
-    } else if (currentRolePermission?.name ) {
+    } else if (currentRolePermission?.name) {
       setFormData({
         name: currentRolePermission.name,
-        code: currentRolePermission.code??"",
+        code: currentRolePermission.code ?? "",
         permissions: currentRolePermission.permissions || [],
         canCreateRole: currentRolePermission.canCreateRole || [],
         type: (currentRolePermission.type as "internal" | "external") || "internal",
@@ -219,7 +219,7 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
     setTimeout(() => setIsInitialLoading(false), 300);
   }, [roles, id, currentRolePermission, dispatch]);
 
-  const categorized = useMemo(() => categorizePermissions(formData.permissions), [formData.permissions]);
+  const categorized = useMemo(() => categorizePermissions(availablePermissions), []);
   const allSelectedCount = formData.permissions.length;
   const totalCount = availablePermissions.length;
 
@@ -320,28 +320,28 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   };
 
   const handleUpdate = async () => {
-      if(isUserRole){
-        handleUpdateUserRolesPermission()
-      }else{
-  setIsSaving(true);
-    try {
-      if (currentRolePermission?._id) {
-        const res = await dispatch(updateRolePermission({ ...formData, _id: currentRolePermission._id })).unwrap();
-        if (res) {
+    if (isUserRole) {
+      handleUpdateUserRolesPermission()
+    } else {
+      setIsSaving(true);
+      try {
+        if (currentRolePermission?._id) {
+          const res = await dispatch(updateRolePermission({ ...formData, _id: currentRolePermission._id })).unwrap();
+          if (res) {
 
-          toast.success("Role updated successfully ✅");
-          router.back()
+            toast.success("Role updated successfully ✅");
+            router.back()
+          }
         }
+      } catch (e: any) {
+        console.log("error", e)
+        miniToast(e?.message || "Something went wrong");
+        return false;
+      } finally {
+        setIsSaving(false);
       }
-    } catch (e: any) {
-      console.log("error", e)
-      miniToast(e?.message || "Something went wrong");
-      return false;
-    } finally {
-      setIsSaving(false);
     }
-      }
-  
+
   };
 
   const handleSave = async () => {
@@ -367,14 +367,14 @@ export default function RolesPersmissionForm({ id }: Rolesprops) {
   };
 
 
-  const handleUpdateUserRolesPermission=async()=>{
+  const handleUpdateUserRolesPermission = async () => {
 
-    const data:IUser={
+    const data: IUser = {
       ...currentUser,
-      permissions:formData.permissions,
-      
+      permissions: formData.permissions,
+
     }
-    if(!currentUser){
+    if (!currentUser) {
       miniToast("User not found");
       return false;
     }

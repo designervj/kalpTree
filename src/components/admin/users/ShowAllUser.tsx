@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { redirect, useRouter } from 'next/navigation';
 import { Edit2 } from 'lucide-react';
 import { IUser } from '@/models/user';
-import { RolePermissionModel, setCurrentRolePermission } from '@/hooks/slices/RolePermissions/rolePermissionSlice';
+import { RolePermissionModel, setCurrentRolePermission, setIsUserRole } from '@/hooks/slices/RolePermissions/rolePermissionSlice';
 
 const ShowAllUser = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,7 +20,7 @@ const ShowAllUser = () => {
   const updatedUSer = useMemo(() => {
     if (!alluser) return [];
 
-    if (user && user.role == "superadmin") {
+    if (user && user.role == "superadmin" &&allBusiness.length > 0) {
       return alluser.filter((user) => user.role != "superadmin").map((user) => {
         return {
           ...user,
@@ -61,7 +61,8 @@ const ShowAllUser = () => {
       canMultipleTenants: false,
 
     }
-
+  dispatch(setCurrentUser(data))
+      dispatch(setIsUserRole(true))
     dispatch(setCurrentRolePermission(userData));
     router.push(`/admin/rolesandpermission/${userData?._id}`);
   }
