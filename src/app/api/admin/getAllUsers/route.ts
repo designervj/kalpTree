@@ -14,16 +14,9 @@ export async function GET(request: NextRequest) {
     }
     const userRole = session.user.role;
      const db = await getCollection("users");
-      if(userRole=== "superadmin"){
-          let users = await db.find({}).toArray();
-          return NextResponse.json({ users: users });
-      }
-      else if(userRole=== "agency"){
-        
-        let users = await db.find({agencyId: session.user.id}).toArray();
-        return NextResponse.json({ users: users });
-      }
-  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+       let users = await db.find({}).toArray();
+     
+  return NextResponse.json({ users: users });
   
   } catch (error) {
     console.error("Error fetching users:", error);

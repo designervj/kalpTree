@@ -16,10 +16,11 @@ import UserHome from "@/components/admin/users/UserHome";
 
 import React from 'react'
 
-const page = () => {
+const page = async () => {
+  
   return (
     <>
-    <UserHome/>
+    <UserHome />
     </>
   )
 }

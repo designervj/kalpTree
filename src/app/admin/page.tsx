@@ -226,7 +226,7 @@ export default async function AdminIndex() {
     redirect("/auth/signin");
   }
 
-  console.log(session?.user);
+
   
   return (
     <>

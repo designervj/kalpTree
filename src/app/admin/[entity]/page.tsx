@@ -4,7 +4,7 @@ import {
   entityComponents,
   isValidEntityComponent,
 } from "@/components/admin/EntityRegistry";
-import EntityModalForImport from "./EntityModalForImport";
+import EntityModalForImport from "../websites/[website]/[entity]/EntityModalForImport";
 
 export default async function EntityIndexPage(props: any) {
   const params = await props.params;

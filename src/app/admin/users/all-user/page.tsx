@@ -20,7 +20,6 @@ import { useRouter } from "next/navigation";
 // import { hasPermission } from "@/lib/utils";
 import { toast } from "sonner";
 import { DataTableExt } from "@/components/admin/DataTableExt";
-import GetAllUsers from "@/components/admin/users/GetAllUsers";
 
 export default function Page() {
   const { user, hasFetchedAllUsers, alluser } = useSelector(

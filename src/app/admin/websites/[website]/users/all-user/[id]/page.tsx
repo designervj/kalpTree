@@ -55,7 +55,7 @@ export default async function UpdateUserPage() {
   return (
     <div>
       <UserForm />
-      <GetAllUsers />
+  
       <GetAllAccount allaccounts={allaccounts || []} />
       {/* <GetAllRolePermission /> */}
       <GetBusinessUsers />

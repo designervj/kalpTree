@@ -1,7 +1,7 @@
 "use client";
 
 import { AppDispatch, RootState } from '@/store/store';
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { DataTableExt } from '../DataTableExt';
 import { setCurrentUser } from '@/hooks/slices/user/userSlice';
@@ -9,12 +9,44 @@ import { toast } from 'sonner';
 import { redirect, useRouter } from 'next/navigation';
 import { Edit2 } from 'lucide-react';
 import { IUser } from '@/models/user';
-import { RolePermissionModel, setCurrentRolePermission } from '@/hooks/slices/RolePermissions/rolePermissionSlice';
+import { RolePermissionModel, setCurrentRolePermission, setIsUserRole } from '@/hooks/slices/RolePermissions/rolePermissionSlice';
 
 const ShowAllUser = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { alluser } = useSelector((state: RootState) => state.user)
+  const { alluser, user } = useSelector((state: RootState) => state.user)
+  const { allBusiness } = useSelector((state: RootState) => state.business)
+
+  const updatedUSer = useMemo(() => {
+    if (!alluser) return [];
+
+    if (user && user.role == "superadmin" &&allBusiness.length > 0) {
+      return alluser.filter((user) => user.role != "superadmin").map((user) => {
+        return {
+          ...user,
+          id: user._id?.toString(),
+        }
+      })
+    } else if (user && user.role == "agency" && allBusiness.length > 0) {
+      // getAll Businessid
+      const business = allBusiness.map((business) => {
+        return business._id?.toString()
+      })
+      console.log("allBusiness", allBusiness)
+      return alluser.filter((user) => {
+        console.log("user", user)
+        return user.role == "business" && business.includes(user.tenantId?.toString())
+      }).map((user) => {
+        return {
+          ...user,
+          id: user._id?.toString(),
+        }
+      })
+    }
+    return [];
+  }, [alluser, user, allBusiness])
+
+
   const createHref = "/admin/users/create";
 
   const handlePermissionView = (data: IUser) => {
@@ -29,7 +61,8 @@ const ShowAllUser = () => {
       canMultipleTenants: false,
 
     }
-
+  dispatch(setCurrentUser(data))
+      dispatch(setIsUserRole(true))
     dispatch(setCurrentRolePermission(userData));
     router.push(`/admin/rolesandpermission/${userData?._id}`);
   }
@@ -54,9 +87,9 @@ const ShowAllUser = () => {
       label: "Permissions",
       render: (value: string[], row: IUser) => (
         <div className="flex items-center gap-2">
-          <span className="truncate max-w-[150px]">
+          {/* <span className="truncate max-w-[150px]">
             {Array.isArray(value) && value.length > 0 ? value.join(", ") : "No permissions"}
-          </span>
+          </span> */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -96,7 +129,7 @@ const ShowAllUser = () => {
 
         <DataTableExt
           title="Users"
-          data={alluser}
+          data={updatedUSer}
           createHref={createHref}
           initialColumns={initialColumns}
           onDelete={handleDelete}
