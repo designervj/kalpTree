@@ -20,7 +20,7 @@ import { useRouter } from "next/navigation";
 // import { hasPermission } from "@/lib/utils";
 import { toast } from "sonner";
 import { DataTableExt } from "@/components/admin/DataTableExt";
-import GetAllUsers from "@/components/admin/users/GetAllUsers";
+
 import GetBusinessUsers from "@/components/admin/users/GetBusinessUsers";
 import { setCurrentUser } from "@/hooks/slices/user/userSlice";
 import GetAllRolePermission from "@/components/admin/onboarding/GetAllRolePermission";
@@ -130,8 +130,7 @@ export default function Page() {
   ];
   return (
     <>
-      {/* get all users */}
-      {/* <GetAllUsers /> */}
+ 
       {/* get business users */}
       <GetAllRolePermission />
       <GetBusinessUsers />

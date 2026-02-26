@@ -1,7 +1,7 @@
 "use client";
 
 import { AppDispatch, RootState } from '@/store/store';
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { DataTableExt } from '../DataTableExt';
 import { setCurrentUser } from '@/hooks/slices/user/userSlice';
@@ -14,7 +14,39 @@ import { RolePermissionModel, setCurrentRolePermission } from '@/hooks/slices/Ro
 const ShowAllUser = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
-  const { alluser } = useSelector((state: RootState) => state.user)
+  const { alluser, user } = useSelector((state: RootState) => state.user)
+  const { allBusiness } = useSelector((state: RootState) => state.business)
+
+  const updatedUSer = useMemo(() => {
+    if (!alluser) return [];
+
+    if (user && user.role == "superadmin") {
+      return alluser.filter((user) => user.role != "superadmin").map((user) => {
+        return {
+          ...user,
+          id: user._id?.toString(),
+        }
+      })
+    } else if (user && user.role == "agency" && allBusiness.length > 0) {
+      // getAll Businessid
+      const business = allBusiness.map((business) => {
+        return business._id?.toString()
+      })
+      console.log("allBusiness", allBusiness)
+      return alluser.filter((user) => {
+        console.log("user", user)
+        return user.role == "business" && business.includes(user.tenantId?.toString())
+      }).map((user) => {
+        return {
+          ...user,
+          id: user._id?.toString(),
+        }
+      })
+    }
+    return [];
+  }, [alluser, user, allBusiness])
+
+
   const createHref = "/admin/users/create";
 
   const handlePermissionView = (data: IUser) => {
@@ -54,9 +86,9 @@ const ShowAllUser = () => {
       label: "Permissions",
       render: (value: string[], row: IUser) => (
         <div className="flex items-center gap-2">
-          <span className="truncate max-w-[150px]">
+          {/* <span className="truncate max-w-[150px]">
             {Array.isArray(value) && value.length > 0 ? value.join(", ") : "No permissions"}
-          </span>
+          </span> */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -96,7 +128,7 @@ const ShowAllUser = () => {
 
         <DataTableExt
           title="Users"
-          data={alluser}
+          data={updatedUSer}
           createHref={createHref}
           initialColumns={initialColumns}
           onDelete={handleDelete}

@@ -1,12 +1,13 @@
 "use client";
 import React from 'react'
-import GetAllUsers from './GetAllUsers';
+
 import ShowAllUser from './ShowAllUser';
+import GetAllUsers from './GetAllUsers';
 
 const UserHome = () => {
   return (
    <>
-   <GetAllUsers/>
+  <GetAllUsers/>
    <ShowAllUser/>
    </>
   )

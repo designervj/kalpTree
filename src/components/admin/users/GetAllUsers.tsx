@@ -1,5 +1,6 @@
 "use client";
 
+import { clearAllUser } from "@/hooks/slices/user/userSlice";
 import { getAllUser } from "@/hooks/slices/user/UserThunk";
 import { AppDispatch, RootState } from "@/store/store";
 import React, { useEffect } from "react";
@@ -11,15 +12,18 @@ const GetAllUsers = () => {
   );
   const dispatch = useDispatch<AppDispatch>();
 
+
+  useEffect(()=>{
+     dispatch(clearAllUser())
+  },[])
   useEffect(() => {
     if (
       user &&
       user.role &&
-      user.role === "superadmin" &&
       !hasFetchedAllUsers &&
       alluser.length == 0
     ) {
-     // dispatch(getAllUser());
+      dispatch(getAllUser());
     }
   }, [user]);
 
