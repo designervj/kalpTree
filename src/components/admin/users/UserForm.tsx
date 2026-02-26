@@ -749,7 +749,7 @@ export function UserForm() {
               >
                 {loading ? "Creating..." : "Create User"}
               </button>}
-              <button
+              <Button
                 onClick={handleReset}
                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >

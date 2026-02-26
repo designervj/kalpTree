@@ -25,6 +25,7 @@ import GetBusinessUsers from "@/components/admin/users/GetBusinessUsers";
 import { setCurrentUser } from "@/hooks/slices/user/userSlice";
 import GetAllRolePermission from "@/components/admin/onboarding/GetAllRolePermission";
 import { RolePermissionModel, setCurrentRolePermission, setIsUserRole } from "@/hooks/slices/RolePermissions/rolePermissionSlice";
+import { deleteBusinessUser } from "@/hooks/slices/user/UserThunk";
 
 export default function Page() {
   const { user, hasFetchedAllUsers, alluser } = useSelector(
@@ -79,7 +80,14 @@ export default function Page() {
 
   };
 
-  const handleDelete = (row: IUser) => { };
+  const handleDelete = (row: IUser) => {
+  
+      const confirmDelete = confirm("Are you sure you want to delete this user?")  
+    if (confirmDelete) {
+      dispatch(deleteBusinessUser(row._id?.toString() ?? ""))
+    }
+
+  };
   const handleEditPermissions = (row: IUser) => {
     dispatch(setCurrentUser(row))
     const selectedRole: RolePermissionModel = {
