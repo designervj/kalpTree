@@ -80,12 +80,12 @@ const SlugPageHome = ({
         <div className="primary-main">
           <EditeBuilderHome />
 
-          <EditButton
+          {/* <EditButton
             pageData={website}
             currentWebsite={currentWebsite}
             user={user || {}}
             type="page"
-          />
+          /> */}
           <div className="primary-inner">
             <RenderHtml
               html={html}

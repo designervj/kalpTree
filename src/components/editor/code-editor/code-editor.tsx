@@ -154,7 +154,10 @@ export function CodeEditor({
     setIsDialogOpen(false);
   };
 
-
+const handleCancel = () => {
+  console.log("Cancel");
+  setIsDialogOpen(false);
+}
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -244,7 +247,7 @@ export function CodeEditor({
         </div>
 
         <div className="flex justify-end mt-4 space-x-2 shrink-0">
-          <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+          <Button variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
           <Button
