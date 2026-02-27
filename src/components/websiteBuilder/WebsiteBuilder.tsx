@@ -76,7 +76,7 @@ const WebsiteBuilder = ({
         );
       }
     } else {
-      console.log("no page found");
+
       dispatch(
         setPageEdit({
           page: pages[0],

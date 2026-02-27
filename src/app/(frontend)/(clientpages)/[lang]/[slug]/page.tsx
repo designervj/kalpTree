@@ -141,12 +141,14 @@ export default async function PageTemplate({
       return <ComingSoonPage />;
     }
 
-    website = {
-      ...website,
-      _id: String(website._id),
-      tenantId: String(website.tenantId),
-      websiteId: String(website.websiteId),
-    };
+    const serializedWebsite = JSON.parse(
+      JSON.stringify({
+        ...website,
+        _id: String(website._id),
+        tenantId: String(website.tenantId),
+        websiteId: String(website.websiteId),
+      }),
+    );
 
     const headerData = await allheader_coll.findOne({
       websiteId: currentWebsite._id,
@@ -175,14 +177,19 @@ export default async function PageTemplate({
       ? JSON.parse(JSON.stringify(footerData))
       : {};
 
+    const serializedCurrentWebsite = currentWebsite
+      ? JSON.parse(JSON.stringify(currentWebsite))
+      : null;
+    const serializedUser = session?.user ? JSON.parse(JSON.stringify(session.user)) : {};
+
     const processedHtml = html;
 
     return (
       <>
         <SlugPageHome
-          website={website}
-          currentWebsite={currentWebsite}
-          user={session?.user || {}}
+          website={serializedWebsite}
+          currentWebsite={serializedCurrentWebsite}
+          user={serializedUser}
           html={processedHtml}
           headerData={serializedHeaderData}
           footerData={serializedFooterData}

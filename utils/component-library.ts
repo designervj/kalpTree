@@ -485,7 +485,7 @@ export const componentTemplates: ComponentTemplate[] = [
               <img src="/placeholder.svg?height=400&width=600" alt="Website Builder" class="rounded-lg shadow-xl" />
             </div>
           </div>
-        </div>
+        </div>  
       </section>
     `,
     thumbnail: "/placeholder.svg?height=100&width=200",
