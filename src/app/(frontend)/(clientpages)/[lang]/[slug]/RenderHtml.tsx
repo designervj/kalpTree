@@ -95,7 +95,7 @@ const RenderHtml = ({
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             body { margin: 0; padding: 0; overflow-x: hidden; font-family: sans-serif; }
-            #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+            #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; height: 100vh; }
             main { flex: 1; }
             ${extractedStyles}
           </style>
@@ -141,7 +141,7 @@ const RenderHtml = ({
       srcDoc={iframeContent}
       style={{
         width: "100%",
-        height: iframeHeight,
+        height: "100vh",
         border: "none",
         display: "block"
       }}

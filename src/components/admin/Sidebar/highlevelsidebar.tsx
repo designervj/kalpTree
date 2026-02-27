@@ -149,6 +149,22 @@ const navigationItems = [
     icon: Palette,
     href: "/admin/themes",
   },
+
+
+  {
+    id: "template-manager",
+    label: "Templates Manager",
+    icon: Settings2,
+    href: "/admin/setting/general",
+    hasSubmenu: true,
+    submenuItems: [
+      { label: "Templates", href: "/admin/settings/Templates" },
+      { label: "All Components", href: "/admin/settings/all-components" },
+      
+    ],
+  },
+
+
 ];
 
 const ease = [0.22, 1, 0.36, 1] as const;

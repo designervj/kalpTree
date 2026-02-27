@@ -669,6 +669,12 @@ export const currenBusinessSections: NavSection[] = [
         icon: Blocks,
         permission: ["media:update", "media:read", "media:delete"],
       },
+      {
+        label: "All Components",
+        href: "/admin/website/all-components",
+        icon: Blocks,
+        permission: ["media:update", "media:read", "media:delete"],
+      },
     ],
   },
 

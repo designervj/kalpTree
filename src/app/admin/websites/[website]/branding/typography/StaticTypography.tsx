@@ -37,6 +37,7 @@ import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor
 import { toast } from "sonner";
 import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColorPallet";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
+import { ColorPicker } from "@/components/editor/color-picker/color-picker";
 
 /* -----------------------------
   Types
@@ -209,9 +210,13 @@ function HexInput({
           autoComplete="off"
           inputMode="text"
         />
-        <input
+
+
+
+        
+        {/* <input
           type="color"
-          className="h-9 w-10 rounded-md border bg-background px-1"
+          className="h-9 w-10 rounded-md border bg-background px-1 "
           value={displayForPicker}
           onChange={(e) => {
             const v = e.target.value;
@@ -220,7 +225,19 @@ function HexInput({
             onCommit(v);
           }}
           title="Pick color"
-        />
+        /> */}
+
+        <ColorPicker
+  color={displayForPicker}
+  onChange={(v) => {
+    lastValidRef.current = v;
+    setDraft(v);
+    onCommit(v);
+  }}
+/>
+
+        {/* <ColorPicker /> */}
+
       </div>
       {!isHexColor(draft) ? (
         <p className="text-[11px] text-muted-foreground">
@@ -970,8 +987,9 @@ export default function TypographyPage({
       <Card>
         <CardContent className="pt-6 space-y-5">
           <div className="rounded-lg border bg-muted/20 p-4">
-            <div className="flex items-center gap-2">
-              <Palette className="h-4 w-4 text-muted-foreground" />
+            <div className="flex items-center gap-2 ">
+              <Palette className="h-8 w-8 text-muted-foreground" />
+
               <div>
                 <p className="text-sm font-semibold">Theme Colors</p>
                 <p className="text-xs text-muted-foreground">
@@ -979,7 +997,9 @@ export default function TypographyPage({
                   (Background/Surface are mode-driven)
                 </p>
               </div>
+
             </div>
+
           </div>
 
           <ColorPallet type={type} handleColorPallet={handleColorPallet} />
