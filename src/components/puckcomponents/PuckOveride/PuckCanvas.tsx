@@ -5,7 +5,7 @@ export function Canvas() {
   const { appState } = usePuck();
   const viewportWidth = appState.ui.viewports.current.width;
 
-  console.log(viewportWidth)
+  
 
   return (
     <main className="flex flex-1 flex-col items-center overflow-auto bg-slate-100 p-8 gap-6">
