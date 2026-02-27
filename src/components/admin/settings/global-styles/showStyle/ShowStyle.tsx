@@ -18,6 +18,7 @@ import BodyPreview from './BodyPreview';
 import ButtonsPreview from './ButtonsPreview';
 import { Website } from '@/components/admin/AppShell';
 import { updateWebsite } from '@/hooks/slices/websites/WebsiteThunk';
+import StaticTypography from '@/app/admin/websites/[website]/branding/typography/StaticTypography';
 
 function isHexColor(v: string) {
   return /^#([0-9a-fA-F]{6})$/.test(v.trim());
@@ -401,175 +402,178 @@ const ShowStyle = () => {
 
  
     return (
-        <div className="space-y-6 max-w-6xl mx-auto pb-10">
-            {/* TOP BAR */}
-            <div className="flex justify-between items-center gap-3">
-                <div className="grid grid-cols-4 gap-2">
-                    <Button variant={leftTab === "colors" ? "default" : "outline"}
-                        onClick={() => onLeftTab("colors")}>
-                        Colors
-                    </Button>
-                    <Button variant={leftTab === "headings" ? "default" : "outline"}
-                        onClick={() => onLeftTab("headings")}>
-                        Headings
-                    </Button>
-                    <Button variant={leftTab === "body" ? "default" : "outline"}
-                        onClick={() => onLeftTab("body")}>
-                        Body
-                    </Button>
-                    <Button variant={leftTab === "buttons" ? "default" : "outline"}
-                        onClick={() => onLeftTab("buttons")}>
-                        Buttons
-                    </Button>
-                </div>
+        <>
+         <StaticTypography />
+        </>
+        // <div className="space-y-6 max-w-6xl mx-auto pb-10">
+           
+        //     <div className="flex justify-between items-center gap-3">
+        //         <div className="grid grid-cols-4 gap-2">
+        //             <Button variant={leftTab === "colors" ? "default" : "outline"}
+        //                 onClick={() => onLeftTab("colors")}>
+        //                 Colors
+        //             </Button>
+        //             <Button variant={leftTab === "headings" ? "default" : "outline"}
+        //                 onClick={() => onLeftTab("headings")}>
+        //                 Headings
+        //             </Button>
+        //             <Button variant={leftTab === "body" ? "default" : "outline"}
+        //                 onClick={() => onLeftTab("body")}>
+        //                 Body
+        //             </Button>
+        //             <Button variant={leftTab === "buttons" ? "default" : "outline"}
+        //                 onClick={() => onLeftTab("buttons")}>
+        //                 Buttons
+        //             </Button>
+        //         </div>
 
-                <div className="flex items-center gap-2">
-                    {/* ✅ Light/Dark mode toggle */}
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
-                        className="gap-2"
-                        title="Toggle Light/Dark"
-                    >
-                        {mode === "light" ? (
-                            <Sun className="h-4 w-4" />
-                        ) : (
-                            <Moon className="h-4 w-4" />
-                        )}
-                        {mode === "light" ? "Light" : "Dark"}
-                    </Button>
+        //         <div className="flex items-center gap-2">
+                  
+        //             <Button
+        //                 size="sm"
+        //                 variant="outline"
+        //                 onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
+        //                 className="gap-2"
+        //                 title="Toggle Light/Dark"
+        //             >
+        //                 {mode === "light" ? (
+        //                     <Sun className="h-4 w-4" />
+        //                 ) : (
+        //                     <Moon className="h-4 w-4" />
+        //                 )}
+        //                 {mode === "light" ? "Light" : "Dark"}
+        //             </Button>
 
-                    <Button
-                        size="sm"
-                        variant={rightPanel === "preview" ? "secondary" : "ghost"}
-                        onClick={() => {
-                            setRightPanel("preview");
-                            // ✅ requested: preview click -> typography show
-                            setLeftTab("headings");
-                        }}
-                        className="gap-2"
-                    >
-                        <Eye className="h-4 w-4" />
-                        Preview
-                    </Button>
+        //             <Button
+        //                 size="sm"
+        //                 variant={rightPanel === "preview" ? "secondary" : "ghost"}
+        //                 onClick={() => {
+        //                     setRightPanel("preview");
+                    
+        //                     setLeftTab("headings");
+        //                 }}
+        //                 className="gap-2"
+        //             >
+        //                 <Eye className="h-4 w-4" />
+        //                 Preview
+        //             </Button>
 
-                    <Button
-                        size="sm"
-                        variant={rightPanel === "root" ? "secondary" : "ghost"}
-                        onClick={() => setRightPanel("root")}
-                        className="gap-2"
-                    >
-                        <Code2 className="h-4 w-4" />
-                        Root File
-                    </Button>
-                </div>
-            </div>
+        //             <Button
+        //                 size="sm"
+        //                 variant={rightPanel === "root" ? "secondary" : "ghost"}
+        //                 onClick={() => setRightPanel("root")}
+        //                 className="gap-2"
+        //             >
+        //                 <Code2 className="h-4 w-4" />
+        //                 Root File
+        //             </Button>
+        //         </div>
+        //     </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* LEFT */}
-                <div className="lg:col-span-4 space-y-6">
-                    {leftTab === "colors" &&
-                        brand &&
-                        <ColorControl
-                            brand={brand}
-                            setBrand={setBrand}
-                            uiPalette={uiPalette}
-                            setC={(v) => handleSectionColorChange(v)}
-                            setButtonColors={setButtonColors as any}
-                        />
+        //     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+        //         <div className="lg:col-span-4 space-y-6">
+        //             {leftTab === "colors" &&
+        //                 brand &&
+        //                 <ColorControl
+        //                     brand={brand}
+        //                     setBrand={setBrand}
+        //                     uiPalette={uiPalette}
+        //                     setC={(v) => handleSectionColorChange(v)}
+        //                     setButtonColors={setButtonColors as any}
+        //                 />
 
-                    }
-                    {leftTab === "headings" && headings && <HeadingControl
-                        headings={headings}
-                        headingFontFamily={headingFontFamily ?? ""}
-                        setHeadingFontFamily={(value) => {
-                            setHeadingFontFamily(value);
-                            // onStyleChange("--font-heading", value);
-                        }}
-                        setH={(value) => handleHeadingChange(value)}
-                        selectedHeading={selectedHeading}
-                        setSelectedHeading={setSelectedHeading}
-                    />}
-                    {leftTab === "body" && body && <BodyControl
-                        body={body}
-                        setBody={(patch) => handleBodyChange(patch)}
-                        globalFontFamily={globalFontFamily}
-                        setGlobalFontFamily={(value) => {
-                            setGlobalFontFamily(value);
-                            // onStyleChange("--font-body", value);
-                        }}
-                    />}
-                    {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
-                        buttonBase={buttonBase}
-                        setButtonBase={(patch) => handleButtonBaseChange(patch)}
-                        buttonColors={buttonColors}
-                        setButtonColors={handleButtonColorChange as any}
-                        selectedBtn={selectedBtn}
-                        setSelectedBtn={setSelectedBtn}
-                    />}
-                </div>
+        //             }
+        //             {leftTab === "headings" && headings && <HeadingControl
+        //                 headings={headings}
+        //                 headingFontFamily={headingFontFamily ?? ""}
+        //                 setHeadingFontFamily={(value) => {
+        //                     setHeadingFontFamily(value);
 
-                {/* RIGHT */}
-                <div className="lg:col-span-8">
-                    <Card className="h-full min-h-[580px] border-2 border-muted/40">
-                        <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
-                            {rightPanel === "root" && (
-                                <>
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={handleCopyRoot}
-                                        className="gap-2"
-                                    >
-                                        {copied ? (
-                                            <Check className="h-4 w-4" />
-                                        ) : (
-                                            <Copy className="h-4 w-4" />
-                                        )}
-                                        {copied ? "Copied" : "Copy"}
-                                    </Button>
+        //                 }}
+        //                 setH={(value) => handleHeadingChange(value)}
+        //                 selectedHeading={selectedHeading}
+        //                 setSelectedHeading={setSelectedHeading}
+        //             />}
+        //             {leftTab === "body" && body && <BodyControl
+        //                 body={body}
+        //                 setBody={(patch) => handleBodyChange(patch)}
+        //                 globalFontFamily={globalFontFamily}
+        //                 setGlobalFontFamily={(value) => {
+        //                     setGlobalFontFamily(value);
+                         
+        //                 }}
+        //             />}
+        //             {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
+        //                 buttonBase={buttonBase}
+        //                 setButtonBase={(patch) => handleButtonBaseChange(patch)}
+        //                 buttonColors={buttonColors}
+        //                 setButtonColors={handleButtonColorChange as any}
+        //                 selectedBtn={selectedBtn}
+        //                 setSelectedBtn={setSelectedBtn}
+        //             />}
+        //         </div>
 
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={handleSave}
-                                        className="gap-2"
-                                    >
-                                        {copied ? (
-                                            <Check className="h-4 w-4" />
-                                        ) : (
-                                            <Save className="h-4 w-4" />
-                                        )}
-                                        {copied ? "Saved" : "Save"}
-                                    </Button>
-                                </>
-                            )}
-                        </div>
+          
+        //         <div className="lg:col-span-8">
+        //             <Card className="h-full min-h-[580px] border-2 border-muted/40">
+        //                 <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
+        //                     {rightPanel === "root" && (
+        //                         <>
+        //                             <Button
+        //                                 size="sm"
+        //                                 variant="outline"
+        //                                 onClick={handleCopyRoot}
+        //                                 className="gap-2"
+        //                             >
+        //                                 {copied ? (
+        //                                     <Check className="h-4 w-4" />
+        //                                 ) : (
+        //                                     <Copy className="h-4 w-4" />
+        //                                 )}
+        //                                 {copied ? "Copied" : "Copy"}
+        //                             </Button>
 
-                        {rightPanel === "preview" ? (
-                            <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
-                                <RightPreviewContent {...previewProps} />
-                            </CardContent>
-                        ) : (
-                            <CardContent className="p-6">
-                                <div className="mb-3">
-                                    <p className="text-sm font-semibold">Root File Code (LIVE)</p>
-                                    <p className="text-xs text-muted-foreground">
-                                        Light/Dark have separate variables via{" "}
-                                        <span className="font-mono">:root[data-theme="..."]</span>.
-                                        Gradient removed (solid hero).
-                                    </p>
-                                </div>
-                                <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
-                                    <code>{ROOT_CSS}</code>
-                                </pre>
-                            </CardContent>
-                        )}
-                    </Card>
-                </div>
-            </div>
-        </div>
+        //                             <Button
+        //                                 size="sm"
+        //                                 variant="outline"
+        //                                 onClick={handleSave}
+        //                                 className="gap-2"
+        //                             >
+        //                                 {copied ? (
+        //                                     <Check className="h-4 w-4" />
+        //                                 ) : (
+        //                                     <Save className="h-4 w-4" />
+        //                                 )}
+        //                                 {copied ? "Saved" : "Save"}
+        //                             </Button>
+        //                         </>
+        //                     )}
+        //                 </div>
+
+        //                 {rightPanel === "preview" ? (
+        //                     <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
+        //                         <RightPreviewContent {...previewProps} />
+        //                     </CardContent>
+        //                 ) : (
+        //                     <CardContent className="p-6">
+        //                         <div className="mb-3">
+        //                             <p className="text-sm font-semibold">Root File Code (LIVE)</p>
+        //                             <p className="text-xs text-muted-foreground">
+        //                                 Light/Dark have separate variables via{" "}
+        //                                 <span className="font-mono">:root[data-theme="..."]</span>.
+        //                                 Gradient removed (solid hero).
+        //                             </p>
+        //                         </div>
+        //                         <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
+        //                             <code>{ROOT_CSS}</code>
+        //                         </pre>
+        //                     </CardContent>
+        //                 )}
+        //             </Card>
+        //         </div>
+        //     </div>
+        // </div>
     )
 }
 

@@ -6,7 +6,7 @@ import PageMan from '../../websites/[website]/branding/typography/PageMan';
 const page = () => {
   return (
   <>
-    <StaticTypography />
+    <StaticTypography />     
      {/* <PageMan/> */}
   </>
   )

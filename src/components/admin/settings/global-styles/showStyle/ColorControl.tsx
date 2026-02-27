@@ -60,12 +60,15 @@ const ColorControl = ({
   };
 
   return (
+
+    
     <Card>
       <CardContent className="pt-6 space-y-5">
         <div className="rounded-lg border bg-muted/20 p-4">
           <div className="flex items-center gap-2">
             <Palette className="h-4 w-4 text-muted-foreground" />
             <div>
+              
               <p className="text-sm font-semibold">Theme Colors</p>
               <p className="text-xs text-muted-foreground">
                 Left side change → right preview same time update.

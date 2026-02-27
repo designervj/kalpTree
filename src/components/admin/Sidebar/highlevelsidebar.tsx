@@ -155,11 +155,11 @@ const navigationItems = [
     id: "template-manager",
     label: "Templates Manager",
     icon: Settings2,
-    href: "/admin/setting/general",
+    href: "/admin/template-manager/templates",
     hasSubmenu: true,
     submenuItems: [
-      { label: "Templates", href: "/admin/settings/Templates" },
-      { label: "All Components", href: "/admin/settings/all-components" },
+      { label: "Templates", href: "/admin/template-manager/templates" },
+      { label: "All Components", href: "/admin/template-manager/all-components" },
       
     ],
   },

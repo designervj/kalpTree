@@ -565,9 +565,9 @@ export default function HeaderEditForm() {
                       </div>
                     </TabsContent>
 
-                          <TabsContent value="navigation" className="mt-0">
-                              {/* <Navigation/> */}
-                          </TabsContent>
+                    <TabsContent value="navigation" className="mt-0">
+                      {/* <Navigation/> */}
+                    </TabsContent>
 
                     {/* ============ SHOPPING BAG TAB ============ */}
                     <TabsContent value="bag" className="mt-0">

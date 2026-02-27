@@ -35,6 +35,7 @@ const PreviewHeader = ({
     ];
 
     return (
+      <>
         <div
         className="rounded-2xl overflow-hidden border"
         style={{
@@ -69,7 +70,7 @@ const PreviewHeader = ({
             </div>
           </div>
 
-          {/* Heading text — uses headingFontFamily */}
+    
           <div className="mt-4" style={{ fontFamily: headingFontFamily }}>
             <div
               style={{
@@ -83,7 +84,7 @@ const PreviewHeader = ({
             </div>
           </div>
 
-          {/* Body paragraph — uses bodyFontFamily */}
+         
           <p
             className="mt-2 text-sm opacity-85"
             style={{ maxWidth: 740, fontFamily: globalFontFamily }}
@@ -93,7 +94,7 @@ const PreviewHeader = ({
             ever since the 1500s.
           </p>
 
-          {/* Tab pills */}
+     
           <div className="mt-5 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const isActive = leftTab === t.key;
@@ -104,8 +105,7 @@ const PreviewHeader = ({
                   onClick={() => onLeftTab(t.key)}
                   className="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold"
                   style={{
-                    // button font family applied here
-                    fontFamily: buttonBase?.fontFamily,
+               fontFamily: buttonBase?.fontFamily,
                     background: isActive
                       ? rgba("#ffffff", 0.16)
                       : rgba("#ffffff", 0.1),
@@ -120,6 +120,7 @@ const PreviewHeader = ({
           </div>
         </div>
       </div>
+      </>
     );
 };
 
