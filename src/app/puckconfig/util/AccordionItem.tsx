@@ -52,3 +52,5 @@ export const AccordionItem = {
         return <AccordionItemComponent {...props} />;
     },
 };
+
+
