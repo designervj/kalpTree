@@ -1,33 +1,26 @@
 import {
-  BackgroundPanel,
   DEFAULT_BACKGROUND,
   getBackgroundCSS,
 } from "@/components/puckcomponents/CustomBackground";
 import {
-  BorderPanel,
   DEFAULT_BORDER,
   generateBorderCSS,
 } from "@/components/puckcomponents/CustomBorder";
 import {
-  BoxShadowPanel,
-  BoxShadowState,
   DEFAULT_BOX_SHADOW,
   generateBoxShadowCSS,
 } from "@/components/puckcomponents/CustomBoxShadow";
 import {
   DEFAULT_LAYOUT,
   generateLayoutCSS,
-  LayoutPanel,
 } from "@/components/puckcomponents/CustomLayout";
 import {
   DEFAULT_SIZING,
   generateCSS,
-  SizingPanel,
 } from "@/components/puckcomponents/CustomSIzing";
 import {
   DEFAULT_SPACING,
   generateSpacingCSS,
-  SpacingPanel,
 } from "@/components/puckcomponents/CustomSpacing";
 import {
   DEFAULT_TEXT,
@@ -35,7 +28,6 @@ import {
   TextPanel,
 } from "@/components/puckcomponents/CustomText";
 import {
-  AccordionComponent,
   accordionContentFields,
   DEFAULT_ACCORDION_CONTENT,
 } from "@/components/puckcomponents/DirectComps/AccordianBlock";
@@ -45,6 +37,17 @@ import { AccordionItem } from "@/components/puckcomponents/DirectComps/Accordion
 import HeroSlider from "@/components/puckcomponents/DirectComps/Hero";
 import * as React from "react";
 import { createPortal } from "react-dom";
+import {
+  backgroundFields,
+  bodyTextFields,
+  borderFields,
+  boxShadowFields,
+  closedTextFields,
+  layoutFields,
+  makeTextFields,
+  sizingFields,
+  spacingFields,
+} from "./puckfields";
 
 const HoverButtonWrapper = ({ children }: { children: React.ReactNode }) => {
   const [isModalOpen, setIsModalOpen] = React.useState(false);
@@ -218,183 +221,6 @@ const HoverButtonWrapper = ({ children }: { children: React.ReactNode }) => {
         )}
     </>
   );
-};
-
-export const sizingFields = {
-  type: "custom",
-  label: "Sizing",
-  defaultValue: DEFAULT_SIZING,
-  render: (data: any) => {
-    const { field, onChange, value } = data;
-
-    const update = (key: string, val: string) => {
-      onChange({ ...value, [key]: val });
-    };
-
-    const safeValue = value ? { ...DEFAULT_SIZING, ...value } : DEFAULT_SIZING;
-
-    return <SizingPanel updateField={update} sizing={safeValue} />;
-  },
-};
-
-export const spacingFields = {
-  type: "custom",
-  label: "Spacing",
-  defaultValue: DEFAULT_SPACING,
-  render: (data: any) => {
-    const { onChange, field, value } = data;
-
-    const safeValue = value
-      ? { ...DEFAULT_SPACING, ...value }
-      : DEFAULT_SPACING;
-
-    return <SpacingPanel onChange={onChange} spacing={safeValue} />;
-  },
-};
-
-export const borderFields = {
-  type: "custom",
-  label: "Border",
-  defaultValue: DEFAULT_BORDER,
-  render: (data: any) => {
-    const { onChange, value, field } = data;
-
-    const safeValue = value ? { ...DEFAULT_BORDER, ...value } : DEFAULT_BORDER;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return (
-      <BorderPanel
-        updateField={updateField}
-        border={safeValue}
-        onChange={onChange}
-      />
-    );
-  },
-};
-
-export const layoutFields = {
-  type: "custom",
-  label: "Layout",
-  defaultValue: DEFAULT_LAYOUT,
-  render: (data: any) => {
-    const { onChange, value } = data;
-
-    const safeValue = value ? { ...DEFAULT_LAYOUT, ...value } : DEFAULT_LAYOUT;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return <LayoutPanel updateField={updateField} layout={safeValue} />;
-  },
-};
-
-export const boxShadowFields = {
-  type: "custom",
-  label: "Box Shadow",
-  defaultValue: DEFAULT_BOX_SHADOW,
-  render: (data: any) => {
-    const { onChange, value } = data;
-
-    const safeValue = value
-      ? { ...DEFAULT_BOX_SHADOW, ...value }
-      : DEFAULT_BOX_SHADOW;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return (
-      <BoxShadowPanel
-        updateField={updateField}
-        shadow={safeValue}
-        onChange={onChange}
-      />
-    );
-  },
-};
-
-export const makeTextFields = {
-  type: "custom",
-  label: "Text",
-  defaultValue: DEFAULT_TEXT,
-  render: (data: any) => {
-    const { onChange, value } = data;
-
-    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return (
-      <TextPanel updateField={updateField} text={safeValue} textlabel="Text" />
-    );
-  },
-};
-
-export const closedTextFields = {
-  type: "custom",
-  label: "Closed Text",
-  defaultValue: DEFAULT_TEXT,
-  render: (data: any) => {
-    const { onChange, value } = data;
-
-    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return (
-      <TextPanel
-        updateField={updateField}
-        text={safeValue}
-        textlabel="Closed Text"
-      />
-    );
-  },
-};
-
-export const bodyTextFields = {
-  type: "custom",
-  label: "Body Text",
-  defaultValue: DEFAULT_TEXT,
-  render: (data: any) => {
-    const { onChange, value } = data;
-
-    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
-
-    const updateField = (key: string, val: any) => {
-      onChange({ ...safeValue, [key]: val });
-    };
-
-    return (
-      <TextPanel
-        updateField={updateField}
-        text={safeValue}
-        textlabel="Body Text"
-      />
-    );
-  },
-};
-
-export const backgroundFields = {
-  type: "custom" as const,
-  label: "Background",
-  defaultValue: DEFAULT_BACKGROUND,
-  render: (data: any) => {
-    const { onChange, value } = data;
-    const safeValue = value
-      ? { ...DEFAULT_BACKGROUND, ...value }
-      : DEFAULT_BACKGROUND;
-    const updateField = (key: string, val: any) =>
-      onChange({ ...safeValue, [key]: val });
-    return <BackgroundPanel updateField={updateField} background={safeValue} />;
-  },
 };
 
 export const newconfig = {

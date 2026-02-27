@@ -90,7 +90,9 @@ export function AccordionComponentNew({
 }: any) {
   // Local open state — initialised from props
   const [openItems, setOpenItems] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries((accordion?.items ?? []).map((i) => [i.id, i.open])),
+    Object.fromEntries(
+      (accordion?.items ?? []).map((i: any) => [i.id, i.open]),
+    ),
   );
 
   const usePuck = createUsePuck();
@@ -111,7 +113,7 @@ export function AccordionComponentNew({
       if (acc.toggleType === "accordion") {
         // Close all others, toggle this one
         const next: Record<string, boolean> = {};
-        acc.items.forEach((i) => {
+        acc.items.forEach((i: any) => {
           next[i.id] = i.id === id ? !prev[id] : false;
         });
         return next;
@@ -144,10 +146,6 @@ export function AccordionComponentNew({
   const data = useMemo(() => {
     return puckmain.getItemById(id);
   }, [puckmain.appState]);
-
-  const { content } = data?.props;
-
-  console.log(data);
 
   return (
     <div style={containerStyle} className="w-full">
