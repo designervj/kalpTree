@@ -357,6 +357,7 @@ export const newconfig = {
     },
 
     render: ({ children, puck, ...props }: any) => {
+      console.log(children, puck, props);
       return (
         <div
           style={{
@@ -408,7 +409,7 @@ export const newconfig = {
         const backgroundstyle = getBackgroundCSS(background);
 
         return (
-          <HoverButtonWrapper>
+      
             <props.content
               style={{
                 ...sizestyle,
@@ -419,7 +420,7 @@ export const newconfig = {
                 ...backgroundstyle,
               }}
             />
-          </HoverButtonWrapper>
+    
         );
       },
     },
