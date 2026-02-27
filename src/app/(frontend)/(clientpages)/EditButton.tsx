@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,7 +33,7 @@ import {
   Plus,
 
   FileText,
-  
+
   Pencil,
   Settings,
   Image as ImageIcon,
@@ -71,15 +72,21 @@ export default function BuilderSidebarLayout({
   pageData: WebsitePageModel | TemplateDocument;
   type: string;
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-  const {user:reduxUser} = useSelector((state: RootState) => state.user);
+  const { user: reduxUser } = useSelector((state: RootState) => state.user);
 
 
   const currentUser = useMemo(() => {
     return user || reduxUser;
-  }, [user, reduxUser]);  
+  }, [user, reduxUser]);
 
 
   // ✅ Fix: pageData.id may not exist in your type
@@ -104,16 +111,18 @@ export default function BuilderSidebarLayout({
     router.push(slug ? `/${lang}/${slug}/builder` : "/builder");
   };
 
-   console.log("user--", user)
+
+
+  if (!mounted) return null;
 
   return (
     <>
- { user &&
- (user.role === "superadmin" || user.role === "business" || user.role === "agency" )&&
- <TooltipProvider delayDuration={120}>
-      {/* ================= TOP HEADER ================= */}
-      <div
-        className="
+      {user &&
+        (user.role === "superadmin" || user.role === "business" || user.role === "agency") &&
+        <TooltipProvider delayDuration={120}>
+          {/* ================= TOP HEADER ================= */}
+          <div
+            className="
           fixed top-0 left-0 right-0
           h-10
           bg-gradient-to-b from-[#2a3138] to-[#1f252b]
@@ -123,210 +132,210 @@ export default function BuilderSidebarLayout({
           z-[200]
           px-4
         "
-      >
-        <div className="h-full flex items-center justify-between gap-2">
-          {/* LEFT */}
-          <div className="flex items-center gap-1 min-w-0">
-            <img
-              src="/v-favicon.svg"
-              alt="KalpTree"
-              className="w-[28px] h-[28px]"
-            />
+          >
+            <div className="h-full flex items-center justify-between gap-2">
+              {/* LEFT */}
+              <div className="flex items-center gap-1 min-w-0">
+                <img
+                  src="/v-favicon.svg"
+                  alt="KalpTree"
+                  className="w-[28px] h-[28px]"
+                />
 
-            <Separator orientation="vertical" className="h-4 bg-white/10 mx-1" />
+                <Separator orientation="vertical" className="h-4 bg-white/10 mx-1" />
 
-            {/* NEW */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
+                {/* NEW */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      type="button"
+                      className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>New</span>
+                      <ChevronDown className="h-4 w-4 opacity-80" />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent className="w-56 z-[300]">
+                    <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                      Create
+                    </DropdownMenuLabel>
+
+                    <Link href="/admin/pages/new">
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                        <FileText className="h-4 w-4" /> Page
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <Link href="/admin/posts/new">
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                        <FileText className="h-4 w-4" /> Post
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <Link href="/admin/products/new">
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                        <ShoppingBag className="h-4 w-4" /> Product
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <Link href="/admin/media">
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                        <ImageIcon className="h-4 w-4" /> Media
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <Link href="/admin/users/new">
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
+                        <UserPlus className="h-4 w-4" /> User
+                      </DropdownMenuItem>
+                    </Link>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* EDIT */}
+                {
+                  <DropdownMenu
+
+                  >
+                    <DropdownMenuTrigger asChild
+
+                    >
+                      <button
+                        type="button"
+                        className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                      >
+                        <Pencil className="h-4 w-4" />
+                        <span>Edit</span>
+                        <ChevronDown className="h-4 w-4 opacity-80" />
+                      </button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent className="w-64 z-[300]">
+                      <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px", }}>
+                        Editing
+                      </DropdownMenuLabel>
+
+                      <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px" }}>
+                        <Pencil className="h-4 w-4" />
+                        Edit in Admin
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem
+                        className="gap-2"
+                        style={{ padding: "4px", margin: "4px" }}
+                        onSelect={(e) => {
+                          e.preventDefault();
+                          handleEditInBuilder();
+                        }}
+                      >
+                        <Wrench className="h-4 w-4" />
+                        Edit in Builder
+                      </DropdownMenuItem>
+
+                      <DropdownMenuSeparator />
+
+                      <Link href={`/admin/pages/${pageId}/settings`}>
+                        <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px" }}>
+                          <Settings className="h-4 w-4" />
+                          Page Settings
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuContent>
+                  </DropdownMenu>}
+
+                <Button
                   type="button"
-                  className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleEditInBuilder}
+                  className="h-8 px-2 rounded-sm hover:bg-[#2c3338] text-[#c3c4c7] hover:text-white text-[13px] font-semibold"
                 >
-                  <Plus className="h-4 w-4" />
-                  <span>New</span>
-                  <ChevronDown className="h-4 w-4 opacity-80" />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-56 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}> 
-                  Create
-                </DropdownMenuLabel>
-
-                <Link href="/admin/pages/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
-                    <FileText className="h-4 w-4" /> Page
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link href="/admin/posts/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
-                    <FileText className="h-4 w-4" /> Post
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link href="/admin/products/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
-                    <ShoppingBag className="h-4 w-4" /> Product
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link href="/admin/media">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
-                    <ImageIcon className="h-4 w-4" /> Media
-                  </DropdownMenuItem>
-                </Link>
-
-                <Link href="/admin/users/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
-                    <UserPlus className="h-4 w-4" /> User
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* EDIT */}
-           {
-           <DropdownMenu 
-            
-            >
-              <DropdownMenuTrigger asChild 
-             
-              >
-                <button
-                  type="button"
-                  className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
-                >
-                  <Pencil className="h-4 w-4" />
-                  <span>Edit</span>
-                  <ChevronDown className="h-4 w-4 opacity-80" />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent className="w-64 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground" style={{paddingLeft:"10px", paddingRight:"10px", paddingTop:"10px", }}>
-                  Editing
-                </DropdownMenuLabel>
-
-                <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px"}}>
-                  <Pencil className="h-4 w-4" />
-                  Edit in Admin
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  className="gap-2"
-                 style={{padding:"4px", margin:"4px"}}
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    handleEditInBuilder();
-                  }}
-                >
-                  <Wrench className="h-4 w-4" />
                   Edit in Builder
-                </DropdownMenuItem>
+                </Button>
+              </div>
 
-                <DropdownMenuSeparator />
+              {/* RIGHT */}
+              <div className="flex items-center gap-1">
+                {/* Search dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <div>
+                      <BarIconOnly label="Search" icon={<Search className="h-4 w-4" />} />
+                    </div>
+                  </DropdownMenuTrigger>
 
-                <Link href={`/admin/pages/${pageId}/settings`}>
-                  <DropdownMenuItem className="gap-2" style={{padding:"4px", margin:"4px"}}>
-                    <Settings className="h-4 w-4" />
-                    Page Settings
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuContent>
-            </DropdownMenu>}
+                  <DropdownMenuContent align="end" className="w-72 z-[300]">
+                    <DropdownMenuLabel className="text-xs text-muted-foreground">
+                      Search
+                    </DropdownMenuLabel>
+                    <div className="p-2">
+                      <Input placeholder="Search pages, posts, products..." className="h-9" />
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={handleEditInBuilder}
-              className="h-8 px-2 rounded-sm hover:bg-[#2c3338] text-[#c3c4c7] hover:text-white text-[13px] font-semibold"
-            >
-              Edit in Builder
-            </Button>
+                {/* User dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                      type="button"
+                    >
+                      <span className="hidden sm:inline">Hello, {safeName}</span>
+                      <span className="sm:hidden">{safeName}</span>
+                      <ChevronDown className="h-4 w-4 opacity-80" />
+                    </button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end" className="w-56 z-[300]">
+                    <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ padding: "4px", margin: "4px" }}>
+                      {currentWebsite?.name || "Website"}
+                    </DropdownMenuLabel>
+
+                    <Link href="/admin/dashboard">
+                      <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
+                        <BsSpeedometer2 className="text-[16px] opacity-90" />
+                        Dashboard
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <DropdownMenuSeparator />
+
+                    <Link href="/admin/profile">
+                      <DropdownMenuItem className="gap-2 font-semibold " style={{ padding: "4px", margin: "4px" }}>
+                        <BsPersonCircle className="text-[16px] opacity-90" />
+                        Profile
+                      </DropdownMenuItem>
+                    </Link>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
+                      <BsGear className="text-[16px] opacity-90" />
+                      Website Settings
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
+                      <BsStars className="text-[16px] opacity-90" />
+                      LLM Setting
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem className="gap-2 text-red-600 font-semibold" style={{ padding: "4px", margin: "4px" }}>
+                      <BsBoxArrowRight className="text-[16px] opacity-90" />
+                      Log Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           </div>
 
-          {/* RIGHT */}
-          <div className="flex items-center gap-1">
-            {/* Search dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div>
-                  <BarIconOnly label="Search" icon={<Search className="h-4 w-4" />} />
-                </div>
-              </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-72 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  Search
-                </DropdownMenuLabel>
-                <div className="p-2">
-                  <Input placeholder="Search pages, posts, products..." className="h-9" />
-                </div>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* User dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
-                  type="button"
-                >
-                  <span className="hidden sm:inline">Hello, {safeName}</span>
-                  <span className="sm:hidden">{safeName}</span>
-                  <ChevronDown className="h-4 w-4 opacity-80" />
-                </button>
-              </DropdownMenuTrigger>
-
-              <DropdownMenuContent align="end" className="w-56 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground"  style={{padding:"4px", margin:"4px"}}>
-                  {currentWebsite?.name || "Website"}
-                </DropdownMenuLabel>
-
-                <Link href="/admin/dashboard">
-                  <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
-                    <BsSpeedometer2 className="text-[16px] opacity-90" />
-                    Dashboard
-                  </DropdownMenuItem>
-                </Link>
-
-                <DropdownMenuSeparator />
-
-                <Link href="/admin/profile">
-                  <DropdownMenuItem className="gap-2 font-semibold "  style={{padding:"4px", margin:"4px"}}>
-                    <BsPersonCircle className="text-[16px] opacity-90" />
-                    Profile
-                  </DropdownMenuItem>
-                </Link>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
-                  <BsGear className="text-[16px] opacity-90" />
-                  Website Settings
-                </DropdownMenuItem>
-
-                <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
-                  <BsStars className="text-[16px] opacity-90" />
-                  LLM Setting
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <DropdownMenuItem className="gap-2 text-red-600 font-semibold"  style={{padding:"4px", margin:"4px"}}>
-                  <BsBoxArrowRight className="text-[16px] opacity-90" />
-                  Log Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </div>
-
-    
-    </TooltipProvider>}
+        </TooltipProvider>}
     </>
   );
 }

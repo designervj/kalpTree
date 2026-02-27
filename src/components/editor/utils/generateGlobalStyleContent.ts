@@ -43,6 +43,7 @@ body {
   background-color: var(--bg, #fff);
   margin: 0;
   padding: 0;
+  background: var(--quantum-black);
 }
 
 ${headingStyles}

@@ -61,7 +61,7 @@ export function executeScript(scriptContent: string): void {
         // Wrap the script content in an IIFE to create a new scope
         // This prevents variable redeclaration errors when multiple scripts
         // declare the same variables (e.g., menuData)
-        script.textContent = `(function() { ${scriptContent} })();`;
+        script.textContent = `(function() {\n${scriptContent}\n})();`;
 
         // Append to document body to execute
         document.body.appendChild(script);

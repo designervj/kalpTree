@@ -1,14 +1,10 @@
 "use client";
 import { Website } from "@/components/admin/AppShell";
 import { TemplateDocument } from "@/components/admin/templates/TemplateType";
-import React, { useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  extractScriptsFromHtml,
-  executeScript,
   isHeaderPresent,
 } from "@/components/editor/utils/htmlParser";
-import Script from "next/script";
 import { extractHtmlParts, extractStyles } from "@/lib/utils";
 
 type props = {
@@ -24,143 +20,136 @@ const RenderHtml = ({
   footerData,
   headerData,
 }: props) => {
-  // localStorage.setItem("current_website", JSON.stringify(currentWebsite));
-  // localStorage.setItem("current_header", JSON.stringify(headerData));
-  // localStorage.setItem("current_footer", JSON.stringify(footerData));
-  // console.log("current_website", currentWebsite);
-  // console.log("current_header", headerData);
-  // console.log("html", html);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeHeight, setIframeHeight] = useState("auto");
 
-  // Extract scripts from header, main content, and footer
-  const headerParsed = useMemo(() => {
-    if (!headerData?.content) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    return extractScriptsFromHtml(headerData.content.replace(/\\n/g, ""));
-  }, [headerData?.content]);
-
+  // Extract content parts
   const mainParsed = useMemo(() => {
     if (!html) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    return extractScriptsFromHtml(html);
+    const { body, scripts, externalScripts } = extractHtmlParts(html);
+    return { htmlWithoutScripts: body, scripts, externalScripts };
   }, [html]);
 
+  const headerParsed = useMemo(() => {
+    const data = headerData?.content?.replace(/\\n/g, "").trim();
+    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
+    const { body, scripts, externalScripts } = extractHtmlParts(data);
+    return { htmlWithoutScripts: body, scripts, externalScripts };
+  }, [headerData?.content]);
+
   const footerParsed = useMemo(() => {
-    if (!footerData?.content) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    return extractScriptsFromHtml(footerData.content.replace(/\\n/g, ""));
+    const data = footerData?.content?.replace(/\\n/g, "").trim();
+    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
+    const { body, scripts, externalScripts } = extractHtmlParts(data);
+    return { htmlWithoutScripts: body, scripts, externalScripts };
   }, [footerData?.content]);
 
-
-  // Extract styles from header, main content, and footer
+  // Combined styles
   const extractedStyles = useMemo(() => {
     const headerStyles = headerData?.content ? extractStyles(headerData.content) : '';
     const mainStyles = html ? extractStyles(html) : '';
     const footerStyles = footerData?.content ? extractStyles(footerData.content) : '';
+    return `${headerStyles}\n${mainStyles}\n${footerStyles}`;
+  }, [html, headerData?.content, footerData?.content]);
 
-    const combinedStyles = `${headerStyles}\n${mainStyles}\n${footerStyles}`;
+  // Combined external scripts
+  const allExternalScripts = useMemo(() => {
+    const scripts = [
+      "https://unpkg.com/lucide@latest",
+      ...(headerParsed?.externalScripts || []),
+      ...(mainParsed?.externalScripts || []),
+      ...(footerParsed?.externalScripts || [])
+    ];
+    // Remove duplicates
+    return Array.from(new Set(scripts));
+  }, [headerParsed, mainParsed, footerParsed]);
 
-
-    return combinedStyles;
-  }, [html]);
-  // Execute all scripts after the component mounts and content is rendered
-  useEffect(() => {
-    const allScripts = [
+  // Combined inline scripts
+  const allInlineScripts = useMemo(() => {
+    return [
       ...(headerParsed?.scripts || []),
       ...(mainParsed?.scripts || []),
-      ...(footerParsed?.scripts || []),
-    ];
-
-    if (allScripts.length > 0) {
-      // If scripts contain 'lucide', make sure lucide is available
-      const needsLucide = allScripts.some(s => s.includes('lucide'));
-
-      const runScripts = () => {
-        headerParsed?.scripts.forEach(executeScript);
-        mainParsed?.scripts.forEach(executeScript);
-        footerParsed?.scripts.forEach(executeScript);
-      };
-
-      if (needsLucide && !(window as any).lucide) {
-        // Wait for lucide to be available if it's being loaded via Script component
-        const checkLucide = setInterval(() => {
-          if ((window as any).lucide) {
-            clearInterval(checkLucide);
-            runScripts();
-          }
-        }, 100);
-        // Timeout after 5 seconds to avoid infinite loop
-        setTimeout(() => clearInterval(checkLucide), 5000);
-      } else {
-        runScripts();
-      }
-    }
-
-    // Cleanup function to remove event listeners if needed
-    return () => {
-      // Add any cleanup logic here if your scripts add event listeners
-      console.log("Cleaning up scripts...");
-    };
-  }, [headerParsed.scripts, mainParsed.scripts, footerParsed.scripts]);
-
-  const { body } = extractHtmlParts(html);
+      ...(footerParsed?.scripts || [])
+    ].join("\n");
+  }, [headerParsed, mainParsed, footerParsed]);
 
   const isHeaderPresentInHtml = useMemo(() => {
-    return isHeaderPresent(html)
-  }, [html])
+    return isHeaderPresent(html);
+  }, [html]);
 
-  console.log("isHeaderPresentInHtml", isHeaderPresentInHtml)
+  // Construct the full HTML for the iframe
+  const iframeContent = useMemo(() => {
+    const headerHtml = headerData && headerData.content && !isHeaderPresentInHtml
+      ? headerParsed.htmlWithoutScripts
+      : "";
+    const mainHtml = mainParsed.htmlWithoutScripts;
+    const footerHtml = footerData && footerData.content
+      ? footerParsed.htmlWithoutScripts
+      : "";
+
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <style>
+            body { margin: 0; padding: 0; overflow-x: hidden; font-family: sans-serif; }
+            #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
+            main { flex: 1; }
+            ${extractedStyles}
+          </style>
+          ${allExternalScripts.map(src => `<script src="${src}"></script>`).join("\n")}
+        </head>
+        <body class="min-h-screen h-[100vh]>
+          <div id="iframe-wrapper" ">
+            <div id="header-container">${headerHtml}</div>
+            <main id="main-content">${mainHtml}</main>
+            <div id="footer-container">${footerHtml}</div>
+          </div>
+          <script>
+            // Wrap inline scripts in IIFE for safety
+            (function() {
+              try {
+                ${allInlineScripts}
+              } catch (e) {
+                console.error("Error in iframe inline scripts:", e);
+              }
+            })();
+
+          </script>
+        </body>
+      </html>
+    `;
+  }, [extractedStyles, allExternalScripts, allInlineScripts, headerData, footerData, headerParsed, mainParsed, footerParsed, isHeaderPresentInHtml]);
+
+  // Listen for resize messages from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data.type === 'resize-iframe') {
+        setIframeHeight(`${event.data.height}px`);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   return (
-    <>
-
-      {/* Load Lucide icons library as it is a common dependency for templates */}
-      <Script
-        src="https://unpkg.com/lucide@latest"
-        strategy="afterInteractive"
-      />
-
-      {/* Load any other external scripts extracted from HTML */}
-      {[
-        ...headerParsed.externalScripts,
-        ...mainParsed.externalScripts,
-        ...footerParsed.externalScripts
-      ].map((src, idx) => (
-        <Script key={idx} src={src} strategy="afterInteractive" />
-      ))}
-
-      {/* Inject extracted styles globally */}
-      {extractedStyles && (
-        <style
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: extractedStyles }}
-        />
-      )}
-      {/* Render header at the top if headerData exists */}
-      {headerData && headerData.content && !isHeaderPresentInHtml && (
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: headerParsed.htmlWithoutScripts || "",
-          }}
-        />
-      )}
-
-      {/* Render main page content */}
-      <main>
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: body }}
-        />
-      </main>
-
-      {/* Render footer at the bottom if footerData exists */}
-      {footerData && footerData.content && (
-        <div
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: footerParsed.htmlWithoutScripts || "",
-          }}
-        />
-      )}
-    </>
+    <iframe
+      ref={iframeRef}
+      srcDoc={iframeContent}
+      style={{
+        width: "100%",
+        height: iframeHeight,
+        border: "none",
+        display: "block"
+      }}
+      title="Website Content"
+      suppressHydrationWarning
+    />
   );
 };
 
 export default RenderHtml;
+
