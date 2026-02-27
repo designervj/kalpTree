@@ -507,8 +507,8 @@ export default function PageEditor({
   const onSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     setMsg(null);
-
-    if (!formData?.title || !formData?.slug || !formData?.websiteId) {
+   console.log(formData);
+    if (!formData?.title || !formData?.slug) {
       toast.error("Please fill all required fields");
       return;
     }

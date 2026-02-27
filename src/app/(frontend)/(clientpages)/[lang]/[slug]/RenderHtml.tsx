@@ -70,7 +70,7 @@ const RenderHtml = ({
       ...(headerParsed?.scripts || []),
       ...(mainParsed?.scripts || []),
       ...(footerParsed?.scripts || [])
-    ].join("\n");
+    ];
   }, [headerParsed, mainParsed, footerParsed]);
 
   const isHeaderPresentInHtml = useMemo(() => {
@@ -87,6 +87,8 @@ const RenderHtml = ({
       ? footerParsed.htmlWithoutScripts
       : "";
 
+    console.log("allInlineScripts", allInlineScripts);
+
     return `
       <!DOCTYPE html>
       <html>
@@ -95,28 +97,44 @@ const RenderHtml = ({
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <style>
             body { margin: 0; padding: 0; overflow-x: hidden; font-family: sans-serif; }
-            #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; height: 100vh; }
+            #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
             main { flex: 1; }
+            #cursor, #cursor-follower { pointer-events: none; }
             ${extractedStyles}
           </style>
           ${allExternalScripts.map(src => `<script src="${src}"></script>`).join("\n")}
         </head>
-        <body class="min-h-screen h-[100vh]>
-          <div id="iframe-wrapper" ">
+        <body class="min-h-screen">
+          <div id="iframe-wrapper">
             <div id="header-container">${headerHtml}</div>
             <main id="main-content">${mainHtml}</main>
             <div id="footer-container">${footerHtml}</div>
           </div>
           <script>
-            // Wrap inline scripts in IIFE for safety
-            (function() {
+            console.log("Iframe Initializing...");
+            window.onerror = function(msg, url, line, col, error) {
+              console.error("Iframe Error:", msg, "at line", line);
+              return false;
+            };
+          </script>
+          ${allInlineScripts.map((s, i) => `
+            <script id="script-${i}">
               try {
-                ${allInlineScripts}
+                ${s}
               } catch (e) {
-                console.error("Error in iframe inline scripts:", e);
+                console.error("Error in script ${i}:", e);
               }
-            })();
-
+            </script>
+          `).join("\n")}
+          <script>
+            try {
+              if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+              }
+              console.log("Iframe Scripts Loaded Successfully");
+            } catch (e) {
+              console.error("Lucide Init Error:", e);
+            }
           </script>
         </body>
       </html>
