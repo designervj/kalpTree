@@ -26,6 +26,7 @@ import {
   DEFAULT_TEXT,
   TextPanel,
 } from "@/components/puckcomponents/CustomText";
+import { RowLayoutPicker } from "@/components/puckcomponents/RowLayoutPicker";
 
 export const sizingFields = {
   type: "custom",
@@ -201,5 +202,15 @@ export const backgroundFields = {
     const updateField = (key: string, val: any) =>
       onChange({ ...safeValue, [key]: val });
     return <BackgroundPanel updateField={updateField} background={safeValue} />;
+  },
+};
+
+export const rowLayoutFields = {
+  type: "custom" as const,
+  label: "Layout Presets",
+  defaultValue: "1fr",
+  render: (data: any) => {
+    const { onChange, value } = data;
+    return <RowLayoutPicker value={value} onChange={onChange} />;
   },
 };
