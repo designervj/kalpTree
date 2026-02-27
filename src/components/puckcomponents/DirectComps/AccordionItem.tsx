@@ -1,5 +1,3 @@
-
-
 import { registerOverlayPortal } from "@puckeditor/core";
 import { useEffect, useRef, useState } from "react";
 import { generateTextCSS } from "../CustomText";
@@ -7,6 +5,7 @@ import { generateSpacingCSS } from "../CustomSpacing";
 import { generateBorderCSS } from "../CustomBorder";
 import { generateBoxShadowCSS } from "../CustomBoxShadow";
 import { generateCSS } from "../CustomSIzing";
+import { getBackgroundCSS } from "../CustomBackground";
 
 function AccordionIcon({
   style,
@@ -100,6 +99,7 @@ export function AccordionItem({
   iconPosition = "right",
   closedIconColor = "#222C39",
   openIconColor = "#3b82f6",
+  background,
 }: {
   title?: string;
   body?: string;
@@ -115,6 +115,7 @@ export function AccordionItem({
   iconPosition?: "left" | "right";
   closedIconColor?: string;
   openIconColor?: string;
+  background?: any;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const ref = useRef<HTMLButtonElement>(null);
@@ -141,6 +142,7 @@ export function AccordionItem({
     ...generateSpacingCSS(spacing),
     ...generateBorderCSS(border),
     ...generateBoxShadowCSS(boxShadow),
+    ...getBackgroundCSS(background),
   };
 
   const icon = (
@@ -181,3 +183,563 @@ export function AccordionItem({
     </div>
   );
 }
+
+export const toAddInElement = {
+  titletext: {
+    activeTag: "H1",
+    h1: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "30",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h2: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "24",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h3: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "20",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h4: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "18",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h5: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "16",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h6: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    p: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+  },
+  closedtitletext: {
+    activeTag: "H1",
+    h1: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "30",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h2: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "24",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h3: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "20",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h4: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "18",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h5: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "16",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h6: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    p: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+  },
+  bodytext: {
+    activeTag: "H1",
+    h1: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "30",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h2: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "24",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h3: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "20",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h4: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "18",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h5: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "16",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    h6: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+    p: {
+      font: "Default",
+      fontWeight: "Regular",
+      fontStyle: "normal",
+      textAlign: "left",
+      color: "",
+      fontSize: {
+        value: "14",
+        unit: "px",
+      },
+      letterSpacing: {
+        value: "0",
+        unit: "px",
+      },
+      lineHeight: {
+        value: "1",
+        unit: "em",
+      },
+      textShadow: 0,
+    },
+  },
+  sizing: {
+    width: {
+      value: "",
+      unit: "auto",
+    },
+    maxWidth: {
+      value: "",
+      unit: "none",
+    },
+    sectionAlignment: "center",
+    minHeight: {
+      value: "",
+      unit: "auto",
+    },
+    height: {
+      value: "",
+      unit: "auto",
+    },
+    maxHeight: {
+      value: "",
+      unit: "none",
+    },
+  },
+  spacing: {
+    marginTop: {
+      value: "0",
+      unit: "px",
+    },
+    marginBottom: {
+      value: "0",
+      unit: "px",
+    },
+    marginLeft: {
+      value: "",
+      unit: "px",
+    },
+    marginRight: {
+      value: "",
+      unit: "px",
+    },
+    paddingTop: {
+      value: "",
+      unit: "px",
+    },
+    paddingBottom: {
+      value: "",
+      unit: "px",
+    },
+    paddingLeft: {
+      value: "",
+      unit: "px",
+    },
+    paddingRight: {
+      value: "",
+      unit: "px",
+    },
+  },
+  border: {
+    radiusTopLeft: {
+      value: "10",
+      unit: "px",
+    },
+    radiusTopRight: {
+      value: "10",
+      unit: "px",
+    },
+    radiusBottomLeft: {
+      value: "0",
+      unit: "px",
+    },
+    radiusBottomRight: {
+      value: "0",
+      unit: "px",
+    },
+    activeSide: "all",
+    allWidth: {
+      value: "0",
+      unit: "px",
+    },
+    allColor: "",
+    allStyle: "Solid",
+    topWidth: {
+      value: "0",
+      unit: "px",
+    },
+    topColor: "",
+    topStyle: "Solid",
+    rightWidth: {
+      value: "0",
+      unit: "px",
+    },
+    rightColor: "",
+    rightStyle: "Solid",
+    bottomWidth: {
+      value: "0",
+      unit: "px",
+    },
+    bottomColor: "",
+    bottomStyle: "Solid",
+    leftWidth: {
+      value: "0",
+      unit: "px",
+    },
+    leftColor: "",
+    leftStyle: "Solid",
+  },
+  boxShadow: {
+    presetIndex: 0,
+    horizontal: {
+      value: "0",
+      unit: "px",
+    },
+    vertical: {
+      value: "0",
+      unit: "px",
+    },
+    blur: {
+      value: "18",
+      unit: "px",
+    },
+    spread: {
+      value: "0",
+      unit: "px",
+    },
+    color: "#000000",
+    colorOpacity: "30",
+    position: "Inner Shadow",
+  },
+};

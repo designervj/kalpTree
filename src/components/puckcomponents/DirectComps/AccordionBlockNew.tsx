@@ -78,7 +78,6 @@ function AccordionIcon({
 }
 
 export function AccordionComponentNew({
-  accordion,
   sizing,
   spacing,
   border,
@@ -88,39 +87,9 @@ export function AccordionComponentNew({
   content: Content,
   id,
 }: any) {
-  // Local open state — initialised from props
-  const [openItems, setOpenItems] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(
-      (accordion?.items ?? []).map((i: any) => [i.id, i.open]),
-    ),
-  );
-
   const usePuck = createUsePuck();
 
   const puckmain = usePuck((s) => s);
-
-  const acc = accordion ?? {
-    items: [],
-    toggleType: "accordion",
-    iconPosition: "right",
-    iconStyle: "plus",
-    closedIconColor: "#222C39",
-    openIconColor: "#3b82f6",
-  };
-
-  function toggle(id: string) {
-    setOpenItems((prev) => {
-      if (acc.toggleType === "accordion") {
-        // Close all others, toggle this one
-        const next: Record<string, boolean> = {};
-        acc.items.forEach((i: any) => {
-          next[i.id] = i.id === id ? !prev[id] : false;
-        });
-        return next;
-      }
-      return { ...prev, [id]: !prev[id] };
-    });
-  }
 
   // Title style from H3 (accordion titles are typically mid-level)
   const titleStyle = generateTextCSS(text?.h3);
@@ -134,22 +103,13 @@ export function AccordionComponentNew({
     ...generateLayoutCSS(layout),
   };
 
-  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-
-  useEffect(() => {
-    const cleanups = Object.values(itemRefs.current).map((el) =>
-      registerOverlayPortal(el),
-    );
-    return () => cleanups.forEach((fn) => fn?.());
-  }, [acc.items]);
-
   const data = useMemo(() => {
     return puckmain.getItemById(id);
   }, [puckmain.appState]);
 
   return (
-    <div style={containerStyle} className="w-full">
-      <Content />
-    </div>
+    // <div style={containerStyle} className="w-full">
+    <Content style={containerStyle} />
+    // </div>
   );
 }

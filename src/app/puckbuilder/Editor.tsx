@@ -1,7 +1,7 @@
 "use client";
 
 import { EditorUI } from "@/components/puckcomponents/PuckOveride/EditorUI";
-import { Puck } from "@puckeditor/core";
+import { ActionBar, Puck } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { newconfig } from "../puckconfig/newconfig";
 import matter from "gray-matter";
@@ -9,6 +9,8 @@ import * as runtime from "react/jsx-runtime";
 import { evaluate } from "@mdx-js/mdx";
 import * as framerMotion from "framer-motion";
 import { useEffect, useState } from "react";
+import { ContainerSecondaryActions } from "@/components/puckcomponents/PuckOveride/ActionBarOver";
+import { RowOverlay } from "@/components/puckcomponents/PuckOveride/RowOverlay";
 
 const initialData = {
   // root: {
@@ -41,6 +43,11 @@ export async function compileMDX(
 export function Editor() {
   const [config, setConfig] = useState<any>(newconfig);
   const [loading, setLoading] = useState(true);
+  const [openComponentModel, setOpenComponentModel] = useState(false);
+
+  const handleOpemComponentModal = () => {
+    setOpenComponentModel((prev) => !prev);
+  };
 
   useEffect(() => {
     (async () => {
@@ -101,6 +108,32 @@ export function Editor() {
     })();
   }, []);
 
+  const overrides = {
+    actionBar: ({ children, label }: any) => (
+      <ActionBar label={label}>
+        <ActionBar.Group>
+          {children}
+          <ContainerSecondaryActions
+            handleOpemComponentModal={handleOpemComponentModal}
+          />
+        </ActionBar.Group>
+      </ActionBar>
+    ),
+
+    componentOverlay: ({
+      children,
+      hover,
+      componentId,
+      componentType,
+    }: any) => (
+      <RowOverlay
+        onAddComponent={handleOpemComponentModal} // ✅ was: onAddComponent={openComponentModel} (boolean — wrong!)
+        hovered={hover}
+        children={children}
+      />
+    ),
+  };
+
   if (loading) {
     return (
       <div
@@ -129,8 +162,12 @@ export function Editor() {
       config={config}
       data={initialData}
       onPublish={save}
+      overrides={overrides}
     >
-      <EditorUI />
+      <EditorUI
+        openComponentModel={openComponentModel}
+        handleOpemComponentModal={handleOpemComponentModal}
+      />
     </Puck>
   );
 }

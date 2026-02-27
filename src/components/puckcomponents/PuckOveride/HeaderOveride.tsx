@@ -1,5 +1,5 @@
 "use client";
-import { usePuck } from "@puckeditor/core";
+import { createUsePuck, usePuck } from "@puckeditor/core";
 import {
   Undo2,
   Redo2,
@@ -48,7 +48,8 @@ const VIEWPORTS: ViewportOption[] = [
 
 // ─── Header ───────────────────────────────────────────────────────────────────
 export function EditorHeader() {
-  const { dispatch, appState } = usePuck();
+  const usePuck = createUsePuck();
+  const { appState, dispatch } = usePuck((s) => s);
 
   const [activeViewport, setActiveViewport] = useState<ViewportId>("desktop");
 

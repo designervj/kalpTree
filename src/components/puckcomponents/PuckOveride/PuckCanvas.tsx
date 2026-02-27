@@ -1,11 +1,10 @@
 "use client";
-import { Puck, usePuck } from "@puckeditor/core";
+import { createUsePuck, Puck, usePuck } from "@puckeditor/core";
 
 export function Canvas() {
-  const { appState } = usePuck();
+  const usePuck = createUsePuck();
+  const { appState } = usePuck((s) => s);
   const viewportWidth = appState.ui.viewports.current.width;
-
-  
 
   return (
     <main className="flex flex-1 flex-col items-center overflow-auto bg-slate-100 p-8 gap-6">
