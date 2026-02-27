@@ -1,44 +1,30 @@
 "use client";
 
-import { EditorUI } from "@/components/puckcomponents/PuckOveride/EditorUI";
-import { Puck } from "@puckeditor/core";
-import "@puckeditor/core/puck.css";
+import { Render } from "@puckeditor/core";
+import { useEffect, useState } from "react";
 import { newconfig } from "../puckconfig/newconfig";
 import matter from "gray-matter";
-import * as runtime from "react/jsx-runtime";
-import { evaluate } from "@mdx-js/mdx";
+import { compileMDX } from "../puckbuilder/Editor";
 import * as framerMotion from "framer-motion";
-import { useEffect, useState } from "react";
 
 const initialData = {
-  // root: {
-  //   props: {
-  //     navbar: [],
-  //   },
-  // },
-  // content: [
-  //   {
-  //     type: "HeroSection",
-  //     props: {
-  //       id: "HeroSection-874c8567-006f-4eaf-8fbf-6ed5df1bf7f3",
-  //     },
-  //   },
-  // ],
-  // zones: {},
+  root: {
+    props: {
+      navbar: [],
+    },
+  },
+  content: [
+    {
+      type: "HeroSection",
+      props: {
+        id: "HeroSection-874c8567-006f-4eaf-8fbf-6ed5df1bf7f3",
+      },
+    },
+  ],
+  zones: {},
 };
 
-const save = (data: any) => console.log(data);
-
-export async function compileMDX(
-  mdxContent: string,
-): Promise<React.ComponentType<any>> {
-  const { default: MDXComponent } = await evaluate(mdxContent, {
-    ...(runtime as any),
-  });
-  return MDXComponent;
-}
-
-export function Editor() {
+export default function RenderPage() {
   const [config, setConfig] = useState<any>(newconfig);
   const [loading, setLoading] = useState(true);
 
@@ -121,16 +107,5 @@ export function Editor() {
     );
   }
 
-  return (
-    <Puck
-      iframe={{
-        enabled: true,
-      }}
-      config={config}
-      data={initialData}
-      onPublish={save}
-    >
-      <EditorUI />
-    </Puck>
-  );
+  return <Render config={config} data={initialData} />;
 }

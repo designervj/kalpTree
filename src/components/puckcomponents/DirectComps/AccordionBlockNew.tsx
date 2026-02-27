@@ -1,0 +1,157 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { generateTextCSS } from "../CustomText";
+import { generateSpacingCSS } from "../CustomSpacing";
+import { generateBorderCSS } from "../CustomBorder";
+import { generateBoxShadowCSS } from "../CustomBoxShadow";
+import { generateLayoutCSS } from "../CustomLayout";
+import { generateCSS } from "../CustomSIzing";
+import { createUsePuck, registerOverlayPortal } from "@puckeditor/core";
+
+function AccordionIcon({
+  style,
+  open,
+  closedColor,
+  openColor,
+}: {
+  style: string;
+  open: boolean;
+  closedColor: string;
+  openColor: string;
+}) {
+  const color = open ? openColor : closedColor;
+
+  if (style === "plus") {
+    return (
+      <svg
+        width="14"
+        height="14"
+        viewBox="0 0 14 14"
+        fill="none"
+        className="flex-shrink-0 transition-transform duration-200"
+      >
+        <path
+          d="M2 7h10"
+          stroke={color}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+        />
+        {!open && (
+          <path
+            d="M7 2v10"
+            stroke={color}
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+        )}
+      </svg>
+    );
+  }
+  // arrow and chevron both just rotate
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      className="flex-shrink-0 transition-transform duration-200"
+      style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+    >
+      {style === "arrow" ? (
+        <path
+          d="M2 4l5 6 5-6"
+          stroke={color}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <path
+          d="M3 5l4 4 4-4"
+          stroke={color}
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      )}
+    </svg>
+  );
+}
+
+export function AccordionComponentNew({
+  accordion,
+  sizing,
+  spacing,
+  border,
+  boxShadow,
+  text,
+  layout,
+  content: Content,
+  id,
+}: any) {
+  // Local open state — initialised from props
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries((accordion?.items ?? []).map((i) => [i.id, i.open])),
+  );
+
+  const usePuck = createUsePuck();
+
+  const puckmain = usePuck((s) => s);
+
+  const acc = accordion ?? {
+    items: [],
+    toggleType: "accordion",
+    iconPosition: "right",
+    iconStyle: "plus",
+    closedIconColor: "#222C39",
+    openIconColor: "#3b82f6",
+  };
+
+  function toggle(id: string) {
+    setOpenItems((prev) => {
+      if (acc.toggleType === "accordion") {
+        // Close all others, toggle this one
+        const next: Record<string, boolean> = {};
+        acc.items.forEach((i) => {
+          next[i.id] = i.id === id ? !prev[id] : false;
+        });
+        return next;
+      }
+      return { ...prev, [id]: !prev[id] };
+    });
+  }
+
+  // Title style from H3 (accordion titles are typically mid-level)
+  const titleStyle = generateTextCSS(text?.h3);
+  const bodyStyle = generateTextCSS(text?.p);
+
+  const containerStyle: React.CSSProperties = {
+    ...generateCSS(sizing),
+    ...generateSpacingCSS(spacing),
+    ...generateBorderCSS(border),
+    ...generateBoxShadowCSS(boxShadow),
+    ...generateLayoutCSS(layout),
+  };
+
+  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  useEffect(() => {
+    const cleanups = Object.values(itemRefs.current).map((el) =>
+      registerOverlayPortal(el),
+    );
+    return () => cleanups.forEach((fn) => fn?.());
+  }, [acc.items]);
+
+  const data = useMemo(() => {
+    return puckmain.getItemById(id);
+  }, [puckmain.appState]);
+
+  const { content } = data?.props;
+
+  console.log(data);
+
+  return (
+    <div style={containerStyle} className="w-full">
+      <Content />
+    </div>
+  );
+}

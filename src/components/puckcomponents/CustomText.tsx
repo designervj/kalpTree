@@ -605,11 +605,13 @@ function TagStyleEditor({
 export function TextPanel({
   updateField,
   text,
+  textlabel,
 }: {
   updateField: (key: string, val: any) => void;
   text: TextState | undefined;
+  textlabel: string;
 }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const s = text ?? DEFAULT_TEXT;
   const activeTag = (s.activeTag ?? "H1") as Tag;
   const tagKey = activeTag.toLowerCase() as keyof TextState;
@@ -643,7 +645,7 @@ export function TextPanel({
           />
         </svg>
         <span className="text-sm font-semibold text-blue-600 tracking-wide">
-          Text
+          {textlabel}
         </span>
       </button>
 

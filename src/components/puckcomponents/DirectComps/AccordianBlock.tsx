@@ -48,13 +48,17 @@ export const accordionContentFields = {
   },
 };
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { generateCSS, SizeInput } from "../CustomSIzing";
 import { generateTextCSS } from "../CustomText";
 import { generateSpacingCSS } from "../CustomSpacing";
 import { generateBorderCSS } from "../CustomBorder";
 import { generateBoxShadowCSS } from "../CustomBoxShadow";
-import { registerOverlayPortal } from "@puckeditor/core";
+import {
+  createUsePuck,
+  registerOverlayPortal,
+  usePuck,
+} from "@puckeditor/core";
 import { generateLayoutCSS } from "../CustomLayout";
 
 function SelectInput({
@@ -407,11 +411,16 @@ export function AccordionComponent({
   boxShadow,
   text,
   layout,
+  id,
 }: any) {
   // Local open state — initialised from props
   const [openItems, setOpenItems] = useState<Record<string, boolean>>(() =>
     Object.fromEntries((accordion?.items ?? []).map((i) => [i.id, i.open])),
   );
+
+  const usePuck = createUsePuck();
+
+  const puckmain = usePuck((s) => s);
 
   const acc = accordion ?? {
     items: [],
@@ -458,6 +467,12 @@ export function AccordionComponent({
     );
     return () => cleanups.forEach((fn) => fn?.());
   }, [acc.items]);
+
+  const data = useMemo(() => {
+    return puckmain.getItemById(id);
+  }, [puckmain.appState]);
+
+  const { content } = data?.props;
 
   return (
     <div style={containerStyle} className="w-full">

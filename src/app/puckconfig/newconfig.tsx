@@ -39,6 +39,8 @@ import {
   accordionContentFields,
   DEFAULT_ACCORDION_CONTENT,
 } from "@/components/puckcomponents/DirectComps/AccordianBlock";
+import { AccordionComponentNew } from "@/components/puckcomponents/DirectComps/AccordionBlockNew";
+import { AccordionItem } from "@/components/puckcomponents/DirectComps/AccordionItem";
 
 import HeroSlider from "@/components/puckcomponents/DirectComps/Hero";
 import * as React from "react";
@@ -328,7 +330,55 @@ export const makeTextFields = {
       onChange({ ...safeValue, [key]: val });
     };
 
-    return <TextPanel updateField={updateField} text={safeValue} />;
+    return (
+      <TextPanel updateField={updateField} text={safeValue} textlabel="Text" />
+    );
+  },
+};
+
+export const closedTextFields = {
+  type: "custom",
+  label: "Closed Text",
+  defaultValue: DEFAULT_TEXT,
+  render: (data: any) => {
+    const { onChange, value } = data;
+
+    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
+
+    const updateField = (key: string, val: any) => {
+      onChange({ ...safeValue, [key]: val });
+    };
+
+    return (
+      <TextPanel
+        updateField={updateField}
+        text={safeValue}
+        textlabel="Closed Text"
+      />
+    );
+  },
+};
+
+export const bodyTextFields = {
+  type: "custom",
+  label: "Body Text",
+  defaultValue: DEFAULT_TEXT,
+  render: (data: any) => {
+    const { onChange, value } = data;
+
+    const safeValue = value ? { ...DEFAULT_TEXT, ...value } : DEFAULT_TEXT;
+
+    const updateField = (key: string, val: any) => {
+      onChange({ ...safeValue, [key]: val });
+    };
+
+    return (
+      <TextPanel
+        updateField={updateField}
+        text={safeValue}
+        textlabel="Body Text"
+      />
+    );
   },
 };
 
@@ -348,34 +398,32 @@ export const backgroundFields = {
 };
 
 export const newconfig = {
-  root: {
-    fields: {
-      navbar: {
-        type: "slot",
-        allowed: ["NavbarBlock"],
-      },
-    },
+  // root: {
+  //   fields: {
+  //     navbar: {
+  //       type: "slot",
+  //       allowed: ["NavbarBlock"],
+  //     },
+  //   },
 
-    render: ({ children, puck, ...props }: any) => {
-      console.log(children, puck, props);
-      return (
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <props.navbar />
-          {/* Page content */}
-          <main className="h-[90vh]" style={{ flex: 1 }}>
-            {children}
-          </main>
-        </div>
-      );
-    },
-  },
-
+  //   render: ({ children, puck, ...props }: any) => {
+  //     return (
+  //       <div
+  //         style={{
+  //           minHeight: "100vh",
+  //           display: "flex",
+  //           flexDirection: "column",
+  //         }}
+  //       >
+  //         <props.navbar />
+  //         {/* Page content */}
+  //         <main className="h-[90vh]" style={{ flex: 1 }}>
+  //           {children}
+  //         </main>
+  //       </div>
+  //     );
+  //   },
+  // },
   components: {
     Container: {
       fields: {
@@ -409,23 +457,21 @@ export const newconfig = {
         const backgroundstyle = getBackgroundCSS(background);
 
         return (
-      
-            <props.content
-              style={{
-                ...sizestyle,
-                ...borderstyle,
-                ...spacingstyle,
-                ...boxshadowstyle,
-                ...layoutstyle,
-                ...backgroundstyle,
-              }}
-            />
-    
+          <props.content
+            style={{
+              ...sizestyle,
+              ...borderstyle,
+              ...spacingstyle,
+              ...boxshadowstyle,
+              ...layoutstyle,
+              ...backgroundstyle,
+            }}
+          />
         );
       },
     },
 
-    HeadingBlock: {
+    TextBlock: {
       fields: {
         text: makeTextFields,
       },
@@ -435,8 +481,6 @@ export const newconfig = {
       render: (props: any) => {
         const { text } = props;
         const textstyle = generateTextCSS(text[text.activeTag.toLowerCase()]);
-
-        console.log(text, textstyle);
 
         return (
           <HoverButtonWrapper>
@@ -456,6 +500,67 @@ export const newconfig = {
       },
     },
 
+    // Accordion: {
+    //   fields: {
+    //     layout: layoutFields,
+    //     sizing: sizingFields,
+    //     spacing: spacingFields,
+    //     border: borderFields,
+    //     boxShadow: boxShadowFields,
+    //     accordion: accordionContentFields,
+    //   },
+    //   defaultProps: {
+    //     boxShadow: DEFAULT_BOX_SHADOW,
+    //     layout: DEFAULT_LAYOUT,
+    //     sizing: DEFAULT_SIZING,
+    //     spacing: DEFAULT_SPACING,
+    //     border: DEFAULT_BORDER,
+    //     accordion: DEFAULT_ACCORDION_CONTENT,
+    //   },
+    //   render: (props: any) => {
+    //     // compute CSS from field values and render your accordion UI
+    //     return (
+
+    //         <AccordionComponent {...props} />
+
+    //     );
+    //   },
+    // },
+    AccordionItem: {
+      fields: {
+        title: {
+          type: "text",
+          label: "Title",
+          defaultValue: "Accordion Title",
+          contentEditable: true,
+        },
+        body: {
+          type: "textarea",
+          label: "Body",
+          defaultValue: "Content goes here.",
+          contentEditable: true,
+        },
+        titletext: makeTextFields,
+        closedtitletext: closedTextFields,
+        bodytext: bodyTextFields,
+        sizing: sizingFields,
+        spacing: spacingFields,
+        border: borderFields,
+        boxShadow: boxShadowFields,
+      },
+      defaultProps: {
+        titletext: DEFAULT_TEXT,
+        closedtitletext: DEFAULT_TEXT,
+        bodytext: DEFAULT_TEXT,
+        sizing: DEFAULT_SIZING,
+        spacing: DEFAULT_SPACING,
+        border: DEFAULT_BORDER,
+        boxShadow: DEFAULT_BOX_SHADOW,
+      },
+      render: (props: any) => {
+        return <AccordionItem {...props} />;
+      },
+    },
     Accordion: {
       fields: {
         layout: layoutFields,
@@ -464,6 +569,10 @@ export const newconfig = {
         border: borderFields,
         boxShadow: boxShadowFields,
         accordion: accordionContentFields,
+        content: {
+          type: "slot",
+          allow: ["AccordionItem"],
+        },
       },
       defaultProps: {
         boxShadow: DEFAULT_BOX_SHADOW,
@@ -472,14 +581,162 @@ export const newconfig = {
         spacing: DEFAULT_SPACING,
         border: DEFAULT_BORDER,
         accordion: DEFAULT_ACCORDION_CONTENT,
+        // content: [
+        //   {
+        //     type: "HeadingBlock",
+        //     props: {
+        //       text: {
+        //         activeTag: "H1",
+        //         h1: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "30",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         h2: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "24",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         h3: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "20",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         h4: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "18",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         h5: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "16",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         h6: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "14",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //         p: {
+        //           font: "Default",
+        //           fontWeight: "Regular",
+        //           fontStyle: "normal",
+        //           textAlign: "left",
+        //           color: "",
+        //           fontSize: {
+        //             value: "14",
+        //             unit: "px",
+        //           },
+        //           letterSpacing: {
+        //             value: "0",
+        //             unit: "px",
+        //           },
+        //           lineHeight: {
+        //             value: "1",
+        //             unit: "em",
+        //           },
+        //           textShadow: 0,
+        //         },
+        //       },
+        //       id: "HeadingBlock-f77653fc-4dd1-4c9b-8db0-3ca9506d7ebd",
+        //     },
+        //   },
+        // ],
       },
+
       render: (props: any) => {
         // compute CSS from field values and render your accordion UI
-        return (
-          <HoverButtonWrapper>
-            <AccordionComponent {...props} />
-          </HoverButtonWrapper>
-        );
+        return <AccordionComponentNew {...props} />;
       },
     },
   },
