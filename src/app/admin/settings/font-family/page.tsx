@@ -177,6 +177,7 @@ export default function FontFamilyPage() {
     };
   }, []);
 
+
   // Helper: get FontItem by family
   const fontByFamily = useMemo(() => {
     const map = new Map<string, FontItem>();
@@ -191,6 +192,7 @@ export default function FontFamilyPage() {
     return fonts.filter((f) => f.family.toLowerCase().includes(q)).slice(0, 100);
   }, [fonts, query]);
 
+  console.log("filtered", filtered)
   // Current active family
   const activeFamily = fontMap[activeTarget] || "";
 
@@ -200,21 +202,29 @@ export default function FontFamilyPage() {
     return fontByFamily.get(activeFamily) || null;
   }, [activeFamily, fontByFamily]);
 
-  // Inject fonts for ALL selected families (so previews render)
+  // Inject fonts for ALL relevant families (so previews render)
   useEffect(() => {
     if (!fonts.length) return;
 
-    // only unique families
-    const uniq = Array.from(new Set(Object.values(fontMap).filter(Boolean)));
-    uniq.forEach((family) => {
+    const selectedFamilies = new Set(Object.values(fontMap).filter(Boolean));
+    const listFamilies = filtered.map((f) => f.family);
+    const allToLoad = Array.from(new Set([...selectedFamilies, ...listFamilies]));
+
+    allToLoad.forEach((family) => {
       const item = fontByFamily.get(family);
       if (!item) return;
-      const href = googleFontsCssUrl(item.family, item.variants);
-      // unique id per family (stable)
+
+      const isSelected = selectedFamilies.has(family);
+      // For listed items, we only need regular weight to show the name.
+      // For selected items, we need all variants for the styles preview.
+      const href = isSelected
+        ? googleFontsCssUrl(item.family, item.variants)
+        : googleFontsCssUrl(item.family, ["regular"]);
+
       const id = `gf_${familyToQuery(family)}`;
       injectGoogleFontLink(href, id);
     });
-  }, [fontMap, fonts.length, fontByFamily]);
+  }, [fontMap, filtered, fonts.length, fontByFamily]);
 
   // Save to localStorage whenever map changes
   useEffect(() => {
@@ -267,7 +277,7 @@ p  { font-family: var(--font-p);  }
       await navigator.clipboard.writeText(text);
       setCopiedKey(k);
       window.setTimeout(() => setCopiedKey(null), 1200);
-    } catch {}
+    } catch { }
   }
 
   return (
@@ -313,13 +323,14 @@ p  { font-family: var(--font-p);  }
                       title={`Edit ${t.label} font`}
                     >
                       {t.label}
-                      <span 
+                      <span
                         className={cn(
-                        "h-10 rounded-xl px-2 text-sm font-medium transition",
-                        active
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-background hover:bg-muted/40"
-                      )}
+                          "h-10 rounded-xl px-2 text-sm font-medium transition",
+                          active
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-background hover:bg-muted/40"
+                        )}
+                        style={fontMap[t.key] ? { fontFamily: makeFontStack(fontMap[t.key]) } : {}}
                       >
                         {fontMap[t.key] ? fontMap[t.key] : "—"}
                       </span>
@@ -369,7 +380,10 @@ p  { font-family: var(--font-p);  }
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
-                              <div className="truncate text-sm font-medium">
+                              <div
+                                className="truncate text-sm font-medium"
+                                style={{ fontFamily: makeFontStack(f.family) }}
+                              >
                                 {f.family}
                               </div>
                               <div className="truncate text-xs text-muted-foreground">
@@ -394,89 +408,89 @@ p  { font-family: var(--font-p);  }
                   </div>
                 </div>
 
-                     <Card className="rounded-2xl">
-                <CardContent className="p-0">
-                  <div className="px-5 py-4">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold">Styles</div>
-                        <div className="text-xs text-muted-foreground">
-                          Preview: {activeTarget.toUpperCase()} • {activeFamily || "—"}
+                <Card className="rounded-2xl">
+                  <CardContent className="p-0">
+                    <div className="px-5 py-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold">Styles</div>
+                          <div className="text-xs text-muted-foreground">
+                            Preview: {activeTarget.toUpperCase()} • {activeFamily || "—"}
+                          </div>
+                        </div>
+                        <div className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
+                          {px}px
                         </div>
                       </div>
-                      <div className="rounded-full border px-2 py-1 text-xs text-muted-foreground">
-                        {px}px
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="divide-y">
-                    <div className="px-5 py-5">
-                      <div className="text-xs text-muted-foreground">
-                        Regular 400
-                      </div>
-                      <div
-                        className="mt-3 leading-tight"
-                        style={{
-                          fontFamily: `var(--font-${activeTarget})`,
-                          fontSize: px,
-                          fontWeight: 400,
-                          fontStyle: "normal",
-                        }}
-                      >
-                        {previewText}
-                      </div>
                     </div>
 
-                    <div className="px-5 py-5">
-                      <div className="text-xs text-muted-foreground">
-                        Regular 400 Italic
+                    <Separator />
+
+                    <div className="divide-y">
+                      <div className="px-5 py-5">
+                        <div className="text-xs text-muted-foreground">
+                          Regular 400
+                        </div>
+                        <div
+                          className="mt-3 leading-tight"
+                          style={{
+                            fontFamily: `var(--font-${activeTarget})`,
+                            fontSize: px,
+                            fontWeight: 400,
+                            fontStyle: "normal",
+                          }}
+                        >
+                          {previewText}
+                        </div>
                       </div>
-                      <div
-                        className="mt-3 leading-tight"
-                        style={{
-                          fontFamily: `var(--font-${activeTarget})`,
-                          fontSize: px,
-                          fontWeight: 400,
-                          fontStyle: "italic",
-                        }}
-                      >
-                        {previewText}
+
+                      <div className="px-5 py-5">
+                        <div className="text-xs text-muted-foreground">
+                          Regular 400 Italic
+                        </div>
+                        <div
+                          className="mt-3 leading-tight"
+                          style={{
+                            fontFamily: `var(--font-${activeTarget})`,
+                            fontSize: px,
+                            fontWeight: 400,
+                            fontStyle: "italic",
+                          }}
+                        >
+                          {previewText}
+                        </div>
+                        <div className="mt-1 text-[11px] text-muted-foreground">
+                          Note: if italic variant not available, browser will fake-italic.
+                        </div>
                       </div>
-                      <div className="mt-1 text-[11px] text-muted-foreground">
-                        Note: if italic variant not available, browser will fake-italic.
+
+                      <div className="px-5 py-5">
+                        <div className="text-xs text-muted-foreground">
+                          Medium 500
+                        </div>
+                        <div
+                          className="mt-3 leading-tight"
+                          style={{
+                            fontFamily: `var(--font-${activeTarget})`,
+                            fontSize: px,
+                            fontWeight: 500,
+                            fontStyle: "normal",
+                          }}
+                        >
+                          {previewText}
+                        </div>
                       </div>
                     </div>
-
-                    <div className="px-5 py-5">
-                      <div className="text-xs text-muted-foreground">
-                        Medium 500
-                      </div>
-                      <div
-                        className="mt-3 leading-tight"
-                        style={{
-                          fontFamily: `var(--font-${activeTarget})`,
-                          fontSize: px,
-                          fontWeight: 500,
-                          fontStyle: "normal",
-                        }}
-                      >
-                        {previewText}
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
 
 
-       
+
               </div>
 
               <div className="grid gap-3 md:grid-cols-[1.8fr_1fr]">
 
-                       {/* RIGHT */}
+                {/* RIGHT */}
                 <div className="space-y-3">
                   {/* ✅ Styles panel FIRST (as you asked) */}
                   <div className="rounded-2xl border p-4">
@@ -485,7 +499,10 @@ p  { font-family: var(--font-p);  }
                         <div className="text-xs text-muted-foreground">
                           Styles (active: {activeTarget.toUpperCase()})
                         </div>
-                        <div className="truncate text-base font-semibold">
+                        <div
+                          className="truncate text-base font-semibold"
+                          style={activeFamily ? { fontFamily: makeFontStack(activeFamily) } : {}}
+                        >
                           {activeFamily || "—"}
                         </div>
                         <div className="mt-1 text-xs text-muted-foreground">
@@ -625,55 +642,55 @@ p  { font-family: var(--font-p);  }
                 </div>
 
 
-               
-                   <div className="grid gap-4">
-                
-               <Card className="rounded-2xl">
-                  <CardContent className="p-5 space-y-3">
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Heading previews (uses :root vars)
-                    </div>
 
-                    <h1 className="text-3xl font-semibold" style={styleFor("h1")}>
-                      H1 – {fontMap.h1}
-                    </h1>
-                    <h2 className="text-2xl font-semibold" style={styleFor("h2")}>
-                      H2 – {fontMap.h2}
-                    </h2>
-                    <h3 className="text-xl font-semibold" style={styleFor("h3")}>
-                      H3 – {fontMap.h3}
-                    </h3>
-                    <h4 className="text-lg font-semibold" style={styleFor("h4")}>
-                      H4 – {fontMap.h4}
-                    </h4>
-                    <h5 className="text-base font-semibold" style={styleFor("h5")}>
-                      H5 – {fontMap.h5}
-                    </h5>
-                    <h6 className="text-sm font-semibold" style={styleFor("h6")}>
-                      H6 – {fontMap.h6}
-                    </h6>
-                  </CardContent>
-                </Card>
+                <div className="grid gap-4">
 
-                <Card className="rounded-2xl">
-                  <CardContent className="p-5">
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Paragraph preview
-                    </div>
-                    <p className="mt-3 text-base leading-7" style={styleFor("p")}>
-                      P – ({fontMap.p}) • Select fonts for each element from the
-                      top buttons. Changes are saved to :root and persisted in
-                      localStorage.
-                    </p>
-                  </CardContent>
-                </Card>
+                  <Card className="rounded-2xl">
+                    <CardContent className="p-5 space-y-3">
+                      <div className="text-xs font-medium text-muted-foreground">
+                        Heading previews (uses :root vars)
+                      </div>
+
+                      <h1 className="text-3xl font-semibold" style={styleFor("h1")}>
+                        H1 – {fontMap.h1}
+                      </h1>
+                      <h2 className="text-2xl font-semibold" style={styleFor("h2")}>
+                        H2 – {fontMap.h2}
+                      </h2>
+                      <h3 className="text-xl font-semibold" style={styleFor("h3")}>
+                        H3 – {fontMap.h3}
+                      </h3>
+                      <h4 className="text-lg font-semibold" style={styleFor("h4")}>
+                        H4 – {fontMap.h4}
+                      </h4>
+                      <h5 className="text-base font-semibold" style={styleFor("h5")}>
+                        H5 – {fontMap.h5}
+                      </h5>
+                      <h6 className="text-sm font-semibold" style={styleFor("h6")}>
+                        H6 – {fontMap.h6}
+                      </h6>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="rounded-2xl">
+                    <CardContent className="p-5">
+                      <div className="text-xs font-medium text-muted-foreground">
+                        Paragraph preview
+                      </div>
+                      <p className="mt-3 text-base leading-7" style={styleFor("p")}>
+                        P – ({fontMap.p}) • Select fonts for each element from the
+                        top buttons. Changes are saved to :root and persisted in
+                        localStorage.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
               </div>
 
-              </div>
-         
 
               {/* ✅ H1..P preview (shows real mapping) */}
-          
+
             </div>
           )}
         </CardContent>

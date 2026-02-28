@@ -28,14 +28,14 @@ const GetAllRolePermission = () => {
  
  const isApi= useRef<boolean>(true)
   useEffect(() => {
-    if (businessid && !hasFetched && isApi.current) {
+    if ((businessid||currentBusiness?._id?.toString()) && !hasFetched && isApi.current) {
       console.log("called fetch role permission",businessid)
-      dispatch(fetchRolePermissions(businessid));
+      dispatch(fetchRolePermissions(businessid||currentBusiness?._id?.toString()));
       isApi.current=false
     }else{
       isApi.current=true
     }
-  }, [hasFetched, businessid]);
+  }, [hasFetched, businessid,currentBusiness]);
   return null;
 };
 
