@@ -83,7 +83,7 @@ export type DataTableExtProps = {
   onView?: (row: any) => void;
   opentab?: (row: any) => void;
   onSelectionChange?: (rows: any[]) => void;
-
+  onEditPermissions?: (row: any) => void;
   /** ✅ OPTIONAL: force horizontal scrolling after X columns */
   scrollMinWidth?: number; // default 1100
 };
@@ -197,6 +197,7 @@ export function DataTableExt({
   onView,
   opentab,
   onSelectionChange,
+  onEditPermissions,
   scrollMinWidth = 1100,
 }: DataTableExtProps) {
   const [query, setQuery] = useState("");
@@ -207,6 +208,7 @@ export function DataTableExt({
 
   const pathname = usePathname();
   const pageName = pathname.split("/")[5];
+
 
   const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { alluser } = useSelector((state: RootState) => state.user);
@@ -495,6 +497,11 @@ export function DataTableExt({
       : `http://${currentWebsite?.primaryDomain[0]}/builder/${currentWebsite?._id}?page=${row.slug}`;
 
     window.open(url, "_blank");
+  };
+   
+  const handleEditPermissions = (row: any) => {
+    if (!onEditPermissions) return;
+    onEditPermissions(row);
   };
 
   return (
@@ -936,7 +943,10 @@ export function DataTableExt({
                                 Builder
                               </DropdownMenuItem>
                             ) : null}
-
+   {alluser.length>0 ? <DropdownMenuItem onClick={() => handleEditPermissions(row)}>
+                            <Edit2 className="h-4 w-4 mr-2" />
+                            Edit Permissions
+                          </DropdownMenuItem> : null}
                             <DropdownMenuItem onClick={() => onView?.(row)}>
                               <Edit2 className="h-4 w-4 mr-2" />
                               Edit

@@ -13,6 +13,8 @@ const LAYOUT_STYLES = ["Block", "Flex", "Grid"];
 
 export const DEFAULT_LAYOUT = {
   layoutStyle: "block",
+  width: { value: "100", unit: "%" },
+  height: { value: "auto", unit: "auto" },
 
   // Shared
   horizontalGap: { value: "60", unit: "px" },
@@ -179,11 +181,10 @@ function IconButtonGroup<T extends string>({
             key={opt.value}
             title={opt.title}
             onClick={() => onChange(opt.value)}
-            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${
-              value === opt.value
+            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${value === opt.value
                 ? "border-blue-500 bg-blue-50 text-blue-600"
                 : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300 hover:text-slate-600"
-            }`}
+              }`}
           >
             {opt.icon}
           </button>
@@ -1664,6 +1665,21 @@ export function LayoutPanel({
               onChange={(v) => updateField("layoutStyle", v)}
             />
 
+            <div className="grid grid-cols-2 gap-3">
+              <SizeInput
+                label="Width"
+                value={s.width.value}
+                unit={s.width.unit}
+                onChange={(v) => updateField("width", v)}
+              />
+              <SizeInput
+                label="Height"
+                value={s.height.value}
+                unit={s.height.unit}
+                onChange={(v) => updateField("height", v)}
+              />
+            </div>
+
             {s.layoutStyle === "Flex" && <FlexSection s={s} u={updateField} />}
             {s.layoutStyle === "Grid" && <GridSection s={s} u={updateField} />}
 
@@ -1701,12 +1717,16 @@ export function generateLayoutCSS(layout?: LayoutState): React.CSSProperties {
 
   const horizontalGap = getSize(layout.horizontalGap);
   const verticalGap = getSize(layout.verticalGap);
+  const width = getSize(layout.width);
+  const height = getSize(layout.height);
 
   // ─────────────────────────────
   // BLOCK
   // ─────────────────────────────
   if (layout.layoutStyle === "Block") {
     css.display = "block";
+    if (width) css.width = width;
+    if (height) css.height = height;
     return css;
   }
 
@@ -1724,6 +1744,8 @@ export function generateLayoutCSS(layout?: LayoutState): React.CSSProperties {
 
     if (horizontalGap) css.columnGap = horizontalGap;
     if (verticalGap) css.rowGap = verticalGap;
+    if (width) css.width = width;
+    if (height) css.height = height;
 
     return css;
   }
@@ -1736,6 +1758,8 @@ export function generateLayoutCSS(layout?: LayoutState): React.CSSProperties {
 
     if (horizontalGap) css.columnGap = horizontalGap;
     if (verticalGap) css.rowGap = verticalGap;
+    if (width) css.width = width;
+    if (height) css.height = height;
 
     // Columns
     if (layout.columnWidths === "Equal Width Columns") {

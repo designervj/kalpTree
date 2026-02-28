@@ -1,8 +1,20 @@
-import { NextAuthConfig } from "next-auth";
+import { NextAuthConfig, CredentialsSignin } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { userService } from "./user-service";
 import { tenantService } from "../tenant/tenant-service";
 
+class InvalidDomainError extends CredentialsSignin {
+  code = "INVALID_DOMAIN"
+}
+class DomainNotFoundError extends CredentialsSignin {
+  code = "DOMAIN_NOT_FOUND"
+}
+class InvalidTenantError extends CredentialsSignin {
+  code = "INVALID_TENANT"
+}
+class InvalidCredentialsError extends CredentialsSignin {
+  code = "INVALID_CREDENTIALS"
+}
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -23,7 +35,7 @@ export const authConfig: NextAuthConfig = {
           !credentials?.isMainDomain ||
           !credentials?.domain
         ) {
-          throw new Error("Email and password are required");
+          throw new InvalidCredentialsError("Email and password are required");
         }
 
         try {
@@ -33,45 +45,54 @@ export const authConfig: NextAuthConfig = {
           // Check if user exists and is active
 
           if (!user || user.status !== "active") {
-            throw new Error("Invalid credentials ");
+            throw new InvalidCredentialsError();
           }
-          console.log("credentials?.isMainDomain",credentials?.isMainDomain)
-          let businessTenant
-          let tenantdetail
-          if (user.role != "superadmin" ) {
-                const gettenant= await tenantService.getTenantById(user.tenantId?.toString() as string)
-               
-                 const getWebsite= await tenantService.getWebsiteByDomain(credentials?.domain as string)
-             
-                 if(!getWebsite){
-                  throw new Error("Invalid domain for this user");
-                 }
-                 if(!gettenant){
-                  throw new Error("Invalid tenant for this user");
-                 }
-                 tenantdetail=gettenant
-                 if(getWebsite){
-                  businessTenant=getWebsite
-                 }
-            }
+          console.log("credentials?.isMainDomain", credentials?.isMainDomain);
+          let businessTenant;
+          let tenantdetail;
+
+          const gettenant = await tenantService.getTenantById(
+            user.tenantId?.toString() as string,
+          );
+
+          const getWebsite = await tenantService.getWebsiteByDomain(
+            credentials?.domain as string,
+          );
+          console.log(
+            "getWebsite--->",
+            getWebsite?._id?.toString(),
+            user.tenantId?.toString(),
+          );
+
+          if (!getWebsite) {
+            throw new DomainNotFoundError();
+          }
+
+          if (getWebsite?._id?.toString() !== user.tenantId?.toString()) {
+            throw new InvalidDomainError();
+          }
+
+          if (!gettenant) {
+            throw new InvalidTenantError();
+          }
+          tenantdetail = gettenant;
+          if (getWebsite) {
+            businessTenant = getWebsite;
+          }
+
           // Verify password
           const isValid = await userService.verifyPassword(
             user,
             credentials.password as string,
           );
-          // console.log("isValid=====", isValid);
           if (!isValid) {
-            throw new Error("Invalid credentials");
+            throw new InvalidCredentialsError();
           }
 
           // Update last login (don't await to avoid blocking)
           userService.updateLastLogin(user._id).catch((err) => {
             console.error("Failed to update last login:", err);
           });
-
-          // const finaltenant = await tenantService.getTenantById(
-          //   user.tenantId?.toString() as string,
-          // );
 
           // Return user object
           return {
@@ -85,9 +106,10 @@ export const authConfig: NextAuthConfig = {
             businessTenant: businessTenant,
             tenantdetail: tenantdetail,
           };
-        } catch (error) {
+        } catch (error: any) {
           console.error("Authorization error:", error);
-          return null;
+          if (error instanceof CredentialsSignin) throw error;
+          throw new InvalidCredentialsError(error.message || "Sign-in failed");
         }
       },
     }),
@@ -109,8 +131,6 @@ export const authConfig: NextAuthConfig = {
       // Handle token refresh/update
       if (trigger === "update") {
         // You can refresh user data here if needed
-        // const refreshedUser = await userService.getUserById(token.userId);
-        // Update token with fresh data
       }
 
       return token;
@@ -137,24 +157,6 @@ export const authConfig: NextAuthConfig = {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  // cookies: {
-  //   sessionToken: {
-  //     name:
-  //       process.env.NODE_ENV === "production"
-  //         ? "__Secure-authjs.session-token"
-  //         : "authjs.session-token",
-  //     options: {
-  //       httpOnly: true,
-  //       sameSite: "lax",
-  //       path: "/",
-  //       secure: process.env.NODE_ENV === "production",
-  //       domain:
-  //         process.env.NODE_ENV === "production"
-  //           ? ".kalptree.xyz" // 👈 FIXES www vs non-www
-  //           : undefined,
-  //     },
-  //   },
-  // },
   secret: process.env.NEXTAUTH_SECRET,
   cookies: {
     sessionToken: {

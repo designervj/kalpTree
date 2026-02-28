@@ -49,7 +49,22 @@ export const AccordionItem = {
         boxShadow: DEFAULT_BOX_SHADOW,
     },
     render: (props: any) => {
-        return <AccordionItemComponent {...props} />;
+        const { puck } = props;
+        return (
+            <div style={{ position: "relative" }}>
+                {/* Boundary Visualization — Only visible in editor mode */}
+                {(puck?.renderMode === "editor" || puck?.isEditing) && (
+                    <div style={{
+                        position: "absolute",
+                        inset: 0,
+                        border: "1px dashed rgba(0, 0, 0, 0.1)",
+                        pointerEvents: "none",
+                        zIndex: 10,
+                    }} />
+                )}
+                <AccordionItemComponent {...props} />
+            </div>
+        );
     },
 };
 

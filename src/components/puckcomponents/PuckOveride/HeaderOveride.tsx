@@ -9,7 +9,7 @@ import {
   Tablet,
   Smartphone,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type ViewportId = "desktop" | "tablet" | "mobile";
@@ -51,7 +51,7 @@ export function EditorHeader() {
   const usePuck = createUsePuck();
   const { appState, dispatch } = usePuck((s) => s);
 
-  const [activeViewport, setActiveViewport] = useState<ViewportId>("mobile");
+  const [activeViewport, setActiveViewport] = useState<ViewportId>("desktop");
 
   const handleViewport = (vp: ViewportOption) => {
     setActiveViewport(vp.id);
@@ -72,6 +72,14 @@ export function EditorHeader() {
     });
   };
 
+  useEffect(() => {
+    // Sync Puck state to desktop on mount to ensure canvas matches the header's default state
+    const desktopVp = VIEWPORTS.find((v) => v.id === "desktop");
+    if (desktopVp && appState.ui.viewports.current.width !== "100%") {
+      handleViewport(desktopVp);
+    }
+  }, []); // Run once on mount
+
   const active = VIEWPORTS.find((v) => v.id === activeViewport)!;
 
   return (
@@ -91,7 +99,7 @@ export function EditorHeader() {
 
       {/* ── Center: Viewport switcher + Undo/Redo ── */}
       <div className="flex items-center gap-3">
-      
+
         {/* <div className="flex items-center gap-0.5">
           {[
             {
@@ -131,19 +139,17 @@ export function EditorHeader() {
                 className={`
                   flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium
                   transition-all duration-200 select-none
-                  ${
-                    isActive
-                      ? "bg-white text-slate-800 shadow-sm ring-1 ring-slate-200"
-                      : "text-slate-400 hover:text-slate-600"
+                  ${isActive
+                    ? "bg-white text-slate-800 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-400 hover:text-slate-600"
                   }
                 `}
               >
                 <vp.icon size={14} strokeWidth={isActive ? 2.2 : 1.8} />
                 {/* Label only shows for active */}
                 <span
-                  className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${
-                    isActive ? "max-w-[60px] opacity-100" : "max-w-0 opacity-0"
-                  }`}
+                  className={`overflow-hidden whitespace-nowrap transition-all duration-200 ${isActive ? "max-w-[60px] opacity-100" : "max-w-0 opacity-0"
+                    }`}
                 >
                   {vp.label}
                 </span>

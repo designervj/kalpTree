@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { signIn, getSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { loginWithObject } from "./actions";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
 import { setUser } from "@/hooks/slices/user/userSlice";
@@ -80,18 +81,28 @@ function SignInForm() {
     setError(null);
 
     try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        callbackUrl: "/admin",
+      const result = await loginWithObject({
         email,
         password,
         isMainDomain,
         domain,
-        // tenantSlug,
       });
-      if (result?.error) {
-        console.log("result?.error",result?.error)
-        throw new Error(result.error || "Sign-in failed");
+
+      if (result.error) {
+        console.log("Login error from action:", result.error);
+
+        // Map backend codes to human readable labels
+        const errorMap: Record<string, string> = {
+          "INVALID_DOMAIN": "Invalid domain for this user",
+          "DOMAIN_NOT_FOUND": "Domain not found for this user",
+          "INVALID_TENANT": "Invalid tenant for this user",
+          "INVALID_CREDENTIALS": "Invalid email or password",
+          "CredentialsSignin": "Invalid credentials",
+        };
+
+        const message = errorMap[result.error] || result.error;
+        setError(message);
+        return;
       }
       console.log("result", result);
       const session = await getSession();

@@ -48,7 +48,7 @@ export const Button = {
         boxShadow: DEFAULT_BOX_SHADOW,
     },
     render: (props: any) => {
-        const { label, variant, text, sizing, spacing, border, boxShadow } = props;
+        const { label, variant, text, sizing, spacing, border, boxShadow, puck } = props;
 
         const variantStyles: Record<string, React.CSSProperties> = {
             primary: { backgroundColor: "#007bff", color: "#fff", border: "none" },
@@ -74,9 +74,24 @@ export const Button = {
         }, [variant, text, sizing, spacing, border, boxShadow]);
 
         return (
-            <button style={combinedStyle}>
-                {label}
-            </button>
+            <div style={{ position: "relative", display: "inline-block" }}>
+                {/* Boundary Visualization — Only visible in editor mode */}
+                {(puck?.renderMode === "editor" || puck?.isEditing) && (
+                    <div
+                        style={{
+                            position: "absolute",
+                            inset: "-4px",
+                            border: "1px dashed rgba(0, 0, 0, 0.12)",
+                            pointerEvents: "none",
+                            zIndex: 0,
+                            borderRadius: combinedStyle.borderRadius,
+                        }}
+                    />
+                )}
+                <button style={{ ...combinedStyle, position: "relative", zIndex: 1 }}>
+                    {label}
+                </button>
+            </div>
         );
     },
 };

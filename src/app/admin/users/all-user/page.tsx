@@ -1,9 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useMemo } from "react";
 import { Search, Edit, Trash2, UserPlus } from "lucide-react";
 
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { IUser } from "@/models/user";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 // import { hasPermission } from "@/lib/utils";
 import { toast } from "sonner";
 import { DataTableExt } from "@/components/admin/DataTableExt";
+import { clearAllUser } from "@/hooks/slices/user/userSlice";
 
 export default function Page() {
   const { user, hasFetchedAllUsers, alluser } = useSelector(
@@ -27,7 +28,15 @@ export default function Page() {
   );
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
+
+
+   
+    const updatedAllUser: IUser[] = useMemo(() => {
+      return (alluser || []).filter((user) => user?.role !== "business");
+    }, [alluser]);
+  
   const handleAdd = () => {
     // const check = hasPermission(user, "user:create");
     if (true) {
@@ -69,7 +78,7 @@ export default function Page() {
       {/* <GetAllUsers /> */}
       <DataTableExt
         title=""
-        data={alluser ?? []}
+        data={updatedAllUser ?? []}
         onCreate={handleAdd}
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
