@@ -80,6 +80,11 @@ import {
   LanguagesIcon,
   MessageSquare,
   HelpCircle,
+  PackageCheck,
+  MapPinned,
+  Hotel,
+  Building2,
+  FolderTree,
 } from "lucide-react";
 import { NavSection } from "../../AppShell";
 
@@ -337,6 +342,43 @@ export const currenBusinessSections: NavSection[] = [
         label: "Settings",
         href: "/admin/ecommerce/settings",
         icon: Settings,
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+    ],
+  },
+  {
+    id: "packages",
+    label: "Packages",
+    feature: "packagesEnabled",
+    items: [
+      {
+        label: "Packages",
+        href: "/admin/packages",
+        icon: PackageCheck, // Better for travel/product packages
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Activities",
+        href: "/admin/activities-minor",
+        icon: MapPinned, // Represents tours / activities
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Hotels",
+        href: "/admin/hotels-minor",
+        icon: Hotel, // Clear hotel icon
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Cities",
+        href: "/admin/cities",
+        icon: Building2, // Represents city/buildings
+        permission: ["product:read", "product:update", "product:delete"],
+      },
+      {
+        label: "Categories",
+        href: "/admin/categories",
+        icon: FolderTree, // Hierarchical categories
         permission: ["product:read", "product:update", "product:delete"],
       },
     ],

@@ -15,6 +15,7 @@ import {
   Sparkles,
   LogOut,
   Settings,
+  PackageCheck,
 } from "lucide-react";
 import {
   Sheet,
@@ -156,6 +157,7 @@ export const sectionIconMap: Record<
   users: Users,
   settings: Settings,
   domains: Network,
+  packages: PackageCheck,
 };
 
 export function FiCloseHint() {
@@ -170,7 +172,6 @@ export function AppShell({ children }: AppShellProps) {
   const params = useParams();
   const searchParams = useSearchParams();
   const businessid = searchParams.get("businessid");
-  const agencyid = searchParams.get("agencyid");
   const { user } = useSelector((state: RootState) => state.user);
   const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
