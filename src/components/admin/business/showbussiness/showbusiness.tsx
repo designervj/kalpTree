@@ -233,6 +233,7 @@ const ShowBusiness = () => {
   };
 
   const handleEditBusiness = (business: IBusiness) => {
+    console.log("business", business);
     const website = websites.find(
       (website) => website.tenantId === business._id,
     );
