@@ -25,35 +25,37 @@ export const GridBlock = {
     gap: "24",
     layout: DEFAULT_LAYOUT,
   },
-  render: ({ numberOfColumns, gap, layout, content: Content }: any) => {
+  render: ({ numberOfColumns, gap, layout, content: Content, puck }: any) => {
     const layoutStyle = generateLayoutCSS(layout);
     const cols = parseInt(numberOfColumns) || 1;
 
     return (
       <div style={{ position: "relative", width: "100%" }}>
-        {/* Grid Visualization Overlay */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            display: "grid",
-            gridTemplateColumns: `repeat(${cols}, 1fr)`,
-            gap: gap ? `${gap}px` : "0px",
-            pointerEvents: "none",
-            zIndex: 0,
-          }}
-        >
-          {Array.from({ length: cols }).map((_, i) => (
-            <div
-              key={i}
-              style={{
-                border: "1px dashed rgba(0, 0, 0, 0.15)",
-                minHeight: "100px",
-                height: "100%",
-              }}
-            />
-          ))}
-        </div>
+        {/* Grid Visualization Overlay — Only in editor */}
+        {(puck?.renderMode === "editor" || puck?.isEditing) && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              display: "grid",
+              gridTemplateColumns: `repeat(${cols}, 1fr)`,
+              gap: gap ? `${gap}px` : "0px",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          >
+            {Array.from({ length: cols }).map((_, i) => (
+              <div
+                key={i}
+                style={{
+                  border: "1px dashed rgba(0, 0, 0, 0.15)",
+                  minHeight: "100px",
+                  height: "100%",
+                }}
+              />
+            ))}
+          </div>
+        )}
 
         {/* DropZone Wrapper */}
         <div style={{ position: "relative", zIndex: 1 }}>
