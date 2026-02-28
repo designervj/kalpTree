@@ -27,10 +27,6 @@ import {
   generateTextCSS,
   TextPanel,
 } from "@/components/puckcomponents/CustomText";
-import {
-  accordionContentFields,
-  DEFAULT_ACCORDION_CONTENT,
-} from "@/components/puckcomponents/DirectComps/AccordianBlock";
 
 import { toAddInElement } from "@/components/puckcomponents/DirectComps/AccordionItem";
 import { AccordionItem } from "@/components/puckcomponents/DirectComps/AccordionItem";
@@ -51,7 +47,6 @@ import { Hero } from "./util/Hero";
 import { HeadingBlock } from "./util/HeadingBlock";
 import { TextBlock } from "./util/TextBlock";
 import { elementsFields } from "@/components/puckcomponents/CustomeElement";
-
 import { Button } from "./util/Button";
 import { Accordion } from "./util/Accordion";
 import { AccordionGlass } from "./util/AccordionGlass";
