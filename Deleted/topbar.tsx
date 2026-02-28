@@ -28,7 +28,7 @@ type TopbarProps = {
   onToggleMobileSidebar: () => void;
   collapsed: boolean;
   onToggleCollapse: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => void;
 };
 
@@ -47,7 +47,6 @@ export function Topbar({
   }, []);
 
   const handleSignOut = async () => {
-
     try {
       // Step 1: Call server-side API to delete cookies
       await fetch("/api/appshell-data", {
@@ -63,21 +62,21 @@ export function Topbar({
 
       // Step 4: Clear client-side cookies (as backup)
       const cookiesToClear = [
-        'admin-cart-token',
-        'current_website_data',
-        'current_website',
-        'current_website_id',
-        'authjs.session-token',
-        'authjs.csrf-token',
-        'authjs.callback-url',
-        '__Secure-authjs.session-token',
-        '__Host-authjs.csrf-token'
+        "admin-cart-token",
+        "current_website_data",
+        "current_website",
+        "current_website_id",
+        "authjs.session-token",
+        "authjs.csrf-token",
+        "authjs.callback-url",
+        "__Secure-authjs.session-token",
+        "__Host-authjs.csrf-token",
       ];
 
       cookiesToClear.forEach((cookieName) => {
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=${window.location.hostname};`;
-        const domain = window.location.hostname.split('.').slice(-2).join('.');
+        const domain = window.location.hostname.split(".").slice(-2).join(".");
         document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.${domain};`;
       });
 
@@ -107,7 +106,7 @@ export function Topbar({
             // size={"xl"}
             className={cn(
               "w-full justify-between  hover:bg-transparent",
-              "border-e border-black/5 bg-transparent rounded-none  text-black/70 "
+              "border-e border-black/5 bg-transparent rounded-none  text-black/70 ",
             )}
           >
             {!collapsed ? (
@@ -171,7 +170,9 @@ export function Topbar({
             >
               <Avatar className="h-7 w-7">
                 <AvatarFallback>
-                  {isMounted ? (user?.email?.charAt(0).toUpperCase() || "U") : "U"}
+                  {isMounted
+                    ? user?.email?.charAt(0).toUpperCase() || "U"
+                    : "U"}
                 </AvatarFallback>
               </Avatar>
             </Button>
@@ -191,6 +192,7 @@ export function Topbar({
             <DropdownMenuItem className="hover:bg-primary hover:text-white p-2">
               Account settings
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleSignOut}

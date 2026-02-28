@@ -11,6 +11,7 @@ import * as framerMotion from "framer-motion";
 import { useEffect, useState } from "react";
 import { ContainerSecondaryActions } from "@/components/puckcomponents/PuckOveride/ActionBarOver";
 import { RowOverlay } from "@/components/puckcomponents/PuckOveride/RowOverlay";
+import { FieldsOveride } from "@/components/puckcomponents/PuckOveride/FieldsOverride";
 
 const initialData = {
   // root: {
@@ -120,16 +121,18 @@ export function Editor() {
       </ActionBar>
     ),
 
-    componentOverlay: ({
-      children,
-      hover,
-      componentId,
-      componentType,
-    }: any) => (
+    componentOverlay: ({ children, hover }: any) => (
       <RowOverlay
-        onAddComponent={handleOpemComponentModal} // ✅ was: onAddComponent={openComponentModel} (boolean — wrong!)
+        onAddComponent={handleOpemComponentModal}
         hovered={hover}
         children={children}
+      />
+    ),
+    fields: ({ children, isLoading, itemSelector }: any) => (
+      <FieldsOveride
+        children={children}
+        isLoading={isLoading}
+        itemSelector={itemSelector}
       />
     ),
   };

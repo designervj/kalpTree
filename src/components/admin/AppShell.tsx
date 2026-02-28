@@ -1,37 +1,26 @@
-
-
 "use client";
 import * as React from "react";
 import {
   Menu,
-
   Tags,
   Bell,
   Palette,
   Share2,
   LayoutTemplate,
   Globe,
- 
   Users,
-
   Bot,
   Network,
-
   Image as ImageIcon,
   Megaphone,
   BookOpen,
-
   ShoppingCart,
-
   LayoutGrid,
-
-
   User,
   Sparkles,
   ChevronsUpDown,
   LogOut,
   Settings,
-
 } from "lucide-react";
 
 import {
@@ -84,6 +73,7 @@ import Link from "next/link";
 import { clearUser } from "@/hooks/slices/user/userSlice";
 // import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
 import { ColorPalletModal } from "./branding/color_pallet/Color_Pallet_Modal";
+import { BusinessModal } from "./business/businessID/BusinessModal";
 // ---------------------------------------------------------------------------
 // Types & interfaces
 // ---------------------------------------------------------------------------
@@ -139,7 +129,6 @@ export type NavSection = {
   items: NavItem[];
   permission?: string;
 };
-
 
 export const getRoleAvatarClass = (role?: string) => {
   const r = (role || "").toLowerCase().trim();
@@ -197,12 +186,9 @@ export function FiCloseHint() {
 }
 
 export function AppShell({ children }: AppShellProps) {
-  // const { user, websites, currentWebsite } = useSelector(
-  //   (state: RootState) => state.dashboardDetails
-  // );
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
+  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const params = useParams();
   const searchParams = useSearchParams();
@@ -210,16 +196,23 @@ export function AppShell({ children }: AppShellProps) {
   const agencyid = searchParams.get("agencyid");
   const { user } = useSelector((state: RootState) => state.user);
   const [isMounted, setIsMounted] = useState(false);
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const { currentBusiness, allBusiness } = useSelector((state: RootState) => state.business);
+  const { currentBusiness, allBusiness } = useSelector(
+    (state: RootState) => state.business,
+  );
 
   const router = useRouter();
 
   const param = useParams();
   const { website } = param;
+
+  const handleBusinessEdit = () => {
+    setOpen(true);
+  };
 
   // Track loading state during transitions
   const [isLoading, setIsLoading] = React.useState(false);
@@ -313,7 +306,6 @@ export function AppShell({ children }: AppShellProps) {
     router.push(`/admin`);
   };
 
-  
   const handleWebsiteBuilder = () => {
     const url = `/builder/${currentBusiness?._id}`;
     window.open(url, "_blank");
@@ -324,6 +316,13 @@ export function AppShell({ children }: AppShellProps) {
       <header className="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-5">
         {/* LEFT */}
 
+        {currentBusiness && (
+          <BusinessModal
+            open={open}
+            business={currentBusiness}
+            onClose={() => setOpen(false)}
+          />
+        )}
         <div className="flex items-center gap-4">
           {/* Mobile menu button */}
           <Button
@@ -354,9 +353,13 @@ export function AppShell({ children }: AppShellProps) {
         <div className="flex items-center gap-3">
           {/* Search */}
 
-             <Button onClick={handleWebsiteBuilder} size="sm" className="text-xs tracking-wide cursor-pointer">
-                  Website Builder
-              </Button>
+          <Button
+            onClick={handleWebsiteBuilder}
+            size="sm"
+            className="text-xs tracking-wide cursor-pointer"
+          >
+            Website Builder
+          </Button>
 
           <div className="relative hidden md:block">
             <FiSearch className="absolute left-3 top-[9px] text-gray-400 text-sm" />
@@ -437,6 +440,15 @@ export function AppShell({ children }: AppShellProps) {
                 Account settings
               </DropdownMenuItem>
 
+              {website && (
+                <DropdownMenuItem
+                  onClick={handleBusinessEdit}
+                  className="rounded-md"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Business settings
+                </DropdownMenuItem>
+              )}
 
               <DropdownMenuSeparator className="my-1" />
 
@@ -449,7 +461,6 @@ export function AppShell({ children }: AppShellProps) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
         </div>
       </header>
 
@@ -463,17 +474,19 @@ export function AppShell({ children }: AppShellProps) {
         </div>
       ) : (
         <div className="flex h-[92vh] bg-[#e8e9eb] text-foreground overflow-hidden">
-          {user && (user.role == "superadmin" || user.role == "agency") && !isHighLevelCollapsed && (
-            <HighLevelSidebar
-              user={user}
-              collapsed={collapsed}
-              setCollapsed={setCollapsed}
-              showSidebar={showSidebar}
-              setShowSidebar={setShowSidebar}
-            />
-          )}
+          {user &&
+            (user.role == "superadmin" || user.role == "agency") &&
+            !isHighLevelCollapsed && (
+              <HighLevelSidebar
+                user={user}
+                collapsed={collapsed}
+                setCollapsed={setCollapsed}
+                showSidebar={showSidebar}
+                setShowSidebar={setShowSidebar}
+              />
+            )}
 
-          {user && (user.role == "business" || businessid ) && (
+          {user && (user.role == "business" || businessid) && (
             <Sidebar
               collapsed={false}
               onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -539,10 +552,10 @@ export function AppShell({ children }: AppShellProps) {
                       business={allBusiness}
                       currentBusiness={currentBusiness}
                       user={user}
-                    // onWebsiteChange={(websiteId) => {
-                    //   onWebsiteChange(websiteId);
-                    //   setMobileSidebarOpen(false);
-                    // }}
+                      // onWebsiteChange={(websiteId) => {
+                      //   onWebsiteChange(websiteId);
+                      //   setMobileSidebarOpen(false);
+                      // }}
                     />
                   )}
                 </div>

@@ -106,7 +106,7 @@ export const newconfig = {
       },
     },
     Accordion: Accordion,
-    AccordionGlass: AccordionGlass,
+    ttile: AccordionGlass,
     AccordionSoft: AccordionSoft,
     AccordionEditorial: AccordionEditorial,
   },

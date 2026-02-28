@@ -29,7 +29,6 @@ import {
   LayoutGrid,
   BadgeCheck,
 } from "lucide-react";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +36,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store/store";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -58,21 +56,20 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { deleteBusiness } from "@/hooks/slices/business/BusinessThunk";
 import { toast } from "sonner";
-
-import { setCurretAgency } from "@/hooks/slices/user/agencySlice";
 import { IndustryOption } from "../../users/IndustryRadioList";
 import { getIndustryIcon } from "./util/GetIcon";
 import { toCreateHref } from "@/lib/utils/url-helpers";
 import { cn } from "@/lib/utils";
+import { BusinessModal } from "../businessID/BusinessModal";
 
 const ShowBusiness = () => {
-  const { allBusiness, pagination } = useSelector(
+  const { allBusiness, pagination, editBusiness } = useSelector(
     (state: RootState) => state.business,
   );
   const { user } = useSelector((state: RootState) => state.user);
   const { websites } = useSelector((state: RootState) => state.websites);
   const { allAgencies } = useSelector((state: RootState) => state.agency);
-
+  const [open, setOpen] = useState(false);
   const params = useSearchParams();
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
@@ -233,26 +230,8 @@ const ShowBusiness = () => {
   };
 
   const handleEditBusiness = (business: IBusiness) => {
-    console.log("business", business);
-    const website = websites.find(
-      (website) => website.tenantId === business._id,
-    );
-    if (!website) {
-      toast.error("Website not found");
-      return;
-    }
-
-    const agency = allAgencies.find(
-      (agency) => agency._id === business.tenantId,
-    );
-    if (!agency) {
-      toast.error("Agency not found");
-      return;
-    }
-
-    dispatch(setCurretAgency(agency));
+    setOpen(true);
     dispatch(setEditBusiness(business));
-    router.push(`/admin/businesses/edit`);
   };
 
   const copyToClipboard = async (text: string) => {
@@ -296,6 +275,13 @@ const ShowBusiness = () => {
 
   return (
     <div className="w-full space-y-5">
+      {editBusiness && (
+        <BusinessModal
+          open={open}
+          business={editBusiness}
+          onClose={() => setOpen(false)}
+        />
+      )}
       {/* Header */}
       <div className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
         <div>

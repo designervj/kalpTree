@@ -1,11 +1,8 @@
 import { Puck } from "@puckeditor/core";
-import { ChevronLeft, Layers, LayoutGrid } from "lucide-react";
+import { ChevronLeft, Layers, LayoutGrid, Sheet } from "lucide-react";
 import { useState } from "react";
 
-type PanelId = "components" | "outline" | null;
-
-const initialData = {};
-const save = (data: any) => console.log(data);
+type PanelId = "components" | "outline" | null | "pages";
 
 function RailButton({
   icon: Icon,
@@ -57,47 +54,6 @@ export function LeftSidebar() {
 
   const isOpen = activePanel !== null;
 
-  function RailButton({
-    icon: Icon,
-    label,
-    active,
-    onClick,
-  }: {
-    icon: React.ElementType;
-    label: string;
-    active: boolean;
-    onClick: () => void;
-  }) {
-    return (
-      <button
-        onClick={onClick}
-        title={label}
-        className={`
-        group relative flex flex-col items-center justify-center w-full py-3 gap-1
-        transition-all duration-150 cursor-pointer border-none outline-none
-        ${
-          active
-            ? "bg-indigo-50 text-indigo-600"
-            : "bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-700"
-        }
-      `}
-      >
-        {/* Active indicator bar */}
-        {active && (
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 bg-indigo-500 rounded-r-full" />
-        )}
-        <Icon
-          size={18}
-          strokeWidth={active ? 2.2 : 1.8}
-          className="transition-transform duration-150 group-hover:scale-110"
-        />
-        <span className="text-[9px] font-semibold tracking-widest uppercase leading-none">
-          {label}
-        </span>
-      </button>
-    );
-  }
-
   return (
     <div className="flex h-full flex-shrink-0 border-r border-slate-200">
       {/* Icon rail — always visible */}
@@ -113,6 +69,12 @@ export function LeftSidebar() {
           label="Outline"
           active={activePanel === "outline"}
           onClick={() => toggle("outline")}
+        />
+        <RailButton
+          icon={Sheet}
+          label="Pages"
+          active={activePanel === "pages"}
+          onClick={() => toggle("pages")}
         />
       </div>
 
@@ -147,6 +109,9 @@ export function LeftSidebar() {
             <div className="text-sm text-slate-600">
               <Puck.Outline />
             </div>
+          )}
+          {activePanel === "pages" && (
+            <div className="text-sm text-slate-600">Pages</div>
           )}
         </div>
       </div>

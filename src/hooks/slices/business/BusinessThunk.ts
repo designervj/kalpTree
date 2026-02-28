@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { IBusiness } from "@/models/business";
 import { Pagination } from "./BusinessSlice";
-import { initialProfileData } from "@/app/admin/websites/[website]/branding/brand-profile/page";
 
 // Type definitions for Create and Update inputs
 export interface CreateBusinessInput {
@@ -71,20 +70,18 @@ export const fetchAllBusinesses = createAsyncThunk(
     {
       page = 1,
       itemsperpage = 30,
-      tenantId
+      tenantId,
     }: {
       page: number;
       itemsperpage: number;
       tenantId?: string;
     },
 
-    { rejectWithValue }
+    { rejectWithValue },
   ) => {
-
-
     try {
       const response = await fetch(
-        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business&tenantId=${tenantId}`
+        `/api/admin/business?page=${page}&itemsperpage=${itemsperpage}&type=business&tenantId=${tenantId}`,
       );
 
       if (!response.ok) {
@@ -99,7 +96,7 @@ export const fetchAllBusinesses = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch businesses");
     }
-  }
+  },
 );
 
 // Thunk to fetch business by businessId
@@ -107,9 +104,7 @@ export const fetchBusinessById = createAsyncThunk(
   "business/fetchById",
   async (businessId: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `/api/admin/business?id=${businessId}`
-      );
+      const response = await fetch(`/api/admin/business?id=${businessId}`);
 
       if (!response.ok) {
         throw new Error("Failed to fetch business");
@@ -119,12 +114,11 @@ export const fetchBusinessById = createAsyncThunk(
       return {
         business: data.data as IBusiness[],
         businessId: businessId,
-
-      }
+      };
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch business");
     }
-  }
+  },
 );
 
 // Thunk to fetch business by slug
@@ -143,7 +137,7 @@ export const fetchBusinessBySlug = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch business");
     }
-  }
+  },
 );
 
 // Thunk to create a new business
@@ -169,15 +163,19 @@ export const createBusiness = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to create business");
     }
-  }
+  },
 );
 
 // Thunk to update an existing business
 export const updateBusiness = createAsyncThunk(
   "business/update",
   async (
-    { businessId, input, password }: { businessId: string; input: IBusiness , password?:string},
-    { rejectWithValue }
+    {
+      businessId,
+      input,
+      password,
+    }: { businessId: string; input: IBusiness; password?: string },
+    { rejectWithValue },
   ) => {
     try {
       const response = await fetch(
@@ -188,7 +186,7 @@ export const updateBusiness = createAsyncThunk(
             "Content-Type": "application/json",
           },
           body: JSON.stringify(input),
-        }
+        },
       );
 
       if (!response.ok) {
@@ -200,11 +198,11 @@ export const updateBusiness = createAsyncThunk(
       return {
         business: input as IBusiness,
         success: true,
-      }
+      };
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to update business");
     }
-  }
+  },
 );
 
 // Thunk to delete a business (soft delete)
@@ -216,7 +214,7 @@ export const deleteBusiness = createAsyncThunk(
         `/api/admin/business?businessId=${businessId}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -229,7 +227,7 @@ export const deleteBusiness = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete business");
     }
-  }
+  },
 );
 
 // Thunk to fetch businesses by tenant
@@ -247,10 +245,10 @@ export const fetchBusinessesByTenant = createAsyncThunk(
       return data.businesses as IBusiness[];
     } catch (error: any) {
       return rejectWithValue(
-        error.message || "Failed to fetch businesses by tenant"
+        error.message || "Failed to fetch businesses by tenant",
       );
     }
-  }
+  },
 );
 
 // Thunk to fetch businesses by plan
@@ -268,10 +266,10 @@ export const fetchBusinessesByPlan = createAsyncThunk(
       return data.businesses as IBusiness[];
     } catch (error: any) {
       return rejectWithValue(
-        error.message || "Failed to fetch businesses by plan"
+        error.message || "Failed to fetch businesses by plan",
       );
     }
-  }
+  },
 );
 
 // Thunk to search businesses
@@ -280,7 +278,7 @@ export const searchBusinesses = createAsyncThunk(
   async (query: string, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `/api/admin/business?search=${encodeURIComponent(query)}`
+        `/api/admin/business?search=${encodeURIComponent(query)}`,
       );
 
       if (!response.ok) {
@@ -292,12 +290,12 @@ export const searchBusinesses = createAsyncThunk(
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to search businesses");
     }
-  }
+  },
 );
 // create athunk to update business branding
 export const updateBusinessBranding = createAsyncThunk(
   "business/updateBranding",
-  async (input: initialProfileData, { rejectWithValue }) => {
+  async (input: any, { rejectWithValue }) => {
     try {
       const response = await fetch("/api/admin/branding/brandingProfile", {
         method: "PUT",
@@ -309,14 +307,18 @@ export const updateBusinessBranding = createAsyncThunk(
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to update business branding");
+        throw new Error(
+          errorData.error || "Failed to update business branding",
+        );
       }
-     
+
       const data = await response.json();
-       console.log("response --- update branding", data);
+      console.log("response --- update branding", data);
       return data;
     } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to update business branding");
+      return rejectWithValue(
+        error.message || "Failed to update business branding",
+      );
     }
-  }
+  },
 );

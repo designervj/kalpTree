@@ -51,7 +51,7 @@ export function EditorHeader() {
   const usePuck = createUsePuck();
   const { appState, dispatch } = usePuck((s) => s);
 
-  const [activeViewport, setActiveViewport] = useState<ViewportId>("desktop");
+  const [activeViewport, setActiveViewport] = useState<ViewportId>("mobile");
 
   const handleViewport = (vp: ViewportOption) => {
     setActiveViewport(vp.id);
@@ -91,8 +91,8 @@ export function EditorHeader() {
 
       {/* ── Center: Viewport switcher + Undo/Redo ── */}
       <div className="flex items-center gap-3">
-        {/* Undo / Redo */}
-        <div className="flex items-center gap-0.5">
+      
+        {/* <div className="flex items-center gap-0.5">
           {[
             {
               Icon: Undo2,
@@ -114,10 +114,10 @@ export function EditorHeader() {
               <Icon size={15} strokeWidth={2} />
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* Divider */}
-        <div className="h-5 w-px bg-slate-200" />
+        {/* <div className="h-5 w-px bg-slate-200" /> */}
 
         {/* Viewport pills */}
         <div className="flex items-center gap-0.5 rounded-lg bg-slate-100 p-1">

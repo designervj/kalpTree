@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { SizeInput } from "./CustomSIzing";
+import { DefaultHeader } from "./CustomHeader";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -492,14 +493,16 @@ const AlignIcons = {
 
 // ─── Tag Style Editor ─────────────────────────────────────────────────────────
 
-function TagStyleEditor({
+export function TagStyleEditor({
   tag,
   style,
   update,
+  type = "default",
 }: {
   tag: string;
   style: TagStyle;
   update: (key: keyof TagStyle, val: any) => void;
+  type: string;
 }) {
   const label = (field: string) => `${tag} ${field}`;
 
@@ -623,31 +626,11 @@ export function TextPanel({
 
   return (
     <div className="bg-white">
-      {/* Header */}
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className="w-full flex items-center gap-2 transition-colors"
-      >
-        <svg
-          width="11"
-          height="11"
-          viewBox="0 0 12 12"
-          fill="none"
-          className="text-blue-600 flex-shrink-0 transition-transform duration-200"
-          style={{ transform: collapsed ? "rotate(-90deg)" : "rotate(0deg)" }}
-        >
-          <path
-            d="M2 4l4 4 4-4"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-        <span className="text-sm font-semibold text-blue-600 tracking-wide">
-          {textlabel}
-        </span>
-      </button>
+      <DefaultHeader
+        setCollapsed={setCollapsed}
+        textlabel={textlabel}
+        collapsed={collapsed}
+      />
 
       {!collapsed && (
         <div className="pb-4 border-t border-slate-100">

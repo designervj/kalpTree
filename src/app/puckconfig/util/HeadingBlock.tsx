@@ -1,23 +1,21 @@
 import React from "react";
 import { makeTextFields } from "./fields";
 import {
-    DEFAULT_TEXT,
-    generateTextCSS,
+  DEFAULT_TEXT,
+  generateTextCSS,
 } from "@/components/puckcomponents/CustomText";
 
 export const HeadingBlock = {
-    fields: {
-        text: makeTextFields,
-    },
-    defaultProps: {
-        text: DEFAULT_TEXT,
-    },
-    render: (props: any) => {
-        const { text } = props;
-        const textstyle = generateTextCSS(text[text.activeTag.toLowerCase()]);
+  fields: {
+    text: makeTextFields,
+  },
+  defaultProps: {
+    text: DEFAULT_TEXT,
+  },
+  render: (props: any) => {
+    const { text } = props;
+    const textstyle = generateTextCSS(text[text.activeTag.toLowerCase()]);
 
-        console.log(text, textstyle);
-
-        return <h1 style={{ ...textstyle }}>Himanshu</h1>;
-    },
+    return <h1 style={{ ...textstyle }}>Himanshu</h1>;
+  },
 };
