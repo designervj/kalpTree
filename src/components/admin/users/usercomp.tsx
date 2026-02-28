@@ -972,7 +972,7 @@ export default function BusinessCreatePage({
   }, [formData.businessdetails.globalStyle]);
 
   return (
-    <div className="min-h-screen bg-[#f3f4f6]">
+    <div className="min-h-screen bg-[#f3f4f6] a">
       <div className="mx-auto max-w-5xl px-6 py-8">
         {/* Breadcrumb */}
         <div className="mb-6">

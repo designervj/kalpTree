@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 type Tool = {
   id: string;
@@ -116,11 +117,13 @@ export default function AIToolsHostingerStylePage() {
       <div className="mx-auto max-w-7xl px-4 md:px-6 py-6">
         {/* Top bar: title + breadcrumb + credits pill */}
         <div className="flex items-center gap-3 text-sm text-slate-500">
-          <h1 className="text-2xl font-semibold text-slate-900">AI tools</h1>
+
+          {/* <h1 className="text-2xl font-semibold text-slate-900">AI tools</h1>
           <span className="text-slate-300">|</span>
           <Home className="h-4 w-4" />
           <span>–</span>
-          <span className="text-slate-700 font-medium">AI tools</span>
+          <span className="text-slate-700 font-medium">AI tools</span> */}
+          <BreadCrumbPage />
 
           {/* <div className="ml-auto flex items-center gap-3">
             <span className="text-slate-500">Your AI credits:</span>
@@ -133,7 +136,7 @@ export default function AIToolsHostingerStylePage() {
         </div>
 
         {/* Big white container like screenshot */}
-        <div className="mt-6 rounded-[8px] border bg-white px-6 py-10 md:px-10 md:py-12 shadow-sm">
+        <div className="mt-0 rounded-[8px] border-none bg-transparent px-0 py-10 md:px-0 md:py-12 shadow-none">
           {/* Center header */}
           <div className="mx-auto max-w-3xl text-center">
             <div className="flex items-center justify-center gap-2">
