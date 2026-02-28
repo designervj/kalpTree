@@ -78,6 +78,8 @@ import {
   TypeIcon,
   Factory,
   LanguagesIcon,
+  MessageSquare,
+  HelpCircle,
 } from "lucide-react";
 import { NavSection } from "../../AppShell";
 
@@ -141,13 +143,6 @@ export const currenBusinessSections: NavSection[] = [
         icon: Newspaper,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      
-      // {
-      //   label: "Templates",
-      //   href: "/admin/website/templates",
-      //   icon: ImageIcon,
-      //   permission: ["media:update", "media:read", "media:delete"],
-      // },
       {
         label: "Header",
         href: "/admin/website/header",
@@ -160,12 +155,6 @@ export const currenBusinessSections: NavSection[] = [
         icon: PanelBottom,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      // {
-      //   label: "Navigation",
-      //   href: "/admin/website/navigation",
-      //   icon: Compass,
-      //   permission: ["websites:update", "websites:read", "websites:delete"],
-      // },
       {
         label: "Forms",
         href: "/admin/website/forms",
@@ -178,12 +167,6 @@ export const currenBusinessSections: NavSection[] = [
         icon: ArrowLeftRight,
         permission: ["websites:update", "websites:read", "websites:delete"],
       },
-      // {
-      //   label: "Domain Settings",
-      //   href: "/admin/website/domains",
-      //   icon: Globe2,
-      //   permission: ["websites:update", "websites:read", "websites:delete"],
-      // },
     ],
   },
 
@@ -221,12 +204,6 @@ export const currenBusinessSections: NavSection[] = [
         icon: Type,
         permission: ["content:read", "content:update", "content:delete"],
       },
-      // {
-      //   label: "Layout Settings",
-      //   href: "/admin/branding/layout-settings",
-      //   icon: LayoutTemplate,
-      //   permission: ["content:read", "content:update", "content:delete"],
-      // },
       {
         label: "Theme Presets",
         href: "/admin/branding/theme-presets",
@@ -264,12 +241,6 @@ export const currenBusinessSections: NavSection[] = [
         icon: LayoutGrid,
         permission: ["product:read", "product:update", "product:delete"],
       },
-      // {
-      //   label: "Brand",
-      //   href: "/admin/brand",
-      //   icon: Award,
-      //   permission: ["product:read", "product:update", "product:delete"],
-      // },
       {
         label: "Attribute",
         href: "/admin/attribute",
@@ -278,17 +249,10 @@ export const currenBusinessSections: NavSection[] = [
       },
       {
         label: "Business Type",
-        // href: "/admin/attributessets",
         href: "/admin/businesstype",
         icon: Component,
         permission: ["product:read", "product:update", "product:delete"],
       },
-      // {
-      //   label: "Styles",
-      //   href: "/admin/styles",
-      //   icon: Palette,
-      //   permission: ["product:read", "product:update", "product:delete"],
-      // },
       {
         label: "Tags",
         href: "/admin/tags",
@@ -297,7 +261,6 @@ export const currenBusinessSections: NavSection[] = [
       },
       {
         label: "Industry Type",
-        // href: "/admin/product-type-category",
         href: "/admin/industry-type",
         icon: Factory,
         permission: ["product:read", "product:update", "product:delete"],
@@ -314,6 +277,7 @@ export const currenBusinessSections: NavSection[] = [
   {
     id: "ecommerce",
     label: "E-Commerce",
+    feature: "ecommerceEnabled",
     items: [
       {
         label: "Orders",
@@ -377,10 +341,10 @@ export const currenBusinessSections: NavSection[] = [
       },
     ],
   },
-
   {
     id: "bookings",
     label: "Bookings",
+    feature: "bookingEnabled",
     items: [
       {
         label: "Rooms and Rent Plans",
@@ -435,6 +399,286 @@ export const currenBusinessSections: NavSection[] = [
         href: "/admin/bookings/settings",
         icon: Settings,
         permission: ["booking:update"],
+      },
+    ],
+  },
+
+  {
+    id: "appointments",
+    label: "Appointments",
+    feature: "appointmentsEnabled", // ← entire section hidden if appointmentsEnabled is false
+    items: [
+      {
+        label: "All Appointments",
+        href: "/admin/appointments",
+        icon: CalendarCheck,
+        permission: ["booking:read"],
+      },
+      {
+        label: "Calendar",
+        href: "/admin/appointments/calendar",
+        icon: Calendar,
+        permission: ["booking:read", "booking:update"],
+      },
+      {
+        label: "Services",
+        href: "/admin/appointments/services",
+        icon: Package,
+        permission: ["booking:read", "booking:update"],
+      },
+      {
+        label: "Staff",
+        href: "/admin/appointments/staff",
+        icon: Users,
+        permission: ["booking:read", "booking:update"],
+      },
+      {
+        label: "Clients",
+        href: "/admin/appointments/clients",
+        icon: Users,
+        permission: ["booking:read"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/appointments/settings",
+        icon: Settings,
+        permission: ["booking:update"],
+      },
+    ],
+  },
+
+  {
+    id: "events",
+    label: "Events",
+    feature: "eventsEnabled", // ← entire section hidden if eventsEnabled is false
+    items: [
+      {
+        label: "All Events",
+        href: "/admin/events",
+        icon: CalendarCheck,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Calendar",
+        href: "/admin/events/calendar",
+        icon: Calendar,
+        permission: ["content:read", "content:update"],
+      },
+      {
+        label: "Tickets",
+        href: "/admin/events/tickets",
+        icon: TicketPercent,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Attendees",
+        href: "/admin/events/attendees",
+        icon: Users,
+        permission: ["content:read"],
+      },
+      {
+        label: "Reports",
+        href: "/admin/events/reports",
+        icon: BarChart4,
+        permission: ["content:read"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/events/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "membership",
+    label: "Membership",
+    feature: "membershipEnabled", // ← entire section hidden if membershipEnabled is false
+    items: [
+      {
+        label: "Members",
+        href: "/admin/membership/members",
+        icon: Users,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Plans",
+        href: "/admin/membership/plans",
+        icon: Package,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Benefits",
+        href: "/admin/membership/benefits",
+        icon: Award,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Reports",
+        href: "/admin/membership/reports",
+        icon: BarChart4,
+        permission: ["content:read"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/membership/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "donations",
+    label: "Donations",
+    feature: "donationsEnabled", // ← entire section hidden if donationsEnabled is false
+    items: [
+      {
+        label: "All Donations",
+        href: "/admin/donations",
+        icon: CircleDollarSign,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Campaigns",
+        href: "/admin/donations/campaigns",
+        icon: Megaphone,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Donors",
+        href: "/admin/donations/donors",
+        icon: Users,
+        permission: ["content:read"],
+      },
+      {
+        label: "Reports",
+        href: "/admin/donations/reports",
+        icon: BarChart4,
+        permission: ["content:read"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/donations/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "portfolio",
+    label: "Portfolio",
+    feature: "portfolioEnabled", // ← entire section hidden if portfolioEnabled is false
+    items: [
+      {
+        label: "Projects",
+        href: "/admin/portfolio/projects",
+        icon: Blocks,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Categories",
+        href: "/admin/portfolio/categories",
+        icon: LayoutGrid,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Media",
+        href: "/admin/portfolio/media",
+        icon: ImageIcon,
+        permission: ["media:read", "media:update", "media:delete"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/portfolio/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "testimonials",
+    label: "Testimonials",
+    feature: "testimonialsEnabled", // ← entire section hidden if testimonialsEnabled is false
+    items: [
+      {
+        label: "All Testimonials",
+        href: "/admin/testimonials",
+        icon: MessageSquare,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Pending Review",
+        href: "/admin/testimonials/pending",
+        icon: ClipboardList,
+        permission: ["content:read", "content:update"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/testimonials/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "faq",
+    label: "FAQ",
+    feature: "faqEnabled", // ← entire section hidden if faqEnabled is false
+    items: [
+      {
+        label: "All FAQs",
+        href: "/admin/faq",
+        icon: HelpCircle,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Categories",
+        href: "/admin/faq/categories",
+        icon: LayoutGrid,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/faq/settings",
+        icon: Settings,
+        permission: ["content:update"],
+      },
+    ],
+  },
+
+  {
+    id: "team",
+    label: "Team",
+    feature: "teamEnabled", // ← entire section hidden if teamEnabled is false
+    items: [
+      {
+        label: "Members",
+        href: "/admin/team/members",
+        icon: Users,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Departments",
+        href: "/admin/team/departments",
+        icon: UsersRound,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Roles",
+        href: "/admin/team/roles",
+        icon: Fingerprint,
+        permission: ["content:read", "content:update", "content:delete"],
+      },
+      {
+        label: "Settings",
+        href: "/admin/team/settings",
+        icon: Settings,
+        permission: ["content:update"],
       },
     ],
   },
@@ -500,62 +744,6 @@ export const currenBusinessSections: NavSection[] = [
     ],
   },
 
-  // {
-  //   id: "ai-studio",
-  //   label: "AI Studio",
-  //   items: [
-  //     {
-  //       label: "Image Uploads",
-  //       href: "/admin/ai-studio/image-uploads",
-  //       icon: ImagePlus,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Segment Detection",
-  //       href: "/admin/ai-studio/segment-detection",
-  //       icon: ScanSearch,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Material Application",
-  //       href: "/admin/ai-studio/material-application",
-  //       icon: Paintbrush,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Prompt Library",
-  //       href: "/admin/ai-studio/prompt-library",
-  //       icon: Terminal,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Render History",
-  //       href: "/admin/ai-studio/render-history",
-  //       icon: History,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Saved Designs",
-  //       href: "/admin/ai-studio/saved-designs",
-  //       icon: Heart,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "Reference Images",
-  //       href: "/admin/ai-studio/reference-images",
-  //       icon: GalleryVerticalEnd,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //     {
-  //       label: "AI Settings",
-  //       href: "/admin/ai-studio/ai-settings",
-  //       icon: Cpu,
-  //       permission: ["ai:read", "ai:update", "ai:delete"],
-  //     },
-  //   ],
-  // },
-
-
   {
     id: "users",
     label: "Users",
@@ -598,6 +786,7 @@ export const currenBusinessSections: NavSection[] = [
       },
     ],
   },
+
   {
     id: "settings",
     label: "Settings",
@@ -677,25 +866,4 @@ export const currenBusinessSections: NavSection[] = [
       },
     ],
   },
-
-  //  {
-  //       label: "Templates",
-  //       href: "/admin/website/templates",
-  //       icon: ImageIcon,
-  //       permission: ["media:update", "media:read", "media:delete"],
-  //     },
-
-  // {
-  //   id: "domains",
-  //   label: "Domain & Hosting",
-  //   items: [
-  //     {
-  //       label: "Domains",
-  //       href: "/admin/domain",
-  //       icon: Globe,
-  //       permission: ["content:read", "content:update", "content:delete"],
-  //     },
-  //   ],
-  // },
-
 ];

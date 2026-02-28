@@ -3,52 +3,35 @@ import * as React from "react";
 import {
   Menu,
   Tags,
-  Bell,
   Palette,
-  Share2,
-  LayoutTemplate,
   Globe,
   Users,
   Bot,
   Network,
-  Image as ImageIcon,
   Megaphone,
-  BookOpen,
   ShoppingCart,
   LayoutGrid,
   User,
   Sparkles,
-  ChevronsUpDown,
   LogOut,
   Settings,
 } from "lucide-react";
-
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-
 import { Sidebar } from "./Sidebar/sidebar";
 import { MobileSidebar } from "./Sidebar/mobileSidebar";
 import { HighLevelSidebar } from "./Sidebar/highlevelsidebar";
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from "next/navigation";
-
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
 import { clearAttributes } from "@/hooks/slices/attribute/AttributeSlice";
 import { clearBrands } from "@/hooks/slices/brand/BrandSlice";
-
 import { clearCategories } from "@/hooks/slices/category/CategorySlice";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { FiSearch, FiBell, FiChevronLeft } from "react-icons/fi";
-import { HiSparkles } from "react-icons/hi2";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -60,23 +43,16 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { signOut } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
-import { GoSidebarCollapse, GoSidebarExpand } from "react-icons/go";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { RootState } from "@/store/store";
-import { Label } from "../ui/label";
 import { UpperBar } from "./Sidebar/UpperBar";
 import type { ObjectId } from "mongodb";
 import { IUser } from "@/models/user";
 import { IoMdClose } from "react-icons/io";
-import Link from "next/link";
 import { clearUser } from "@/hooks/slices/user/userSlice";
-// import { Combo } from "@/app/admin/websites/[website]/branding/typography/ColorPallet";
 import { ColorPalletModal } from "./branding/color_pallet/Color_Pallet_Modal";
 import { BusinessModal } from "./business/businessID/BusinessModal";
-// ---------------------------------------------------------------------------
-// Types & interfaces
-// ---------------------------------------------------------------------------
 
 export type Website = {
   _id?: string | ObjectId;
@@ -128,6 +104,7 @@ export type NavSection = {
   label: string;
   items: NavItem[];
   permission?: string;
+  feature?: string;
 };
 
 export const getRoleAvatarClass = (role?: string) => {
@@ -197,6 +174,7 @@ export function AppShell({ children }: AppShellProps) {
   const { user } = useSelector((state: RootState) => state.user);
   const [isMounted, setIsMounted] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -204,9 +182,6 @@ export function AppShell({ children }: AppShellProps) {
   const { currentBusiness, allBusiness } = useSelector(
     (state: RootState) => state.business,
   );
-
-  const router = useRouter();
-
   const param = useParams();
   const { website } = param;
 
@@ -288,6 +263,8 @@ export function AppShell({ children }: AppShellProps) {
       window.location.href = redirect;
     }
   };
+
+  console.log("=====>>>", currentBusiness);
 
   const resetRedux = () => {
     dispatch(clearAttributes());

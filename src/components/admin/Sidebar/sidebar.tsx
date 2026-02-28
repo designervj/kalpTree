@@ -1,11 +1,7 @@
 "use client";
 
 import { useParams, usePathname, useSearchParams } from "next/navigation";
-import {
-  FiCloseHint,
-  sectionIconMap,
-  useHasPermission,
-} from "../AppShell";
+import { FiCloseHint, sectionIconMap, useHasPermission } from "../AppShell";
 import React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { buildWebsiteHref, cn } from "@/lib/utils";
@@ -30,6 +26,10 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const { user } = useSelector((state: RootState) => state.user);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+
+  console.log(currentBusiness);
+
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);
   const searchParams = useSearchParams();
@@ -62,6 +62,10 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             href: buildWebsiteHref(d.href, params.website!, searchparams),
           })),
       }))
+      .filter((section) => {
+        if (!section.feature) return true; // no feature key → always show
+        return currentBusiness?.features[section.feature] === true; // show only when enabled
+      })
       .filter((section) => section.items.length > 0);
   }, [hasPermission, params, searchparams]);
 
@@ -97,7 +101,9 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
       return;
     }
 
-    const stillExists = filteredWebsiteSections.some((s) => s.id === openGroupId);
+    const stillExists = filteredWebsiteSections.some(
+      (s) => s.id === openGroupId,
+    );
     if (stillExists) return;
 
     setOpenGroupId(activeSectionId ?? filteredWebsiteSections[0].id);
@@ -113,7 +119,9 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
 
   const isSectionActive = React.useCallback(
     (section: (typeof filteredWebsiteSections)[number]) => {
-      return section.items.some((item) => normalizePath(item.href) === activeItemPath);
+      return section.items.some(
+        (item) => normalizePath(item.href) === activeItemPath,
+      );
     },
     [activeItemPath, normalizePath],
   );
@@ -162,7 +170,8 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             <div className={cn("mt-3 flex-1 overflow-y-auto pb-3", "px-2")}>
               <div className="space-y-2">
                 {filteredWebsiteSections.map((section) => {
-                  const HeaderIcon = sectionIconMap[section.id] || LayoutDashboard;
+                  const HeaderIcon =
+                    sectionIconMap[section.id] || LayoutDashboard;
                   const isOpen = openGroupId === section.id;
                   const sectionActive = isSectionActive(section);
 
@@ -221,17 +230,25 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                             >
                               <div className="rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl p-3">
                                 <div className="flex items-center justify-between px-2 pb-2">
-                                  <div className="text-sm font-semibold">{section.label}</div>
+                                  <div className="text-sm font-semibold">
+                                    {section.label}
+                                  </div>
                                   <FiCloseHint />
                                 </div>
 
                                 <div className="space-y-1">
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
-                                    const active = normalizePath(item.href) === activeItemPath;
+                                    const active =
+                                      normalizePath(item.href) ===
+                                      activeItemPath;
 
                                     return (
-                                      <Link key={item.href} href={item.href} className="block">
+                                      <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="block"
+                                      >
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2 text-sm border transition-colors",
@@ -241,7 +258,9 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                           )}
                                         >
                                           <Icon className="h-4 w-4" />
-                                          <span className="truncate flex-1">{item.label}</span>
+                                          <span className="truncate flex-1">
+                                            {item.label}
+                                          </span>
 
                                           {item.badge && (
                                             <span className="text-[11px] rounded-lg bg-muted px-2 py-0.5 text-muted-foreground">
@@ -333,10 +352,16 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
                                 <div className="space-y-1">
                                   {section.items.map((item) => {
                                     const Icon = item.icon;
-                                    const active = normalizePath(item.href) === activeItemPath;
+                                    const active =
+                                      normalizePath(item.href) ===
+                                      activeItemPath;
 
                                     return (
-                                      <Link key={item.href} href={item.href} className="block">
+                                      <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className="block"
+                                      >
                                         <div
                                           className={cn(
                                             "group flex items-center gap-3 rounded-xl px-3 py-2 border transition-colors",
