@@ -86,7 +86,7 @@ export const transformVarsToGlobalStyleModel = (
       primary: getVal("--primary", "#1F6F43"),
       secondary: getVal("--secondary", "#2EA76A"),
       accent: getVal("--accent", "#B9F3D5"),
-      dark: getVal("--dark", "#0B3A2A"),
+      dark: getVal("--background", getVal("--dark", "#0B3A2A")),
       ring: getVal("--ring", "#2EA76A"),
       text: getVal("--text", "#0B2A1F"),
       mutedText: getVal("--muted-text", "#5E6E65"),
@@ -321,12 +321,12 @@ export const updateCssWithColors = (
     "--primary": "primary",
     "--secondary": "secondary",
     "--accent": "accent",
-    "--dark": "dark",
+    "--background": "dark",
     "--ring": "ring",
     "--text": "text",
     "--muted-text": "mutedText",
     "--border": "border",
- 
+
   };
 
   Object.entries(brandMap).forEach(([varName, key]) => {
@@ -351,7 +351,7 @@ export const updateCssWithColors = (
     };
 
     Object.entries(btnMap).forEach(([subKey, colorKey]) => {
-      
+
       const varName = `--btn-${btnType}-${subKey}`;
       const value = colors[colorKey];
 

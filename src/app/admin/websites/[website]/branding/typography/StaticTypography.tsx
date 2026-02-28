@@ -213,7 +213,7 @@ function HexInput({
 
 
 
-        
+
         {/* <input
           type="color"
           className="h-9 w-10 rounded-md border bg-background px-1 "
@@ -228,13 +228,13 @@ function HexInput({
         /> */}
 
         <ColorPicker
-  color={displayForPicker}
-  onChange={(v) => {
-    lastValidRef.current = v;
-    setDraft(v);
-    onCommit(v);
-  }}
-/>
+          color={displayForPicker}
+          onChange={(v) => {
+            lastValidRef.current = v;
+            setDraft(v);
+            onCommit(v);
+          }}
+        />
 
         {/* <ColorPicker /> */}
 
@@ -279,7 +279,7 @@ export default function TypographyPage({
   /* RIGHT tabs */
   const [rightPanel, setRightPanel] = useState<RightPanelTab>("preview");
 
-  /* Light / Dark Mode */
+  /* Light / background Mode */
   const [mode, setMode] = useState<Mode>("light");
 
   const [copied, setCopied] = useState(false);
@@ -453,21 +453,21 @@ export default function TypographyPage({
   /* ── Computed palette for preview (not user-editable) ── */
   const uiPalette = useMemo(() => {
     const light = {
-      bg: "#F4F6F5",
-      surface: "#FFFFFF",
-      text: brand.text,
-      mutedText: brand.mutedText,
-      border: brand.border,
+      bgPage: "#F4F6F5",
+      bgSurface: "#FFFFFF",
+      textMain: brand.text,
+      textMuted: brand.mutedText,
+      borderSubtle: brand.border,
     };
     const dark = {
-      bg: "#071B14",
-      surface: "#0B2A1F",
-      text: "#EAF7F0",
-      mutedText: mixHex("#EAF7F0", "#000000", 0.35),
-      border: rgba("#B9F3D5", 0.22),
+      bgPage: brand.dark,
+      bgSurface: mixHex(brand.dark, "#FFFFFF", 0.08),
+      textMain: "#FFFFFF",
+      textMuted: mixHex("#FFFFFF", brand.dark, 0.45),
+      borderSubtle: rgba(brand.accent, 0.2),
     };
     return mode === "light" ? light : dark;
-  }, [mode, brand.text, brand.mutedText, brand.border]);
+  }, [mode, brand]);
 
   const onLeftTab = (t: LeftTab) => {
     setLeftTab(t);
@@ -564,7 +564,7 @@ export default function TypographyPage({
     lines.push(`  --primary: ${primary};`);
     lines.push(`  --secondary: ${secondary};`);
     lines.push(`  --accent: ${accent};`);
-    lines.push(`  --dark: ${dark};`);
+    lines.push(`  --background: ${dark};`);
     lines.push(`  --ring: ${ring};`);
     lines.push(``);
     lines.push(`  /* Fonts */`);
@@ -616,28 +616,27 @@ export default function TypographyPage({
 
     lines.push(`:root[data-theme="light"] {`);
     lines.push(`  --mode: light;`);
-    lines.push(`  --bg: #F4F6F5;`);
-    lines.push(`  --surface: #FFFFFF;`);
-    lines.push(`  --text: ${lightText};`);
-    lines.push(`  --muted-text: ${lightMuted};`);
-    lines.push(`  --border: ${lightBorder};`);
+    lines.push(`  --bg-page: #F4F6F5; /* Main page background */`);
+    lines.push(`  --bg-surface: #FFFFFF; /* Cards and containers */`);
+    lines.push(`  --text-main: ${lightText}; /* Primary text */`);
+    lines.push(`  --text-muted: ${lightMuted}; /* Secondary/muted text */`);
+    lines.push(`  --border-subtle: ${lightBorder}; /* Borders and dividers */`);
     lines.push(`}`);
     lines.push(``);
-
     lines.push(`:root[data-theme="dark"] {`);
     lines.push(`  --mode: dark;`);
-    lines.push(`  --bg: #071B14;`);
-    lines.push(`  --surface: #0B2A1F;`);
-    lines.push(`  --text: #EAF7F0;`);
-    lines.push(`  --muted-text: ${darkMuted};`);
-    lines.push(`  --border: ${darkBorder};`);
+    lines.push(`  --bg-page: ${dark}; /* Main page background */`);
+    lines.push(`  --bg-surface: ${mixHex(dark, "#FFFFFF", 0.08)}; /* Cards and containers */`);
+    lines.push(`  --text-main: #FFFFFF; /* Primary text */`);
+    lines.push(`  --text-muted: ${mixHex("#FFFFFF", dark, 0.45)}; /* Secondary/muted text */`);
+    lines.push(`  --border-subtle: ${rgba(accent, 0.2)}; /* Borders and dividers */`);
     lines.push(`}`);
     lines.push(``);
 
     lines.push(`/* Optional: Base application styles */`);
     lines.push(`html, body {`);
-    lines.push(`  background: var(--bg);`);
-    lines.push(`  color: var(--text);`);
+    lines.push(`  background: var(--bg-page);`);
+    lines.push(`  color: var(--text-main);`);
     lines.push(`  font-family: var(--font-body);`);
     lines.push(`  font-size: var(--body-size);`);
     lines.push(`  font-weight: var(--body-weight);`);
@@ -887,8 +886,8 @@ export default function TypographyPage({
   const outerPreviewStyle = useMemo(
     () =>
       ({
-        background: uiPalette.bg,
-        color: uiPalette.text,
+        background: uiPalette.bgPage,
+        color: uiPalette.textMain,
         fontFamily: bodyFontFamily, // body font drives outer preview text
         fontSize: `${body.sizePx}px`,
         fontWeight: body.weight,
@@ -901,9 +900,9 @@ export default function TypographyPage({
   const cardPreviewStyle = useMemo(
     () =>
       ({
-        background: uiPalette.surface,
-        borderColor: uiPalette.border,
-        color: uiPalette.text,
+        background: uiPalette.bgSurface,
+        borderColor: uiPalette.borderSubtle,
+        color: uiPalette.textMain,
       }) as React.CSSProperties,
     [uiPalette],
   );
@@ -1005,6 +1004,14 @@ export default function TypographyPage({
           <ColorPallet type={type} handleColorPallet={handleColorPallet} />
 
           <HexInput
+            label="Background "
+            value={brand.dark}
+            fallback="#0B3A2A"
+            onCommit={(v) => setC({ dark: v })}
+          />
+
+
+          <HexInput
             label="Primary"
             value={brand.primary}
             fallback="#1F6F43"
@@ -1021,12 +1028,6 @@ export default function TypographyPage({
             value={brand.accent}
             fallback="#B9F3D5"
             onCommit={(v) => setC({ accent: v })}
-          />
-          <HexInput
-            label="Dark"
-            value={brand.dark}
-            fallback="#0B3A2A"
-            onCommit={(v) => setC({ dark: v })}
           />
 
           <Separator />
@@ -1059,17 +1060,17 @@ export default function TypographyPage({
           <div className="rounded-lg border p-3 text-xs text-muted-foreground">
             <div className="flex items-center justify-between">
               <span>Mode Background</span>
-              <span className="font-mono">{uiPalette.bg}</span>
+              <span className="font-mono">{uiPalette.bgPage}</span>
             </div>
             <div className="flex items-center justify-between mt-1">
               <span>Mode Surface</span>
-              <span className="font-mono">{uiPalette.surface}</span>
+              <span className="font-mono">{uiPalette.bgSurface}</span>
             </div>
           </div>
         </CardContent>
       </Card>
     );
-  }, [brand, uiPalette.bg, uiPalette.surface]);
+  }, [brand, uiPalette.bgPage, uiPalette.bgSurface]);
 
   const headingControls = useMemo(() => {
     const setH = (patch: Partial<HeadingStyle>) => {
@@ -1553,10 +1554,10 @@ export default function TypographyPage({
       style={{
         background:
           mode === "light"
-            ? mixHex(brand.accent, "#FFFFFF", 0.65)
-            : rgba(brand.accent, 0.12),
-        color: mode === "light" ? brand.dark : uiPalette.text,
-        borderColor: rgba(brand.secondary, mode === "light" ? 0.35 : 0.22),
+            ? mixHex(brand.accent, "#FFFFFF", 0.75)
+            : rgba(brand.accent, 0.15),
+        color: mode === "light" ? mixHex(brand.dark, "#000000", 0.2) : "#FFFFFF",
+        borderColor: rgba(brand.secondary, mode === "light" ? 0.3 : 0.4),
       }}
     >
       {text}
@@ -1575,18 +1576,19 @@ export default function TypographyPage({
       <div
         className="rounded-2xl overflow-hidden border"
         style={{
-          borderColor: uiPalette.border,
+          borderColor: uiPalette.borderSubtle,
           boxShadow: "0 16px 36px rgba(0,0,0,0.08)",
         }}
       >
         <div
           className="p-6 md:p-7"
           style={{
-            background: mode === "light" ? brand.dark : "#06140F",
+            background: brand.primary,
             color: "#FFFFFF",
           }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between"
+          >
             <div className="flex items-center gap-2">
               <span
                 className="inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs font-bold"
@@ -1670,13 +1672,13 @@ export default function TypographyPage({
           <div>
             <div
               className="text-sm font-semibold"
-              style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
+              style={{ color: uiPalette.textMain, fontFamily: bodyFontFamily }}
             >
               Brand Preview Gallery
             </div>
             <div
               className="text-xs mt-1"
-              style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+              style={{ color: uiPalette.textMuted, fontFamily: bodyFontFamily }}
             >
               Live token-driven preview across all brand elements.
             </div>
@@ -1694,7 +1696,7 @@ export default function TypographyPage({
               <div
                 className="p-4 border-b"
                 style={{
-                  borderColor: uiPalette.border,
+                  borderColor: uiPalette.borderSubtle,
                   background:
                     mode === "light"
                       ? rgba(brand.accent, 0.12)
@@ -1702,7 +1704,7 @@ export default function TypographyPage({
                 }}
               >
                 <div className="flex items-center justify-between text-[11px]">
-                  <span style={{ color: uiPalette.mutedText }}>
+                  <span style={{ color: uiPalette.textMuted }}>
                     Cover / Brand Guidelines
                   </span>
                   <Pill text="Hero" />
@@ -1712,17 +1714,18 @@ export default function TypographyPage({
               <div
                 className="p-6"
                 style={{
-                  background:
-                    mode === "light"
-                      ? mixHex(brand.dark, "#000000", 0.08)
-                      : "#06140F",
-                  color: "#ffffff",
+                  background: brand.primary,
+                  color: "#FFFFFF",
                   minHeight: 170,
                   position: "relative",
                 }}
+
+
               >
                 {/* Heading font */}
-                <div style={{ fontFamily: headingFontFamily }}>
+                <div style={{ fontFamily: headingFontFamily }}
+
+                >
                   <div className="text-2xl font-extrabold leading-tight">
                     KalpTree
                   </div>
@@ -1778,7 +1781,7 @@ export default function TypographyPage({
                     <div
                       className="text-[11px] mt-1"
                       style={{
-                        color: uiPalette.mutedText,
+                        color: uiPalette.textMuted,
                         fontFamily: bodyFontFamily,
                       }}
                     >
@@ -1804,7 +1807,7 @@ export default function TypographyPage({
                       <span className="text-xs font-medium opacity-70">Aa</span>
                       <span
                         className="ml-auto text-[10px]"
-                        style={{ color: uiPalette.mutedText }}
+                        style={{ color: uiPalette.textMuted }}
                       >
                         Scale
                       </span>
@@ -1828,14 +1831,14 @@ export default function TypographyPage({
                       <div
                         key={c.name}
                         className="rounded-xl border overflow-hidden"
-                        style={{ borderColor: uiPalette.border }}
+                        style={{ borderColor: uiPalette.borderSubtle }}
                       >
                         <div style={{ height: 44, background: c.v }} />
                         <div className="p-2">
                           <div
                             className="text-[11px] font-semibold"
                             style={{
-                              color: uiPalette.text,
+                              color: uiPalette.textMain,
                               fontFamily: bodyFontFamily,
                             }}
                           >
@@ -1843,7 +1846,7 @@ export default function TypographyPage({
                           </div>
                           <div
                             className="text-[10px]"
-                            style={{ color: uiPalette.mutedText }}
+                            style={{ color: uiPalette.textMuted }}
                           >
                             {c.v}
                           </div>
@@ -1899,7 +1902,7 @@ export default function TypographyPage({
                         paddingRight: buttonBase.paddingXPx,
                         borderRadius: buttonBase.radiusPx,
                         background: "transparent",
-                        color: uiPalette.text,
+                        color: uiPalette.textMain,
                         border: `${buttonBase.borderWidthPx}px solid transparent`,
                       }}
                     >
@@ -1929,7 +1932,7 @@ export default function TypographyPage({
                     key={i}
                     className="h-2 rounded-full"
                     style={{
-                      background: rgba(uiPalette.border, 0.9),
+                      background: rgba(uiPalette.borderSubtle, 0.9),
                       width: `${w}%`,
                     }}
                   />
@@ -1939,15 +1942,15 @@ export default function TypographyPage({
                 <div
                   className="h-10 rounded-xl border"
                   style={{
-                    borderColor: uiPalette.border,
-                    background: rgba(uiPalette.bg, 0.6),
+                    borderColor: uiPalette.borderSubtle,
+                    background: rgba(uiPalette.bgPage, 0.6),
                   }}
                 />
                 <div
                   className="h-10 rounded-xl border"
                   style={{
-                    borderColor: uiPalette.border,
-                    background: rgba(uiPalette.bg, 0.6),
+                    borderColor: uiPalette.borderSubtle,
+                    background: rgba(uiPalette.bgPage, 0.6),
                   }}
                 />
               </div>
@@ -1965,7 +1968,7 @@ export default function TypographyPage({
               </div>
               <div
                 className="mt-3 h-20 rounded-xl border"
-                style={{ borderColor: uiPalette.border, background: softBg }}
+                style={{ borderColor: uiPalette.borderSubtle, background: softBg }}
               />
             </div>
 
@@ -1982,19 +1985,18 @@ export default function TypographyPage({
               <div
                 className="mt-3 rounded-xl border overflow-hidden"
                 style={{
-                  borderColor: uiPalette.border,
-                  background: mixHex(
-                    brand.accent,
-                    "#FFFFFF",
-                    mode === "light" ? 0.55 : 0.1,
-                  ),
+                  borderColor: uiPalette.borderSubtle,
+                  background:
+                    mode === "light"
+                      ? mixHex(brand.accent, "#FFFFFF", 0.55)
+                      : mixHex(brand.accent, brand.dark, 0.12),
                 }}
               >
                 <div className="p-4">
                   <div
                     className="text-sm font-bold"
                     style={{
-                      color: uiPalette.text,
+                      color: uiPalette.textMain,
                       fontFamily: headingFontFamily,
                     }}
                   >
@@ -2003,7 +2005,7 @@ export default function TypographyPage({
                   <div
                     className="text-[11px] mt-1"
                     style={{
-                      color: uiPalette.mutedText,
+                      color: uiPalette.textMuted,
                       fontFamily: bodyFontFamily,
                     }}
                   >
@@ -2034,7 +2036,7 @@ export default function TypographyPage({
           className="mt-6 rounded-2xl border p-5"
           style={{
             ...cardPreviewStyle,
-            background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+            background: rgba(uiPalette.bgPage, mode === "light" ? 0.6 : 0.15),
           }}
         >
           <div className="flex items-center justify-between">
@@ -2048,7 +2050,7 @@ export default function TypographyPage({
               <div
                 className="text-xs mt-1"
                 style={{
-                  color: uiPalette.mutedText,
+                  color: uiPalette.textMuted,
                   fontFamily: bodyFontFamily,
                 }}
               >
@@ -2071,7 +2073,7 @@ export default function TypographyPage({
               </div>
               <div
                 className="mt-2 text-[11px]"
-                style={{ color: uiPalette.mutedText }}
+                style={{ color: uiPalette.textMuted }}
               >
                 <div>
                   --font-body:{" "}
@@ -2115,7 +2117,7 @@ export default function TypographyPage({
               </div>
               <div
                 className="mt-2 grid grid-cols-2 gap-2 text-[11px]"
-                style={{ color: uiPalette.mutedText }}
+                style={{ color: uiPalette.textMuted }}
               >
                 <div className="font-mono">--h1: {headingPx("h1")}px</div>
                 <div className="font-mono">--h2: {headingPx("h2")}px</div>
@@ -2139,13 +2141,13 @@ export default function TypographyPage({
       <div className="mt-6">
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMain, fontFamily: bodyFontFamily }}
         >
           Typography Preview
         </div>
         <div
           className="text-xs mt-1"
-          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMuted, fontFamily: bodyFontFamily }}
         >
           Headings use{" "}
           <b style={{ fontFamily: headingFontFamily }}>{headingFontFamily}</b> •
@@ -2157,7 +2159,7 @@ export default function TypographyPage({
           className="mt-4 rounded-2xl border p-5"
           style={{
             ...cardPreviewStyle,
-            background: mode === "light" ? "#FFFFFF" : uiPalette.surface,
+            background: mode === "light" ? "#FFFFFF" : uiPalette.bgSurface,
           }}
         >
           <div className="space-y-5">
@@ -2169,13 +2171,13 @@ export default function TypographyPage({
                   <div className="flex items-center justify-between">
                     <span
                       className="text-xs font-mono"
-                      style={{ color: uiPalette.mutedText }}
+                      style={{ color: uiPalette.textMuted }}
                     >
                       {k.toUpperCase()} / {headingPx(k)}px
                     </span>
                     <span
                       className="text-[11px]"
-                      style={{ color: uiPalette.mutedText }}
+                      style={{ color: uiPalette.textMuted }}
                     >
                       w:{s.weight} · lh:{s.lineHeight.toFixed(2)} · ls:
                       {s.letterSpacingEm.toFixed(2)}em
@@ -2189,7 +2191,7 @@ export default function TypographyPage({
                       fontWeight: s.weight,
                       lineHeight: s.lineHeight,
                       letterSpacing: `${s.letterSpacingEm}em`,
-                      color: uiPalette.text,
+                      color: uiPalette.textMain,
                     }}
                   >
                     {k === "h1" && "Brand typography that feels premium"}
@@ -2217,18 +2219,18 @@ export default function TypographyPage({
         className="mt-6 rounded-2xl border p-5"
         style={{
           ...cardPreviewStyle,
-          background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+          background: rgba(uiPalette.bgPage, mode === "light" ? 0.6 : 0.15),
         }}
       >
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMain, fontFamily: bodyFontFamily }}
         >
           Body Preview
         </div>
         <div
           className="text-xs mt-1"
-          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMuted, fontFamily: bodyFontFamily }}
         >
           Paragraph spacing + max-width live.
         </div>
@@ -2236,7 +2238,7 @@ export default function TypographyPage({
         <div className="mt-4" style={{ maxWidth: `${body.maxWidthCh}ch` }}>
           <div
             className="text-xs font-mono"
-            style={{ color: uiPalette.mutedText }}
+            style={{ color: uiPalette.textMuted }}
           >
             Body / {body.sizePx}px · w:{body.weight} · lh:
             {body.lineHeight.toFixed(2)} · ls:{body.letterSpacingEm.toFixed(2)}
@@ -2250,21 +2252,21 @@ export default function TypographyPage({
               fontWeight: body.weight,
               lineHeight: body.lineHeight,
               letterSpacing: `${body.letterSpacingEm}em`,
-              color: uiPalette.text,
+              color: uiPalette.textMain,
               fontFamily: bodyFontFamily,
             }}
           >
             <p
               style={{
                 marginBottom: body.paragraphGapPx,
-                color: uiPalette.mutedText,
+                color: uiPalette.textMuted,
               }}
             >
               Tokens-based system: all changes on the left (colors, fonts,
               sizes) instantly reflect in this preview. This gives you a clear
               picture of what your website pages will look and feel like.
             </p>
-            <p style={{ color: uiPalette.mutedText }}>
+            <p style={{ color: uiPalette.textMuted }}>
               Good typography isn't just about choosing a font — it's about
               establishing a rhythm. Line-height, letter-spacing, paragraph
               gaps, and max-width all work together to create readable,
@@ -2285,18 +2287,18 @@ export default function TypographyPage({
         className="mt-6 rounded-2xl border p-5"
         style={{
           ...cardPreviewStyle,
-          background: rgba(uiPalette.bg, mode === "light" ? 0.6 : 0.15),
+          background: rgba(uiPalette.bgPage, mode === "light" ? 0.6 : 0.15),
         }}
       >
         <div
           className="text-sm font-semibold"
-          style={{ color: uiPalette.text, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMain, fontFamily: bodyFontFamily }}
         >
           Buttons Preview
         </div>
         <div
           className="text-xs mt-1"
-          style={{ color: uiPalette.mutedText, fontFamily: bodyFontFamily }}
+          style={{ color: uiPalette.textMuted, fontFamily: bodyFontFamily }}
         >
           Hover to see hover colors/border • Font:{" "}
           <b style={{ fontFamily: buttonBase.fontFamily }}>
@@ -2342,7 +2344,7 @@ export default function TypographyPage({
               paddingRight: buttonBase.paddingXPx,
               borderRadius: buttonBase.radiusPx,
               background: "transparent",
-              color: uiPalette.text,
+              color: uiPalette.textMain,
               border: `${buttonBase.borderWidthPx}px solid transparent`,
             }}
           >
@@ -2369,135 +2371,135 @@ export default function TypographyPage({
     <>
       <GetAlColorPallet />
       <div className="min-h-screen px-3 pt-1">
-      <div className="pb-6">
-        <BreadCrumbPage />
-      </div>
-      <div className="space-y-6 max-w-6xl mx-auto pb-10">
-        {/* TOP BAR */}
-        <div className="flex justify-between items-center gap-3">
-          <div className="grid grid-cols-4 gap-2">
-            {(["colors", "headings", "body", "buttons"] as LeftTab[]).map(
-              (t) => (
-                <Button
-                  key={t}
-                  variant={leftTab === t ? "default" : "outline"}
-                  onClick={() => onLeftTab(t)}
-                >
-                  {t.charAt(0).toUpperCase() + t.slice(1)}
-                </Button>
-              ),
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
-              className="gap-2"
-              title="Toggle Light/Dark"
-            >
-              {mode === "light" ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
+        <div className="pb-6">
+          <BreadCrumbPage />
+        </div>
+        <div className="space-y-6 max-w-6xl mx-auto pb-10">
+          {/* TOP BAR */}
+          <div className="flex justify-between items-center gap-3">
+            <div className="grid grid-cols-4 gap-2">
+              {(["colors", "headings", "body", "buttons"] as LeftTab[]).map(
+                (t) => (
+                  <Button
+                    key={t}
+                    variant={leftTab === t ? "default" : "outline"}
+                    onClick={() => onLeftTab(t)}
+                  >
+                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                  </Button>
+                ),
               )}
-              {mode === "light" ? "Light" : "Dark"}
-            </Button>
+            </div>
 
-            <Button
-              size="sm"
-              variant={rightPanel === "preview" ? "secondary" : "ghost"}
-              onClick={() => {
-                setRightPanel("preview");
-                setLeftTab("headings");
-              }}
-              className="gap-2"
-            >
-              <Eye className="h-4 w-4" />
-              Preview
-            </Button>
-
-            <Button
-              size="sm"
-              variant={rightPanel === "root" ? "secondary" : "ghost"}
-              onClick={() => setRightPanel("root")}
-              className="gap-2"
-            >
-              <Code2 className="h-4 w-4" />
-              Root File
-            </Button>
-
-            {!type && type !== "onboard" && (
+            <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant={rightPanel === "root" ? "secondary" : "default"}
-                onClick={() => handleSaveGlobalCss()}
+                variant="outline"
+                onClick={() => setMode((m) => (m === "light" ? "dark" : "light"))}
+                className="gap-2"
+                title="Toggle Light/Dark"
+              >
+                {mode === "light" ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                {mode === "light" ? "Light" : "Dark"}
+              </Button>
+
+              <Button
+                size="sm"
+                variant={rightPanel === "preview" ? "secondary" : "ghost"}
+                onClick={() => {
+                  setRightPanel("preview");
+                  setLeftTab("headings");
+                }}
                 className="gap-2"
               >
-                <Save className="h-4 w-4" />
-                Save
+                <Eye className="h-4 w-4" />
+                Preview
               </Button>
-            )}
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* LEFT */}
-          <div className="lg:col-span-4 space-y-6">
-            {leftTab === "colors" && colorsControls}
-            {leftTab === "headings" && headingControls}
-            {leftTab === "body" && bodyControls}
-            {leftTab === "buttons" && buttonControls}
-          </div>
+              <Button
+                size="sm"
+                variant={rightPanel === "root" ? "secondary" : "ghost"}
+                onClick={() => setRightPanel("root")}
+                className="gap-2"
+              >
+                <Code2 className="h-4 w-4" />
+                Root File
+              </Button>
 
-          {/* RIGHT */}
-          <div className="lg:col-span-8">
-            <Card className="h-full min-h-[580px] border-2 border-muted/40">
-              <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
-                {rightPanel === "root" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={handleCopyRoot}
-                    className="gap-2"
-                  >
-                    {copied ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      <Copy className="h-4 w-4" />
-                    )}
-                    {copied ? "Copied" : "Copy"}
-                  </Button>
-                )}
-              </div>
-
-              {rightPanel === "preview" ? (
-                <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
-                  {RightPreviewContent}
-                </CardContent>
-              ) : (
-                <CardContent className="p-6">
-                  <div className="mb-3">
-                    <p className="text-sm font-semibold">
-                      Root File Code (LIVE)
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Light/Dark have separate variables via{" "}
-                      <span className="font-mono">:root[data-theme="..."]</span>
-                      . Body, Heading, and Button fonts are tracked
-                      independently.
-                    </p>
-                  </div>
-                  <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
-                    <code>{ROOT_CSS}</code>
-                  </pre>
-                </CardContent>
+              {!type && type !== "onboard" && (
+                <Button
+                  size="sm"
+                  variant={rightPanel === "root" ? "secondary" : "default"}
+                  onClick={() => handleSaveGlobalCss()}
+                  className="gap-2"
+                >
+                  <Save className="h-4 w-4" />
+                  Save
+                </Button>
               )}
-            </Card>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* LEFT */}
+            <div className="lg:col-span-4 space-y-6">
+              {leftTab === "colors" && colorsControls}
+              {leftTab === "headings" && headingControls}
+              {leftTab === "body" && bodyControls}
+              {leftTab === "buttons" && buttonControls}
+            </div>
+
+            {/* RIGHT */}
+            <div className="lg:col-span-8">
+              <Card className="h-full min-h-[580px] border-2 border-muted/40">
+                <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">
+                  {rightPanel === "root" && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCopyRoot}
+                      className="gap-2"
+                    >
+                      {copied ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                      {copied ? "Copied" : "Copy"}
+                    </Button>
+                  )}
+                </div>
+
+                {rightPanel === "preview" ? (
+                  <CardContent className="p-6 md:p-8" style={outerPreviewStyle}>
+                    {RightPreviewContent}
+                  </CardContent>
+                ) : (
+                  <CardContent className="p-6 " >
+                    <div className="mb-3">
+                      <p className="text-sm font-semibold">
+                        Root File Code (LIVE)
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Light/background have separate variables via{" "}
+                        <span className="font-mono">:root[data-theme="..."]</span>
+                        . Body, Heading, and Button fonts are tracked
+                        independently.
+                      </p>
+                    </div>
+                    <pre className="text-xs leading-relaxed p-4 rounded-lg border bg-muted/20 overflow-auto max-h-[520px]">
+                      <code>{ROOT_CSS}</code>
+                    </pre>
+                  </CardContent>
+                )}
+              </Card>
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </>
   );

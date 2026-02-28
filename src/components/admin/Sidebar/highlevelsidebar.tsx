@@ -130,6 +130,8 @@ const navigationItems = [
       { label: "Security", href: "/admin/setting/security" },
       { label: "Global Styles", href: "/admin/settings/global-styles" },
       { label: "Font Family", href: "/admin/settings/font-family" },
+      { label: "Grapjs Guidelines", href: "/admin/settings/grapjs-guidelines" },
+
 
     ],
   },
