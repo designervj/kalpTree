@@ -1,26 +1,18 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
-import { Search, Edit, Trash2, UserPlus } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { IUser } from "@/models/user";
-import { Button } from "@/components/ui/button";
-// import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 
 import { useRouter } from "next/navigation";
 // import { hasPermission } from "@/lib/utils";
 import { toast } from "sonner";
 import { DataTableExt } from "@/components/admin/DataTableExt";
-import { clearAllUser } from "@/hooks/slices/user/userSlice";
+import GetAllUsers from "@/components/admin/users/GetAllUsers";
+import GetAllRolePermission from "@/components/admin/onboarding/GetAllRolePermission";
 
 export default function Page() {
   const { user, hasFetchedAllUsers, alluser } = useSelector(
@@ -34,8 +26,14 @@ export default function Page() {
 
    
     const updatedAllUser: IUser[] = useMemo(() => {
-      return (alluser || []).filter((user) => user?.role !== "business");
-    }, [alluser]);
+      if(user && user.role==="superadmin" &&alluser && alluser.length>0){
+        return (alluser || []).filter((user) => user?.role !== "superadmin");
+      }
+      else if(user && user.role==="business" &&alluser && alluser.length>0 ){
+        return(alluser || []).filter((user) => user?.role !== "business");
+      }
+     return (alluser || [])
+    }, [alluser, user]);
   
   const handleAdd = () => {
     // const check = hasPermission(user, "user:create");
@@ -75,7 +73,8 @@ export default function Page() {
   return (
     <>
       {/* get all users */}
-      {/* <GetAllUsers /> */}
+         <GetAllRolePermission />
+      <GetAllUsers />
       <DataTableExt
         title=""
         data={updatedAllUser ?? []}

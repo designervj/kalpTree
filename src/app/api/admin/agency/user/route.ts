@@ -15,19 +15,34 @@ export async function GET(request: NextRequest) {
     }
 
     const tenantId = request.nextUrl.searchParams.get("tenantId");
-
+    console.log("tenantId", tenantId);
     if (!tenantId) {
       return NextResponse.json({ error: "Tenant ID is required" }, { status: 400 });
     }
 
     const db = await getDatabase();
-    const userColl = db.collection("users");
-    const users = await userColl
+    const userColl = db.collection("tenants");
+    const allTenants = await userColl
       .find({ tenantId: new ObjectId(tenantId) })
-      .project({ passwordHash: 0 })
-      .sort({ updatedAt: 1 })
+      .project({ _id: 1, tenantId: 1 })
       .toArray();
-    return NextResponse.json({ users });
+    console.log("allTenants", allTenants);
+    if (allTenants.length > 0) {
+      const userallColl = db.collection("users");
+      const allUsers = await userallColl
+        .find({
+          tenantId: { $in: allTenants.map((tenant: any) => tenant?._id) },
+          role: "business",
+        })
+        .project({ passwordHash: 0 })
+        .sort({ updatedAt: 1 })
+        .toArray();
+      console.log("allUsers", allUsers);
+      return NextResponse.json({ users: allUsers });
+    }
+    else {
+      return NextResponse.json({ users: [] });
+    }
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(

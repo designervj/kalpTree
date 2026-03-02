@@ -16,13 +16,31 @@ export const getAllUser = createAsyncThunk<IUser[]>(
   }
 );
 
-// get business user based on tenantId
+/// get business all users for a specific tenant
 export const getBusinessUser = createAsyncThunk<IUser[], string>(
   "user/getBusinessUser",
   async (tenantId, { rejectWithValue }) => {
     try {
       const response = await fetch(`/api/admin/business/users?tenantId=${tenantId}`);
       const data = await response.json();
+      // API returns { users: IUser[] }
+
+      return data.users;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
+/// get agency all users for a specific tenant
+export const getAgencyUser = createAsyncThunk<IUser[], string>(
+  "user/getAgencyUser",
+  async (tenantId, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`/api/admin/agency/user?tenantId=${tenantId}`);
+      const data = await response.json();
+      // API returns { users: IUser[] }
+      console.log("getAgencyUser--->?", data.users);
       return data.users;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || error.message);
