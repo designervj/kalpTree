@@ -49,6 +49,20 @@ interface ExtendedEditorState extends EditorState {
 
 export function useEditor(containerId: string) {
   const editorRef = useRef<GrapesJSEditor | null>(null);
+  const lastCanvasInjectionRef = useRef<{
+    pageSig: string;
+    styleSig: string;
+  } | null>(null);
+  const isTrustedEditorMessage = (event: MessageEvent) => {
+    if (event.origin !== window.location.origin) return false;
+    if (event.source !== window && event.source !== window.parent) return false;
+    if (!event.data || typeof event.data !== "object") return false;
+    return true;
+  };
+  const contentSignature = (value?: string) => {
+    const input = value || "";
+    return `${input.length}:${input.slice(0, 80)}:${input.slice(-80)}`;
+  };
 
   const [state, setState] = useState<ExtendedEditorState>({
     editor: null,
@@ -102,7 +116,8 @@ export function useEditor(containerId: string) {
   // Handle messages from GrapesJS modals (e.g., adding a section)
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (typeof event.data !== "object" || !event.data.type) return;
+      if (!isTrustedEditorMessage(event)) return;
+      if (!event.data.type) return;
 
       const { type, index, template } = event.data;
 
@@ -142,16 +157,6 @@ export function useEditor(containerId: string) {
     globalStyle?: string,
     retryCount = 0,
   ): void => {
-    console.log(
-      "🔍 injectCanvasStyles called with globalStyle:",
-      globalStyle ? "YES (length: " + globalStyle.length + ")" : "NO/UNDEFINED",
-    );
-    if (globalStyle) {
-      console.log(
-        "📄 Global Style Content Preview:",
-        globalStyle.substring(0, 100) + "...",
-      );
-    }
     const MAX_RETRIES = 3;
     const frame = editor.Canvas?.getFrameEl?.();
     const doc = frame?.contentDocument;
@@ -210,17 +215,26 @@ export function useEditor(containerId: string) {
     }
 
     try {
+      const pageSig = contentSignature(pageContent);
+      const styleSig = contentSignature(globalStyle);
+      const lastInjection = lastCanvasInjectionRef.current;
+      const shouldSkipInjection =
+        lastInjection &&
+        lastInjection.pageSig === pageSig &&
+        lastInjection.styleSig === styleSig;
+
+      if (shouldSkipInjection) return;
+
       // Remove existing custom styles
       doc.querySelector('[data-root-vars="true"]')?.remove();
       doc
         .querySelectorAll('[data-font="true"]')
         .forEach((el: Element) => el.remove());
-      doc.querySelector('[data-tailwind="true"]')?.remove();
 
       // Inject Lucide Icons for icon hydration - avoid redundant reloads
       if (!doc.querySelector('[data-lucide-script="true"]')) {
         const lucideScript = doc.createElement("script");
-        lucideScript.src = "https://unpkg.com/lucide@latest";
+        lucideScript.src = "https://unpkg.com/lucide@0.554.0";
         lucideScript.setAttribute("data-lucide-script", "true");
         doc.head.appendChild(lucideScript);
         lucideScript.onload = () => {
@@ -235,11 +249,13 @@ export function useEditor(containerId: string) {
         }
       }
 
-      // Inject Tailwind CSS CDN for styling Tailwind classes in HTML strings
-      const tailwindScript = doc.createElement("script");
-      tailwindScript.src = "https://cdn.tailwindcss.com";
-      tailwindScript.setAttribute("data-tailwind", "true");
-      doc.head.appendChild(tailwindScript);
+      // Inject Tailwind CSS CDN once for styling Tailwind classes in HTML strings
+      if (!doc.querySelector('[data-tailwind="true"]')) {
+        const tailwindScript = doc.createElement("script");
+        tailwindScript.src = "https://cdn.tailwindcss.com";
+        tailwindScript.setAttribute("data-tailwind", "true");
+        doc.head.appendChild(tailwindScript);
+      }
 
       // Inject Swiper CSS
       if (!doc.querySelector('[data-swiper-style="true"]')) {
@@ -386,6 +402,7 @@ export function useEditor(containerId: string) {
         }
       `;
       doc.head.appendChild(addSectionStyle);
+      lastCanvasInjectionRef.current = { pageSig, styleSig };
     } catch (error) {
       console.error("❌ Error injecting canvas styles:", error);
       if (retryCount < MAX_RETRIES) {
@@ -1253,6 +1270,15 @@ export function useEditor(containerId: string) {
   const setupEventListeners = (editor: GrapesJSEditor) => {
     // on mouse
     let addSectionBtn: HTMLElement | null = null;
+    let layersUpdateFrame: number | null = null;
+
+    const scheduleLayerRefresh = () => {
+      if (layersUpdateFrame) return;
+      layersUpdateFrame = requestAnimationFrame(() => {
+        layersUpdateFrame = null;
+        updateLayers(editor);
+      });
+    };
 
     editor.on("component:hover", (component: any) => {
       // @ts-ignore - Canvas might be undefined in some types
@@ -1369,7 +1395,7 @@ export function useEditor(containerId: string) {
           const targetIndex = component.index() + 1;
           window.parent.postMessage(
             { type: "OPEN_TEMPLATE_MANAGER", index: targetIndex },
-            "*",
+            window.location.origin,
           );
         };
 
@@ -1387,17 +1413,13 @@ export function useEditor(containerId: string) {
     });
     // Component selection
     editor.on("component:selected", (component: any) => {
-      console.log("component.nes s --->", component);
-
       if (component?.attributes?.tagName === "form") {
-        console.log("form selected");
         // how to know the child of form
         const componentHtml = component.toHTML();
 
         //editForm
         setEditForm(componentHtml);
       } else if (component?.attributes?.tagName === "header") {
-        console.log("header selected");
         // const componentHtml = component.toHTML();
         // setEditForm(componentHtml)
       } else {
@@ -1411,8 +1433,6 @@ export function useEditor(containerId: string) {
 
       // Get the hierarchy path to auto-expand parent layers
       const hierarchy = getComponentHierarchy(component);
-      console.log("Component hierarchy for auto-expand:", hierarchy);
-
       setState((prev) => ({
         ...prev,
         selectedElement: component,
@@ -1425,16 +1445,12 @@ export function useEditor(containerId: string) {
       updateStylesFromComponent(component);
 
       // Initialize interactions if not already present
-
-      console.log("interaction", component.get("interactions"));
-
       try {
         if (
           component.get &&
           typeof component.get === "function" &&
           !component.get("interactions")
         ) {
-          console.log("interaction", component.get("interactions"));
           if (component.set && typeof component.set === "function") {
             component.set("interactions", []);
           }
@@ -1650,7 +1666,7 @@ export function useEditor(containerId: string) {
       if (tagName === "div" && isComponentUnderSection(component)) {
         component.set("hoverable", false);
       }
-      updateLayers(editor);
+      scheduleLayerRefresh();
       hydrateIcons();
     });
 
@@ -1666,7 +1682,7 @@ export function useEditor(containerId: string) {
       if (typeof currentJs === "string") {
         setState((prev) => ({ ...prev, editorJs: currentJs }));
       }
-      updateLayers(editor);
+      scheduleLayerRefresh();
       hydrateIcons();
     });
 
@@ -1908,8 +1924,9 @@ export function useEditor(containerId: string) {
       // Get computed styles for more accurate values if browser environment
       const backgroundColor = style["background-color"] || "#FFFFFF";
       const borderColor = style["border-color"] || "#E5E7EB";
-      const borderWidth =
-        style["border-width"] || style["border"]
+      const borderWidth = style["border-width"]
+        ? style["border-width"]
+        : style["border"]
           ? style["border"].split(" ")[0]
           : "0px";
       const borderStyle =

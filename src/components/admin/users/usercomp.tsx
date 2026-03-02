@@ -650,6 +650,8 @@ import { IBusiness } from "@/models/business";
 import { PrimaryDomains } from "./PrimaryDomain";
 import { extractStyleContent } from "@/utils/extract-css-variables";
 import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor/GlobalStyelModel";
+import GetAlColorPallet from "../branding/color_pallet/GetAlColorPallet";
+import AllColorPallets from "./AllColorPallets";
 
 type Role = "superadmin" | "admin" | "business" | "agency";
 type StepId = "agency" | "general" | "business" | "branding" | "review";
@@ -972,6 +974,9 @@ export default function BusinessCreatePage({
   }, [formData.businessdetails.globalStyle]);
 
   return (
+    <>
+    {/* get all color pallets */}
+    <GetAlColorPallet />
     <div className="min-h-screen bg-[#f3f4f6] a">
       <div className="mx-auto max-w-5xl px-6 py-8">
         {/* Breadcrumb */}
@@ -1140,8 +1145,8 @@ export default function BusinessCreatePage({
                 logoPreview={logoPreview}
               />
             )}
-
-            {/* ── Review Step ── */}
+       
+            {/* ── Rev  iew Step ── */}
             {activeTab === "review" && (
               <div className="space-y-6">
                 <div>
@@ -1271,5 +1276,6 @@ export default function BusinessCreatePage({
         </div>
       </div>
     </div>
+    </>
   );
 }

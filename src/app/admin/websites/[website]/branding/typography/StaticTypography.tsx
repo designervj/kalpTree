@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColorPallet";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { ColorPicker } from "@/components/editor/color-picker/color-picker";
+import AllColorPallets from "@/components/admin/users/AllColorPallets";
 
 /* -----------------------------
   Types
@@ -265,11 +266,14 @@ export default function TypographyPage({
   // const { currentWebsite } = useSelector((state: RootState) => state.websites);
 
   const { currentBusiness } = useSelector((state: RootState) => state.business);
-
+  const { colorPallets, isFetched } = useSelector(
+    (state: RootState) => state.colorPallet,
+  );
   const data = transformRawToGlobalStyleModel(
     currentBusiness?.website?.globalStyle || "",
   );
 
+  console.log("my datiiiiii", data)
   const [headingBaseSize, setHeadingBaseSize] = useState(17);
   // Add this useEffect:
 
@@ -488,7 +492,7 @@ export default function TypographyPage({
       h6: Math.round(headingBaseSize * h.h6.scale),
     };
 
-    const primary = clampHexOrFallback(brand.primary, "#1F6F43");
+    const primary = clampHexOrFallback(brand.primary, "#1f286fff");
     const secondary = clampHexOrFallback(brand.secondary, "#2EA76A");
     const accent = clampHexOrFallback(brand.accent, "#B9F3D5");
     const dark = clampHexOrFallback(brand.dark, "#0B3A2A");
@@ -727,7 +731,7 @@ export default function TypographyPage({
     // Brand colors
     if (data.brand) {
       setBrand({
-        primary: data.brand.primary ?? "#1F6F43",
+        primary: data.brand.primary ?? "#6f4b1fff",
         secondary: data.brand.secondary ?? "#2EA76A",
         accent: data.brand.accent ?? "#B9F3D5",
         dark: data.brand.dark ?? "#0B3A2A",
@@ -2443,7 +2447,7 @@ export default function TypographyPage({
               )}
             </div>
           </div>
-
+    
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* LEFT */}
             <div className="lg:col-span-4 space-y-6">

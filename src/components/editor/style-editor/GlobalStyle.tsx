@@ -103,8 +103,7 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
     Object.entries(v).forEach(([key, value]) => {
       if (value) {
         const prop = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-        console.log("prop--->", prop)
-        console.log("value--->", value)
+    
         onStyleChange(prop, value);
       }
     });
@@ -119,8 +118,8 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
       };
     });
 
-    console.log("patch--->", patch)
-    console.log("selectedHeading--->", selectedHeading)
+
+
     if (patch.scale !== undefined) onStyleChange(`--${selectedHeading}-size`, `${patch.scale}px`);
     if (patch.weight !== undefined) onStyleChange(`--${selectedHeading}-weight`, patch.weight.toString());
     if (patch.lineHeight !== undefined) onStyleChange(`--${selectedHeading}-lh`, patch.lineHeight.toString());
