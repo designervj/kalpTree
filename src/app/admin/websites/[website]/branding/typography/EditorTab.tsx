@@ -23,6 +23,7 @@ import {
   ShadePanelOverlay,
   Toast,
 } from "./ShadePanelOverlay";
+
 import { ChevronLeft, Copy, LayoutGrid, Lock, Unlock } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -38,10 +39,7 @@ export function EditorTab({
   onCancel: () => void;
 }) {
   const defaultSeed = editingPalette?.seed || "#1F6F43";
-
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
-
 
   const [name, setName] = useState(editingPalette?.name || "");
   const [hexSeed, setHexSeed] = useState(defaultSeed);
@@ -49,6 +47,7 @@ export function EditorTab({
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [toast, setToast] = useState("");
+  const [isGlobal, setIsGlobal] = useState(editingPalette?.isGlobal || false);
 
   // stable base
   const [baseAnalogous, setBaseAnalogous] = useState<string[]>(() =>
@@ -184,7 +183,6 @@ export function EditorTab({
     }
   };
 
-  // ✅ LOCAL STATE SAVE (no window.storage)
   const handleSave = async () => {
     if (!currentBusiness) return;
     try {
@@ -197,7 +195,10 @@ export function EditorTab({
         name: name.trim(),
         seed: hexSeed,
         colors: { brand, buttons: btns },
+        isGlobal,
       };
+
+      const json = JSON.stringify(palette);
 
       let req;
 
@@ -206,7 +207,10 @@ export function EditorTab({
           `/api/admin/color-pallet?tenantId=${currentBusiness._id}&palletId=${editingPalette._id}`,
           {
             method: "PUT",
-            body: JSON.stringify(palette),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: json,
           },
         );
       } else {
@@ -214,7 +218,10 @@ export function EditorTab({
           `/api/admin/color-pallet?tenantId=${currentBusiness._id}`,
           {
             method: "POST",
-            body: JSON.stringify(palette),
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: json,
           },
         );
       }
@@ -243,7 +250,6 @@ export function EditorTab({
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <Toast text={toast || msg} />
-
       {/* Editor Header */}
       <div
         className="px-5 py-3 border-b flex items-center gap-3"
@@ -269,6 +275,29 @@ export function EditorTab({
             color: "#111827",
           }}
         />
+
+        <div className="flex items-center gap-3">
+          <span className="text-[13px] font-semibold text-slate-700">
+            Global Palette
+          </span>
+
+          <button
+            onClick={() => setIsGlobal((prev: boolean) => !prev)}
+            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+              isGlobal ? "bg-emerald-600" : "bg-slate-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                isGlobal ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+
+          <span className="text-[12px] font-medium text-slate-600">
+            {isGlobal ? "Enabled" : "Disabled"}
+          </span>
+        </div>
 
         {/* Seed + Derive */}
         <div
@@ -371,7 +400,10 @@ export function EditorTab({
       </div>
 
       {/* Content */}
-      <div className="flex-1 h-auto p-5 rounded-b-lg" style={{ background: "#F3F5F9" }}>
+      <div
+        className="flex-1 h-auto p-5 rounded-b-lg"
+        style={{ background: "#F3F5F9" }}
+      >
         {/* BRAND */}
         {section === "brand" && (
           <div

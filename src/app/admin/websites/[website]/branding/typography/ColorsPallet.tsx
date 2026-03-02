@@ -51,7 +51,6 @@ export type SelectedToken =
    Main studio (LOCAL STATE ONLY)
 ───────────────────────────────────────────── */
 export default function ColorPaletteStudio() {
-  const { currentWebsite } = useSelector((state: RootState) => state.websites);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
   const [tab, setTab] = useState<"all" | "edit">("all");
@@ -80,18 +79,31 @@ export default function ColorPaletteStudio() {
   }, [currentBusiness]);
 
   const handleSave = (p: any) => {
-    if (!editing) {
-      setPalettes((prev) =>
-        prev.find((x) => x._id === p._id)
+    setPalettes((prev) => {
+      let updated: any[];
+
+      if (!editing) {
+        const exists = prev.find((x) => x._id === p._id);
+
+        updated = exists
           ? prev.map((x) => (x._id === p._id ? p : x))
-          : [p, ...prev],
-      );
-    } else {
-      const copied = structuredClone(palettes);
-      const findIndex = copied.findIndex((d) => d._id == editing._id);
-      copied[findIndex] = p;
-      setPalettes(copied);
-    }
+          : [p, ...prev];
+      } else {
+        updated = prev.map((x) => (x._id === editing._id ? p : x));
+      }
+
+      // 🔥 Ensure only one global palette
+      if (p.isGlobal) {
+        updated = updated.map((x) =>
+          x._id === p._id
+            ? { ...x, isGlobal: true }
+            : { ...x, isGlobal: false },
+        );
+      }
+
+      return updated;
+    });
+
     setTab("all");
     setEditing(null);
   };

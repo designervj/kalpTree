@@ -10,14 +10,6 @@ export async function GET(req: NextRequest) {
 
     let allPallets = await colorpalletColl.find().toArray();
 
-    // if (websiteId) {
-    //   const websiteColl = await getCollection("websites");
-    //   const website = await websiteColl.findOne({
-    //     _id: new ObjectId(websiteId),
-    //   });
-    //   allPallets = [...website.branding, ...allPallets];
-    // }
-
     if (allPallets.length > 0) {
       return NextResponse.json({
         message: "Successfully fetched",
@@ -42,43 +34,58 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const searchParams = req.nextUrl.searchParams;
-    const tenantId = searchParams.get("websiteId");
+    const tenantId = searchParams.get("tenantId");
 
-    if (tenantId) {
-      const tenantColl = await getCollection("tenants");
+    if (!tenantId) {
+      return NextResponse.json({
+        message: "TenantId required",
+        success: false,
+      });
+    }
 
-      const _id = new ObjectId();
+    const tenantColl = await getCollection("tenants");
+    const _id = new ObjectId();
 
-      const updateColorsInWebsite = await tenantColl.updateOne(
+    // 🔥 If new one is global → make all others false first
+    if (body.isGlobal) {
+      await tenantColl.updateOne(
         { _id: new ObjectId(tenantId) },
         {
-          $push: {
-            "website.branding.colors": {
-              ...body,
-              _id,
-            },
+          $set: {
+            "website.branding.colors.$[].isGlobal": false,
           },
         },
       );
-
-      if (updateColorsInWebsite.acknowledged) {
-        return NextResponse.json({
-          message: "Successfully Added",
-          success: true,
-          data: _id,
-        });
-      } else {
-        return NextResponse.json({
-          message: "Adding Unsuccessfull",
-          success: false,
-          data: _id,
-        });
-      }
-    } else {
     }
+
+    // Now push new color
+    const updateColorsInWebsite = await tenantColl.updateOne(
+      { _id: new ObjectId(tenantId) },
+      {
+        $push: {
+          "website.branding.colors": {
+            ...body,
+            _id,
+          },
+        },
+      },
+    );
+
+    if (updateColorsInWebsite.acknowledged) {
+      return NextResponse.json({
+        message: "Successfully Added",
+        success: true,
+        data: _id,
+      });
+    }
+
+    return NextResponse.json({
+      message: "Adding Unsuccessful",
+      success: false,
+    });
   } catch (error) {
     return NextResponse.json({
-      message: "Failed to Find Colors",
+      message: "Failed to Add Colors",
       success: false,
     });
   }
@@ -93,6 +100,17 @@ export async function PUT(req: NextRequest) {
 
     if (tenantId && palletId) {
       const tenantColl = await getCollection("tenants");
+
+      if (body.isGlobal) {
+        await tenantColl.updateOne(
+          { _id: new ObjectId(tenantId) },
+          {
+            $set: {
+              "website.branding.colors.$[].isGlobal": false,
+            },
+          },
+        );
+      }
 
       const updateColorsInWebsite = await tenantColl.updateOne(
         {
