@@ -12,7 +12,6 @@ import { setPageEdit, setPageLoading } from "@/hooks/slices/pageEditSlice";
 import { AiChatModal } from "./aiChatModel/AiChatModal";
 import {
   extractHtmlParts,
-  extractScripts,
   extractStyles,
   wrapScripts,
 } from "@/lib/utils";
@@ -56,6 +55,7 @@ export default function GrapesJSEditor() {
   const [recentBlocks, setRecentBlocks] = useState<string[]>([]);
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const dirtyContentRef = useRef(false);
   const [isAddPage, setIsAddPage] = useState(false);
   const dispatch = require("react-redux").useDispatch();
   const {
@@ -72,6 +72,12 @@ export default function GrapesJSEditor() {
 
   const lastPageIdRef = useRef<string | null>(null);
   const contentLoadedRef = useRef<boolean>(false);
+  const isTrustedEditorMessage = (event: MessageEvent) => {
+    if (event.origin !== window.location.origin) return false;
+    if (event.source !== window && event.source !== window.parent) return false;
+    if (!event.data || typeof event.data !== "object") return false;
+    return true;
+  };
 
   // Reactive global style updates
   useEffect(() => {
@@ -84,7 +90,7 @@ export default function GrapesJSEditor() {
         currentBusiness?.website?.globalStyle || currentStyle?.globalStyle;
       actions.setGlobalStyles(globalStyle);
     }
-  }, [state.editor, currentBusiness?.website?.globalStyle]);
+  }, [state.editor, currentBusiness?.website?.globalStyle, currentStyle?.globalStyle]);
 
   // Trigger loading state when page content changes
   useEffect(() => {
@@ -152,12 +158,13 @@ export default function GrapesJSEditor() {
           const pageParts = extractHtmlParts(data);
           let body = pageParts.body;
           let styles = pageParts.styles;
-          let scripts = extractScripts(data);
-          console.log("scripts===>", scripts);
+          let scripts = [...(pageParts.scripts || [])];
+          let externalScripts = [...(pageParts.externalScripts || [])];
           // If we are editing a normal page (not header/footer), prepend the site header
           if (type !== "header" && type !== "footer" && headerData) {
             const headerParts = extractHtmlParts(headerData);
-            const headerScripts = extractScripts(headerData);
+            const headerScripts = headerParts.scripts || [];
+            const headerExternalScripts = headerParts.externalScripts || [];
             // Merge styles
             if (headerParts.styles) {
               styles = `${headerParts.styles}\n${styles}`;
@@ -166,6 +173,9 @@ export default function GrapesJSEditor() {
             // Merge scripts
             if (headerScripts && headerScripts.length > 0) {
               scripts = [...headerScripts, ...scripts];
+            }
+            if (headerExternalScripts && headerExternalScripts.length > 0) {
+              externalScripts = [...headerExternalScripts, ...externalScripts];
             }
 
             // Combine bodies with wrappers
@@ -202,10 +212,11 @@ export default function GrapesJSEditor() {
           // Wrap the combined scripts
           const jsWrapped = wrapScripts(scripts);
 
-          if (jsWrapped && typeof state.editor.setJs === "function") {
-            state.editor.setJs(jsWrapped);
-            setEditorJs(jsWrapped);
+          if (typeof state.editor.setJs === "function") {
+            state.editor.setJs(jsWrapped || "");
+            setEditorJs(jsWrapped || "");
           }
+          injectScriptsIntoCanvas(state.editor, jsWrapped || "", externalScripts);
 
           // Refresh layers after content is loaded
 
@@ -278,31 +289,45 @@ export default function GrapesJSEditor() {
 
   useEffect(() => {
     if (!state.editor) return;
-    const updateHandler = () => {
-      // Debounce updates to the UI state to prevent excessive re-renders
-      if (timerRef.current) clearTimeout(timerRef.current);
-
-      timerRef.current = setTimeout(() => {
-        if (!state.editor) return;
-        const html = state.editor.getHtml();
-        const css = state.editor.getCss() || "";
-        const js = state.editor.getJs ? state.editor.getJs() : "";
-
-        setEditorHtml(html);
-        setEditorCss(css);
-        setEditorJs(js || "");
-      }, 500);
+    const markDirty = () => {
+      dirtyContentRef.current = true;
     };
-    state.editor.on("component:update", updateHandler);
-    state.editor.on("style:update", updateHandler);
-    state.editor.on("storage:store", updateHandler);
+
+    const syncEditorSnapshot = () => {
+      if (!state.editor || !dirtyContentRef.current) return;
+      const html = state.editor.getHtml();
+      const css = state.editor.getCss() || "";
+      const js = state.editor.getJs ? state.editor.getJs() : "";
+      setEditorHtml(html);
+      setEditorCss(css);
+      setEditorJs(js || "");
+      dirtyContentRef.current = false;
+    };
+
+    const throttledSync = () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(syncEditorSnapshot, 250);
+    };
+
+    const intervalId = setInterval(syncEditorSnapshot, 1500);
+
+    state.editor.on("component:update", markDirty);
+    state.editor.on("component:add", markDirty);
+    state.editor.on("component:remove", markDirty);
+    state.editor.on("style:update", markDirty);
+    state.editor.on("script:update", markDirty);
+    state.editor.on("storage:store", throttledSync);
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      state.editor.off("component:update", updateHandler);
-      state.editor.off("style:update", updateHandler);
-      state.editor.off("storage:store", updateHandler);
+      clearInterval(intervalId);
+      state.editor.off("component:update", markDirty);
+      state.editor.off("component:add", markDirty);
+      state.editor.off("component:remove", markDirty);
+      state.editor.off("style:update", markDirty);
+      state.editor.off("script:update", markDirty);
+      state.editor.off("storage:store", throttledSync);
     };
-  }, [state.editor, dispatch]);
+  }, [state.editor]);
   // ─────────────────────────────
   // Import HTML modal
   // ─────────────────────────────
@@ -400,7 +425,7 @@ export default function GrapesJSEditor() {
   const handleSelectTemplate = (content: string, append = false) => {
     if (!state.editor) return;
 
-    const { body, scripts, styles } = extractHtmlParts(content);
+    const { body, scripts, styles, externalScripts } = extractHtmlParts(content);
     // romovve the root style
     console.log("editorJs--", editorJs);
 
@@ -451,6 +476,17 @@ export default function GrapesJSEditor() {
             setEditorJs(updatedJs);
           }
         }
+        injectScriptsIntoCanvas(
+          state.editor,
+          updatedJs,
+          externalScripts || [],
+        );
+      } else {
+        injectScriptsIntoCanvas(
+          state.editor,
+          editorJs || "",
+          externalScripts || [],
+        );
       }
     } else {
       setIsAddPage(false);
@@ -469,11 +505,13 @@ export default function GrapesJSEditor() {
           (state.editor as any).setJs(jsCode);
           setEditorJs(jsCode);
         }
+        injectScriptsIntoCanvas(state.editor, jsCode, externalScripts || []);
       } else {
         if (typeof (state.editor as any).setJs === "function") {
           (state.editor as any).setJs("");
           setEditorJs("");
         }
+        injectScriptsIntoCanvas(state.editor, "", externalScripts || []);
       }
 
       setEditorHtml(body);
@@ -493,6 +531,7 @@ export default function GrapesJSEditor() {
       } else if (state.editor.StorageManager) {
         state.editor.StorageManager.store({ jsCode: "" });
       }
+      injectScriptsIntoCanvas(state.editor, "");
       console.log("caling clear canvas");
       setEditorHtml("");
       setEditorCss("");
@@ -529,6 +568,7 @@ export default function GrapesJSEditor() {
     if (!state.editor?.setJs) return;
     state.editor.setJs(js);
     setEditorJs(js);
+    injectScriptsIntoCanvas(state.editor, js);
   };
 
   // ─────────────────────────────
@@ -697,11 +737,49 @@ export default function GrapesJSEditor() {
 
   const [open, setOpen] = useState(false);
   const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
+  const injectScriptsIntoCanvas = (
+    editor: any,
+    inlineJs: string,
+    externalScripts: string[] = [],
+  ) => {
+    const frame = editor?.Canvas?.getFrameEl?.();
+    const doc = frame?.contentDocument;
+    if (!doc) return;
+
+    const existingExternal = new Set(
+      Array.from(doc.querySelectorAll('script[data-kalp-ext-script="true"]'))
+        .map((el) => (el as HTMLScriptElement).src)
+        .filter(Boolean),
+    );
+
+    externalScripts
+      .filter((src) => typeof src === "string" && src.trim())
+      .forEach((src) => {
+        const normalizedSrc = src.trim();
+        const absoluteSrc = new URL(normalizedSrc, window.location.origin).href;
+        if (existingExternal.has(absoluteSrc)) return;
+
+        const scriptEl = doc.createElement("script");
+        scriptEl.src = normalizedSrc;
+        scriptEl.async = false;
+        scriptEl.setAttribute("data-kalp-ext-script", "true");
+        doc.head.appendChild(scriptEl);
+      });
+
+    doc.getElementById("kalptree-inline-runtime")?.remove();
+    if (!inlineJs.trim()) return;
+
+    const runtimeScript = doc.createElement("script");
+    runtimeScript.id = "kalptree-inline-runtime";
+    runtimeScript.text = inlineJs;
+    doc.body.appendChild(runtimeScript);
+  };
 
   // callink function on As Section
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
-      if (typeof event.data !== "object" || !event.data.type) return;
+      if (!isTrustedEditorMessage(event)) return;
+      if (!event.data.type) return;
 
       if (event.data.type === "OPEN_TEMPLATE_MANAGER") {
         setInsertionIndex(event.data.index ?? null);

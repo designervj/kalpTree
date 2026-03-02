@@ -1,10 +1,13 @@
 
 import TypographyPage from "@/app/admin/websites/[website]/branding/typography/StaticTypography";
 import { Palette, Upload } from "lucide-react";
+import AllColorPallets from "./AllColorPallets";
+import ShowTropography from "../branding/tropography/ShowTropography";
 
 export const Brandingdetails = ({ logoPreview, handleInputChange }: any) => {
   return (
     <div className="space-y-6">
+       
       <div className="bg-gray-100 p-6 rounded-xl border border-indigo-100">
         <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
           <Upload className="w-5 h-5 text-indigo-600" />
@@ -48,6 +51,8 @@ export const Brandingdetails = ({ logoPreview, handleInputChange }: any) => {
           </div>
         </div>
       </div>
+      <AllColorPallets/>
+      {/* <ShowTropography/> */}
       <TypographyPage type={"onboard"} handleInputChange={handleInputChange} />
     </div>
   );
