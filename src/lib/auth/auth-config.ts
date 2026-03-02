@@ -58,17 +58,13 @@ export const authConfig: NextAuthConfig = {
           const getWebsite = await tenantService.getWebsiteByDomain(
             credentials?.domain as string,
           );
-          console.log(
-            "getWebsite--->",
-            getWebsite?._id?.toString(),
-            user.tenantId?.toString(),
-          );
 
           if (!getWebsite) {
             throw new DomainNotFoundError();
           }
 
-          if (getWebsite?._id?.toString() !== user.tenantId?.toString()) {
+          if ( getWebsite?._id?.toString() !== user.tenantId?.toString()) {
+                if(user?.role!="agency")
             throw new InvalidDomainError();
           }
 

@@ -14,8 +14,9 @@ import { setCurrentWebsite } from "@/hooks/slices/websites/WebsiteSlice";
 
 import { useRouter } from "next/navigation";
 import ComingSoonPage from "@/components/comingsoon/ComingSoonPage";
-import { setUser } from "@/hooks/slices/user/userSlice";
+
 import { fetchWebsitePages } from "@/hooks/slices/website/WebsitePageThunk";
+import { setUser } from "@/hooks/slices/user/userSlice";
 
 type props = {
   html: string;

@@ -745,7 +745,7 @@ export function UserForm() {
               </button> : <button
                 onClick={handleSubmit}
                 disabled={loading}
-                // className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
                 {loading ? "Creating..." : "Create User"}
               </button>}

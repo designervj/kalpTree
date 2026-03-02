@@ -27,13 +27,13 @@ const ShowAllUser = () => {
           id: user._id?.toString(),
         }
       })
-    } else if (user && user.role == "agency" && allBusiness.length > 0) {
+    } else if (user && user.role == "agency" && allBusiness.length > 0 &&alluser.length > 0) {
       // getAll Businessid
       const business = allBusiness.map((business) => {
         return business._id?.toString()
       })
       console.log("allBusiness", allBusiness)
-      return alluser.filter((user) => {
+      return alluser?.filter((user) => {
         console.log("user", user)
         return user.role == "business" && business.includes(user.tenantId?.toString())
       }).map((user) => {
