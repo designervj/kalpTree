@@ -89,7 +89,7 @@ export function PaletteCard({
         brand.secondary,
         brand.accent,
         brand.border,
-        brand.dark,
+        brand.background,
         brand.text,
       ]
     : ["#111827", "#374151", "#9CA3AF", "#E5E7EB", "#0B1220", "#111827"];

@@ -79,14 +79,13 @@ export function generateMonoShades(hex: string) {
   ].map((l) => hslToHex(h, Math.min(s, 85), l));
 }
 
-
 export function deriveBrand(an: string[], sh: string[][]): BrandTokens {
   const m = 3;
   return {
     primary: an[m],
     secondary: an[m - 1],
     accent: sh[m]?.[1] ?? an[m + 2],
-    dark: sh[m]?.[12] ?? an[0],
+    background: sh[m]?.[12] ?? an[0],
     text: sh[m]?.[14] ?? "#111827",
     mutedText: sh[m]?.[10] ?? an[m - 1],
     border: sh[m]?.[6] ?? an[m + 2],
@@ -94,10 +93,13 @@ export function deriveBrand(an: string[], sh: string[][]): BrandTokens {
   };
 }
 
-export function deriveButtons(brand: BrandTokens, sh: string[][]): ButtonTokens {
+export function deriveButtons(
+  brand: BrandTokens,
+  sh: string[][],
+): ButtonTokens {
   const m = 3;
   const primaryBg = brand.primary;
-  const primaryHover = sh[m]?.[12] ?? brand.dark;
+  const primaryHover = sh[m]?.[12] ?? brand.background;
 
   const secondaryBg = sh[m]?.[1] ?? brand.accent;
   const secondaryHover = sh[m]?.[2] ?? brand.accent;
@@ -141,4 +143,3 @@ export function safeHex(v: string) {
   const cleaned = s.replace(/[^0-9a-fA-F]/g, "").slice(0, 6);
   return `#${cleaned.toUpperCase()}`;
 }
-
