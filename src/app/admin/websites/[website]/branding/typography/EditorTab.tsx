@@ -1014,6 +1014,7 @@ export function EditorTab({
     }
   };
 
+
   const handleSave = async () => {
     if (!currentBusiness) return;
     try {
@@ -1035,7 +1036,7 @@ export function EditorTab({
 
       if (editingPalette) {
         req = await fetch(
-          `/api/admin/color-pallet?tenantId=${currentBusiness._id}&palletId=${editingPalette._id}`,
+          `/api/admin/color-pallet?tenantId=${currentBusiness._id}&palletId=${editingPalette._id}&type=normal`,
           {
             method: "PUT",
             headers: {
@@ -1046,7 +1047,7 @@ export function EditorTab({
         );
       } else {
         req = await fetch(
-          `/api/admin/color-pallet?tenantId=${currentBusiness._id}`,
+          `/api/admin/color-pallet?tenantId=${currentBusiness._id}&type=normal`,
           {
             method: "POST",
             headers: {
@@ -1243,7 +1244,7 @@ export function EditorTab({
           >
             <div className="h-[56vh] min-h-[420px] flex">
               {brandEntries.map(([key, color]) => {
-                console.log(key,color)
+                console.log(key, color);
                 const tokenKey = `brand:${String(key)}`;
                 const isSelected =
                   selected?.type === "brand" && selected.key === key;

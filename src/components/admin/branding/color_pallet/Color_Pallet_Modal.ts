@@ -20,4 +20,5 @@ export interface ColorPalletModal {
   fontType?: string;
   seed?: string;
   colors: colorModal;
+  isGlobal?: boolean;
 }

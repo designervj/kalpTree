@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const searchParams = req.nextUrl.searchParams;
     const tenantId = searchParams.get("tenantId");
+    const type = searchParams.get("type");
 
     if (!tenantId) {
       return NextResponse.json({
@@ -43,11 +44,14 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    const isGlobal =
+      type == "typography" ? body.colors.isGlobal : body.isGlobal;
+
     const tenantColl = await getCollection("tenants");
     const _id = new ObjectId();
 
     // 🔥 If new one is global → make all others false first
-    if (body.isGlobal) {
+    if (isGlobal) {
       await tenantColl.updateOne(
         { _id: new ObjectId(tenantId) },
         {
@@ -58,17 +62,35 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Now push new color
-    const updateColorsInWebsite = await tenantColl.updateOne(
-      { _id: new ObjectId(tenantId) },
-      {
+    let updateObj = {};
+
+    if (type == "typography") {
+      updateObj = {
+        $push: {
+          "website.branding.colors": {
+            ...body.colors,
+            _id,
+          },
+        },
+        $set: {
+          "website.globalStyle": body.global_css,
+        },
+      };
+    } else {
+      updateObj = {
         $push: {
           "website.branding.colors": {
             ...body,
             _id,
           },
         },
-      },
+      };
+    }
+
+    // Now push new color
+    const updateColorsInWebsite = await tenantColl.updateOne(
+      { _id: new ObjectId(tenantId) },
+      updateObj,
     );
 
     if (updateColorsInWebsite.acknowledged) {
@@ -97,11 +119,15 @@ export async function PUT(req: NextRequest) {
     const searchParams = req.nextUrl.searchParams;
     const tenantId = searchParams.get("tenantId");
     const palletId = searchParams.get("palletId");
+    const type = searchParams.get("type");
 
     if (tenantId && palletId) {
       const tenantColl = await getCollection("tenants");
 
-      if (body.isGlobal) {
+      const isGlobal =
+        type == "typography" ? body.colors.isGlobal : body.isGlobal;
+
+      if (isGlobal) {
         await tenantColl.updateOne(
           { _id: new ObjectId(tenantId) },
           {
@@ -112,30 +138,46 @@ export async function PUT(req: NextRequest) {
         );
       }
 
-      const updateColorsInWebsite = await tenantColl.updateOne(
-        {
-          _id: new ObjectId(tenantId),
-          "website.branding.colors._id": new ObjectId(palletId),
-        },
-        {
+      let updateObj = body;
+
+      if (type == "typography") {
+        updateObj = {
+          $set: {
+            "website.globalStyle": body.global_css,
+            "website.branding.colors.$": {
+              ...body.colors,
+              _id: new ObjectId(palletId),
+            },
+          },
+        };
+      } else {
+        updateObj = {
           $set: {
             "website.branding.colors.$": {
               ...body,
               _id: new ObjectId(palletId),
             },
           },
+        };
+      }
+
+      const updateColorsInWebsite = await tenantColl.updateOne(
+        {
+          _id: new ObjectId(tenantId),
+          "website.branding.colors._id": new ObjectId(palletId),
         },
+        updateObj,
       );
 
       if (updateColorsInWebsite.acknowledged) {
         return NextResponse.json({
-          message: "Successfully Added",
+          message: "Successfully Updated",
           success: true,
           data: palletId,
         });
       } else {
         return NextResponse.json({
-          message: "Adding Unsuccessfull",
+          message: "Update Unsuccessfull",
           success: false,
         });
       }

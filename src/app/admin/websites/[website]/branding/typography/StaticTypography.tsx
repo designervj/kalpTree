@@ -1,5 +1,3 @@
-
-
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -16,6 +14,9 @@ import {
   Sun,
   Moon,
   Save,
+  ChevronDown,
+  Plus,
+  Globe,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,14 @@ import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColo
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 import { ColorPicker } from "@/components/editor/color-picker/color-picker";
 import AllColorPallets from "@/components/admin/users/AllColorPallets";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 /* -----------------------------
   Types
@@ -728,22 +737,66 @@ export default function TypographyPage({
   ───────────────────────────────────────── */
   const ROOT_CSS = root_css;
 
-  const handleSaveGlobalCss = async () => {
+  const handleSaveGlobalCss = async (type: string = "new") => {
     try {
-      const req = await fetch(
-        `/api/websites?websiteId=${currentBusiness?._id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify(ROOT_CSS),
-        },
-      );
+      let res;
+      if (type === "new") {
+        const palette = {
+          name: "Random Name",
+          seed: brand.primary,
+          colors: { brand, buttons: buttonColors },
+          isGlobal: true,
+        };
+        const body = {
+          colors: palette,
+          global_css: ROOT_CSS,
+        };
 
-      const res = await req.json();
+        let req = await fetch(
+          `/api/admin/color-pallet?tenantId=${currentBusiness?._id}&type=typography`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          },
+        );
+
+        res = await req.json();
+      } else {
+        const global = currentBusiness?.website?.branding.colors.find((d) => {
+          return d.isGlobal;
+        });
+        const palette = {
+          name: global?.name,
+          seed: global?.seed,
+          colors: { brand, buttons: buttonColors },
+          isGlobal: true,
+        };
+        const body = {
+          colors: palette,
+          global_css: ROOT_CSS,
+        };
+
+        let req = await fetch(
+          `/api/admin/color-pallet?tenantId=${currentBusiness?._id}&palletId=${global?._id}&type=typography`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          },
+        );
+
+        res = await req.json();
+      }
 
       if (res.success) {
-        toast.success("Successfully Saved");
+        toast.success(res.message);
       } else {
-        toast.warning("Saved Unsuccessfull");
+        toast.warning(res.message);
       }
     } catch (error) {
       console.error(error);
@@ -2457,19 +2510,42 @@ export default function TypographyPage({
               </Button>
 
               {!type && type !== "onboard" && (
-                <Button
-                  size="sm"
-                  variant={rightPanel === "root" ? "secondary" : "default"}
-                  onClick={() => handleSaveGlobalCss()}
-                  className="gap-2"
-                >
-                  <Save className="h-4 w-4" />
-                  Save
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      variant={rightPanel === "root" ? "secondary" : "default"}
+                      className="gap-2"
+                    >
+                      <Save className="h-4 w-4" />
+                      Save
+                      <ChevronDown className="h-4 w-4 opacity-80" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="end" className="w-44">
+                    <DropdownMenuLabel>Save options</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                      onClick={() => handleSaveGlobalCss("global")}
+                    >
+                      <Globe className="mr-2 h-4 w-4" />
+                      Save Global
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem
+                      onClick={() => handleSaveGlobalCss("new")}
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Save New
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </div>
           </div>
-    
+
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* LEFT */}
             <div className="lg:col-span-4 space-y-6">
