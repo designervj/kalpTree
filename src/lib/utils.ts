@@ -209,13 +209,22 @@ export function buildCategoryTree(categories: any) {
 }
 
 export function extractHtmlParts(html: string) {
+  // Normalize commonly escaped script tags coming from serialized HTML content.
+  // This keeps script extraction consistent for inputs like "\x3C/script>" or "<\/script>".
+  const normalizedHtml = html
+    .replace(/\\x3C\/script>/gi, "</script>")
+    .replace(/\\x3Cscript/gi, "<script")
+    .replace(/<\\\/script>/gi, "</script>")
+    .replace(/<\\script/gi, "<script");
+
   let styles = "";
   let scripts: string[] = [];
   let externalScripts: string[] = [];
-  let body = html;
+  let headTags: string[] = [];
+  let body = normalizedHtml;
 
   // 1. Extract all <style> tags
-  const styleMatches = html.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
+  const styleMatches = normalizedHtml.match(/<style[^>]*>([\s\S]*?)<\/style>/gi);
 
   if (styleMatches) {
     styles = styleMatches
@@ -227,7 +236,7 @@ export function extractHtmlParts(html: string) {
   }
 
   // 2. Extract all <script> tags
-  const scriptMatches = html.match(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi);
+  const scriptMatches = normalizedHtml.match(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi);
 
   if (scriptMatches) {
     scriptMatches.forEach((scriptTag) => {
@@ -248,10 +257,35 @@ export function extractHtmlParts(html: string) {
     body = body.replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "");
   }
 
-  // 3. Remove <body> wrapper if present
-  body = body.replace(/<\/?body[^>]*>/gi, "").trim();
+  // 3. Extract <meta>, <link>, and <title> tags that belong in <head>
+  // These self-closing or paired tags should be moved to <head>
+  const metaMatches = body.match(/<meta\b[^>]*\/?>/gi);
+  if (metaMatches) {
+    headTags.push(...metaMatches);
+    body = body.replace(/<meta\b[^>]*\/?>/gi, "");
+  }
 
-  return { styles, body, scripts, externalScripts };
+  const linkMatches = body.match(/<link\b[^>]*\/?>/gi);
+  if (linkMatches) {
+    headTags.push(...linkMatches);
+    body = body.replace(/<link\b[^>]*\/?>/gi, "");
+  }
+
+  const titleMatch = body.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+  if (titleMatch) {
+    headTags.push(titleMatch[0]);
+    body = body.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, "");
+  }
+
+  // 4. Remove <html>, <head>, <body> wrappers if present
+  body = body
+    .replace(/<\/?html[^>]*>/gi, "")
+    .replace(/<\/?head[^>]*>/gi, "")
+    .replace(/<\/?body[^>]*>/gi, "")
+    .replace(/<!DOCTYPE[^>]*>/gi, "")
+    .trim();
+
+  return { styles, body, scripts, externalScripts, headTags };
 }
 
 export const extractScripts = (html: string): string[] => {
@@ -277,30 +311,30 @@ export const extractStyles = (htmlContent: string): string => {
 
 
 export const wrapScripts = (scripts: string[]): string => {
-    if (!scripts || scripts.length === 0) return "";
+  if (!scripts || scripts.length === 0) return "";
 
-    return scripts
-      .map((content: string) => {
-        const trimmed = content.trim();
-        if (!trimmed) return "";
+  return scripts
+    .map((content: string) => {
+      const trimmed = content.trim();
+      if (!trimmed) return "";
 
-        // Remove comments at the beginning to accurately check for IIFE
-        const codeOnly = trimmed
-          .replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "")
-          .trim();
+      // Remove comments at the beginning to accurately check for IIFE
+      const codeOnly = trimmed
+        .replace(/^\/\*[\s\S]*?\*\/|^\/\/.*/, "")
+        .trim();
 
-        // Check if it already looks like an IIFE to prevent double-wrapping
-        if (
-          codeOnly.startsWith("(function") ||
-          codeOnly.startsWith("(async function")
-        ) {
-          return trimmed;
-        }
-        return `(function(){ ${trimmed} })();`;
-      })
-      .filter((s: string) => s.trim())
-      .join("\n");
-  }
+      // Check if it already looks like an IIFE to prevent double-wrapping
+      if (
+        codeOnly.startsWith("(function") ||
+        codeOnly.startsWith("(async function")
+      ) {
+        return trimmed;
+      }
+      return `(function(){ ${trimmed} })();`;
+    })
+    .filter((s: string) => s.trim())
+    .join("\n");
+}
 
 
 export function groupAttributesByTitle(data: any) {

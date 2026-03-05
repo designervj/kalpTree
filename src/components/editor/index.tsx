@@ -56,6 +56,7 @@ export default function GrapesJSEditor() {
   const [favoriteBlocks, setFavoriteBlocks] = useState<string[]>([]);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const dirtyContentRef = useRef(false);
+  const scriptRuntimeSignatureRef = useRef<string>("");
   const [isAddPage, setIsAddPage] = useState(false);
   const dispatch = require("react-redux").useDispatch();
   const {
@@ -553,8 +554,19 @@ export default function GrapesJSEditor() {
     console.log("update html");
     if (!state.editor) return;
     console.log("html ---", html);
-    state.editor.setComponents(html);
-    setEditorHtml(html);
+    const { body, scripts, styles, externalScripts } = extractHtmlParts(html);
+    state.editor.setComponents(body || "");
+    if (styles) {
+      state.editor.setStyle(styles);
+      setEditorCss(styles);
+    }
+    const jsCode = wrapScripts(scripts || []);
+    if (typeof state.editor.setJs === "function") {
+      state.editor.setJs(jsCode || "");
+      setEditorJs(jsCode || "");
+    }
+    injectScriptsIntoCanvas(state.editor, jsCode || "", externalScripts || []);
+    setEditorHtml(body || "");
   };
 
   const handleUpdateCss = (css: string) => {
@@ -766,12 +778,31 @@ export default function GrapesJSEditor() {
         doc.head.appendChild(scriptEl);
       });
 
+    const signature = `${inlineJs.length}:${inlineJs.slice(0, 120)}:${externalScripts.join("|")}`;
+    if (signature === scriptRuntimeSignatureRef.current) return;
+    scriptRuntimeSignatureRef.current = signature;
+
     doc.getElementById("kalptree-inline-runtime")?.remove();
     if (!inlineJs.trim()) return;
 
     const runtimeScript = doc.createElement("script");
     runtimeScript.id = "kalptree-inline-runtime";
-    runtimeScript.text = inlineJs;
+    runtimeScript.text = `
+      (function () {
+        var run = function () {
+          try {
+            ${inlineJs}
+          } catch (e) {
+            console.error("KalpTree canvas runtime error:", e);
+          }
+        };
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", run, { once: true });
+        } else {
+          requestAnimationFrame(run);
+        }
+      })();
+    `;
     doc.body.appendChild(runtimeScript);
   };
 

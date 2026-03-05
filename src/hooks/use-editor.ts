@@ -2515,10 +2515,66 @@ export function useEditor(containerId: string) {
 
     importCode: (code: string, append = false) => {
       if (editorRef.current) {
+        const { body, styles, scripts, externalScripts } = extractParts(code);
+        const jsCode = scripts && scripts.length > 0 ? scripts.join("\n") : "";
+        const frame = (editorRef.current as any).Canvas?.getFrameEl?.();
+        const doc = frame?.contentDocument;
+
+        if (styles) {
+          editorRef.current.setStyle(styles);
+        }
+
+        if (doc && externalScripts && externalScripts.length > 0) {
+          externalScripts.forEach((src) => {
+            if (typeof src !== "string" || !src.trim()) return;
+            const normalized = src.trim();
+            const abs = new URL(normalized, window.location.origin).href;
+            const exists = Array.from(
+              doc.querySelectorAll('script[data-kalp-import-script="true"]'),
+            ).some((el) => (el as HTMLScriptElement).src === abs);
+            if (exists) return;
+            const s = doc.createElement("script");
+            s.src = normalized;
+            s.async = false;
+            s.setAttribute("data-kalp-import-script", "true");
+            doc.head.appendChild(s);
+          });
+        }
+
         if (append) {
-          editorRef.current.addComponents(code);
+          editorRef.current.addComponents(body || "");
         } else {
-          editorRef.current.setComponents(code);
+          editorRef.current.setComponents(body || "");
+        }
+
+        if (typeof (editorRef.current as any).setJs === "function") {
+          (editorRef.current as any).setJs(jsCode || "");
+          setState((prev) => ({ ...prev, editorJs: jsCode || "" }));
+        }
+
+        if (doc) {
+          doc.getElementById("kalptree-inline-import-runtime")?.remove();
+          if (jsCode.trim()) {
+            const inline = doc.createElement("script");
+            inline.id = "kalptree-inline-import-runtime";
+            inline.text = `
+              (function () {
+                var run = function () {
+                  try {
+                    ${jsCode}
+                  } catch (e) {
+                    console.error("KalpTree import runtime error:", e);
+                  }
+                };
+                if (document.readyState === "loading") {
+                  document.addEventListener("DOMContentLoaded", run, { once: true });
+                } else {
+                  requestAnimationFrame(run);
+                }
+              })();
+            `;
+            doc.body.appendChild(inline);
+          }
         }
       }
     },
