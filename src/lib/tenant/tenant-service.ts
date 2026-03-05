@@ -266,7 +266,7 @@ export class TenantService {
          }
       });
     }
-       console.log("orConditions====", orConditions);
+     
     const doc = await collection.findOne({
       $or: orConditions,
     });
