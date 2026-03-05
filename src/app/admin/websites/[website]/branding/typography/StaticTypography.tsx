@@ -34,8 +34,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import ColorPallet from "./ColorPallet";
 import { FontUploader } from "./Fontuploader";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store/store";
 import { transformRawToGlobalStyleModel } from "@/components/editor/style-editor/GlobalStyelModel";
 import { toast } from "sonner";
 import GetAlColorPallet from "@/components/admin/branding/color_pallet/GetAlColorPallet";
@@ -50,6 +50,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { setPalettes } from "@/hooks/slices/business/BusinessSlice";
 
 /* -----------------------------
   Types
@@ -296,15 +297,13 @@ export default function TypographyPage({
   /* LEFT tabs */
   const [leftTab, setLeftTab] = useState<LeftTab>("colors");
 
-  // const { currentWebsite } = useSelector((state: RootState) => state.websites);
-
   const { currentBusiness } = useSelector((state: RootState) => state.business);
-  const { colorPallets, isFetched } = useSelector(
-    (state: RootState) => state.colorPallet,
-  );
+
   const data = transformRawToGlobalStyleModel(
     currentBusiness?.website?.globalStyle || "",
   );
+
+  const dispatch = useDispatch<AppDispatch>();
 
   // Currently whats happening is dark is named in css as --background but i want the dark also named as background not the dark mode i am talking about variable dark. The function also called has dark named variable set so i just want that variable to be named as background instead dark so it is good.
 
@@ -732,6 +731,29 @@ export default function TypographyPage({
     return match ? match[1].trim() : rawHtml.trim();
   }
 
+  const palletReturn = (prev: any, editing: any, p: any) => {
+    let updated: any[];
+
+    if (!editing) {
+      const exists = prev.find((x: any) => x._id === p._id);
+
+      updated = exists
+        ? prev.map((x: any) => (x._id === p._id ? p : x))
+        : [p, ...prev];
+    } else {
+      updated = prev.map((x: any) => (x._id === editing._id ? p : x));
+    }
+
+    // 🔥 Ensure only one global palette
+    if (p.isGlobal) {
+      updated = updated.map((x) =>
+        x._id === p._id ? { ...x, isGlobal: true } : { ...x, isGlobal: false },
+      );
+    }
+
+    return updated;
+  };
+
   /* ─────────────────────────────────────────
      ROOT CSS output
   ───────────────────────────────────────── */
@@ -764,6 +786,12 @@ export default function TypographyPage({
         );
 
         res = await req.json();
+        const final = palletReturn(
+          currentBusiness?.website?.branding.colors,
+          null,
+          palette,
+        );
+        dispatch(setPalettes(final));
       } else {
         const global = currentBusiness?.website?.branding.colors.find((d) => {
           return d.isGlobal;
@@ -791,6 +819,12 @@ export default function TypographyPage({
         );
 
         res = await req.json();
+        const final = palletReturn(
+          currentBusiness?.website?.branding.colors,
+          global,
+          palette,
+        );
+        dispatch(setPalettes(final));
       }
 
       if (res.success) {
@@ -811,9 +845,15 @@ export default function TypographyPage({
       currentBusiness?.website?.globalStyle || "",
     );
 
+    const global = currentBusiness?.website?.branding.colors.find(
+      (d) => d.isGlobal,
+    );
+
     setRoot_Css(cssOnly);
     // Brand colors
-    if (data.brand) {
+    if (global) {
+      setBrand(normalizeBrandColors(global.colors.brand));
+    } else {
       setBrand(normalizeBrandColors(data.brand));
     }
 
@@ -904,7 +944,8 @@ export default function TypographyPage({
     }
 
     // Button colors
-    const btnColors = data.buttonColors ?? data.buttons;
+    const btnColors =
+      global?.colors.buttons ?? data.buttonColors ?? data.buttons;
     if (btnColors) {
       setButtonColors({
         primary: {

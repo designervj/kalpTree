@@ -92,6 +92,12 @@ const businessSlice = createSlice({
     setError(state, action: PayloadAction<string | null>) {
       state.error = action.payload;
     },
+    setPalettes(state, action) {
+      if (state.currentBusiness && state.currentBusiness.website) {
+        state.currentBusiness.website.branding.colors = action.payload;
+      }
+    },
+  
   },
   extraReducers: (builder) => {
     builder
@@ -324,7 +330,8 @@ export const {
   setLoading,
   setError,
   addCreatedBusiness,
-  updateCurrentBusinessWebsiteGlobalStyle
+  updateCurrentBusinessWebsiteGlobalStyle,
+  setPalettes,
 } = businessSlice.actions;
 
 export default businessSlice.reducer;
