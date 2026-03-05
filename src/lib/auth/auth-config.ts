@@ -62,10 +62,12 @@ export const authConfig: NextAuthConfig = {
           if (!getWebsite) {
             throw new DomainNotFoundError();
           }
-
+          console.log("getWebsite id", getWebsite._id?.toString());
+          console.log("user tenant id", user.tenantId?.toString());
           if ( getWebsite?._id?.toString() !== user.tenantId?.toString()) {
                 if(user?.role!="agency")
-            throw new InvalidDomainError();
+              throw new InvalidDomainError();
+         
           }
 
           if (!gettenant) {
