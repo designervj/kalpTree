@@ -512,7 +512,7 @@ export const Businessdetails = ({
                     </div>
 
                     {isChecked && (
-                      <span className="absolute right-3 top-3 rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-semibold border border-primary-200">
+                      <span className="absolute right-3 top-3 rounded-full bg-primary/80 text-white px-3 py-1 text-xs font-semibold border border-accent00">
                         Selected
                       </span>
                     )}

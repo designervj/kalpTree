@@ -84,6 +84,7 @@ export default async function PageTemplate({
           slug: slug,
         });
       }
+      console.log("page", page);
       if (!lang && tenantData.website.lang) {
         lang = tenantData.website.lang.find(
           (d: any) => d.default == true,

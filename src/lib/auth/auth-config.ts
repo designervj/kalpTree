@@ -47,14 +47,15 @@ export const authConfig: NextAuthConfig = {
           if (!user || user.status !== "active") {
             throw new InvalidCredentialsError();
           }
-        
-          if(credentials?.domain==="kalptree.xyz"){
-            if(user?.role!="superadmin"){
+
+          const isMainDomainLogin = (credentials?.domain as string)?.endsWith("kalptree.xyz");
+          if (isMainDomainLogin) {
+            if (user?.role != "superadmin") {
               throw new InvalidDomainError();
             }
           }
-          if(credentials?.domain!="kalptree.xyz"){
-            if(user?.role=="superadmin"){
+          if (!isMainDomainLogin) {
+            if (user?.role == "superadmin") {
               throw new InvalidDomainError();
             }
           }
