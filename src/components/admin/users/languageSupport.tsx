@@ -93,12 +93,11 @@ export function LanguageSelector({ formData, handleInputChange }: any) {
               onClick={() => handleLanguageSelect(lang.code)}
               className={`
                 relative flex items-center gap-3 p-4 rounded-lg border-2 transition-all
-                ${
-                  selected
-                    ? defaultLang
-                      ? "border-blue-500 bg-blue-50 shadow-sm"
-                      : "border-primary-500 bg-primary-50 shadow-sm"
-                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
+                ${selected
+                  ? defaultLang
+                    ? "border-blue-500 bg-blue-50 shadow-sm"
+                    : "border-primary-500 bg-primary-50 shadow-sm"
+                  : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                 }
               `}
             >
@@ -118,9 +117,8 @@ export function LanguageSelector({ formData, handleInputChange }: any) {
                 <>
                   {/* Check badge */}
                   <div
-                    className={`absolute -top-2 -right-2 rounded-full p-1 ${
-                      defaultLang ? "bg-blue-600" : "bg-primary-600"
-                    } text-white`}
+                    className={`absolute -top-2 -right-2 rounded-full p-1 ${defaultLang ? "bg-blue-600" : "bg-primary-600"
+                      } text-white`}
                   >
                     <Check className="w-3 h-3" />
                   </div>
@@ -164,11 +162,10 @@ export function LanguageSelector({ formData, handleInputChange }: any) {
               return lang ? (
                 <span
                   key={langObj.name}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-sm font-medium ${
-                    langObj.default
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-sm font-medium ${langObj.default
                       ? "bg-blue-100 border-blue-300 text-blue-800"
-                      : "bg-white border-primary-200 text-gray-700"
-                  }`}
+                      : "bg-white border-accent00 text-gray-700"
+                    }`}
                 >
                   <span>{lang.flag}</span>
                   <span>{lang.name}</span>

@@ -62,7 +62,8 @@ function SignInForm() {
 
   useEffect(() => {
     const hostname = window.location.hostname;
-    if (hostname === "kalptree.xyz" || hostname === "localhost") {
+    const isKalpTreeDomain = hostname === "kalptree.xyz" || hostname.endsWith(".kalptree.xyz") || hostname === "localhost";
+    if (isKalpTreeDomain) {
       setIsMainDomain(true);
       setDomain("kalptree.xyz");
     } else {
