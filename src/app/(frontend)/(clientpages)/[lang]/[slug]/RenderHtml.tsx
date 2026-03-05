@@ -20,28 +20,35 @@ const RenderHtml = ({
   footerData,
   headerData,
 }: props) => {
+  const splitScriptIntoSections = (script: string): string[] => {
+    // The page scripts commonly use "/* ===== ... ===== */" separators.
+    const divider = /\/\*\s*=+[\s\S]*?=+\s*\*\//g;
+    const parts = script.split(divider).map((p) => p.trim()).filter(Boolean);
+    return parts.length ? parts : [script];
+  };
+
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeHeight, setIframeHeight] = useState("auto");
 
   // Extract content parts
   const mainParsed = useMemo(() => {
-    if (!html) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    const { body, scripts, externalScripts } = extractHtmlParts(html);
-    return { htmlWithoutScripts: body, scripts, externalScripts };
+    if (!html) return { htmlWithoutScripts: "", scripts: [], externalScripts: [], headTags: [] };
+    const { body, scripts, externalScripts, headTags } = extractHtmlParts(html);
+    return { htmlWithoutScripts: body, scripts, externalScripts, headTags };
   }, [html]);
 
   const headerParsed = useMemo(() => {
     const data = headerData?.content?.replace(/\\n/g, "").trim();
-    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    const { body, scripts, externalScripts } = extractHtmlParts(data);
-    return { htmlWithoutScripts: body, scripts, externalScripts };
+    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [], headTags: [] };
+    const { body, scripts, externalScripts, headTags } = extractHtmlParts(data);
+    return { htmlWithoutScripts: body, scripts, externalScripts, headTags };
   }, [headerData?.content]);
 
   const footerParsed = useMemo(() => {
     const data = footerData?.content?.replace(/\\n/g, "").trim();
-    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [] };
-    const { body, scripts, externalScripts } = extractHtmlParts(data);
-    return { htmlWithoutScripts: body, scripts, externalScripts };
+    if (!data) return { htmlWithoutScripts: "", scripts: [], externalScripts: [], headTags: [] };
+    const { body, scripts, externalScripts, headTags } = extractHtmlParts(data);
+    return { htmlWithoutScripts: body, scripts, externalScripts, headTags };
   }, [footerData?.content]);
 
   // Combined styles
@@ -51,6 +58,17 @@ const RenderHtml = ({
     const footerStyles = footerData?.content ? extractStyles(footerData.content) : '';
     return `${headerStyles}\n${mainStyles}\n${footerStyles}`;
   }, [html, headerData?.content, footerData?.content]);
+
+  // Combined head tags (meta, link, title)
+  const allHeadTags = useMemo(() => {
+    const tags = [
+      ...(mainParsed?.headTags || []),
+      ...(headerParsed?.headTags || []),
+      ...(footerParsed?.headTags || []),
+    ];
+    // Deduplicate by tag string
+    return Array.from(new Set(tags));
+  }, [mainParsed, headerParsed, footerParsed]);
 
   // Combined external scripts
   const allExternalScripts = useMemo(() => {
@@ -73,6 +91,11 @@ const RenderHtml = ({
     ];
   }, [headerParsed, mainParsed, footerParsed]);
 
+  const inlineScriptSections = useMemo(() => {
+    return allInlineScripts.flatMap((script) => splitScriptIntoSections(script));
+  }, [allInlineScripts]);
+  console.log("inlineScriptSections", inlineScriptSections);
+
   const isHeaderPresentInHtml = useMemo(() => {
     return isHeaderPresent(html);
   }, [html]);
@@ -87,7 +110,7 @@ const RenderHtml = ({
       ? footerParsed.htmlWithoutScripts
       : "";
 
-    console.log("allInlineScripts", allInlineScripts);
+
 
     return `
       <!DOCTYPE html>
@@ -95,6 +118,7 @@ const RenderHtml = ({
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
+          ${allHeadTags.join("\n          ")}
           <style>
             body { margin: 0; padding: 0; overflow-x: hidden; font-family: sans-serif; }
             #iframe-wrapper { display: flex; flex-direction: column; min-height: 100vh; }
@@ -117,15 +141,56 @@ const RenderHtml = ({
               return false;
             };
           </script>
-          ${allInlineScripts.map((s, i) => `
-            <script id="script-${i}">
-              try {
-                ${s}
-              } catch (e) {
-                console.error("Error in script ${i}:", e);
+          <script>
+            (function () {
+              // --- PATCH: Handle late DOMContentLoaded listeners ---
+              // Since injected scripts run after DOMContentLoaded has already fired,
+              // we patch addEventListener to trigger the listener immediately if the state is ready.
+              (function patchDOMContentLoaded() {
+                const patch = (target) => {
+                  const original = target.addEventListener;
+                  target.addEventListener = function (type, listener, options) {
+                    if (type === "DOMContentLoaded" && (document.readyState === "interactive" || document.readyState === "complete")) {
+                      setTimeout(() => {
+                        const event = new Event("DOMContentLoaded", { bubbles: true, cancelable: true });
+                        if (typeof listener === "function") {
+                          listener.call(target, event);
+                        } else if (listener && typeof listener.handleEvent === "function") {
+                          listener.handleEvent(event);
+                        }
+                      }, 1);
+                    }
+                    original.apply(target, arguments);
+                  };
+                };
+                patch(document);
+                patch(window);
+              })();
+
+              const sections = ${JSON.stringify(inlineScriptSections)};
+
+              const runSections = function () {
+                sections.forEach((code, index) => {
+                  if (!code || !code.trim()) return;
+                  try {
+                    const scriptEl = document.createElement("script");
+                    scriptEl.type = "text/javascript";
+                    scriptEl.setAttribute("data-inline-section", String(index));
+                    scriptEl.textContent = code + "\\n//# sourceURL=inline-section-" + index + ".js";
+                    document.body.appendChild(scriptEl);
+                  } catch (e) {
+                    console.error("Inline section injection error:", index, e);
+                  }
+                });
+              };
+
+              if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", runSections, { once: true });
+              } else {
+                runSections();
               }
-            </script>
-          `).join("\n")}
+            })();
+          </script>
           <script>
             try {
               if (typeof lucide !== 'undefined') {
@@ -139,7 +204,7 @@ const RenderHtml = ({
         </body>
       </html>
     `;
-  }, [extractedStyles, allExternalScripts, allInlineScripts, headerData, footerData, headerParsed, mainParsed, footerParsed, isHeaderPresentInHtml]);
+  }, [extractedStyles, allHeadTags, allExternalScripts, inlineScriptSections, headerData, footerData, headerParsed, mainParsed, footerParsed, isHeaderPresentInHtml]);
 
   // Listen for resize messages from iframe
   useEffect(() => {
@@ -170,4 +235,3 @@ const RenderHtml = ({
 };
 
 export default RenderHtml;
-

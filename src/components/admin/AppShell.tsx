@@ -167,7 +167,7 @@ export function FiCloseHint() {
 export function AppShell({ children }: AppShellProps) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = React.useState(false);
   // Used inside mobile off-canvas (we don't allow collapsing there)
-  const noopSetCollapsed = React.useCallback((_: any) => {}, []);
+  const noopSetCollapsed = React.useCallback((_: any) => { }, []);
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const params = useParams();
   const searchParams = useSearchParams();
@@ -530,10 +530,10 @@ export function AppShell({ children }: AppShellProps) {
                       business={allBusiness}
                       currentBusiness={currentBusiness}
                       user={user}
-                      // onWebsiteChange={(websiteId) => {
-                      //   onWebsiteChange(websiteId);
-                      //   setMobileSidebarOpen(false);
-                      // }}
+                    // onWebsiteChange={(websiteId) => {
+                    //   onWebsiteChange(websiteId);
+                    //   setMobileSidebarOpen(false);
+                    // }}
                     />
                   )}
                 </div>
