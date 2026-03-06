@@ -53,7 +53,7 @@ export async function GET(req: NextRequest, ctx: any) {
     // Otherwise, get list of items
     const items = await entityConfig[entity].list(websiteId);
     return NextResponse.json({ items });
-    
+
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Server error" },
@@ -79,7 +79,7 @@ export async function DELETE(req: NextRequest, ctx: any) {
     const idFromQuery = req.nextUrl?.searchParams?.get("id");
     console.log("idFromQuery")
     let id = idFromQuery;
-    
+
     if (!id) {
       return NextResponse.json({ error: "Missing id" }, { status: 400 });
     }
@@ -88,7 +88,7 @@ export async function DELETE(req: NextRequest, ctx: any) {
     if (!deleted) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    
+
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json(
@@ -122,7 +122,7 @@ export async function PATCH(req: NextRequest, ctx: any) {
     if (!updated) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    
+
     return NextResponse.json({ item: updated });
   } catch (error: any) {
     return NextResponse.json(

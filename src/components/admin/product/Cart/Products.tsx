@@ -79,7 +79,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
     [filterConfig],
   );
 
-   const mergedCardConfig = useMemo(
+  const mergedCardConfig = useMemo(
     () => ({
       ...DEFAULT_CARD_CONFIG,
       ...cardConfig,
@@ -415,11 +415,11 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
   //             className="old-price line-through mr-2"
   //             style={{ color: secondaryColor }}
   //           >
-  //             ₹{product.basePrice}
+  //             ${product.basePrice}
   //           </span>
   //         )}
   //         <span className="new-price font-bold" style={{ color: primaryColor }}>
-  //           ₹{minPrice}
+  //           ${minPrice}
   //         </span>
   //       </div>
   //     </div>
@@ -787,10 +787,10 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
 
           {/* Product Grid */}
           <div className="flex-1">
-            <ProductCart 
-            product={paginatedProducts}
-            cardConfig={mergedCardConfig}
-            mergedStyleConfig={mergedStyleConfig}
+            <ProductCart
+              product={paginatedProducts}
+              cardConfig={mergedCardConfig}
+              mergedStyleConfig={mergedStyleConfig}
             />
             {/* <main className={`grid gap-x-6 gap-y-10 ${getGridClass()}`}>
               {paginatedProducts.map((product) => (
@@ -901,7 +901,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                             className="font-bold"
                             style={{ color: accentColor }}
                           >
-                            ₹{parseFloat(variant?.price || "0") * item.quantity}
+                            ${parseFloat(variant?.price || "0") * item.quantity}
                           </span>
                         </div>
                       </div>
@@ -918,7 +918,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({
                       className="text-2xl font-bold"
                       style={{ color: accentColor }}
                     >
-                      ₹{getTotalPrice().toFixed(2)}
+                      ${getTotalPrice().toFixed(2)}
                     </span>
                   </div>
                   <button

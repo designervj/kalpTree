@@ -59,7 +59,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
   // Get current category data
   const currentCategory = useMemo(() => {
     if (category === "All Products") {
-      
+
       return {
         name: categoryConfig.name || "All Products",
         description: categoryConfig.description || "",
@@ -99,7 +99,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
   const isFilterSelected = (filterTitle: string, value: string) => {
     return dynamicFilters[filterTitle]?.includes(value) || false;
   };
-  
+
 
   // Get filtered products by category (same logic as first component)
   const getFilteredProducts = () => {
@@ -108,7 +108,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
         ? listCategory.find((d) => d.slug == category)
         : null;
 
-     
+
 
     let filtered = [...products].filter((d) =>
       slug ? d.allcategories.includes(slug?._id) : true,
@@ -917,7 +917,7 @@ const CategoryPage: React.FC<CategoryPageProps> = ({
                         <div className="body">
                           <div className="name">{product.title}</div>
                           <div className="line">
-                            <span className="price">₹{minPrice}</span>
+                            <span className="price">${minPrice}</span>
                             <span className="rating">
                               <i className="star"></i> {product.rating || "5.0"}
                             </span>

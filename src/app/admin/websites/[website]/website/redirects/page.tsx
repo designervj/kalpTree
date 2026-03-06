@@ -30,18 +30,18 @@ export default function Page() {
           {/* <h1 className="text-3xl font-semibold">Redirects</h1> */}
           <BreadCrumbPage />
           <p className="text-gray-500 mt-1">
-            Manage URL redirects for your website 
+            Manage URL redirects for your website
           </p>
         </div>
 
-       <Link href="/admin/website/redirects/create">
-       <Button >
-          <Plus size={18} />
-          Add Redirect 
-        </Button></Link>
+        <Link href="/admin/website/redirects/create">
+          <Button >
+            <Plus size={18} />
+            Add Redirect
+          </Button></Link>
       </div>
 
-     
+
 
       {/* REDIRECTS TABLE */}
       <div className="bg-white border rounded-xl shadow-sm overflow-hidden">
@@ -69,11 +69,10 @@ export default function Page() {
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      item.type === "301"
+                    className={`px-2 py-1 text-xs rounded-full ${item.type === "301"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
-                    }`}
+                      }`}
                   >
                     {item.type}
                   </span>

@@ -22,10 +22,9 @@ function RailButton({
       className={`
         group relative flex flex-col items-center justify-center w-full py-3 gap-1
         transition-all duration-150 cursor-pointer border-none outline-none
-        ${
-          active
-            ? "bg-indigo-50 text-indigo-600"
-            : "bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+        ${active
+          ? "bg-indigo-50 text-indigo-600"
+          : "bg-transparent text-slate-400 hover:bg-slate-100 hover:text-slate-700"
         }
       `}
     >

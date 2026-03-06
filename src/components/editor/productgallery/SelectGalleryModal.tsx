@@ -93,7 +93,7 @@ const SelectGalleryModal = ({
 }: Props) => {
 
 
-  
+
   return (
     <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">

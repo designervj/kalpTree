@@ -40,8 +40,8 @@ export default async function HomeTemplate({ params }: any) {
       return <RootClientPage />;
     }
 
-   
-    
+
+
 
     return (
       <>

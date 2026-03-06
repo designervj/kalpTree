@@ -191,36 +191,36 @@ export default function BuilderSidebarLayout({
               </DropdownMenuTrigger>
 
               <DropdownMenuContent className="w-56 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}> 
+                <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                   Create
                 </DropdownMenuLabel>
 
                 <Link href="/admin/pages/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                     <FileText className="h-4 w-4" /> Page
                   </DropdownMenuItem>
                 </Link>
 
                 <Link href="/admin/posts/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                     <FileText className="h-4 w-4" /> Post
                   </DropdownMenuItem>
                 </Link>
 
                 <Link href="/admin/products/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                     <ShoppingBag className="h-4 w-4" /> Product
                   </DropdownMenuItem>
                 </Link>
 
                 <Link href="/admin/media">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                     <ImageIcon className="h-4 w-4" /> Media
                   </DropdownMenuItem>
                 </Link>
 
                 <Link href="/admin/users/new">
-                  <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px", paddingLeft:"10px"}}>
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px", paddingLeft: "10px" }}>
                     <UserPlus className="h-4 w-4" /> User
                   </DropdownMenuItem>
                 </Link>
@@ -228,57 +228,57 @@ export default function BuilderSidebarLayout({
             </DropdownMenu>
 
             {/* EDIT */}
-           {user?.role == "superadmin" ||
-           user?.role == "business" ||
-           user?.role == "agency" &&
-           <DropdownMenu 
-            
-            >
-              <DropdownMenuTrigger asChild 
-             
+            {user?.role == "superadmin" ||
+              user?.role == "business" ||
+              user?.role == "agency" &&
+              <DropdownMenu
+
               >
-                <button
-                  type="button"
-                  className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                <DropdownMenuTrigger asChild
+
                 >
-                  <Pencil className="h-4 w-4" />
-                  <span>Edit</span>
-                  <ChevronDown className="h-4 w-4 opacity-80" />
-                </button>
-              </DropdownMenuTrigger>
+                  <button
+                    type="button"
+                    className="h-8 px-2 rounded-sm flex items-center gap-2 hover:bg-[#2c3338] text-[13px] font-medium"
+                  >
+                    <Pencil className="h-4 w-4" />
+                    <span>Edit</span>
+                    <ChevronDown className="h-4 w-4 opacity-80" />
+                  </button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent className="w-64 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground" style={{paddingLeft:"10px", paddingRight:"10px", paddingTop:"10px", }}>
-                  Editing
-                </DropdownMenuLabel>
+                <DropdownMenuContent className="w-64 z-[300]">
+                  <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px", }}>
+                    Editing
+                  </DropdownMenuLabel>
 
-                <DropdownMenuItem className="gap-2"  style={{padding:"4px", margin:"4px"}}>
-                  <Pencil className="h-4 w-4" />
-                  Edit in Admin
-                </DropdownMenuItem>
-
-                <DropdownMenuItem
-                  className="gap-2"
-                 style={{padding:"4px", margin:"4px"}}
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    handleEditInBuilder();
-                  }}
-                >
-                  <Wrench className="h-4 w-4" />
-                  Edit in Builder
-                </DropdownMenuItem>
-
-                <DropdownMenuSeparator />
-
-                <Link href={`/admin/pages/${pageId}/settings`}>
-                  <DropdownMenuItem className="gap-2" style={{padding:"4px", margin:"4px"}}>
-                    <Settings className="h-4 w-4" />
-                    Page Settings
+                  <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px" }}>
+                    <Pencil className="h-4 w-4" />
+                    Edit in Admin
                   </DropdownMenuItem>
-                </Link>
-              </DropdownMenuContent>
-            </DropdownMenu>}
+
+                  <DropdownMenuItem
+                    className="gap-2"
+                    style={{ padding: "4px", margin: "4px" }}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      handleEditInBuilder();
+                    }}
+                  >
+                    <Wrench className="h-4 w-4" />
+                    Edit in Builder
+                  </DropdownMenuItem>
+
+                  <DropdownMenuSeparator />
+
+                  <Link href={`/admin/pages/${pageId}/settings`}>
+                    <DropdownMenuItem className="gap-2" style={{ padding: "4px", margin: "4px" }}>
+                      <Settings className="h-4 w-4" />
+                      Page Settings
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuContent>
+              </DropdownMenu>}
 
             <Button
               type="button"
@@ -325,12 +325,12 @@ export default function BuilderSidebarLayout({
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-56 z-[300]">
-                <DropdownMenuLabel className="text-xs text-muted-foreground"  style={{padding:"4px", margin:"4px"}}>
+                <DropdownMenuLabel className="text-xs text-muted-foreground" style={{ padding: "4px", margin: "4px" }}>
                   {currentWebsite?.name || "Website"}
                 </DropdownMenuLabel>
 
                 <Link href="/admin/dashboard">
-                  <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
+                  <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
                     <BsSpeedometer2 className="text-[16px] opacity-90" />
                     Dashboard
                   </DropdownMenuItem>
@@ -339,7 +339,7 @@ export default function BuilderSidebarLayout({
                 <DropdownMenuSeparator />
 
                 <Link href="/admin/profile">
-                  <DropdownMenuItem className="gap-2 font-semibold "  style={{padding:"4px", margin:"4px"}}>
+                  <DropdownMenuItem className="gap-2 font-semibold " style={{ padding: "4px", margin: "4px" }}>
                     <BsPersonCircle className="text-[16px] opacity-90" />
                     Profile
                   </DropdownMenuItem>
@@ -347,19 +347,19 @@ export default function BuilderSidebarLayout({
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
+                <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
                   <BsGear className="text-[16px] opacity-90" />
                   Website Settings
                 </DropdownMenuItem>
 
-                <DropdownMenuItem className="gap-2 font-semibold"  style={{padding:"4px", margin:"4px"}}>
+                <DropdownMenuItem className="gap-2 font-semibold" style={{ padding: "4px", margin: "4px" }}>
                   <BsStars className="text-[16px] opacity-90" />
                   LLM Setting
                 </DropdownMenuItem>
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem className="gap-2 text-red-600 font-semibold"  style={{padding:"4px", margin:"4px"}}>
+                <DropdownMenuItem className="gap-2 text-red-600 font-semibold" style={{ padding: "4px", margin: "4px" }}>
                   <BsBoxArrowRight className="text-[16px] opacity-90" />
                   Log Out
                 </DropdownMenuItem>
@@ -383,7 +383,7 @@ export default function BuilderSidebarLayout({
           py-3
         "
         style={{
-          paddingLeft:"10px", paddingRight:"10px", paddingTop:"10px",
+          paddingLeft: "10px", paddingRight: "10px", paddingTop: "10px",
         }}
       >
         <div className="px-4 py-4 grid gap-1 ">
@@ -456,7 +456,7 @@ function SecondPanel({
         show ? "translate-x-0" : "-translate-x-[380px]",
       ].join(" ")}
       style={{
-        paddingLeft:"10px", paddingRight: "10px",
+        paddingLeft: "10px", paddingRight: "10px",
       }}
     >
       <div className="h-14 px-4 flex items-center justify-between border-b border-slate-200 bg-white">
@@ -542,8 +542,8 @@ function SeoPanel() {
       <button
         type="button"
         className="w-full flex items-center gap-3 rounded-xl bg-violet-50 border border-violet-100 px-3 py-3 text-left"
-              style={{paddingTop:"15px"}}
-        
+        style={{ paddingTop: "15px" }}
+
       >
         <div className="h-9 w-9 rounded-lg bg-violet-100 flex items-center justify-center text-violet-700">
           <FileText className="h-5 w-5" />
@@ -585,7 +585,7 @@ function SeoPanel() {
                   key={p.label}
                   type="button"
                   className="w-full flex items-center gap-3 rounded-lg px-2 py-2 hover:bg-slate-50 text-left 1"
-                        style={{paddingTop:"15px"}}
+                  style={{ paddingTop: "15px" }}
                 >
                   <StatusDot status={p.status} />
                   <div className="flex items-center gap-2 text-slate-900">
@@ -691,7 +691,7 @@ function RailButton({
         "transition-colors",
         active ? "bg-violet-50" : "hover:bg-slate-50",
       ].join(" ")}
-      style={{paddingTop:"5px", paddingBottom:"10px"}}
+      style={{ paddingTop: "5px", paddingBottom: "10px" }}
     >
       <div
         className={[
@@ -699,7 +699,7 @@ function RailButton({
           "flex items-center justify-center",
           active ? "bg-violet-100 text-violet-700" : "bg-slate-100 text-slate-700",
         ].join(" ")}
-        // style={{paddingTop:"10px"}}
+      // style={{paddingTop:"10px"}}
       >
         {icon}
       </div>
@@ -726,7 +726,7 @@ function PanelRow({ icon, label }: { icon: React.ReactNode; label: string }) {
     <button
       type="button"
       className="w-full flex items-center gap-3 rounded-lg px-3 py-2 hover:bg-slate-50 text-left 1"
-      
+
 
     >
       <div className="text-slate-600">{icon}</div>
@@ -750,12 +750,12 @@ type SidebarKey =
 
 type RailItem =
   | {
-      key: SidebarKey;
-      label: string;
-      icon: React.ReactNode;
-    }
+    key: SidebarKey;
+    label: string;
+    icon: React.ReactNode;
+  }
   | {
-      key: "divider";
-      label: string;
-      icon: React.ReactNode;
-    };
+    key: "divider";
+    label: string;
+    icon: React.ReactNode;
+  };

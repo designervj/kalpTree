@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     const userId = searhParams.get("userId");
     const websiteId = searhParams.get("websiteId");
 
-    
+
   } catch (error) {
     console.error(error);
     return NextResponse.json({

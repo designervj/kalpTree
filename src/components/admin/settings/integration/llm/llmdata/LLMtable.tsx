@@ -26,7 +26,7 @@ import { LLMModel } from '../type/LLMModel';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
-import {  setCurrentLLMSetting } from '@/hooks/slices/setting/llmSetting/LLMSettingSlice';
+import { setCurrentLLMSetting } from '@/hooks/slices/setting/llmSetting/LLMSettingSlice';
 import { deleteLLMSetting } from '@/hooks/slices/setting/llmSetting/LLMSettingThunk';
 
 const LLMtable = () => {
@@ -38,12 +38,12 @@ const LLMtable = () => {
   const [isFetching, setIsFetching] = useState(true);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
 
-  const {listLLMSettings, hasFetched} = useSelector((state: RootState) => state.llmSetting);
-  const router= useRouter();
-   const dispatch = useDispatch<AppDispatch>();
-  const llmModels= useMemo(()=>{
+  const { listLLMSettings, hasFetched } = useSelector((state: RootState) => state.llmSetting);
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const llmModels = useMemo(() => {
     return listLLMSettings;
-  },[listLLMSettings])
+  }, [listLLMSettings])
 
 
   const toggleKeyVisibility = (id: string) => {
@@ -61,7 +61,7 @@ const LLMtable = () => {
 
 
   const handleAddNew = () => {
-       router.push('/admin/settings/integrations/llm/create');
+    router.push('/admin/settings/integrations/llm/create');
   };
 
   const handleEdit = (model: LLMModel) => {
@@ -76,11 +76,11 @@ const LLMtable = () => {
       return;
     }
     await dispatch(deleteLLMSetting(id)).unwrap();
- 
-  
+
+
   };
 
- 
+
 
   return (
     <>
@@ -89,7 +89,7 @@ const LLMtable = () => {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>LLM Models</CardTitle>
-             
+
             </div>
             <Button onClick={handleAddNew} className="gap-2">
               <Plus className="h-4 w-4" />
@@ -145,7 +145,7 @@ const LLMtable = () => {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge 
+                        <Badge
                           variant={model.isActive !== false ? "default" : "secondary"}
                           className={model.isActive !== false ? "bg-green-600" : "bg-gray-500"}
                         >

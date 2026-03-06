@@ -40,7 +40,7 @@ const MinorComp = ({ sessionUser }: any) => {
       return
     }
 
-    if (user.role === "business" && currentWebsite &&  currentWebsite.primaryDomain) {
+    if (user.role === "business" && currentWebsite && currentWebsite.primaryDomain) {
       const encodedName = decodeURIComponent(currentWebsite.primaryDomain[0]);
       router.replace(`/admin/websites/${encodedName}`);
     }

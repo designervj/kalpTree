@@ -1136,17 +1136,17 @@ export function useEditor(containerId: string) {
               return `
         <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
           ${products
-            .slice(0, limit)
-            .map(
-              (p: any) => `
-            <div class="product-card" style="border: 1px solid #ddd; border-radius: 8px; padding: 16px; text-align: center;">
-              <img src="${p.thumbnail}" alt="${p.title}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 12px;">
-              <h3 style="font-size: 16px; margin: 8px 0;">${p.title}</h3>
-              <p style="color: #666; margin: 4px 0; font-size: 14px;">$${p.price}</p>
-            </div>
-          `,
-            )
-            .join("")}
+                  .slice(0, limit)
+                  .map(
+                    (p: any) => `
+                < div class="product-card" style = "border: 1px solid #ddd; border-radius: 8px; padding: 16px; text-align: center;" >
+                  <img src="${p.thumbnail}" alt = "${p.title}" style = "width: 100%; height: 150px; object-fit: cover; border-radius: 4px; margin-bottom: 12px;" >
+                    <h3 style="font-size: 16px; margin: 8px 0;" >${p.title} </h3>
+                      < p style = "color: #666; margin: 4px 0; font-size: 14px;" >$${p.price} </p>
+                        </div>
+                          `,
+                  )
+                  .join("")}
         </div>
       `;
             },
@@ -1173,32 +1173,30 @@ export function useEditor(containerId: string) {
         <div style="font-family: Arial, sans-serif;">
           <div class="category-tabs" style="display: flex; gap: 8px; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px;">
             ${this.categories
-              .map(
-                (cat: string) => `
-              <button 
-                class="tab-btn" 
-                data-category="${cat}"
-                style="
-                  padding: 12px 24px;
-                  background: ${
-                    cat === this.activeCategory ? "#007bff" : "transparent"
-                  };
-                  color: ${cat === this.activeCategory ? "white" : "#333"};
-                  border: none;
-                  border-bottom: 3px solid ${
-                    cat === this.activeCategory ? "#007bff" : "transparent"
-                  };
-                  cursor: pointer;
-                  font-size: 14px;
-                  text-transform: capitalize;
-                  transition: all 0.3s;
-                "
-              >
+                  .map(
+                    (cat: string) => `
+                < button
+              class="tab-btn"
+              data - category="${cat}"
+              style = "
+              padding: 12px 24px;
+              background: ${cat === this.activeCategory ? "#007bff" : "transparent"
+                      };
+              color: ${cat === this.activeCategory ? "white" : "#333"};
+              border: none;
+              border - bottom: 3px solid ${cat === this.activeCategory ? "#007bff" : "transparent"
+                      };
+              cursor: pointer;
+              font - size: 14px;
+              text - transform: capitalize;
+              transition: all 0.3s;
+              "
+                >
                 ${cat}
-              </button>
-            `,
-              )
-              .join("")}
+    </button>
+      `,
+                  )
+                  .join("")}
           </div>
           <div class="products-container">
             <div style="text-align: center; padding: 40px;">Loading products...</div>
@@ -2274,7 +2272,8 @@ export function useEditor(containerId: string) {
       ${css}
     </style>
     ${html}
-    ${js ? `<script>${js}</script>` : ""}
+    ${js ? `<script>${js}</script>` : ""
+        }
   `;
       // console.log("Saving page", page._id, html);
       if (type === "footer") {
@@ -2344,64 +2343,64 @@ export function useEditor(containerId: string) {
 
         // Generate initialization code for animations
         const initCode = `
-          // Initialize elements with animations
-          document.addEventListener('DOMContentLoaded', function() {
-            // Hide elements that should be initially hidden
-            document.querySelectorAll('[data-initial-state="hidden"]').forEach(function(el) {
-              el.style.display = 'none';
-              el.style.opacity = '0';
-            });
+// Initialize elements with animations
+document.addEventListener('DOMContentLoaded', function () {
+  // Hide elements that should be initially hidden
+  document.querySelectorAll('[data-initial-state="hidden"]').forEach(function (el) {
+    el.style.display = 'none';
+    el.style.opacity = '0';
+  });
 
-            // Setup Intersection Observer for scroll-triggered elements
-            const scrollElements = document.querySelectorAll('[data-scroll-action]');
-            if (scrollElements.length > 0 && 'IntersectionObserver' in window) {
-              scrollElements.forEach(function(el) {
-                const offset = parseFloat(el.getAttribute('data-scroll-offset') || '0') / 100;
-                
-                const observer = new IntersectionObserver(function(entries) {
-                  entries.forEach(function(entry) {
-                    if (entry.isIntersecting && !el.classList.contains('scroll-triggered')) {
-                      el.classList.add('scroll-triggered');
-                      const action = el.getAttribute('data-scroll-action');
-                      
-                      if (action === 'show') {
-                        el.style.display = 'block';
-                        setTimeout(function() { el.style.opacity = '1'; }, 10);
-                      } else if (action === 'add-class') {
-                        const className = el.getAttribute('data-scroll-class');
-                        if (className) el.classList.add(className);
-                      }
-                    }
-                  });
-                }, {
-                  threshold: offset || 0.1,
-                  rootMargin: '0px'
-                });
-                
-                observer.observe(el);
-              });
+  // Setup Intersection Observer for scroll-triggered elements
+  const scrollElements = document.querySelectorAll('[data-scroll-action]');
+  if (scrollElements.length > 0 && 'IntersectionObserver' in window) {
+    scrollElements.forEach(function (el) {
+      const offset = parseFloat(el.getAttribute('data-scroll-offset') || '0') / 100;
+
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && !el.classList.contains('scroll-triggered')) {
+            el.classList.add('scroll-triggered');
+            const action = el.getAttribute('data-scroll-action');
+
+            if (action === 'show') {
+              el.style.display = 'block';
+              setTimeout(function () { el.style.opacity = '1'; }, 10);
+            } else if (action === 'add-class') {
+              const className = el.getAttribute('data-scroll-class');
+              if (className) el.classList.add(className);
             }
-          });
-        `;
+          }
+        });
+      }, {
+        threshold: offset || 0.1,
+        rootMargin: '0px'
+      });
+
+      observer.observe(el);
+    });
+  }
+});
+`;
 
         // Create a full HTML document with proper script separation
         const fullHtml = `
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Exported Landing Page</title>
-            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-            <style>${css}</style>
-          </head>
-          <body>
+  < !DOCTYPE html >
+    <html lang="en" >
+      <head>
+      <meta charset="UTF-8" >
+        <meta name="viewport" content = "width=device-width, initial-scale=1.0" >
+          <title>Exported Landing Page </title>
+            < link href = "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel = "stylesheet" >
+              <style>${css} </style>
+                </head>
+                <body>
             ${html}
             ${js ? `<script>${js}</script>` : ""}
-            <script>${initCode}</script>
-          </body>
-          </html>
-        `;
+<script>${initCode} </script>
+  </body>
+  </html>
+    `;
 
         return fullHtml;
       }
@@ -2438,7 +2437,7 @@ export function useEditor(containerId: string) {
           // Re-attach styles to the body if they exist
           let contentToAdd = body;
           if (styles) {
-            contentToAdd = `<style>${styles}</style>${body}`;
+            contentToAdd = `<style>${styles} </style>${body}`;
           }
 
           addComponentAboveFooter(editorRef.current, contentToAdd);

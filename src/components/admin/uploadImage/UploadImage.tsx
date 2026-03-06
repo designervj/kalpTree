@@ -16,14 +16,14 @@ interface UploadImageProps {
   className?: string;
   accept?: string;
   createdProjectId?: string | null;
-   jobImageUpload: (file: File ) => void;
+  jobImageUpload: (file: File) => void;
 }
 
 interface FileWithPreview extends File {
   preview?: string;
 }
 
-const   UploadImage: React.FC<UploadImageProps> = ({
+const UploadImage: React.FC<UploadImageProps> = ({
   onUploadSuccess,
   onUploadError,
   maxSize = 10 * 1024 * 1024, // 10MB default
@@ -37,51 +37,51 @@ const   UploadImage: React.FC<UploadImageProps> = ({
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   //const getUserProfiles = useSelector(selectProfile);
 
 
   useEffect(() => {
-     if( createdProjectId && createdProjectId!==null) {
-     handleUpload()
-     }
+    if (createdProjectId && createdProjectId !== null) {
+      handleUpload()
+    }
   }, [createdProjectId]);
 
   // Handle file selection
-const handleFileSelect = useCallback(async (file: File) => {
-  try {
-    // Process the file using the upload service
-    const processedFile = await UploadService.processImageFile(file, maxSize, allowedTypes);
-    
-    // Create a File object with preview property
-    const fileWithPreview = Object.assign(processedFile.file, {
-      preview: processedFile.preview
-    }) as FileWithPreview;
-    
-    setSelectedFile(fileWithPreview);
-    setUploadResult(null);
-    setUploadProgress(null);
-    // jobImageUpload(processedFile.file);
-  } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Failed to process file';
-    setUploadResult({
-      success: false,
-      error: errorMessage,
-    });
-    onUploadError?.(errorMessage);
-  }
-}, [maxSize, allowedTypes, onUploadError]);
+  const handleFileSelect = useCallback(async (file: File) => {
+    try {
+      // Process the file using the upload service
+      const processedFile = await UploadService.processImageFile(file, maxSize, allowedTypes);
+
+      // Create a File object with preview property
+      const fileWithPreview = Object.assign(processedFile.file, {
+        preview: processedFile.preview
+      }) as FileWithPreview;
+
+      setSelectedFile(fileWithPreview);
+      setUploadResult(null);
+      setUploadProgress(null);
+      // jobImageUpload(processedFile.file);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to process file';
+      setUploadResult({
+        success: false,
+        error: errorMessage,
+      });
+      onUploadError?.(errorMessage);
+    }
+  }, [maxSize, allowedTypes, onUploadError]);
 
   // Handle file input change
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       handleFileSelect(file);
-    //    jobImageUpload(file);
+      //    jobImageUpload(file);
     }
-   
+
   };
 
   // Handle drag and drop
@@ -106,7 +106,7 @@ const handleFileSelect = useCallback(async (file: File) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files[0]) {
       handleFileSelect(files[0]);
@@ -133,13 +133,13 @@ const handleFileSelect = useCallback(async (file: File) => {
       // Use upload service to handle the upload
       const result = await UploadService.uploadToS3(
         selectedFile,
-        createdProjectId??"", // userId (optional)
+        createdProjectId ?? "", // userId (optional)
         (progress) => setUploadProgress(progress),
         createdProjectId || undefined // projectId
       );
 
       setUploadResult(result);
-        console.log("upload image success---->", result)
+      console.log("upload image success---->", result)
       if (result.success && result.fileUrl && result.key) {
         onUploadSuccess?.(result.fileUrl, result.key);
       } else {
@@ -220,7 +220,7 @@ const handleFileSelect = useCallback(async (file: File) => {
                 </Button>
               </div>
             )}
-            
+
             {/* File Info */}
             <div className="text-sm text-gray-600">
               <p className="font-medium">{selectedFile.name}</p>
@@ -273,8 +273,8 @@ const handleFileSelect = useCallback(async (file: File) => {
       {/* Action Buttons */}
       <div className="mt-4 flex gap-2">
         {selectedFile && !uploadResult?.success && (
-          <Button 
-           onClick={handleUpload} 
+          <Button
+            onClick={handleUpload}
             disabled={uploading}
             className="flex-1"
           >
@@ -286,15 +286,15 @@ const handleFileSelect = useCallback(async (file: File) => {
             ) : (
               <>
                 <Upload className="h-4 w-4 mr-2" />
-              
+
               </>
             )}
           </Button>
         )}
-        
+
         {(selectedFile || uploadResult) && (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleClear}
             disabled={uploading}
           >

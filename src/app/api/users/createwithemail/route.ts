@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const request = await req;
   const body = await request.json();
-  const {email,password} = body;
+  const { email, password } = body;
   const userscoll = await getCollection("users");
   const exist = await userscoll.findOne({ email });
 

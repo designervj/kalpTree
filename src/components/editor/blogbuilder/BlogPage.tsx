@@ -72,7 +72,7 @@ type BlogManagerProps = {
 const uid = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? // @ts-ignore
-      crypto.randomUUID()
+    crypto.randomUUID()
     : Math.random().toString(36).slice(2, 10);
 
 const formatDate = (d: Date = new Date()): string => {
@@ -210,7 +210,7 @@ const PostRow: React.FC<PostRowProps> = ({ post, onAction }) => {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild >
-          <Button  size="icon" className="h-10 w-3 bg-transparent hover:bg-transparent text-black p-0">
+          <Button size="icon" className="h-10 w-3 bg-transparent hover:bg-transparent text-black p-0">
             <MoreVertical className="h-5 w-5 " />
           </Button>
         </DropdownMenuTrigger>

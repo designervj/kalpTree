@@ -64,10 +64,10 @@ function Badge({
     variant === "purple"
       ? "bg-purple-50 text-purple-700 border-purple-200"
       : variant === "green"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-      : variant === "amber"
-      ? "bg-amber-50 text-amber-700 border-amber-200"
-      : "bg-slate-50 text-slate-700 border-slate-200";
+        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+        : variant === "amber"
+          ? "bg-amber-50 text-amber-700 border-amber-200"
+          : "bg-slate-50 text-slate-700 border-slate-200";
 
   return (
     <span
@@ -87,8 +87,8 @@ function BusinessIcon({
     tone === "purple"
       ? "bg-purple-600"
       : tone === "dark"
-      ? "bg-slate-900"
-      : "bg-[#ddd]";
+        ? "bg-slate-900"
+        : "bg-[#ddd]";
   return (
     <div
       className={`h-14 w-14 rounded-md  ${bg} grid place-items-center text-white font-bold`}
@@ -204,36 +204,36 @@ export default async function BusinessList({
   return (
     <div className="w-full max-full space-y-6">
 
-             <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
-      {/* Page Title */}
-      <h1 className="text-2xl font-semibold text-slate-900">
-        Agencies
-      </h1>
+      <div className="flex items-center gap-4 bg-transparent px-0 py-4 border-b">
+        {/* Page Title */}
+        <h1 className="text-2xl font-semibold text-slate-900">
+          Agencies
+        </h1>
 
-      {/* Divider */}
-      <div className="h-6 w-px bg-slate-300" />
+        {/* Divider */}
+        <div className="h-6 w-px bg-slate-300" />
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Home className="h-4 w-4" />
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <Home className="h-4 w-4" />
 
-        <span>–</span>
+          <span>–</span>
 
-        <Link
-          href="/billing"
-          className="hover:text-slate-700 transition"
-        >
-         Agencies
-        </Link>
+          <Link
+            href="/billing"
+            className="hover:text-slate-700 transition"
+          >
+            Agencies
+          </Link>
 
-        <span>–</span>
+          <span>–</span>
 
-        <span className="text-slate-700 font-medium">
-        Agencies List
-        </span>
+          <span className="text-slate-700 font-medium">
+            Agencies List
+          </span>
+        </div>
       </div>
-      </div>
-      
+
       {/* Header */}
       {/* <div className="flex flex-col gap-1">
         <h2 className="text-[26px] font-semibold text-slate-900">Businesses</h2>
@@ -299,8 +299,8 @@ export default async function BusinessList({
                         idx % 3 === 0
                           ? "blue"
                           : idx % 3 === 1
-                          ? "dark"
-                          : "purple"
+                            ? "dark"
+                            : "purple"
                       }
                     />
 

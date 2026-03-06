@@ -43,8 +43,8 @@ export function LayersPanel({ layers, onSelectLayer, autoExpandedLayers = [], se
       <div key={layer.id}>
         <div
           className={`flex items-center py-1 px-2 rounded cursor-pointer transition-colors ${isSelected
-              ? "bg-blue-600 hover:bg-blue-700"
-              : "hover:bg-slate-800"
+            ? "bg-blue-600 hover:bg-blue-700"
+            : "hover:bg-slate-800"
             }`}
           style={{ paddingLeft: `${layer.level * 10 + 4}px` }}
         >

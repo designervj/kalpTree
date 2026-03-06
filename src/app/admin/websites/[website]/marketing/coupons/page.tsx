@@ -143,9 +143,9 @@ export default function CouponsPage() {
             </p>
           </div> */}
 
-           <div>
+          <div>
             <BreadCrumbPage />
-                 <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Create promo codes, enforce limits, schedule validity and control usage.
             </p>
           </div>
@@ -188,7 +188,7 @@ export default function CouponsPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Minimum cart value (₹)</Label>
+                  <Label>Minimum cart value ($)</Label>
                   <Input type="number" placeholder="e.g., 1999" />
                 </div>
 
@@ -346,10 +346,10 @@ export default function CouponsPage() {
                         <p className="text-xs">Discount</p>
                       </div>
                       <p className="mt-1 text-sm font-semibold">
-                        {c.type === "percent" ? `${c.value}% OFF` : `₹${c.value} OFF`}
+                        {c.type === "percent" ? `${c.value}% OFF` : `$${c.value} OFF`}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Min cart ₹{c.minCart.toLocaleString("en-IN")}
+                        Min cart ${c.minCart.toLocaleString("en-IN")}
                       </p>
                     </div>
 

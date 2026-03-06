@@ -153,7 +153,7 @@ const ListCategory = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
 
       {/* Edit Category Dialog */}

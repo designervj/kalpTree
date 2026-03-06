@@ -44,7 +44,7 @@ export async function createProduct(
   data: ProductModel
 ): Promise<ProductModel> {
   if (!data?.name?.trim()) throw new Error("Name is required");
-  
+
   const db = await getDatabase();
   const col = db.collection<ProductModel>(COLLECTION);
 

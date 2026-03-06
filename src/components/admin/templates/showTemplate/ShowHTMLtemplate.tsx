@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react'
-import { extractColors, extractFontsAndSizesFromHTML,} from './util/ExtractColorFont'
+import { extractColors, extractFontsAndSizesFromHTML, } from './util/ExtractColorFont'
 
 type htmlProps = {
-    html: string
+  html: string
 }
 const ShowHTMLtemplate = ({ html }: htmlProps) => {
 
 
-  
 
-    const srcDoc = useMemo(() => `
+
+  const srcDoc = useMemo(() => `
     <!DOCTYPE html>
     <html style="overflow: hidden; pointer-events: none; width: 100%; height: 100%;">
       <head>
@@ -30,22 +30,22 @@ const ShowHTMLtemplate = ({ html }: htmlProps) => {
     </html>
   `, [html]);
 
-    return (
-        <div className="w-full h-full overflow-hidden relative bg-white pointer-events-none">
-            {/* The 400% width + 0.25 scale trick ensures it always fills 100% of the parent container */}
-            <div className="absolute inset-0 w-[400%] h-[400%] origin-top-left transform scale-[0.25]">
-                <iframe
-                    srcDoc={srcDoc}
-                    className="w-full h-full border-none pointer-events-none"
-                    title="Template Preview"
-                    scrolling="no"
-                />
-            </div>
-            
-            {/* Overlay to catch any stray interactions */}
-            <div className="absolute inset-0 z-10" />
-        </div>
-    )
+  return (
+    <div className="w-full h-full overflow-hidden relative bg-white pointer-events-none">
+      {/* The 400% width + 0.25 scale trick ensures it always fills 100% of the parent container */}
+      <div className="absolute inset-0 w-[400%] h-[400%] origin-top-left transform scale-[0.25]">
+        <iframe
+          srcDoc={srcDoc}
+          className="w-full h-full border-none pointer-events-none"
+          title="Template Preview"
+          scrolling="no"
+        />
+      </div>
+
+      {/* Overlay to catch any stray interactions */}
+      <div className="absolute inset-0 z-10" />
+    </div>
+  )
 }
 
 export default ShowHTMLtemplate

@@ -154,23 +154,23 @@ export default function LogoManager() {
       const updatedLogos = logos.map((logo) =>
         logo.id === (selectedLogo as Logo).id
           ? {
-              ...logo,
-              size: `${logoWidth}x${logoHeight}`,
-              settings: {
-                width: logoWidth,
-                height: logoHeight,
-                opacity: logoOpacity,
-                rotation: logoRotation,
-                borderRadius,
-                text: addText ? logoText : "",
-                textPosition,
-                textSize,
-                textColor,
-                backgroundColor,
-                padding,
-                shadow,
-              },
-            }
+            ...logo,
+            size: `${logoWidth}x${logoHeight}`,
+            settings: {
+              width: logoWidth,
+              height: logoHeight,
+              opacity: logoOpacity,
+              rotation: logoRotation,
+              borderRadius,
+              text: addText ? logoText : "",
+              textPosition,
+              textSize,
+              textColor,
+              backgroundColor,
+              padding,
+              shadow,
+            },
+          }
           : logo
       );
       setLogos(updatedLogos);
@@ -206,14 +206,13 @@ export default function LogoManager() {
       padding: `${logoSettings.padding || 0}px`,
       borderRadius: `${logoSettings.borderRadius || 0}px`,
       boxShadow: logoSettings.shadow
-        ? `0 ${logoSettings.shadow}px ${
-            logoSettings.shadow * 2
-          }px rgba(0,0,0,0.1)`
+        ? `0 ${logoSettings.shadow}px ${logoSettings.shadow * 2
+        }px rgba(0,0,0,0.1)`
         : "none",
       display: "inline-flex",
       flexDirection:
         logoSettings.textPosition === "bottom" ||
-        logoSettings.textPosition === "top"
+          logoSettings.textPosition === "top"
           ? "column" as const
           : "row" as const,
       alignItems: "center",

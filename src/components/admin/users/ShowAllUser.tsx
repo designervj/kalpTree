@@ -20,14 +20,14 @@ const ShowAllUser = () => {
   const updatedUSer = useMemo(() => {
     if (!alluser) return [];
 
-    if (user && user.role == "superadmin" &&allBusiness.length > 0) {
+    if (user && user.role == "superadmin" && allBusiness.length > 0) {
       return alluser.filter((user) => user.role != "superadmin").map((user) => {
         return {
           ...user,
           id: user._id?.toString(),
         }
       })
-    } else if (user && user.role == "agency" && allBusiness.length > 0 &&alluser.length > 0) {
+    } else if (user && user.role == "agency" && allBusiness.length > 0 && alluser.length > 0) {
       // getAll Businessid
       const business = allBusiness.map((business) => {
         return business._id?.toString()
@@ -61,8 +61,8 @@ const ShowAllUser = () => {
       canMultipleTenants: false,
 
     }
-  dispatch(setCurrentUser(data))
-      dispatch(setIsUserRole(true))
+    dispatch(setCurrentUser(data))
+    dispatch(setIsUserRole(true))
     dispatch(setCurrentRolePermission(userData));
     router.push(`/admin/rolesandpermission/${userData?._id}`);
   }

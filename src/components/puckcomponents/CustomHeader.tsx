@@ -17,9 +17,8 @@ const PresetRow = ({
 
   return (
     <div
-      className={`flex items-center justify-between px-3 py-1.5 cursor-pointer transition-colors ${
-        isSelected ? "bg-blue-600" : "hover:bg-blue-500/10"
-      }`}
+      className={`flex items-center justify-between px-3 py-1.5 cursor-pointer transition-colors ${isSelected ? "bg-blue-600" : "hover:bg-blue-500/10"
+        }`}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={() => {
@@ -28,9 +27,8 @@ const PresetRow = ({
       }}
     >
       <span
-        className={`text-xs ${
-          isSelected ? "text-white font-medium" : "text-slate-400"
-        }`}
+        className={`text-xs ${isSelected ? "text-white font-medium" : "text-slate-400"
+          }`}
       >
         {preset.presetname}
       </span>

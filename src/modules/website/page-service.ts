@@ -137,7 +137,7 @@ export class PageService {
       { _id: oid },
       { $set: { content: updates } }
     );
-    console.log("result ",result)
+    console.log("result ", result)
     return result.modifiedCount > 0;
   }
 

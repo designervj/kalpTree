@@ -9,6 +9,7 @@ This document describes the comprehensive Role-Based Access Control (RBAC) syste
 The system implements a 7-tier role hierarchy with specific permissions and capabilities:
 
 ### A - Admin (Platform Super Admin)
+
 - **Level**: 1 (Highest Authority)
 - **Description**: Platform administrator with full system access
 - **Capabilities**:
@@ -19,6 +20,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Platform-wide oversight
 
 ### F - Franchise (Sub-admin with White-labeling)
+
 - **Level**: 2
 - **Description**: Franchise owner with client management and white-labeling capabilities
 - **Capabilities**:
@@ -30,6 +32,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Custom branding and theming
 
 ### B - Business (Operations Manager)
+
 - **Level**: 3
 - **Description**: Business operations manager with inventory and order management
 - **Capabilities**:
@@ -40,6 +43,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Operational oversight
 
 ### C - Client (Customer)
+
 - **Level**: 4
 - **Description**: Client with access to own data and order placement
 - **Capabilities**:
@@ -50,6 +54,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Limited dashboard access
 
 ### D - Designer (Content and Design)
+
 - **Level**: 4
 - **Description**: Designer with content creation and branding capabilities
 - **Capabilities**:
@@ -60,6 +65,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Design system maintenance
 
 ### E - Editor (Content Management)
+
 - **Level**: 5
 - **Description**: Content editor with publishing capabilities
 - **Capabilities**:
@@ -70,6 +76,7 @@ The system implements a 7-tier role hierarchy with specific permissions and capa
   - Content workflow management
 
 ### G - Guest (Read-only Access)
+
 - **Level**: 6 (Lowest Authority)
 - **Description**: Guest user with read-only access
 - **Capabilities**:
@@ -115,22 +122,26 @@ interface Permission {
 Franchises can customize their admin panel appearance through:
 
 #### Color Schemes
+
 - Primary, secondary, and accent colors
 - Background and foreground colors
 - Border and input styling
 - Muted colors for subtle elements
 
 #### Logo Management
+
 - Logo upload and configuration
 - Dimension control (50-500px width, 20-200px height)
 - Format support: PNG, SVG, JPG
 
 #### Typography
+
 - Heading font selection
 - Body font selection
 - Custom font integration
 
 #### Advanced Customization
+
 - Custom CSS injection
 - CSS variable system
 - Safety validation for malicious code
@@ -138,6 +149,7 @@ Franchises can customize their admin panel appearance through:
 ### Branding Presets
 
 Pre-configured themes for quick setup:
+
 - **Default**: Blue-based professional theme
 - **Dark**: Dark mode with blue accents
 - **Green**: Nature-inspired green theme
@@ -181,18 +193,21 @@ Franchises can create client tenants with:
 ## API Endpoints
 
 ### User Management
+
 - `GET /api/admin/users` - List manageable users
 - `POST /api/admin/users` - Create new user
 - `PUT /api/admin/users/[id]` - Update user
 - `DELETE /api/admin/users/[id]` - Delete user
 
 ### Branding Management
+
 - `GET /api/admin/branding` - Get branding settings
 - `PUT /api/admin/branding` - Update branding settings
 - `POST /api/admin/branding/presets` - Apply branding preset
 - `POST /api/admin/branding/logo` - Upload logo
 
 ### Franchise Management
+
 - `GET /api/admin/franchise/clients` - List franchise clients
 - `POST /api/admin/franchise/clients` - Create new client
 - `PUT /api/admin/franchise/clients/[id]` - Update client
@@ -204,16 +219,17 @@ Franchises can create client tenants with:
 
 ```typescript
 withRBAC({
-  resource: 'users',
-  action: 'create',
+  resource: "users",
+  action: "create",
   requireTenantAccess: true,
   allowSuperAdmin: true,
-})
+});
 ```
 
 ### Tenant Isolation
 
 Ensures data isolation between tenants:
+
 - Automatic tenant filtering
 - Cross-tenant access prevention
 - Hierarchical access for franchises
@@ -221,6 +237,7 @@ Ensures data isolation between tenants:
 ### Resource Ownership
 
 Validates resource ownership for user-specific data:
+
 - Own resource access validation
 - Ownership-based permissions
 - Secure resource isolation
@@ -228,18 +245,21 @@ Validates resource ownership for user-specific data:
 ## Security Features
 
 ### Permission Validation
+
 - Hierarchical role checking
 - Context-aware permissions
 - Tenant-level isolation
 - Resource ownership validation
 
 ### Audit Logging
+
 - Activity tracking for all actions
 - User action logging
 - Resource change tracking
 - Security event monitoring
 
 ### Data Protection
+
 - Tenant data isolation
 - Encrypted sensitive data
 - Secure password handling
@@ -250,27 +270,26 @@ Validates resource ownership for user-specific data:
 ### Checking Permissions
 
 ```typescript
-import { RoleManager } from '@/lib/rbac/roles';
+import { RoleManager } from "@/lib/rbac/roles";
 
 // Check if user can create users
-const canCreate = RoleManager.hasPermission('F', 'users', 'create', {
-});
+const canCreate = RoleManager.hasPermission("F", "users", "create", {});
 
 // Check role hierarchy
-const canManage = RoleManager.canManageRole('F', 'C');
+const canManage = RoleManager.canManageRole("F", "C");
 
 // Get manageable roles
-const manageableRoles = RoleManager.getManageableRoles('F');
+const manageableRoles = RoleManager.getManageableRoles("F");
 ```
 
 ### Using Middleware
 
 ```typescript
-import { withRBAC } from '@/middleware/rbac';
+import { withRBAC } from "@/middleware/rbac";
 
 export const GET = withRBAC({
-  resource: 'users',
-  action: 'read',
+  resource: "users",
+  action: "read",
   requireTenantAccess: true,
 })(async (request, { user, tenantId }) => {
   // Handler with validated access
@@ -280,23 +299,28 @@ export const GET = withRBAC({
 ### Branding Customization
 
 ```typescript
-import { BrandingService } from '@/lib/branding/branding-service';
+import { BrandingService } from "@/lib/branding/branding-service";
 
 // Update branding
-await BrandingService.updateBrandingSettings(tenantId, {
-  colors: {
-    primary: '#3b82f6',
-    secondary: '#64748b',
-  }
-}, userId);
+await BrandingService.updateBrandingSettings(
+  tenantId,
+  {
+    colors: {
+      primary: "#3b82f6",
+      secondary: "#64748b",
+    },
+  },
+  userId,
+);
 
 // Apply preset
-await BrandingService.applyBrandingPreset(tenantId, 'dark', userId);
+await BrandingService.applyBrandingPreset(tenantId, "dark", userId);
 ```
 
 ## Database Schema
 
 ### Users Collection
+
 ```typescript
 interface User {
   _id: ObjectId;
@@ -305,34 +329,36 @@ interface User {
   name: string;
   role: UserRole;
   permissions: UserPermissions;
-  status: 'active' | 'invited' | 'suspended';
+  status: "active" | "invited" | "suspended";
   metadata?: UserMetadata;
 }
 ```
 
 ### Tenants Collection
+
 ```typescript
 interface Tenant {
   _id: ObjectId;
   slug: string;
   name: string;
-  type: 'platform' | 'franchise' | 'business' | 'client';
+  type: "platform" | "franchise" | "business" | "client";
   parentTenantId?: ObjectId;
   branding: BrandingSettings;
   features: FeatureFlags;
-  status: 'active' | 'suspended' | 'pending';
+  status: "active" | "suspended" | "pending";
 }
 ```
 
 ### Franchise-Client Relationships
+
 ```typescript
 interface FranchiseClient {
   _id: ObjectId;
   tenantId: ObjectId;
   franchiseId: ObjectId;
   clientTenantId: ObjectId;
-  relationshipType: 'direct' | 'referral' | 'partnership';
-  status: 'active' | 'suspended' | 'terminated';
+  relationshipType: "direct" | "referral" | "partnership";
+  status: "active" | "suspended" | "terminated";
   settings: RelationshipSettings;
 }
 ```
@@ -350,6 +376,7 @@ The system includes comprehensive tests covering:
 - Integration testing
 
 Run tests with:
+
 ```bash
 npm test src/tests/rbac-system.test.ts
 ```
@@ -377,20 +404,20 @@ npm test src/tests/rbac-system.test.ts
 ```typescript
 // Migration script to update existing users
 async function migrateToRBAC() {
-  const users = await db.collection('users').find({}).toArray();
-  
+  const users = await db.collection("users").find({}).toArray();
+
   for (const user of users) {
     const newRole = mapOldRoleToNew(user.role);
     const permissions = DEFAULT_USER_PERMISSIONS[newRole];
-    
-    await db.collection('users').updateOne(
+
+    await db.collection("users").updateOne(
       { _id: user._id },
-      { 
-        $set: { 
-          role: newRole, 
-          permissions 
-        } 
-      }
+      {
+        $set: {
+          role: newRole,
+          permissions,
+        },
+      },
     );
   }
 }

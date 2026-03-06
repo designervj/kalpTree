@@ -44,18 +44,18 @@ const TOOLS: Array<{
   label: string;
   icon: React.ReactNode;
 }> = [
-  { id: "image", label: "AI Image Generator", icon: <Sparkles className="h-4 w-4" /> },
-  { id: "writer", label: "AI Writer", icon: <Type className="h-4 w-4" /> },
-  { id: "page", label: "AI Page Generator", icon: <LayoutGrid className="h-4 w-4" /> },
-  { id: "section", label: "AI Section Generator", icon: <Rows3 className="h-4 w-4" /> },
-  { id: "blog", label: "AI Blog Generator", icon: <FileText className="h-4 w-4" /> },
-  {
-    id: "product_details",
-    label: "AI Product Details Generator",
-    icon: <ShoppingBag className="h-4 w-4" />,
-  },
-  { id: "seo", label: "AI SEO Assistant", icon: <Search className="h-4 w-4" /> },
-];
+    { id: "image", label: "AI Image Generator", icon: <Sparkles className="h-4 w-4" /> },
+    { id: "writer", label: "AI Writer", icon: <Type className="h-4 w-4" /> },
+    { id: "page", label: "AI Page Generator", icon: <LayoutGrid className="h-4 w-4" /> },
+    { id: "section", label: "AI Section Generator", icon: <Rows3 className="h-4 w-4" /> },
+    { id: "blog", label: "AI Blog Generator", icon: <FileText className="h-4 w-4" /> },
+    {
+      id: "product_details",
+      label: "AI Product Details Generator",
+      icon: <ShoppingBag className="h-4 w-4" />,
+    },
+    { id: "seo", label: "AI SEO Assistant", icon: <Search className="h-4 w-4" /> },
+  ];
 
 const TOOL_TITLES: Record<ToolId, string> = {
   image: "AI image generator",
@@ -132,50 +132,50 @@ export default function AiToolsPage() {
       {/* List view (screenshot 1) */}
       {showList && (
         <div className={cn("w-full ")}>
-    
-            <div className="space-y-2">
-              {TOOLS.map((t) => (
-                <div
-                  key={t.id}
-                  className={cn(
-                    "w-full flex items-center gap-4 rounded-xl px-2 py-2 text-left transition-colors",
-                    "hover:bg-slate-50 dark:hover:bg-white/5"
-                  )}
+
+          <div className="space-y-2">
+            {TOOLS.map((t) => (
+              <div
+                key={t.id}
+                className={cn(
+                  "w-full flex items-center gap-4 rounded-xl px-2 py-2 text-left transition-colors",
+                  "hover:bg-slate-50 dark:hover:bg-white/5"
+                )}
+              >
+                <button
+                  type="button"
+                  className="flex flex-1 items-center gap-4 text-left"
+                  onClick={() => handleOpenTool(t.id)}
                 >
-                  <button
-                    type="button"
-                    className="flex flex-1 items-center gap-4 text-left"
-                    onClick={() => handleOpenTool(t.id)}
-                  >
-                    <span
-                      className={cn(
-                        "inline-flex h-8 w-8 items-center justify-center rounded-full",
-                        "bg-violet-700 text-white"
-                      )}
-                    >
-                      {t.icon}
-                    </span>
-
-                    <span className="flex-1 text-sm font-medium text-slate-900 dark:text-slate-100">
-                      {t.label}
-                    </span>
-                  </button>
-
-                  {/* ✅ ChevronRight click = open tool (hide list, show detail) */}
-                  <button
-                    type="button"
+                  <span
                     className={cn(
-                      "inline-flex h-6 w-6 items-center justify-center rounded-full",
-                      "hover:bg-transprant dark:hover:bg-white/5"
+                      "inline-flex h-8 w-8 items-center justify-center rounded-full",
+                      "bg-violet-700 text-white"
                     )}
-                    onClick={() => handleOpenTool(t.id)}
-                    aria-label={`Open ${t.label}`}
                   >
-                    <ChevronRight className="h-6 w-6 text-slate-300 dark:text-slate-700" />
-                  </button>
-                </div>
-              ))}
-            </div>
+                    {t.icon}
+                  </span>
+
+                  <span className="flex-1 text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {t.label}
+                  </span>
+                </button>
+
+                {/* ✅ ChevronRight click = open tool (hide list, show detail) */}
+                <button
+                  type="button"
+                  className={cn(
+                    "inline-flex h-6 w-6 items-center justify-center rounded-full",
+                    "hover:bg-transprant dark:hover:bg-white/5"
+                  )}
+                  onClick={() => handleOpenTool(t.id)}
+                  aria-label={`Open ${t.label}`}
+                >
+                  <ChevronRight className="h-6 w-6 text-slate-300 dark:text-slate-700" />
+                </button>
+              </div>
+            ))}
+          </div>
 
         </div>
       )}
@@ -198,7 +198,7 @@ export default function AiToolsPage() {
             </div>
 
             {/* close -> back to list */}
-       
+
           </div>
 
           {/* Body */}
@@ -240,7 +240,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -252,24 +252,24 @@ export default function AiToolsPage() {
                         "rounded-md text-sm font-semibold w-36",
                         "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       <Sparkles className="h-5 w-5" />
                       Create images
                     </Button>
 
-                         <Button
-                            variant="outline"
-                            //   className={cn(
-                            //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                            //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
-                            //   )}
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
-                      </Button>
+                    <Button
+                      variant="outline"
+                      //   className={cn(
+                      //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                      //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
+                      //   )}
+                      className="w-36"
+                      onClick={() => setActiveTool(null)}
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" /> Close
+                    </Button>
 
                   </div>
 
@@ -285,7 +285,7 @@ export default function AiToolsPage() {
                       "mt-4 inline-flex items-center gap-2 text-sm",
                       "text-slate-600 hover:underline dark:text-slate-300"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <SmilePlus className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                     <span>
@@ -334,7 +334,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -346,25 +346,25 @@ export default function AiToolsPage() {
                         "w-36  rounded-md text-sm font-semibold",
                         "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       <Sparkles className=" h-5 w-5" />
                       Create text
                     </Button>
 
 
-                      <Button
-                            variant="outline"
-                            //   className={cn(
-                            //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                            //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
-                            //   )}
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
-                      </Button>
+                    <Button
+                      variant="outline"
+                      //   className={cn(
+                      //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                      //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
+                      //   )}
+                      className="w-36"
+                      onClick={() => setActiveTool(null)}
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" /> Close
+                    </Button>
                   </div>
                 </>
               )}
@@ -405,7 +405,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -423,32 +423,32 @@ export default function AiToolsPage() {
                       Create page
                     </Button> */}
 
-                     <div className="mt-6 flex justify-center items-center gap-2">
-                    <Button
-                      className={cn(
-                        "w-36  rounded-md text-sm font-semibold",
-                        "bg-violet-600 hover:bg-violet-700 text-white"
-                      )}
-                      onClick={() => {}}
-                    >
-                      <Sparkles className=" h-5 w-5" />
-                       Create page
-                    </Button>
+                    <div className="mt-6 flex justify-center items-center gap-2">
+                      <Button
+                        className={cn(
+                          "w-36  rounded-md text-sm font-semibold",
+                          "bg-violet-600 hover:bg-violet-700 text-white"
+                        )}
+                        onClick={() => { }}
+                      >
+                        <Sparkles className=" h-5 w-5" />
+                        Create page
+                      </Button>
 
 
                       <Button
-                            variant="outline"
-                            //   className={cn(
-                            //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                            //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
-                            //   )}
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
+                        variant="outline"
+                        //   className={cn(
+                        //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                        //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
+                        //   )}
+                        className="w-36"
+                        onClick={() => setActiveTool(null)}
+                        aria-label="Close"
+                      >
+                        <X className="h-4 w-4" /> Close
                       </Button>
-                  </div>
+                    </div>
 
                   </div>
                 </>
@@ -458,8 +458,8 @@ export default function AiToolsPage() {
               {activeTool === "section" && (
                 <>
                   <div className="text-base font-semibold text-slate-900 dark:text-slate-100">
-                    
-                     <h5 className="text-gray-700 font-medium text-sm">Section description</h5>
+
+                    <h5 className="text-gray-700 font-medium text-sm">Section description</h5>
                   </div>
 
                   <div className="mt-3">
@@ -491,7 +491,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -510,31 +510,31 @@ export default function AiToolsPage() {
                     </Button>
                   </div> */}
 
-                   <div className="mt-6 flex justify-center items-center gap-2">
+                  <div className="mt-6 flex justify-center items-center gap-2">
                     <Button
                       className={cn(
                         "w-36  rounded-md text-sm font-semibold",
                         "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
-                      onClick={() => {}}
+                      onClick={() => { }}
                     >
                       <Sparkles className=" h-5 w-5" />
                       Create section
                     </Button>
 
 
-                      <Button
-                            variant="outline"
-                            //   className={cn(
-                            //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
-                            //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
-                            //   )}
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
-                      </Button>
+                    <Button
+                      variant="outline"
+                      //   className={cn(
+                      //     "rounded-full p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                      //     "dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-slate-100"
+                      //   )}
+                      className="w-36"
+                      onClick={() => setActiveTool(null)}
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" /> Close
+                    </Button>
                   </div>
 
                 </>
@@ -625,27 +625,27 @@ export default function AiToolsPage() {
 
 
                     <div className="mt-6 flex justify-center items-center gap-2">
-                    <Button
-                      className={cn(
-                        "w-36  rounded-md text-sm font-semibold",
-                        "bg-violet-600 hover:bg-violet-700 text-white"
-                      )}
-                      onClick={() => {}}
-                    >
-                      <Sparkles className=" h-5 w-5" />
-                      Create content
-                    </Button>
+                      <Button
+                        className={cn(
+                          "w-36  rounded-md text-sm font-semibold",
+                          "bg-violet-600 hover:bg-violet-700 text-white"
+                        )}
+                        onClick={() => { }}
+                      >
+                        <Sparkles className=" h-5 w-5" />
+                        Create content
+                      </Button>
 
 
                       <Button
-                            variant="outline"
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
+                        variant="outline"
+                        className="w-36"
+                        onClick={() => setActiveTool(null)}
+                        aria-label="Close"
+                      >
+                        <X className="h-4 w-4" /> Close
                       </Button>
-                  </div>
+                    </div>
 
                   </div>
                 </>
@@ -655,8 +655,8 @@ export default function AiToolsPage() {
               {activeTool === "product_details" && (
                 <>
                   <div >
-                     <h5 className="text-gray-700 font-medium text-sm">Describe the product</h5>
-                    
+                    <h5 className="text-gray-700 font-medium text-sm">Describe the product</h5>
+
                   </div>
 
                   <div className="mt-3">
@@ -688,7 +688,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -714,21 +714,21 @@ export default function AiToolsPage() {
                         "w-36  rounded-md text-sm font-semibold",
                         "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
-                        onClick={() => {}}
+                      onClick={() => { }}
                     >
                       <Sparkles className=" h-5 w-5" />
-                        Create details
+                      Create details
                     </Button>
 
 
-                      <Button
-                            variant="outline"
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
-                      </Button>
+                    <Button
+                      variant="outline"
+                      className="w-36"
+                      onClick={() => setActiveTool(null)}
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" /> Close
+                    </Button>
                   </div>
                 </>
               )}
@@ -737,8 +737,8 @@ export default function AiToolsPage() {
               {activeTool === "seo" && (
                 <>
                   <div >
-                    
-                     <h5 className="text-gray-700 font-medium text-sm">Describe the page you want SEO for</h5>
+
+                    <h5 className="text-gray-700 font-medium text-sm">Describe the page you want SEO for</h5>
                   </div>
 
                   <div className="mt-3">
@@ -770,7 +770,7 @@ export default function AiToolsPage() {
                       "mt-3 inline-flex items-center gap-2 text-sm font-medium",
                       "text-violet-700 hover:underline dark:text-violet-200"
                     )}
-                    onClick={() => {}}
+                    onClick={() => { }}
                   >
                     <Lightbulb className="h-4 w-4" />
                     See examples <ChevronRight className="h-4 w-4" />
@@ -790,27 +790,27 @@ export default function AiToolsPage() {
                   </div> */}
 
 
-                   <div className="mt-6 flex justify-center items-center gap-2">
+                  <div className="mt-6 flex justify-center items-center gap-2">
                     <Button
                       className={cn(
                         "w-36  rounded-md text-sm font-semibold",
                         "bg-violet-600 hover:bg-violet-700 text-white"
                       )}
-                        onClick={() => {}}
+                      onClick={() => { }}
                     >
                       <Sparkles className=" h-5 w-5" />
                       Generate SEO
                     </Button>
 
 
-                      <Button
-                            variant="outline"
-                            className="w-36"
-                            onClick={() => setActiveTool(null)}
-                            aria-label="Close"
-                            >
-                         <X className="h-4 w-4" /> Close
-                      </Button>
+                    <Button
+                      variant="outline"
+                      className="w-36"
+                      onClick={() => setActiveTool(null)}
+                      aria-label="Close"
+                    >
+                      <X className="h-4 w-4" /> Close
+                    </Button>
                   </div>
 
                 </>

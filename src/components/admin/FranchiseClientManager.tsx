@@ -70,8 +70,8 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
   };
 
   const handleCreateClient = async () => {
-    if (!newClient.name || !newClient.email || !newClient.slug || 
-        !newClient.adminUser.name || !newClient.adminUser.email || !newClient.adminUser.password) {
+    if (!newClient.name || !newClient.email || !newClient.slug ||
+      !newClient.adminUser.name || !newClient.adminUser.email || !newClient.adminUser.password) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -200,7 +200,7 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                 Add a new client to your franchise network
               </DialogDescription>
             </DialogHeader>
-            
+
             <div className="space-y-6">
               {/* Client Information */}
               <div className="space-y-4">
@@ -228,7 +228,7 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="client-email">Business Email *</Label>
@@ -308,7 +308,7 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                     <Label htmlFor="relationship-type">Relationship Type</Label>
                     <Select
                       value={newClient.relationshipType}
-                      onValueChange={(value: 'direct' | 'referral' | 'partnership') => 
+                      onValueChange={(value: 'direct' | 'referral' | 'partnership') =>
                         setNewClient(prev => ({ ...prev, relationshipType: value }))
                       }
                     >
@@ -331,9 +331,9 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                       max="100"
                       step="0.1"
                       value={newClient.commissionRate}
-                      onChange={(e) => setNewClient(prev => ({ 
-                        ...prev, 
-                        commissionRate: parseFloat(e.target.value) || 0 
+                      onChange={(e) => setNewClient(prev => ({
+                        ...prev,
+                        commissionRate: parseFloat(e.target.value) || 0
                       }))}
                       placeholder="0"
                     />
@@ -361,7 +361,7 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                       }))}
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="share-analytics">Share Analytics</Label>
@@ -378,7 +378,7 @@ export default function FranchiseClientManager({ className }: FranchiseClientMan
                       }))}
                     />
                   </div>
-                  
+
                   <div className="flex items-center justify-between">
                     <div>
                       <Label htmlFor="custom-branding">Custom Branding</Label>

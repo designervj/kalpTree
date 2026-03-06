@@ -65,7 +65,7 @@ export default function DashboardPage() {
             Overview of your store's performance and AI usage.
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Select defaultValue="7d">
             <SelectTrigger className="w-[160px] bg-white">

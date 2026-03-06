@@ -103,7 +103,7 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
     Object.entries(v).forEach(([key, value]) => {
       if (value) {
         const prop = `--${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
-    
+
         onStyleChange(prop, value);
       }
     });
@@ -187,87 +187,87 @@ const GlobalStylesSection = ({ onStyleChange }: SectionProps) => {
   };
   return (
     <>
-      <GetAlColorPallet/>
-    <ScrollArea className="h-[calc(100vh-140px)] -mx-3 px-3">
-      <div className="flex justify-between items-center gap-3">
-        <div className="grid grid-cols-4 gap-2">
-          <Button variant={leftTab === "colors" ? "default" : "outline"}
-            className="shrink-0"
-            onClick={() => onLeftTab("colors")}>
-            Colors
-          </Button>
-          <Button variant={leftTab === "headings" ? "default" : "outline"}
-            className="shrink-0"
-            onClick={() => onLeftTab("headings")}>
-            Headings
-          </Button>
-          <Button variant={leftTab === "body" ? "default" : "outline"}
-            className="shrink-0"
-            onClick={() => onLeftTab("body")}>
-            Body
-          </Button>
-          <Button variant={leftTab === "buttons" ? "default" : "outline"}
-            className="shrink-0"
-            onClick={() => onLeftTab("buttons")}>
-            Buttons
-          </Button>
-          <Button variant={leftTab === "root-file" ? "default" : "outline"}
-            className="shrink-0"
-            onClick={() => onLeftTab("root-file")}>
-            Root File
-          </Button>
+      <GetAlColorPallet />
+      <ScrollArea className="h-[calc(100vh-140px)] -mx-3 px-3">
+        <div className="flex justify-between items-center gap-3">
+          <div className="grid grid-cols-4 gap-2">
+            <Button variant={leftTab === "colors" ? "default" : "outline"}
+              className="shrink-0"
+              onClick={() => onLeftTab("colors")}>
+              Colors
+            </Button>
+            <Button variant={leftTab === "headings" ? "default" : "outline"}
+              className="shrink-0"
+              onClick={() => onLeftTab("headings")}>
+              Headings
+            </Button>
+            <Button variant={leftTab === "body" ? "default" : "outline"}
+              className="shrink-0"
+              onClick={() => onLeftTab("body")}>
+              Body
+            </Button>
+            <Button variant={leftTab === "buttons" ? "default" : "outline"}
+              className="shrink-0"
+              onClick={() => onLeftTab("buttons")}>
+              Buttons
+            </Button>
+            <Button variant={leftTab === "root-file" ? "default" : "outline"}
+              className="shrink-0"
+              onClick={() => onLeftTab("root-file")}>
+              Root File
+            </Button>
+          </div>
+
+
         </div>
 
 
-      </div>
+        {/* LEFT */}
+        <div className="lg:col-span-4 space-y-6">
+          {leftTab === "colors" &&
+            brand &&
+            <ColorControl
+              brand={brand}
+              setBrand={setBrand}
+              uiPalette={uiPalette}
+              setC={(v) => handleSectionColorChange(v)}
+              setButtonColors={setButtonColors as any}
+            />
 
+          }
+          {leftTab === "headings" && headings && <HeadingControl
+            headings={headings}
+            headingFontFamily={headingFontFamily ?? ""}
+            setHeadingFontFamily={(value) => {
+              setHeadingFontFamily(value);
+              onStyleChange("--font-heading", value);
+            }}
+            setH={(value) => handleHeadingChange(value)}
+            selectedHeading={selectedHeading}
+            setSelectedHeading={setSelectedHeading}
+          />}
+          {leftTab === "body" && body && <BodyControl
+            body={body}
+            setBody={(patch) => handleBodyChange(patch)}
+            globalFontFamily={globalFontFamily}
+            setGlobalFontFamily={(value) => {
+              setGlobalFontFamily(value);
+              onStyleChange("--font-body", value);
+            }}
+          />}
+          {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
+            buttonBase={buttonBase}
+            setButtonBase={(patch) => handleButtonBaseChange(patch)}
+            buttonColors={buttonColors}
+            setButtonColors={handleButtonColorChange as any}
+            selectedBtn={selectedBtn}
+            setSelectedBtn={setSelectedBtn}
+          />}
+          {leftTab === "root-file" && <RootFileControl
 
-      {/* LEFT */}
-      <div className="lg:col-span-4 space-y-6">
-        {leftTab === "colors" &&
-          brand &&
-          <ColorControl
-            brand={brand}
-            setBrand={setBrand}
-            uiPalette={uiPalette}
-            setC={(v) => handleSectionColorChange(v)}
-            setButtonColors={setButtonColors as any}
-          />
-
-        }
-        {leftTab === "headings" && headings && <HeadingControl
-          headings={headings}
-          headingFontFamily={headingFontFamily ?? ""}
-          setHeadingFontFamily={(value) => {
-            setHeadingFontFamily(value);
-            onStyleChange("--font-heading", value);
-          }}
-          setH={(value) => handleHeadingChange(value)}
-          selectedHeading={selectedHeading}
-          setSelectedHeading={setSelectedHeading}
-        />}
-        {leftTab === "body" && body && <BodyControl
-          body={body}
-          setBody={(patch) => handleBodyChange(patch)}
-          globalFontFamily={globalFontFamily}
-          setGlobalFontFamily={(value) => {
-            setGlobalFontFamily(value);
-            onStyleChange("--font-body", value);
-          }}
-        />}
-        {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
-          buttonBase={buttonBase}
-          setButtonBase={(patch) => handleButtonBaseChange(patch)}
-          buttonColors={buttonColors}
-          setButtonColors={handleButtonColorChange as any}
-          selectedBtn={selectedBtn}
-          setSelectedBtn={setSelectedBtn}
-        />}
-        {leftTab === "root-file" && <RootFileControl
-
-        />}
-      </div>
-    </ScrollArea>
+          />}
+        </div>
+      </ScrollArea>
     </>
   );
 }

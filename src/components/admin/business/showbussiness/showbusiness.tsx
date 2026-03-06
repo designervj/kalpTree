@@ -461,10 +461,10 @@ const ShowBusiness = () => {
 
             const joinedDate = b?.createdAt
               ? new Date(b.createdAt).toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                  year: "numeric",
-                })
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
               : null;
 
             const website = b.website;

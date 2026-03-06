@@ -474,7 +474,7 @@ export function ProductOptionsSection({
   };
 
   const handleSaveOption = (option: ProductOption) => {
-    
+
     if (editingOption) {
       // Edit existing
       setProductOptions((prev) =>

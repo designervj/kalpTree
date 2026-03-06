@@ -59,9 +59,8 @@ export function RowOverlay({
   return (
     <div className="relative w-full" style={{ minHeight: height || undefined }}>
       <div
-        className={`absolute inset-0 pointer-events-none z-10 transition-all duration-150 outline outline-2 -outline-offset-1 ${
-          hovered ? "outline-blue-500" : "outline-transparent"
-        }`}
+        className={`absolute inset-0 pointer-events-none z-10 transition-all duration-150 outline outline-2 -outline-offset-1 ${hovered ? "outline-blue-500" : "outline-transparent"
+          }`}
       />
 
       {hovered && (

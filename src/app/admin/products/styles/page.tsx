@@ -325,13 +325,13 @@ export default function StylesPage() {
     <div className="min-h-[calc(100vh-80px)] bg-muted/20">
       <div className="mx-auto w-full max-w-[1400px] px-4 py-6">
         {/* Breadcrumb */}
-      
+
 
         {/* Title */}
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-      <BreadCrumbPage />
+              <BreadCrumbPage />
               <Badge variant="secondary">{counts.total} total</Badge>
               <Badge>Active {counts.active}</Badge>
               <Badge variant="outline">Draft {counts.draft}</Badge>
@@ -691,10 +691,10 @@ export default function StylesPage() {
                                           prev.map((x) =>
                                             x.id === s.id
                                               ? {
-                                                  ...x,
-                                                  featured: !x.featured,
-                                                  updatedAt: new Date().toISOString(),
-                                                }
+                                                ...x,
+                                                featured: !x.featured,
+                                                updatedAt: new Date().toISOString(),
+                                              }
                                               : x
                                           )
                                         )

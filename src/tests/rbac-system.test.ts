@@ -32,7 +32,7 @@ describe('RBAC System Tests', () => {
     it('should have all required roles defined', () => {
       const expectedRoles: UserRole[] = ['A', 'F', 'B', 'C', 'D', 'E', 'G'];
       const definedRoles = Object.keys(ROLE_DEFINITIONS) as UserRole[];
-      
+
       expect(definedRoles).toEqual(expect.arrayContaining(expectedRoles));
       expect(definedRoles.length).toBe(expectedRoles.length);
     });
@@ -53,15 +53,15 @@ describe('RBAC System Tests', () => {
       // Admin should have full access
       expect(RoleManager.hasPermission('A', 'users', 'create')).toBe(true);
       expect(RoleManager.hasPermission('A', 'tenants', 'delete')).toBe(true);
-      
+
       // Franchise should have limited access
       expect(RoleManager.hasPermission('F', 'franchise', 'create_clients')).toBe(true);
       expect(RoleManager.hasPermission('F', 'tenants', 'delete')).toBe(false);
-      
+
       // Client should have very limited access
       expect(RoleManager.hasPermission('C', 'client', 'view_own_data')).toBe(true);
       expect(RoleManager.hasPermission('C', 'users', 'create')).toBe(false);
-      
+
       // Guest should have read-only access
       expect(RoleManager.hasPermission('G', 'products', 'read')).toBe(true);
       expect(RoleManager.hasPermission('G', 'products', 'create')).toBe(false);
@@ -119,7 +119,7 @@ describe('RBAC System Tests', () => {
       };
 
       expect(RoleManager.hasPermission('F', 'users', 'create', context)).toBe(true);
-      
+
       const noTenantContext = {
         isTenantLevel: false,
         isOwn: false,
@@ -137,7 +137,7 @@ describe('RBAC System Tests', () => {
       };
 
       expect(RoleManager.hasPermission('C', 'orders', 'read', ownContext)).toBe(true);
-      
+
       const notOwnContext = {
         isOwn: false,
         isTenantLevel: false,
@@ -230,7 +230,7 @@ describe('Branding Service Tests', () => {
       };
 
       const css = BrandingService.generateCSSVariables(branding);
-      
+
       expect(css).toContain(':root {');
       expect(css).toContain('--primary: #3b82f6;');
       expect(css).toContain('--secondary: #64748b;');
@@ -249,7 +249,7 @@ describe('Branding Service Tests', () => {
       };
 
       const css = BrandingService.generateCSSVariables(branding);
-      
+
       expect(css).toContain('.custom-class { color: var(--primary); }');
     });
   });
@@ -258,7 +258,7 @@ describe('Branding Service Tests', () => {
     it('should have all required presets', () => {
       const presets = BrandingService.getBrandingPresets();
       const expectedPresets = ['default', 'dark', 'green', 'purple', 'red'];
-      
+
       expectedPresets.forEach(preset => {
         expect(presets).toHaveProperty(preset);
         expect(presets[preset]).toHaveProperty('colors');
@@ -267,7 +267,7 @@ describe('Branding Service Tests', () => {
 
     it('should have valid colors in all presets', () => {
       const presets = BrandingService.getBrandingPresets();
-      
+
       Object.entries(presets).forEach(([name, preset]) => {
         const validation = BrandingService.validateBrandingSettings(preset);
         expect(validation.isValid).toBe(true);
@@ -314,7 +314,7 @@ describe('Integration Tests', () => {
   describe('Role-Based Navigation', () => {
     it('should generate appropriate navigation for each role', () => {
       const roles: UserRole[] = ['A', 'F', 'B', 'C', 'D', 'E', 'G'];
-      
+
       roles.forEach(role => {
         const roleDefinition = RoleManager.getRoleDefinition(role);
         expect(roleDefinition).toBeDefined();
@@ -337,11 +337,11 @@ describe('Integration Tests', () => {
       // Clients should not have admin permissions
       expect(RoleManager.hasPermission('C', 'users', 'create')).toBe(false);
       expect(RoleManager.hasPermission('C', 'tenants', 'read')).toBe(false);
-      
+
       // Guests should only have read permissions
       expect(RoleManager.hasPermission('G', 'products', 'create')).toBe(false);
       expect(RoleManager.hasPermission('G', 'content', 'update')).toBe(false);
-      
+
       // Editors should not have user management permissions
       expect(RoleManager.hasPermission('E', 'users', 'create')).toBe(false);
       expect(RoleManager.hasPermission('E', 'settings', 'update')).toBe(false);
@@ -377,17 +377,17 @@ describe('Error Handling Tests', () => {
 describe('Performance Tests', () => {
   it('should handle role permission checks efficiently', () => {
     const start = performance.now();
-    
+
     // Perform 1000 permission checks
     for (let i = 0; i < 1000; i++) {
       RoleManager.hasPermission('F', 'users', 'read');
       RoleManager.hasPermission('C', 'orders', 'create');
       RoleManager.hasPermission('A', 'tenants', 'delete');
     }
-    
+
     const end = performance.now();
     const duration = end - start;
-    
+
     // Should complete 3000 permission checks in under 100ms
     expect(duration).toBeLessThan(100);
   });
@@ -414,15 +414,15 @@ describe('Performance Tests', () => {
     };
 
     const start = performance.now();
-    
+
     // Generate CSS 100 times
     for (let i = 0; i < 100; i++) {
       BrandingService.generateCSSVariables(branding);
     }
-    
+
     const end = performance.now();
     const duration = end - start;
-    
+
     // Should complete 100 CSS generations in under 50ms
     expect(duration).toBeLessThan(50);
   });

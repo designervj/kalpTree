@@ -54,36 +54,36 @@ export default function page() {
     <div className="space-y-6">
 
 
-        <div className="flex items-center gap-4 bg-transparent  py-4 border-b">
-      {/* Page Title */}
-      <h1 className="text-2xl font-bold text-slate-900">
-        Subscriptions
-      </h1>
-
-      {/* Divider */}
-      <div className="h-6 w-px bg-slate-300" />
-
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-slate-500">
-        <Home className="h-4 w-4" />
-
-        <span>–</span>
-
-        <Link
-        href="/billing"
-          className="hover:text-slate-700 transition"
-         >
-         billing
-        </Link>
-
-        <span>–</span>
-
-        <span className="text-slate-700 font-medium">
+      <div className="flex items-center gap-4 bg-transparent  py-4 border-b">
+        {/* Page Title */}
+        <h1 className="text-2xl font-bold text-slate-900">
           Subscriptions
-        </span>
+        </h1>
+
+        {/* Divider */}
+        <div className="h-6 w-px bg-slate-300" />
+
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <Home className="h-4 w-4" />
+
+          <span>–</span>
+
+          <Link
+            href="/billing"
+            className="hover:text-slate-700 transition"
+          >
+            billing
+          </Link>
+
+          <span>–</span>
+
+          <span className="text-slate-700 font-medium">
+            Subscriptions
+          </span>
+        </div>
       </div>
-    </div>
-    
+
       {/* Header */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>

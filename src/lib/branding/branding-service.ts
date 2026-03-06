@@ -19,7 +19,7 @@ export class BrandingService {
     updatedBy: ObjectId
   ): Promise<void> {
     const db = await this.db;
-    
+
     await db.collection('tenants').updateOne(
       { _id: tenantId },
       {
@@ -60,7 +60,7 @@ export class BrandingService {
     // In a real implementation, you would upload to a cloud storage service
     // For now, we'll simulate the upload and return a URL
     const logoUrl = `/uploads/logos/${tenantId}_${Date.now()}_${logoFile.originalname}`;
-    
+
     // Update the tenant's branding with the new logo
     // await this.updateBrandingSettings(
     //   tenantId,
@@ -80,9 +80,9 @@ export class BrandingService {
   // Generate CSS variables from branding settings
   static generateCSSVariables(branding: BrandingSettings): string {
     const { colors, fonts } = branding;
-    
+
     let css = ':root {\n';
-    
+
     // Color variables
     // if (colors.primary) css += `  --primary: ${colors.primary};\n`;
     // if (colors.secondary) css += `  --secondary: ${colors.secondary};\n`;
@@ -94,18 +94,18 @@ export class BrandingService {
     // if (colors.border) css += `  --border: ${colors.border};\n`;
     // if (colors.input) css += `  --input: ${colors.input};\n`;
     // if (colors.ring) css += `  --ring: ${colors.ring};\n`;
-    
+
     // Font variables
     if (fonts?.heading) css += `  --font-heading: ${fonts.heading};\n`;
     if (fonts?.body) css += `  --font-body: ${fonts.body};\n`;
-    
+
     css += '}\n';
-    
+
     // Add custom CSS if provided
     if (branding.customCSS) {
       css += '\n' + branding.customCSS;
     }
-    
+
     return css;
   }
 
@@ -137,7 +137,7 @@ export class BrandingService {
     // Validate colors
     // if (branding.colors) {
     //   const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
-      
+
     //   Object.entries(branding.colors).forEach(([key, value]) => {
     //     if (value && !colorRegex.test(value)) {
     //       errors.push(`Invalid color format for ${key}: ${value}`);
@@ -160,7 +160,7 @@ export class BrandingService {
       if (branding.customCSS.length > 10000) {
         errors.push('Custom CSS must be less than 10,000 characters');
       }
-      
+
       // Check for potentially dangerous CSS
       const dangerousPatterns = [
         /@import/i,
@@ -168,7 +168,7 @@ export class BrandingService {
         /expression\(/i,
         /behavior:/i,
       ];
-      
+
       dangerousPatterns.forEach(pattern => {
         if (pattern.test(branding.customCSS!)) {
           errors.push('Custom CSS contains potentially dangerous content');
@@ -189,7 +189,7 @@ export class BrandingService {
 
     // Generate CSS
     const css = this.generateCSSVariables(branding);
-    
+
     // Store the generated CSS for the tenant
     const db = await this.db;
     await db.collection('tenant_styles').updateOne(
@@ -309,7 +309,7 @@ export class BrandingService {
   ): Promise<void> {
     const presets = this.getBrandingPresets();
     const preset = presets[presetName];
-    
+
     if (!preset) {
       throw new Error(`Branding preset '${presetName}' not found`);
     }

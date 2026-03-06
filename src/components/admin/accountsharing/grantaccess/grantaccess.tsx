@@ -233,19 +233,17 @@ export const GrantAccessComponent = ({ user }: any) => {
             {/* Admin Role */}
             <button
               onClick={() => handleRoleChange("admin")}
-              className={`w-full p-4 rounded-lg border-2 mb-3 text-left transition-all ${
-                formData.role === "admin"
+              className={`w-full p-4 rounded-lg border-2 mb-3 text-left transition-all ${formData.role === "admin"
                   ? "border-purple-500 bg-purple-50"
                   : "border-gray-200 hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center ${
-                    formData.role === "admin"
+                  className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center ${formData.role === "admin"
                       ? "border-purple-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 >
                   {formData.role === "admin" && (
                     <div className="w-3 h-3 rounded-full bg-purple-500"></div>
@@ -264,19 +262,17 @@ export const GrantAccessComponent = ({ user }: any) => {
             {/* Collaborator Role */}
             <button
               onClick={() => handleRoleChange("collaborator")}
-              className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                formData.role === "collaborator"
+              className={`w-full p-4 rounded-lg border-2 text-left transition-all ${formData.role === "collaborator"
                   ? "border-purple-500 bg-purple-50"
                   : "border-gray-200 hover:border-gray-300"
-              }`}
+                }`}
             >
               <div className="flex items-start gap-3">
                 <div
-                  className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center ${
-                    formData.role === "collaborator"
+                  className={`w-5 h-5 rounded-full border-2 mt-0.5 flex items-center justify-center ${formData.role === "collaborator"
                       ? "border-purple-500"
                       : "border-gray-300"
-                  }`}
+                    }`}
                 >
                   {formData.role === "collaborator" && (
                     <div className="w-3 h-3 rounded-full bg-purple-500"></div>
@@ -319,8 +315,8 @@ export const GrantAccessComponent = ({ user }: any) => {
                   {loadingBusinesses
                     ? "Loading businesses..."
                     : selectedBusiness
-                    ? getBusinessName(selectedBusiness)
-                    : "Select a business"}
+                      ? getBusinessName(selectedBusiness)
+                      : "Select a business"}
                 </span>
                 <ChevronDown className="w-5 h-5 text-gray-400" />
               </button>

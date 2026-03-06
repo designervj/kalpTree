@@ -105,9 +105,8 @@ export default function HeroSlider() {
           <div
             key={i}
             onClick={() => setIndex(i)}
-            className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${
-              i === index ? "bg-white scale-125" : "bg-white/50" // Green ki jagah white kar diya, zyada elegant lagega
-            }`}
+            className={`h-2 w-2 rounded-full transition-all duration-300 cursor-pointer ${i === index ? "bg-white scale-125" : "bg-white/50" // Green ki jagah white kar diya, zyada elegant lagega
+              }`}
           />
         ))}
       </div>

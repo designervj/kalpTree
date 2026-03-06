@@ -108,11 +108,10 @@ export default function VerifyUserComp({ userid }: any) {
 
         {message && (
           <div
-            className={`mt-4 p-3 rounded-md text-sm ${
-              message.includes("Error") || message.includes("Please fill")
+            className={`mt-4 p-3 rounded-md text-sm ${message.includes("Error") || message.includes("Please fill")
                 ? "bg-red-50 text-red-800"
                 : "bg-green-50 text-green-800"
-            }`}
+              }`}
           >
             {message}
           </div>

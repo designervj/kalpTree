@@ -161,7 +161,7 @@ export default function RolesManagement({ businessid }: Props) {
   const handleEdit = (role: RolePermissionModel) => {
     dispatch(setCurrentRolePermission(role));
     // router.push(`/admin/rolesandpermission/${role?._id}`);
-       const finalBusinessId = businessid || businessId;
+    const finalBusinessId = businessid || businessId;
     const finalAgencyId = agencyid || currentBusiness?.tenantId;
 
     if (
@@ -238,7 +238,7 @@ export default function RolesManagement({ businessid }: Props) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {roles && roles.length > 0 ?roles.map((role: RolePermissionModel) => (
+          {roles && roles.length > 0 ? roles.map((role: RolePermissionModel) => (
             <div
               key={role._id}
               className="bg-white rounded-lg border border-gray-200 p-6"

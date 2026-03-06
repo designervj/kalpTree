@@ -226,7 +226,7 @@ const ListAttributeSets = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
 
       {/* Add Attribute Set Dialog */}

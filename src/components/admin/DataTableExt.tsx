@@ -134,10 +134,10 @@ function formatPrettyDate2Line(v: any) {
     : isYesterday
       ? "Yesterday"
       : d.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        });
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      });
 
   const bottom = d.toLocaleTimeString([], {
     hour: "2-digit",
@@ -164,7 +164,7 @@ function getSlugIcon(slug?: string, title?: string) {
 async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text);
-  } catch {}
+  } catch { }
 }
 
 function getRowId(row: any, fallbackIndex: number) {
@@ -498,7 +498,7 @@ export function DataTableExt({
 
     window.open(url, "_blank");
   };
-   
+
   const handleEditPermissions = (row: any) => {
     if (!onEditPermissions) return;
     onEditPermissions(row);
@@ -815,7 +815,7 @@ export function DataTableExt({
                                 </div>
 
                                 {row.isHomePage === true ||
-                                String(row.isHomePage).toLowerCase() === "yes" ? (
+                                  String(row.isHomePage).toLowerCase() === "yes" ? (
                                   <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 shrink-0">
                                     <BadgeCheck className="h-3.5 w-3.5" />
                                     Home
@@ -943,10 +943,10 @@ export function DataTableExt({
                                 Builder
                               </DropdownMenuItem>
                             ) : null}
-   {alluser.length>0 ? <DropdownMenuItem onClick={() => handleEditPermissions(row)}>
-                            <Edit2 className="h-4 w-4 mr-2" />
-                            Edit Permissions
-                          </DropdownMenuItem> : null}
+                            {alluser.length > 0 ? <DropdownMenuItem onClick={() => handleEditPermissions(row)}>
+                              <Edit2 className="h-4 w-4 mr-2" />
+                              Edit Permissions
+                            </DropdownMenuItem> : null}
                             <DropdownMenuItem onClick={() => onView?.(row)}>
                               <Edit2 className="h-4 w-4 mr-2" />
                               Edit

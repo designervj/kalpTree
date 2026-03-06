@@ -287,7 +287,7 @@ const page = () => {
             formData.branding &&
             (
               <Businessdetails
-              step="general"
+                step="general"
                 handleInputChange={handleInputChange}
                 formData={formData}
                 showPassword={showPassword}

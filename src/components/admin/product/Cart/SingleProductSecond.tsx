@@ -477,9 +477,9 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
 
                 <div className="mt-3 flex justify-between gap-3 items-center flex-wrap">
                   <div className="text-xs font-black tracking-[0.18em] uppercase" style={{ color: 'color-mix(in srgb, var(--muted) 95%, transparent)' }}>
-                    ₹{currentPrice}
+                    ${currentPrice}
                     {discount > 0 && (
-                      <span className="line-through opacity-50 ml-2">₹{product.basePrice}</span>
+                      <span className="line-through opacity-50 ml-2">${product.basePrice}</span>
                     )}
                   </div>
                   <div className="inline-flex gap-1.5 items-center text-xs font-extrabold" style={{ color: 'color-mix(in srgb, var(--text) 72%, transparent)' }}>
@@ -863,7 +863,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
-                      <span className="text-lg font-black">₹{itemTotal.toFixed(2)}</span>
+                      <span className="text-lg font-black">${itemTotal.toFixed(2)}</span>
                     </div>
                   </div>
                 );
@@ -875,7 +875,7 @@ const SingleProductNestCraft = ({ slug }: { slug?: any }) => {
             <div className="p-5 border-t" style={{ borderColor: 'var(--border)' }}>
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-bold">Total:</span>
-                <span className="text-[28px] font-black">₹{getTotalPrice().toFixed(2)}</span>
+                <span className="text-[28px] font-black">${getTotalPrice().toFixed(2)}</span>
               </div>
               <button
                 onClick={handleCheckout}

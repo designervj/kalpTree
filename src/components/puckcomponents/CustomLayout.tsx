@@ -182,8 +182,8 @@ function IconButtonGroup<T extends string>({
             title={opt.title}
             onClick={() => onChange(opt.value)}
             className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${value === opt.value
-                ? "border-blue-500 bg-blue-50 text-blue-600"
-                : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300 hover:text-slate-600"
+              ? "border-blue-500 bg-blue-50 text-blue-600"
+              : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300 hover:text-slate-600"
               }`}
           >
             {opt.icon}

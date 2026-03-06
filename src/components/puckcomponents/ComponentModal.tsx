@@ -96,11 +96,10 @@ export function ComponentModal({
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`mr-5 py-2.5 text-xs font-medium transition-colors ${
-                activeTab === tab
+              className={`mr-5 py-2.5 text-xs font-medium transition-colors ${activeTab === tab
                   ? "border-b-2 border-blue-600 text-blue-600"
                   : "text-slate-500 hover:text-slate-700"
-              }`}
+                }`}
             >
               {tab}
             </button>

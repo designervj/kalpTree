@@ -150,13 +150,12 @@ const ModernCheckout = () => {
                 <React.Fragment key={step.number}>
                   <div className="flex flex-col items-center flex-1">
                     <div
-                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        isCompleted
+                      className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${isCompleted
                           ? "bg-green-500 shadow-lg shadow-green-200"
                           : isActive
                             ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-200"
                             : "bg-slate-200"
-                      }`}
+                        }`}
                     >
                       {isCompleted ? (
                         <Check className="w-6 h-6 text-white" />
@@ -167,22 +166,20 @@ const ModernCheckout = () => {
                       )}
                     </div>
                     <p
-                      className={`mt-2 text-sm font-medium ${
-                        isActive
+                      className={`mt-2 text-sm font-medium ${isActive
                           ? "text-indigo-600"
                           : isCompleted
                             ? "text-green-600"
                             : "text-slate-400"
-                      }`}
+                        }`}
                     >
                       {step.title}
                     </p>
                   </div>
                   {index < steps.length - 1 && (
                     <div
-                      className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${
-                        isCompleted ? "bg-green-500" : "bg-slate-200"
-                      }`}
+                      className={`flex-1 h-1 mx-4 rounded transition-all duration-300 ${isCompleted ? "bg-green-500" : "bg-slate-200"
+                        }`}
                     />
                   )}
                 </React.Fragment>

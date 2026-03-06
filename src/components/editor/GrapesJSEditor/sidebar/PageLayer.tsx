@@ -340,9 +340,9 @@ const PageLayer = () => {
         const next = new Set(prev);
         state.autoExpandedLayers?.forEach((layerId) => {
           next.add(layerId);
-   
+
         });
-      
+
         return next;
       });
     }

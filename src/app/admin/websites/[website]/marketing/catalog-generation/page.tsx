@@ -169,9 +169,9 @@ export default function CatalogGenerationPage() {
             </p>
           </div> */}
 
-            <div>
+          <div>
             <BreadCrumbPage />
-              <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Generate product catalogs using templates. Track jobs, logs and outputs.
             </p>
           </div>

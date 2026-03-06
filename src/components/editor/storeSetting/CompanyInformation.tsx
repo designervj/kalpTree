@@ -70,7 +70,7 @@ const CompanyInformation = () => {
           {/* <h1 className="text-[28px] font-semibold text-slate-900">
             Company information
           </h1> */}
-                <h1 className="text-2xl font-semibold tracking-tight">Company information</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Company information</h1>
           <p className="mt-2 text-sm text-slate-600">
             Information from here will appear on your invoices.
           </p>
@@ -137,7 +137,7 @@ const CompanyInformation = () => {
                       style={{ backgroundColor: ACCENT }}
                     >
                       Upload
-                    </button> 
+                    </button>
 
                     {logoError ? (
                       <div className="mt-3 text-xs font-medium text-red-600">
@@ -288,20 +288,20 @@ const CompanyInformation = () => {
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /> */}
 
-                   <Select>
-      <SelectTrigger className="w-full ">
-        <SelectValue placeholder="Select a fruit" />
-      </SelectTrigger>
-      <SelectContent className="w-full">
-        <SelectGroup>
-          <SelectLabel>Select state</SelectLabel>
-          <SelectItem value="banana">California</SelectItem>
-          <SelectItem value="blueberry">Texas</SelectItem>
-          <SelectItem value="grapes">Florida</SelectItem>
-          <SelectItem value="pineapple">New York</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+                  <Select>
+                    <SelectTrigger className="w-full ">
+                      <SelectValue placeholder="Select a fruit" />
+                    </SelectTrigger>
+                    <SelectContent className="w-full">
+                      <SelectGroup>
+                        <SelectLabel>Select state</SelectLabel>
+                        <SelectItem value="banana">California</SelectItem>
+                        <SelectItem value="blueberry">Texas</SelectItem>
+                        <SelectItem value="grapes">Florida</SelectItem>
+                        <SelectItem value="pineapple">New York</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
                 </div>
               </div>
@@ -312,7 +312,7 @@ const CompanyInformation = () => {
                   Zip/Postal code
                 </label>
                 <Input
-                //   className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
+                  //   className="h-12 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   style={{ boxShadow: "0 1px 0 rgba(0,0,0,0.02)" }}
                   placeholder="e.g., 12345"
                 />

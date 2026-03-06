@@ -1,8 +1,8 @@
 export const headerData = {
-    id: "header-demo-001",
-    slug: "header",
-    tenantId: "your-tenant-id",
-    content: `
+  id: "header-demo-001",
+  slug: "header",
+  tenantId: "your-tenant-id",
+  content: `
     <div class="font-sans bg-gray-800 p-5 text-white">
       <h1 class="text-center mb-8 text-white text-3xl font-bold">Header Format Types</h1>
       
@@ -134,10 +134,10 @@ export const headerData = {
 
 // Header Template 2: Advanced Navigation Headers
 export const headerDataAdvanced = {
-    id: "header-demo-002",
-    slug: "header-advanced",
-    tenantId: "your-tenant-id",
-    content: `
+  id: "header-demo-002",
+  slug: "header-advanced",
+  tenantId: "your-tenant-id",
+  content: `
     <div class="font-sans bg-gray-800 p-5 text-white">
       <h1 class="text-center mb-8 text-white text-3xl font-bold">Advanced Header Types</h1>
       
@@ -273,10 +273,10 @@ export const headerDataAdvanced = {
 
 // Header Template 3: E-commerce & Shopping Headers
 export const headerDataEcommerce = {
-    id: "header-demo-003",
-    slug: "header-ecommerce",
-    tenantId: "your-tenant-id",
-    content: `
+  id: "header-demo-003",
+  slug: "header-ecommerce",
+  tenantId: "your-tenant-id",
+  content: `
     <div class="font-sans bg-gray-800 p-5 text-white">
       <h1 class="text-center mb-8 text-white text-3xl font-bold">E-commerce Header Types</h1>
       
@@ -422,10 +422,10 @@ export const headerDataEcommerce = {
 
 // Type definition for the data structure
 export interface HeaderData {
-    id: string;
-    slug: string;
-    tenantId: string;
-    content: string;
+  id: string;
+  slug: string;
+  tenantId: string;
+  content: string;
 }
 
 // Export all templates

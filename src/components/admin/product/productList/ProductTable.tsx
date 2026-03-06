@@ -262,7 +262,7 @@ const ProductTable = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
 
       <Button onClick={() => setIsModalOpen(true)}>Import Products</Button>

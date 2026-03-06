@@ -211,11 +211,10 @@ function IconToggleGroup({
             key={opt.value}
             title={opt.title}
             onClick={() => onChange(opt.value)}
-            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${
-              value === opt.value
+            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${value === opt.value
                 ? "border-blue-500 bg-blue-50 text-blue-600"
                 : "border-transparent bg-transparent text-slate-400 hover:text-slate-600"
-            }`}
+              }`}
           >
             {opt.icon}
           </button>
@@ -244,9 +243,8 @@ function TextShadowCard({
   return (
     <button
       onClick={onClick}
-      className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all bg-white ${
-        active ? "border-blue-500" : "border-slate-200 hover:border-slate-300"
-      }`}
+      className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all bg-white ${active ? "border-blue-500" : "border-slate-200 hover:border-slate-300"
+        }`}
     >
       {index === 0 ? (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
@@ -640,11 +638,10 @@ export function TextPanel({
               <button
                 key={tag}
                 onClick={() => updateField("activeTag", tag)}
-                className={`flex-1 py-2 text-xs font-semibold transition-all relative ${
-                  activeTag === tag
+                className={`flex-1 py-2 text-xs font-semibold transition-all relative ${activeTag === tag
                     ? "text-blue-600"
                     : "text-slate-400 hover:text-slate-600"
-                }`}
+                  }`}
               >
                 {/* Subscript style for H tags */}
                 {tag === "P" ? (

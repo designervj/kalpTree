@@ -318,11 +318,10 @@ export default function CreateUserForm({ user, roles }: any) {
                       <button
                         type="button"
                         onClick={() => handleCategoryToggle(permissions)}
-                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                          isCategorySelected(permissions)
+                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${isCategorySelected(permissions)
                             ? "bg-indigo-600 text-white"
                             : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {isCategorySelected(permissions)
                           ? "Deselect All"
@@ -335,11 +334,10 @@ export default function CreateUserForm({ user, roles }: any) {
                           key={permission}
                           type="button"
                           onClick={() => handlePermissionToggle(permission)}
-                          className={`px-4 py-2 rounded-lg border-2 font-medium text-sm transition-all transform hover:scale-105 ${
-                            formData.permissions.includes(permission)
+                          className={`px-4 py-2 rounded-lg border-2 font-medium text-sm transition-all transform hover:scale-105 ${formData.permissions.includes(permission)
                               ? getPermissionColor(permission) + " shadow-sm"
                               : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                          }`}
+                            }`}
                         >
                           <span className="flex items-center gap-2">
                             {formData.permissions.includes(permission) && (
@@ -358,11 +356,10 @@ export default function CreateUserForm({ user, roles }: any) {
 
           {message && (
             <div
-              className={`p-4 rounded-xl border-2 ${
-                message.type === "success"
+              className={`p-4 rounded-xl border-2 ${message.type === "success"
                   ? "bg-emerald-50 text-emerald-800 border-emerald-200"
                   : "bg-rose-50 text-rose-800 border-rose-200"
-              }`}
+                }`}
             >
               <p className="font-medium">{message.text}</p>
             </div>

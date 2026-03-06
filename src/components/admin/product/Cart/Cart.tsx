@@ -21,8 +21,8 @@ const SteporaCartPage = () => {
       category: "Jacket",
       price: 99.29,
       quantity: 1,
-    image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
-     
+      image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
+
       color: "Ocean Blue",
       checked: true,
     },
@@ -42,33 +42,33 @@ const SteporaCartPage = () => {
       category: "Backpack",
       price: 58.98,
       quantity: 1,
-    image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
       color: "Silver Grey",
       checked: false,
     },
 
-     {
+    {
       id: 3,
       name: "RidgePro 28",
       category: "Backpack",
       price: 58.98,
       quantity: 1,
-    image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
       color: "Silver Grey",
       checked: false,
     },
 
-     {
+    {
       id: 3,
       name: "RidgePro 28",
       category: "Backpack",
       price: 58.98,
       quantity: 1,
-    image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
+      image: "https://images.unsplash.com/photo-1622260614153-03223fb72052?q=80&w=400&auto=format&fit=crop",
       color: "Silver Grey",
       checked: false,
     },
-    
+
   ]);
 
   const toggleCheck = (id) => {
@@ -109,29 +109,29 @@ const SteporaCartPage = () => {
   return (
     <div className="min-h-screen bg-[#F9FAFB] font-sans text-[#111]">
       {/* Black Promo Bar */}
-      
+
 
       {/* Navbar */}
 
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-12">
-          <div className="flex justify-between items-center">
-            <div className="mb-10">
-              <h1 className="text-[32px] font-bold ">Shopping Cart</h1>
-              <p>Review your items, update quantity, then checkout securely.</p>
-            </div>
-          
-              <Button variant="outline">Continue shopping</Button>
-            </div>
-            
+        <div className="flex justify-between items-center">
+          <div className="mb-10">
+            <h1 className="text-[32px] font-bold ">Shopping Cart</h1>
+            <p>Review your items, update quantity, then checkout securely.</p>
+          </div>
+
+          <Button variant="outline">Continue shopping</Button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
           {/* Shopping Cart Section */}
 
-          
+
           <div className="lg:col-span-7">
-           
+
 
             <div className="space-y-4">
               {cartItems.map((item) => (
@@ -171,7 +171,7 @@ const SteporaCartPage = () => {
                         <Button
                           onClick={() => removeItem(item.id)}
                           variant="outline"
-                          // className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors"
+                        // className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200 transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>

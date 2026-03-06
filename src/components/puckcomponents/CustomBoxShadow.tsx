@@ -59,9 +59,8 @@ function ShadowPresetCard({
   return (
     <button
       onClick={() => onClick(index)}
-      className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all bg-white ${
-        active ? "border-blue-500" : "border-slate-200 hover:border-slate-300"
-      }`}
+      className={`w-12 h-12 rounded-lg border-2 flex items-center justify-center transition-all bg-white ${active ? "border-blue-500" : "border-slate-200 hover:border-slate-300"
+        }`}
     >
       {index === 0 ? (
         // None — crossed circle

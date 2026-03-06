@@ -252,7 +252,7 @@ const ListProductTypeCategory = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
 
       <ProductCategoryTypeModal

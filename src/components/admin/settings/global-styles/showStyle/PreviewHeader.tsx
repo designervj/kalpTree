@@ -3,40 +3,40 @@ import { rgba } from "../util/ColorFunction";
 import { BrandColors, LeftTab, HeadingKey, HeadingStyle, ButtonBaseStyle } from "../GlobalStyleModal";
 
 interface PreviewHeaderProps {
-    uiPalette: { border: string };
-    mode: string;
-    brand: BrandColors;
-    headingFontFamily: string;
-    headings: Record<HeadingKey, HeadingStyle>;
-    headingPx: (k: HeadingKey) => number;
-    leftTab: LeftTab;
-    onLeftTab: (t: LeftTab) => void;
-    globalFontFamily: string;
-    buttonBase: ButtonBaseStyle;
+  uiPalette: { border: string };
+  mode: string;
+  brand: BrandColors;
+  headingFontFamily: string;
+  headings: Record<HeadingKey, HeadingStyle>;
+  headingPx: (k: HeadingKey) => number;
+  leftTab: LeftTab;
+  onLeftTab: (t: LeftTab) => void;
+  globalFontFamily: string;
+  buttonBase: ButtonBaseStyle;
 }
 
 const PreviewHeader = ({
-    uiPalette,
-    mode,
-    brand,
-    globalFontFamily,
-    headingFontFamily,
-    headings,
-    buttonBase,
-    headingPx,
-    leftTab,
-    onLeftTab,
+  uiPalette,
+  mode,
+  brand,
+  globalFontFamily,
+  headingFontFamily,
+  headings,
+  buttonBase,
+  headingPx,
+  leftTab,
+  onLeftTab,
 }: PreviewHeaderProps) => {
-    const tabs = [
-        { key: "colors" as const, label: "Colors" },
-        { key: "headings" as const, label: "Typography" },
-        { key: "body" as const, label: "Design Tokens" },
-        { key: "buttons" as const, label: "Preview Gallery" },
-    ];
+  const tabs = [
+    { key: "colors" as const, label: "Colors" },
+    { key: "headings" as const, label: "Typography" },
+    { key: "body" as const, label: "Design Tokens" },
+    { key: "buttons" as const, label: "Preview Gallery" },
+  ];
 
-    return (
-      <>
-        <div
+  return (
+    <>
+      <div
         className="rounded-2xl overflow-hidden border"
         style={{
           borderColor: uiPalette.border,
@@ -70,7 +70,7 @@ const PreviewHeader = ({
             </div>
           </div>
 
-    
+
           <div className="mt-4" style={{ fontFamily: headingFontFamily }}>
             <div
               style={{
@@ -84,7 +84,7 @@ const PreviewHeader = ({
             </div>
           </div>
 
-         
+
           <p
             className="mt-2 text-sm opacity-85"
             style={{ maxWidth: 740, fontFamily: globalFontFamily }}
@@ -94,7 +94,7 @@ const PreviewHeader = ({
             ever since the 1500s.
           </p>
 
-     
+
           <div className="mt-5 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const isActive = leftTab === t.key;
@@ -105,7 +105,7 @@ const PreviewHeader = ({
                   onClick={() => onLeftTab(t.key)}
                   className="inline-flex items-center rounded-lg border px-3 py-1.5 text-xs font-semibold"
                   style={{
-               fontFamily: buttonBase?.fontFamily,
+                    fontFamily: buttonBase?.fontFamily,
                     background: isActive
                       ? rgba("#ffffff", 0.16)
                       : rgba("#ffffff", 0.1),
@@ -120,8 +120,8 @@ const PreviewHeader = ({
           </div>
         </div>
       </div>
-      </>
-    );
+    </>
+  );
 };
 
 export default PreviewHeader;

@@ -217,7 +217,7 @@ const AttributeTable = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
       {/* Add Attribute Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>

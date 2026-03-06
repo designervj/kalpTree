@@ -17,9 +17,9 @@ import Link from "next/link";
 const AgencyList = () => {
 
 
-  
-    // Server-side authentication check
-   
+
+  // Server-side authentication check
+
   const { user } = useSelector((state: RootState) => state.user);
   const { allAgencies, isAgencyLoading } = useSelector(
     (state: RootState) => state.agency
@@ -76,7 +76,7 @@ const AgencyList = () => {
     }
   };
 
-  const handleBusiness = () => {};
+  const handleBusiness = () => { };
   return (
     <>
       <div className="flex items-center justify-between">
@@ -112,7 +112,7 @@ const AgencyList = () => {
         </TabsContent>
       </Tabs> */}
 
-         <AgencyGrid />
+      <AgencyGrid />
     </>
   );
 };

@@ -27,8 +27,8 @@ const initialState: RolePermissionState = {
   rolesPermissions: [],
   loading: false,
   hasFetched: false,
-  current:null,
-isUserRole:false
+  current: null,
+  isUserRole: false
 };
 
 export const fetchRolePermissions = createAsyncThunk<RolePermissionModel[], string | null | undefined>(
@@ -161,9 +161,9 @@ const rolePermissionSlice = createSlice({
   },
 });
 
-export const { setCurrentRolePermission, 
-  addRoles, updateRolePermissions, 
-  clearCurrentRolePermission, resetFetchAllRolePermission ,
-setIsUserRole} =
+export const { setCurrentRolePermission,
+  addRoles, updateRolePermissions,
+  clearCurrentRolePermission, resetFetchAllRolePermission,
+  setIsUserRole } =
   rolePermissionSlice.actions;
 export default rolePermissionSlice.reducer;

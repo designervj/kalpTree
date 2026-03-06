@@ -221,13 +221,12 @@ const HotelRoomManager = () => {
           <React.Fragment key={step.number}>
             <div className="flex flex-col items-center">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                  step.number < currentStep
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step.number < currentStep
                     ? "bg-green-600 text-white"
                     : step.number === currentStep
                       ? "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-600"
-                }`}
+                  }`}
               >
                 {step.number < currentStep ? (
                   <Check className="w-5 h-5" />
@@ -238,9 +237,8 @@ const HotelRoomManager = () => {
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`flex-1 h-0.5 mt-5 ${
-                  step.number < currentStep ? "bg-green-600" : "bg-gray-200"
-                }`}
+                className={`flex-1 h-0.5 mt-5 ${step.number < currentStep ? "bg-green-600" : "bg-gray-200"
+                  }`}
               />
             )}
           </React.Fragment>
@@ -252,20 +250,18 @@ const HotelRoomManager = () => {
   // Collapsible section card for create mode
   const CollapsibleSection = ({ step, children, isExpanded }) => (
     <div
-      className={`bg-white rounded-lg border border-gray-200 mb-4 ${
-        !isExpanded ? "opacity-60" : ""
-      }`}
+      className={`bg-white rounded-lg border border-gray-200 mb-4 ${!isExpanded ? "opacity-60" : ""
+        }`}
     >
       <div className="p-6">
         <div className="flex items-center gap-3 mb-2">
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-              step.number < currentStep
+            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${step.number < currentStep
                 ? "bg-green-600 text-white"
                 : step.number === currentStep
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-600"
-            }`}
+              }`}
           >
             {step.number < currentStep ? (
               <Check className="w-4 h-4" />

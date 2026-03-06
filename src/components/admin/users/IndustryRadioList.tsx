@@ -22,7 +22,7 @@ export type IndustryOption = {
   name: string;
   desc?: string;
   icon?: LucideIcon;
-  slug?:string // ✅ icon support
+  slug?: string // ✅ icon support
 };
 
 export default function IndustryRadioList({

@@ -54,7 +54,7 @@ export class DirectS3UploadService {
    * @param projectId - Optional project ID for organizing files
    * @returns Promise with upload result
    */
-  static async  uploadFile(
+  static async uploadFile(
     file: File,
     userProfileId?: string,
     onProgress?: (progress: UploadProgress) => void,
@@ -374,9 +374,8 @@ export class DirectS3UploadService {
     if (!allowedTypes.includes(file.type)) {
       return {
         valid: false,
-        error: `File type ${
-          file.type
-        } is not allowed. Allowed types: ${allowedTypes.join(", ")}`,
+        error: `File type ${file.type
+          } is not allowed. Allowed types: ${allowedTypes.join(", ")}`,
       };
     }
 

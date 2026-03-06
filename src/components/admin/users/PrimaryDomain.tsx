@@ -131,11 +131,10 @@ export function PrimaryDomains({
         {/* Subdomain Option */}
         <div
           onClick={() => handleDomainTypeChange("subdomain")}
-          className={`mb-3 cursor-pointer rounded-xl border-2 p-4 transition-all ${
-            domainType === "subdomain"
+          className={`mb-3 cursor-pointer rounded-xl border-2 p-4 transition-all ${domainType === "subdomain"
               ? "border-blue-500 bg-blue-50"
               : "border-gray-200 bg-white hover:border-gray-300"
-          }`}
+            }`}
         >
           <div className="flex items-start gap-3">
             <input
@@ -156,11 +155,10 @@ export function PrimaryDomains({
         {/* Own Domain Option */}
         <div
           onClick={() => handleDomainTypeChange("own")}
-          className={`cursor-pointer rounded-xl border-2 p-4 transition-all ${
-            domainType === "own"
+          className={`cursor-pointer rounded-xl border-2 p-4 transition-all ${domainType === "own"
               ? "border-blue-500 bg-blue-50"
               : "border-gray-200 bg-white hover:border-gray-300"
-          }`}
+            }`}
         >
           <div className="flex items-start gap-3">
             <input
@@ -196,11 +194,10 @@ export function PrimaryDomains({
               }
             }}
             placeholder={getPlaceholder()}
-            className={`flex-1 rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 ${
-              validationError
+            className={`flex-1 rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 ${validationError
                 ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
                 : "border-gray-300 focus:border-blue-500 focus:ring-blue-500/20"
-            }`}
+              }`}
           />
           {domainType === "subdomain" && (
             <span className="text-sm text-gray-600 whitespace-nowrap">

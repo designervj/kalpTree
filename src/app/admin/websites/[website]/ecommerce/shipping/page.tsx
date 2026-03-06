@@ -378,12 +378,12 @@ export default function ShippingPage() {
       price: parseFloat(rateForm.price),
       conditions: rateForm.showConditions
         ? [
-            {
-              type: rateForm.conditionType,
-              minValue: rateForm.minValue,
-              maxValue: rateForm.maxValue,
-            },
-          ]
+          {
+            type: rateForm.conditionType,
+            minValue: rateForm.minValue,
+            maxValue: rateForm.maxValue,
+          },
+        ]
         : [],
     };
 

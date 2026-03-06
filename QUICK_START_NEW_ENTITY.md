@@ -48,17 +48,21 @@ export async function getProductById(id: string) {
 export async function updateProduct(id: string, data: any) {
   const db = await getDb();
   const { _id, ...updateData } = data;
-  const result = await db.collection("products").findOneAndUpdate(
-    { _id: new ObjectId(id) },
-    { $set: { ...updateData, updatedAt: new Date() } },
-    { returnDocument: "after" }
-  );
+  const result = await db
+    .collection("products")
+    .findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { ...updateData, updatedAt: new Date() } },
+      { returnDocument: "after" },
+    );
   return result;
 }
 
 export async function deleteProduct(id: string) {
   const db = await getDb();
-  const result = await db.collection("products").deleteOne({ _id: new ObjectId(id) });
+  const result = await db
+    .collection("products")
+    .deleteOne({ _id: new ObjectId(id) });
   return result.deletedCount > 0;
 }
 ```
@@ -83,10 +87,16 @@ import {
 
 // Add this to entityConfig object
 export const entityConfig: Record<string, EntityOperations> = {
-  category: { /* existing */ },
-  brand: { /* existing */ },
-  attribute: { /* existing */ },
-  
+  category: {
+    /* existing */
+  },
+  brand: {
+    /* existing */
+  },
+  attribute: {
+    /* existing */
+  },
+
   // 👇 Add your new entity here
   product: {
     create: createProduct,
@@ -129,7 +139,7 @@ export default ProductHome;
 Create file: `src/components/admin/product/productList/GetAllProduct.tsx`
 
 ```typescript
-"use client"
+"use client";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store/store";
@@ -188,7 +198,7 @@ export const entityComponents: Record<string, React.ComponentType> = {
   category: CategoryHome,
   brand: BrandHome,
   attribute: AttributeHome,
-  
+
   // 👇 Add your new entity here
   product: ProductHome,
 };
@@ -201,7 +211,9 @@ export const entityComponents: Record<string, React.ComponentType> = {
 ## Step 5: Test It Out! (1 minute)
 
 ### Test the Frontend
+
 Open your browser:
+
 ```
 http://localhost:3000/admin/product
 ```
@@ -211,6 +223,7 @@ You should see your ProductHome component!
 ### Test the API
 
 **Create a product:**
+
 ```bash
 curl -X POST http://localhost:3000/api/admin/product \
   -H "Content-Type: application/json" \
@@ -222,16 +235,19 @@ curl -X POST http://localhost:3000/api/admin/product \
 ```
 
 **Get all products:**
+
 ```bash
 curl http://localhost:3000/api/admin/product?websiteId=your-website-id
 ```
 
 **Get single product:**
+
 ```bash
 curl http://localhost:3000/api/admin/product?id=product-id
 ```
 
 **Update a product:**
+
 ```bash
 curl -X PATCH http://localhost:3000/api/admin/product \
   -H "Content-Type: application/json" \
@@ -243,6 +259,7 @@ curl -X PATCH http://localhost:3000/api/admin/product \
 ```
 
 **Delete a product:**
+
 ```bash
 curl -X DELETE http://localhost:3000/api/admin/product?id=product-id
 ```
@@ -252,6 +269,7 @@ curl -X DELETE http://localhost:3000/api/admin/product?id=product-id
 ## 🎉 Congratulations!
 
 You've successfully added a new entity! The system now:
+
 - ✅ Has API endpoints for all CRUD operations
 - ✅ Renders your UI component at `/admin/product`
 - ✅ Validates requests automatically
@@ -290,15 +308,18 @@ export interface Product {
 ## 🐛 Troubleshooting
 
 ### Entity not found error
+
 - ✅ Check spelling in entityConfig.ts and EntityRegistry.tsx
 - ✅ Make sure imports are correct
 - ✅ Restart your dev server
 
 ### API returns 400 error
+
 - ✅ Verify entity is in entityConfig
 - ✅ Check that all 5 operations are defined (create, list, getById, update, delete)
 
 ### Component not rendering
+
 - ✅ Verify component is in EntityRegistry
 - ✅ Check that component exports default
 - ✅ Look for errors in browser console
@@ -308,7 +329,9 @@ export interface Product {
 ## 💡 Pro Tips
 
 ### 1. Copy Existing Entity
+
 The fastest way is to copy an existing entity:
+
 ```bash
 # Copy category to product
 cp -r src/components/admin/category src/components/admin/product
@@ -318,7 +341,9 @@ cp src/lib/material/category.ts src/lib/material/product.ts
 ```
 
 ### 2. Use Code Snippets
+
 Create VS Code snippets for faster entity creation:
+
 ```json
 {
   "New Entity Operations": {
@@ -340,7 +365,9 @@ Create VS Code snippets for faster entity creation:
 ```
 
 ### 3. Test As You Go
+
 Don't wait until the end to test. Test each step:
+
 1. Create operations → Test with curl
 2. Add to config → Test API endpoint
 3. Create component → Check /admin/entity

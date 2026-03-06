@@ -163,8 +163,8 @@ export function LanguageSelector({ formData, handleInputChange }: any) {
                 <span
                   key={langObj.name}
                   className={`inline-flex items-center gap-1.5 px-3 py-1.5 border rounded-full text-sm font-medium ${langObj.default
-                      ? "bg-blue-100 border-blue-300 text-blue-800"
-                      : "bg-white border-accent00 text-gray-700"
+                    ? "bg-blue-100 border-blue-300 text-blue-800"
+                    : "bg-white border-accent00 text-gray-700"
                     }`}
                 >
                   <span>{lang.flag}</span>

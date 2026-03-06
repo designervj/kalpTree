@@ -12,15 +12,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-     const searchParams = request.nextUrl.searchParams;
-     const tenantId = searchParams.get('tenantId');
+    const searchParams = request.nextUrl.searchParams;
+    const tenantId = searchParams.get('tenantId');
 
-     console.log("teannat id ",tenantId)
+    console.log("teannat id ", tenantId)
     const db = await getDatabase();
-    
+
     const llmSettings = await db
       .collection(COLLECTION_NAME)
-      .find({ tenantId:tenantId })
+      .find({ tenantId: tenantId })
       .toArray();
 
     return NextResponse.json({ data: llmSettings });
@@ -48,12 +48,12 @@ export async function POST(request: NextRequest) {
     }
 
     const db = await getDatabase();
-    
+
     const newLLMSetting = {
       name: body.name,
-       model:body.model,
+      model: body.model,
       secreteKey: body.secreteKey,
-      tenantId:body.tenantId, 
+      tenantId: body.tenantId,
       createdBy: session?.user?.id,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -86,7 +86,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const db = await getDatabase();
-    
+
     const updateData: any = {
       updatedAt: new Date(),
       updatedBy: session?.user?.id,
@@ -118,15 +118,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-   const body= await request.json();
-   const id= body.id;
+    const body = await request.json();
+    const id = body.id;
 
     if (!id) {
       return NextResponse.json({ error: 'LLM setting ID is required' }, { status: 400 });
     }
 
     const db = await getDatabase();
-    
+
     const result = await db.collection(COLLECTION_NAME).deleteOne({
       _id: new ObjectId(id),
     });

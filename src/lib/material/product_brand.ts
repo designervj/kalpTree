@@ -59,7 +59,7 @@ export async function createBrand(
 
   const doc: any = {
     ...data,
- 
+
     name: data.name.trim(),
     createdAt: now,
     updatedAt: now,
@@ -82,7 +82,7 @@ export async function deleteBrand(
 }
 
 
-export async function listBrands(websiteId:string): Promise<MaterialBrandModel[]> {
+export async function listBrands(websiteId: string): Promise<MaterialBrandModel[]> {
   const db = await getDatabase();
   const col = db.collection<MaterialBrandModel>(COLLECTION);
   const filter: any = {};

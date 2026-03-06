@@ -198,8 +198,8 @@ export function CreateProduct({ productId }: { productId?: string }) {
       const relevantAttrs =
         attr && attr.length > 0
           ? attributes.filter((d) => {
-              return attr?.includes(String(d._id));
-            })
+            return attr?.includes(String(d._id));
+          })
           : [];
 
       if (relevantAttrs.length > 0) {
@@ -602,7 +602,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                      ₹
+                      $
                     </span>
                     <input
                       type="text"
@@ -619,7 +619,7 @@ export function CreateProduct({ productId }: { productId?: string }) {
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                      ₹
+                      $
                     </span>
                     <input
                       type="text"

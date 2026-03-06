@@ -51,10 +51,10 @@ function Badge({
     variant === "purple"
       ? "bg-purple-50 text-purple-700 border-purple-200"
       : variant === "green"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-      : variant === "amber"
-      ? "bg-amber-50 text-amber-700 border-amber-200"
-      : "bg-slate-50 text-slate-700 border-slate-200";
+        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+        : variant === "amber"
+          ? "bg-amber-50 text-amber-700 border-amber-200"
+          : "bg-slate-50 text-slate-700 border-slate-200";
 
   return (
     <span
@@ -74,8 +74,8 @@ function BusinessIcon({
     tone === "purple"
       ? "bg-purple-600"
       : tone === "dark"
-      ? "bg-slate-900"
-      : "bg-[#0b6d8e]";
+        ? "bg-slate-900"
+        : "bg-[#0b6d8e]";
   return (
     <div
       className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}

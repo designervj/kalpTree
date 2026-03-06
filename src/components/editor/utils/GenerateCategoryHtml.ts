@@ -121,11 +121,12 @@ export function generateCategoryPageHtml(
         <div class="cp-product-info">
             <h3> ${escapedTitle}</h3>
           <div class="cp-price">
-            ${hasSale ? `<span class="cp-old-price">₹${basePriceNum.toFixed(2)}</span>` : ''}
-            <span class="cp-new-price">₹${minPrice.toFixed(2)}</span>
-          </div>
-        </div>
-      </div>`;
+            ${hasSale ? `< span class="cp-old-price" >$${basePriceNum.toFixed(2)} </span>` : ''
+        }
+            <span class="cp-new-price" >$${minPrice.toFixed(2)} </span>
+    </div>
+    </div>
+    </div>`;
     })
     .join('');
 

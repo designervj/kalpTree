@@ -230,7 +230,7 @@ const BrandTable = () => {
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}
         onView={(row) => handleView(row)}
-        opentab={() => {}}
+        opentab={() => { }}
       />
 
       {/* Add Brand Dialog */}
@@ -251,7 +251,7 @@ const BrandTable = () => {
                   }
                 }}
                 fieldErrors={fieldErrors}
-                handleLogoFile={() => {}}
+                handleLogoFile={() => { }}
               />
               <div className="flex justify-end gap-2 pt-4">
                 <Button
@@ -291,7 +291,7 @@ const BrandTable = () => {
                   }
                 }}
                 fieldErrors={fieldErrors}
-                handleLogoFile={() => {}}
+                handleLogoFile={() => { }}
               />
               <div className="flex justify-end gap-2 pt-4">
                 <Button

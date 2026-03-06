@@ -17,7 +17,7 @@ const GetAllHeader = () => {
             allTemplate &&
             allHeader.length === 0 &&
             allTemplate.length > 0) {
-         
+
 
             // Log each template's category
             allTemplate.forEach((template, index) => {
@@ -33,9 +33,9 @@ const GetAllHeader = () => {
                 console.log(`Filtering ${template.label}: category="${template.category}", isNavigation=${isNavigation}`)
                 return isNavigation
             })
-    if(onlyHeader.length > 0){
-        dispatch(setHeaders(onlyHeader));
-    }
+            if (onlyHeader.length > 0) {
+                dispatch(setHeaders(onlyHeader));
+            }
         }
     }, [allHeader, allTemplate]);
 

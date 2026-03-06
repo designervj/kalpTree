@@ -240,19 +240,19 @@ export const registerProductGalleryComponent = (editor: any) => {
             ${view.products
             .map(
               (product: Product) => `
-              <div class="${view.getCardStyleClasses()}" ${config.layout === "carousel"
+          < div class="${view.getCardStyleClasses()}" ${config.layout === "carousel"
                   ? 'style="flex: 0 0 calc(33.333% - 14px); scroll-snap-align: start;"'
                   : ""
                 }>
-                <div class="product-image-wrapper">
-                  <img src="${product.image}" alt="${product.name}" class="product-image">
+          <div class="product-image-wrapper" >
+            <img src="${product.image}" alt = "${product.name}" class="product-image" >
                   ${config.showBadge && product.badge
                   ? `<span class="product-badge">${product.badge}</span>`
                   : ""
                 }
-                </div>
-                <div class="product-content">
-                  <h3 class="product-title">${product.name}</h3>
+</div>
+  < div class="product-content" >
+    <h3 class="product-title" >${product.name} </h3>
                   ${config.showDescription && product.description
                   ? `<p class="product-description">${product.description}</p>`
                   : ""
@@ -261,9 +261,9 @@ export const registerProductGalleryComponent = (editor: any) => {
                   ? `<p class="product-price">$${product.price}</p>`
                   : ""
                 }
-                </div>
-              </div>
-            `,
+</div>
+  </div>
+    `,
             )
             .join("")}
           </div>
@@ -377,24 +377,24 @@ export const registerProductGalleryComponent = (editor: any) => {
             
             ${config.layout === "carousel"
             ? `
-              .product-gallery::-webkit-scrollbar {
-                height: 8px;
-              }
+    .product - gallery:: -webkit - scrollbar {
+    height: 8px;
+  }
               
-              .product-gallery::-webkit-scrollbar-track {
-                background: #f1f5f9;
-                border-radius: 4px;
-              }
+              .product - gallery:: -webkit - scrollbar - track {
+    background: #f1f5f9;
+    border - radius: 4px;
+  }
               
-              .product-gallery::-webkit-scrollbar-thumb {
-                background: #cbd5e0;
-                border-radius: 4px;
-              }
+              .product - gallery:: -webkit - scrollbar - thumb {
+    background: #cbd5e0;
+    border - radius: 4px;
+  }
               
-              .product-gallery::-webkit-scrollbar-thumb:hover {
-                background: #94a3b8;
-              }
-            `
+              .product - gallery:: -webkit - scrollbar - thumb:hover {
+    background: #94a3b8;
+  }
+  `
             : ""
           }
           </style>

@@ -736,7 +736,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 className={cn(
                   "h-9 rounded-md px-4",
                   mode === "html" &&
-                    "bg-violet-600 hover:bg-violet-700 text-white",
+                  "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("html")}
               >
@@ -748,7 +748,7 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                 className={cn(
                   "h-9 rounded-md px-4",
                   mode === "preview" &&
-                    "bg-violet-600 hover:bg-violet-700 text-white",
+                  "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("preview")}
               >
@@ -998,12 +998,12 @@ export default function PageCreator({ item, fields }: PageCreatorProps) {
                       ok={
                         !!focusKeyword &&
                         keywordIn(String(formData.metaDescription || "")) ===
-                          true
+                        true
                       }
                       warn={
                         !focusKeyword ||
                         keywordIn(String(formData.metaDescription || "")) !==
-                          true
+                        true
                       }
                       text={
                         focusKeyword

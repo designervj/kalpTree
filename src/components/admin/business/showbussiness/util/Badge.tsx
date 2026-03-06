@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-const Badge=({
+const Badge = ({
   children,
   variant = "neutral",
 }: {
@@ -21,6 +21,6 @@ const Badge=({
       className={`inline-flex items-center rounded-md border px-2.5 py-1 text-xs font-semibold ${cls}`}>
       {children}
     </span>
-  );    
+  );
 }
 export default Badge

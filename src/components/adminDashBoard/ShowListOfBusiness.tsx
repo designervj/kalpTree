@@ -61,16 +61,16 @@ function PillButton({
     );
 }
 const ShowListOfBusiness = () => {
-   const router = useRouter()
+    const router = useRouter()
     const { allBusiness } = useSelector((state: RootState) => state.business)
-     const dispatch= useDispatch<AppDispatch>()
+    const dispatch = useDispatch<AppDispatch>()
     const handleClick = (site: IBusiness) => {
         dispatch(setBusinessWebsite(site))
         router.push(`/admin/businesses/${site._id}`)
     }
     return (
         <>
-           <ShowBusiness/>
+            <ShowBusiness />
         </>
     )
 }
