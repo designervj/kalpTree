@@ -25,9 +25,7 @@ export default async function MainHomePage({
 
   // If not localhost or main domain, show the custom domain page (PageTemplate)
   // console.log("params", params);
-  console.log("isLocalhost", isLocalhost);
-  console.log("isMainKalpTree", isMainKalpTree);
-  // console.log("host", host);
+
   if (!isLocalhost && !isMainKalpTree) {
     return <PageTemplate params={params} />;
   }

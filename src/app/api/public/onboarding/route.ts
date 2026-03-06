@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         const buffer = Buffer.from(await logo.arrayBuffer());
 
         const fileName = generateFileName(logo.name);
-        const key = `${agencyid}/${fileName}`;
+        const key = `${agencyid}/logo/${fileName}`;
 
         await s3.send(
           new PutObjectCommand({

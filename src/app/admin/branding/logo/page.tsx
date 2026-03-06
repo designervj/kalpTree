@@ -11,8 +11,11 @@ import {
   Monitor,
   CheckCircle2,
   AlertCircle,
-  Globe
+  Globe,
+  Loader2
 } from "lucide-react";
+import { DirectS3UploadService } from "@/components/admin/uploadImage/utilies/DirectS3UploadService";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,8 +23,9 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "@/store/store";
+import { setCurrentBusiness } from "@/hooks/slices/business/BusinessSlice";
 import BreadCrumbPage from "@/components/breadCrumb/BreadCrumbPage";
 
 // --- Types & Scaffold ---
@@ -30,6 +34,7 @@ type LogoVariant = {
   alt: string;
   width?: number;
   height?: number;
+  file?: File;
 };
 
 type LogoState = {
@@ -56,40 +61,60 @@ const ImageUploadZone = ({
 }: {
   label: string;
   preview: string | null;
-  onUpload: () => void;
+  onUpload: (file: File) => void;
   onDelete: () => void;
   helperText: string;
-}) => (
-  <div className="border-2 border-dashed border-muted rounded-xl p-8 text-center transition-colors hover:bg-muted/30">
-    {preview ? (
-      <div className="relative group flex flex-col items-center">
-        <div className="relative p-4 bg-checkerboard rounded-lg mb-4 border shadow-sm">
-          {/* Checkerboard background for transparency simulation */}
-          <img src={preview} alt="Preview" className="h-24 object-contain max-w-full" />
+}) => {
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onUpload(file);
+    }
+  };
+
+  return (
+    <div className="border-2 border-dashed border-muted rounded-xl p-8 text-center transition-colors hover:bg-muted/30">
+      <input
+        type="file"
+        className="hidden"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+      />
+      {preview ? (
+        <div className="relative group flex flex-col items-center">
+          <div className="relative p-4 bg-checkerboard rounded-lg mb-4 border shadow-sm">
+            {/* Checkerboard background for transparency simulation */}
+            <img src={preview} alt="Preview" className="h-24 object-contain max-w-full" />
+          </div>
+          <div className="flex gap-3">
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>Change</Button>
+            <Button variant="destructive" size="sm" onClick={onDelete}><Trash2 className="w-4 h-4" /></Button>
+          </div>
         </div>
-        <div className="flex gap-3">
-          <Button variant="outline" size="sm" onClick={onUpload}>Change</Button>
-          <Button variant="destructive" size="sm" onClick={onDelete}><Trash2 className="w-4 h-4" /></Button>
+      ) : (
+        <div className="flex flex-col items-center justify-center space-y-3 py-6">
+          <div className="p-3 bg-primary/10 rounded-full text-primary">
+            <UploadCloud className="w-6 h-6" />
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium">{label}</p>
+            <p className="text-xs text-muted-foreground">{helperText}</p>
+          </div>
+          <Button variant="secondary" size="sm" onClick={() => fileInputRef.current?.click()}>Select File</Button>
         </div>
-      </div>
-    ) : (
-      <div className="flex flex-col items-center justify-center space-y-3 py-6">
-        <div className="p-3 bg-primary/10 rounded-full text-primary">
-          <UploadCloud className="w-6 h-6" />
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium">{label}</p>
-          <p className="text-xs text-muted-foreground">{helperText}</p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={onUpload}>Select File</Button>
-      </div>
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+};
 
 export default function LogoSettingsPage() {
   const [activeTab, setActiveTab] = useState("primary");
   const [logos, setLogos] = useState<LogoState>(initialLogos);
+  const [isSaving, setIsSaving] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
   const { currentBusiness } = useSelector((state: RootState) => state.business)
 
   // update the logo
@@ -110,12 +135,96 @@ export default function LogoSettingsPage() {
 
   }
   // Mock handlers
-  const handleUpload = (key: keyof LogoState) => {
-    // Simulate upload
-    setLogos(prev => ({ ...prev, [key]: { ...prev[key], src: "/placeholder-logo.png" } }));
+  const handleUpload = (key: keyof LogoState, file: File) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLogos(prev => ({
+        ...prev,
+        [key]: { ...prev[key], src: reader.result as string, file }
+      }));
+    };
+    reader.readAsDataURL(file);
   };
+
+
   const handleDelete = (key: keyof LogoState) => {
     setLogos(prev => ({ ...prev, [key]: { ...prev[key], src: null } }));
+  };
+
+  const handleSaveLogo = async () => {
+    if (!currentBusiness?._id) {
+      toast.error("Business not found");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      // 1. Upload images to S3 via API
+      const uploadResponse = await fetch("/api/admin/branding/logo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tenantId: currentBusiness._id,
+          brandingData: logos,
+        }),
+      });
+
+      if (!uploadResponse.ok) {
+        const errorData = await uploadResponse.json();
+        throw new Error(errorData.message || "Failed to upload images");
+      }
+
+      const { brandingData: updatedLogosFromApi } = await uploadResponse.json();
+
+      // 2. Prepare updated branding data for persistence
+      const brandingData = {
+        ...currentBusiness.branding,
+        logo: updatedLogosFromApi.primary.src || undefined,
+        favicon: updatedLogosFromApi.favicon.src || undefined,
+      };
+
+      // 3. Persist branding changes to the business record
+      const businessResponse = await fetch(`/api/admin/business/${currentBusiness._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...currentBusiness,
+          branding: brandingData,
+        }),
+      });
+
+      if (!businessResponse.ok) {
+        throw new Error("Failed to update business branding in database");
+      }
+
+      // 4. Update Redux and local state
+      const updatedBusiness = {
+        ...currentBusiness,
+        branding: brandingData,
+      };
+
+      dispatch(setCurrentBusiness(updatedBusiness));
+
+      // Clean up local state (remove Blob/File references now that S3 URLs are set)
+      const finalLogos = { ...updatedLogosFromApi };
+      (Object.keys(finalLogos) as (keyof LogoState)[]).forEach(key => {
+        if (finalLogos[key]) {
+          finalLogos[key].file = undefined;
+        }
+      });
+      setLogos(finalLogos);
+
+      toast.success("Logo settings saved successfully");
+    } catch (error: any) {
+      console.error("Save logo error:", error);
+      toast.error(error.message || "Something went wrong");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -123,7 +232,7 @@ export default function LogoSettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           {/* <h1 className="text-2xl font-bold tracking-tight text-black">Logo Settings</h1> */}
-           <BreadCrumbPage />
+          <BreadCrumbPage />
           <p className="text-muted-foreground pb-2">Manage your brand marks across different themes and devices.</p>
         </div>
       </div>
@@ -155,7 +264,7 @@ export default function LogoSettingsPage() {
                     label="Upload Primary Logo"
                     helperText="SVG, PNG, or JPG. Max 2MB. Recommended height: 40px."
                     preview={logos.primary.src}
-                    onUpload={() => handleUpload("primary")}
+                    onUpload={(file) => handleUpload("primary", file)}
                     onDelete={() => handleDelete("primary")}
                   />
 
@@ -196,7 +305,7 @@ export default function LogoSettingsPage() {
                     label="Upload Dark-colored Logo"
                     helperText="Best for white backgrounds."
                     preview={logos.light.src}
-                    onUpload={() => handleUpload("light")}
+                    onUpload={(file) => handleUpload("light", file)}
                     onDelete={() => handleDelete("light")}
                   />
                 </CardContent>
@@ -212,7 +321,7 @@ export default function LogoSettingsPage() {
                     label="Upload Light-colored Logo"
                     helperText="Best for dark headers/footers."
                     preview={logos.dark.src}
-                    onUpload={() => handleUpload("dark")}
+                    onUpload={(file) => handleUpload("dark", file)}
                     onDelete={() => handleDelete("dark")}
                   />
                 </CardContent>
@@ -248,7 +357,7 @@ export default function LogoSettingsPage() {
                       label="Upload Favicon"
                       helperText="ICO, PNG, or SVG. 32x32px or 64x64px."
                       preview={logos.favicon.src}
-                      onUpload={() => handleUpload("favicon")}
+                      onUpload={(file) => handleUpload("favicon", file)}
                       onDelete={() => handleDelete("favicon")}
                     />
                   </div>
@@ -284,7 +393,18 @@ export default function LogoSettingsPage() {
 
       <div className="flex justify-end gap-3 pt-6 border-t">
         <Button variant="outline">Reset to Defaults</Button>
-        <Button className="gap-2"><CheckCircle2 className="w-4 h-4" /> Save Changes</Button>
+        <Button
+          className="gap-2"
+          onClick={handleSaveLogo}
+          disabled={isSaving}
+        >
+          {isSaving ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <CheckCircle2 className="w-4 h-4" />
+          )}
+          {isSaving ? "Saving..." : "Save Changes"}
+        </Button>
       </div>
     </div>
   );
