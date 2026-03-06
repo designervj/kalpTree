@@ -28,27 +28,28 @@ export async function POST(req: Request) {
             Key: s3Key,
             Body: buffer,
             ContentType: mime,
-            ACL: "public-read"
-          })
+          }),
         );
 
         // Update the src to the S3 URL
-        variantData.src = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/${s3Key}`;
+        variantData.src = `https://${process.env.AWS_S3_BUCKET}.s3.${process.env.AWS_REGION || "us-east-1"}.amazonaws.com/${s3Key}`;
       }
     }
 
     // update the branding data in the database
-    const tenant = await tenantService.updateTenant(tenantId, { branding: brandingData });
+    const tenant = await tenantService.updateTenant(tenantId, {
+      branding: brandingData,
+    });
 
     return NextResponse.json(
       { success: true, message: "Logos uploaded successfully", brandingData },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     console.error("Logo upload API error:", error);
     return NextResponse.json(
       { success: false, message: error.message || "Failed to upload logos" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
