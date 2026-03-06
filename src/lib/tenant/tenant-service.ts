@@ -109,6 +109,7 @@ export class TenantService {
   }
 
 
+
   async suspendTenant(id: string | ObjectId): Promise<boolean> {
     return this.updateTenant(id, { status: "suspended" });
   }

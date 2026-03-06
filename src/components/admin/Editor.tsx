@@ -543,8 +543,8 @@ export default function PageEditor({
           updateWebsitePage({
             ...payload,
             content,
-            isHomePage: formData.slug === "home" ? true : false,
-          } as any),
+            isHomePage: item?.isHomePage ? true : false,
+          } as any),  
         );
         if (updateWebsitePage.fulfilled.match(res)) {
           setMsg("Updated successfully!");

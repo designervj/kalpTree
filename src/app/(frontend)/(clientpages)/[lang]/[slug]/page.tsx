@@ -23,7 +23,7 @@ export default async function PageTemplate({
   const header = await headers();
   const host = header.get("host");
   const db = await getDatabase();
-  //  console.log("host", host);
+  console.log("host", host);
   const EditButton = (await import("../../EditButtonBackup")).default;
 
   // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
