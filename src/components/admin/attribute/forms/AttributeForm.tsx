@@ -113,9 +113,8 @@ export default function AttributeForm({
                 : "Select categories"}
             </span>
             <ChevronDown
-              className={`w-5 h-5 text-gray-400 transition-transform ${
-                isDropdownOpen ? "rotate-180" : ""
-              }`}
+              className={`w-5 h-5 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""
+                }`}
             />
           </button>
 

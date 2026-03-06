@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 
-const   BusinessIcon=({
+const BusinessIcon = ({
   tone = "blue",
 }: {
   tone?: "blue" | "dark" | "purple";
@@ -9,8 +9,8 @@ const   BusinessIcon=({
     tone === "purple"
       ? "bg-purple-600"
       : tone === "dark"
-      ? "bg-slate-900"
-      : "bg-[#0b6d8e]";
+        ? "bg-slate-900"
+        : "bg-[#0b6d8e]";
   return (
     <div
       className={`h-14 w-14 rounded-md ${bg} grid place-items-center text-white font-bold`}>

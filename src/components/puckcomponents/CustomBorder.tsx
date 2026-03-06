@@ -408,11 +408,10 @@ export function BorderPanel({
                   <button
                     key={s}
                     onClick={() => updateField("activeSide", s)}
-                    className={`flex-1 flex items-center justify-center h-8 rounded-md border transition-all ${
-                      side === s
+                    className={`flex-1 flex items-center justify-center h-8 rounded-md border transition-all ${side === s
                         ? "border-blue-500 bg-blue-50"
                         : "border-slate-200 bg-slate-50 hover:border-slate-300"
-                    }`}
+                      }`}
                     title={s.charAt(0).toUpperCase() + s.slice(1)}
                   >
                     <BorderSideIcon side={s} active={side === s} />
@@ -534,7 +533,7 @@ export function generateBorderCSS(config: BorderConfig): React.CSSProperties {
     const applySide = (activeSide: string) => {
       const width = getSize(
         config[
-          `${activeSide.toLowerCase()}Width` as keyof BorderConfig
+        `${activeSide.toLowerCase()}Width` as keyof BorderConfig
         ] as SizeField,
       );
       const color = config[
@@ -542,7 +541,7 @@ export function generateBorderCSS(config: BorderConfig): React.CSSProperties {
       ] as string;
       const style = (
         config[
-          `${activeSide.toLowerCase()}Style` as keyof BorderConfig
+        `${activeSide.toLowerCase()}Style` as keyof BorderConfig
         ] as string
       )?.toLowerCase();
 

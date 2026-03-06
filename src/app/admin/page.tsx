@@ -96,8 +96,8 @@ async function fetchWebsites(): Promise<BusinessSite[]> {
         wordpressAdminHref:
           platform === "wordpress"
             ? `/admin/wordpress?website=${encodeURIComponent(
-                String(w._id || w.id || ""),
-              )}`
+              String(w._id || w.id || ""),
+            )}`
             : undefined,
         iconStyle: platform === "wordpress" ? "wp" : "code",
       } satisfies BusinessSite;
@@ -227,16 +227,16 @@ export default async function AdminIndex() {
   }
 
 
-  
+
   return (
     <>
       <GetAllAgency />
       <GetAllBusiness />
       <GetAllWebsites />
-     {session?.user &&
-     (session?.user?.role ==="superadmin" || session?.user?.role ==="agency") ?
-      <MinorComp sessionUser={session?.user} /> : 
-      <BusinessPage/>
+      {session?.user &&
+        (session?.user?.role === "superadmin" || session?.user?.role === "agency") ?
+        <MinorComp sessionUser={session?.user} /> :
+        <BusinessPage />
       }
     </>
   );

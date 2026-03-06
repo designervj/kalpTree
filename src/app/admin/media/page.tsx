@@ -202,22 +202,20 @@ export default function MediaGalleryCMS() {
             <div className="flex items-center gap-2 ml-auto">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded ${
-                  viewMode === "grid"
+                className={`p-2 rounded ${viewMode === "grid"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700"
-                }`}
+                  }`}
               >
                 <Grid size={20} />
               </button>
 
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded ${
-                  viewMode === "list"
+                className={`p-2 rounded ${viewMode === "list"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-700"
-                }`}
+                  }`}
               >
                 <List size={20} />
               </button>
@@ -238,11 +236,10 @@ export default function MediaGalleryCMS() {
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`px-3 py-1 rounded-full text-sm transition ${
-                    selectedTags.includes(tag)
+                  className={`px-3 py-1 rounded-full text-sm transition ${selectedTags.includes(tag)
                       ? "bg-blue-600 text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                  }`}
+                    }`}
                 >
                   {tag}
                 </button>

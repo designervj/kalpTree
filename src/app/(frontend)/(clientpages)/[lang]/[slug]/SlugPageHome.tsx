@@ -71,6 +71,19 @@ const SlugPageHome = ({
     }
   }, [user, dispatch, userdata]);
 
+  // Handle navigation messages from iframe
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.data?.type === 'navigate' && event.data?.url) {
+        console.log("Navigating to:", event.data.url);
+        router.push(event.data.url);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [router]);
+
   return (
     <>
       {currentWebsite && currentWebsite.isComingSoon ? (

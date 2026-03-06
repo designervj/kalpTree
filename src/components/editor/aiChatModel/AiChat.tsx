@@ -12,44 +12,44 @@ interface AiChatProps {
   onResponse?: (response: string) => void;
 }
 
-const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse }) => {
+const AiChat: React.FC<AiChatProps> = ({ componentHtml, componentCss, onResponse }) => {
   const [prompt, setPrompt] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
-  const {currentLLMSetting}= useSelector((state:RootState)=>state.llmSetting)
-   const dispatch= useDispatch<AppDispatch>()
+  const { currentLLMSetting } = useSelector((state: RootState) => state.llmSetting)
+  const dispatch = useDispatch<AppDispatch>()
   const handleSend = async () => {
     if (!prompt.trim()) return;
-    
+
     setIsProcessing(true);
-    
+
     try {
       // TODO: Implement AI chat functionality
       // console.log('Sending prompt:', prompt);
       // console.log('Component HTML:', componentHtml);
-      
+
       // Simulate API call
-   const response = await fetch("/api/admin/llm/test", {
+      const response = await fetch("/api/admin/llm/test", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
           modelType: currentLLMSetting.name,
-          model:currentLLMSetting.model,
-          apiKey:currentLLMSetting.secreteKey,
-          prompt:prompt,
+          model: currentLLMSetting.model,
+          apiKey: currentLLMSetting.secreteKey,
+          prompt: prompt,
           componentHtml: componentHtml,
           componentCss: componentCss,
         }),
       });
 
       const data = await response.json();
-      
+
       // Pass the response to parent component
       if (onResponse && data) {
         onResponse(JSON.stringify(data, null, 2));
       }
-      
+
       // Clear prompt after sending
       setPrompt('');
     } catch (error) {
@@ -70,7 +70,7 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse 
   };
 
   return (
-    <div className="flex flex-col  h-full" style={{marginTop:"20px", marginBottom:"15px"}}>
+    <div className="flex flex-col  h-full" style={{ marginTop: "20px", marginBottom: "15px" }}>
       {/* Textarea for AI prompt */}
       <div className="flex-1 flex flex-col gap-2 mt-2">
         <label className="text-sm font-medium text-gray-700 ">
@@ -82,19 +82,19 @@ const AiChat: React.FC<AiChatProps> = ({ componentHtml,componentCss, onResponse 
           onKeyDown={handleKeyDown}
           placeholder="e.g., Make the text blue and add a shadow, Change the layout to flex..."
           className="flex-1 min-h-[140px] p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          style={{padding:"10px", margin:"4px"}}
+          style={{ padding: "10px", margin: "4px" }}
           disabled={isProcessing}
         />
       </div>
 
       {/* Send Button */}
-      <div className="flex justify-end" style={{marginRight:"10px", marginTop:"10px"}}>
+      <div className="flex justify-end" style={{ marginRight: "10px", marginTop: "10px" }}>
         <Button
           onClick={handleSend}
           variant="secondary"
           disabled={!prompt.trim() || isProcessing}
           // className="bg-blue-600 hover:bg-blue-700 text-white px-6 h-10"]
-          style={{padding:"10px"}}
+          style={{ padding: "10px" }}
         >
           <Send className="h-4 w-4 " />
           {isProcessing ? 'Processing...' : 'Send'}

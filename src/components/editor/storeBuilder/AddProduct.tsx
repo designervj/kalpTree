@@ -303,8 +303,8 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
       const relevantAttrs =
         attr && attr.length > 0
           ? attributes.filter((d) => {
-              return attr?.includes(String(d._id));
-            })
+            return attr?.includes(String(d._id));
+          })
           : [];
 
       if (relevantAttrs.length > 0) {
@@ -862,7 +862,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
                   value={formData.basePrice}
                   onChange={handleInputChange}
                   className="mt-2 h-10 rounded-xl"
-                  placeholder="₹"
+                  placeholder="$"
                 />
               </div>
               <div>
@@ -872,7 +872,7 @@ function ProductFormMock({ onBack }: { onBack: () => void }) {
                   value={formData.baseDiscount}
                   onChange={handleInputChange}
                   className="mt-2 h-10 rounded-xl"
-                  placeholder="₹"
+                  placeholder="$"
                 />
                 <p className="mt-1 text-[11px] text-slate-500">
                   Your final price with the discount applied.

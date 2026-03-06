@@ -25,13 +25,13 @@ export class WebsiteCategoryService {
 
   async create(tenantId: string | ObjectId, data: Omit<Category, '_id' | 'tenantId' | 'createdAt' | 'updatedAt'>, websiteId?: string | ObjectId): Promise<Category> {
     const col = await this.getCollection();
-    console.log("col---",col)
+    console.log("col---", col)
     const tid = typeof tenantId === 'string' ? new ObjectId(tenantId) : tenantId;
     const wid = websiteId ? (typeof websiteId === 'string' ? new ObjectId(websiteId) : websiteId) : undefined;
     const doc: Omit<Category, '_id'> = { ...data, tenantId: tid, ...(wid ? { websiteId: wid } : {}), createdAt: new Date(), updatedAt: new Date() };
     const r = await col.insertOne(doc as Category);
     return { ...doc, _id: r.insertedId } as Category;
-  } 
+  }
 }
 
 export const websiteCategoryService = new WebsiteCategoryService();

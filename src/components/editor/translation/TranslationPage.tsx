@@ -66,8 +66,8 @@ function parsePageTexts(htmlString?: string): ParsedText[] {
 
   walk(
     document.querySelector("iframe")?.contentDocument ??
-      (document.querySelector("[data-editor-canvas]") as HTMLElement) ??
-      document,
+    (document.querySelector("[data-editor-canvas]") as HTMLElement) ??
+    document,
   );
 
   if (results.length === 0 && htmlString) {
@@ -117,11 +117,10 @@ function SimpleSelect({
                   onChange(opt.value);
                   setOpen(false);
                 }}
-                className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                  opt.value === value
+                className={`w-full text-left px-3 py-2 text-sm transition-colors ${opt.value === value
                     ? "bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-400 font-medium"
                     : "text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
+                  }`}
               >
                 {opt.label}
               </button>
@@ -400,10 +399,10 @@ export default function TranslationEditor({
   // ── Dirty check: any lang has unsaved changes ──
   const isDirty = selectedText
     ? targetLangs.some(
-        (l) =>
-          (translationInputs[l.name] ?? "") !==
-          (dictionary[selectedText]?.[l.name] ?? ""),
-      )
+      (l) =>
+        (translationInputs[l.name] ?? "") !==
+        (dictionary[selectedText]?.[l.name] ?? ""),
+    )
     : false;
 
   // ── Save string translations ──
@@ -449,11 +448,10 @@ export default function TranslationEditor({
             key={key}
             type="button"
             onClick={() => setActiveTab(key as any)}
-            className={`flex-1 py-3 text-xs font-semibold border-b-2 transition-colors ${
-              activeTab === key
+            className={`flex-1 py-3 text-xs font-semibold border-b-2 transition-colors ${activeTab === key
                 ? "border-blue-600 text-blue-700 dark:text-blue-400 dark:border-blue-500"
                 : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
-            }`}
+              }`}
           >
             {label}
           </button>
@@ -624,11 +622,10 @@ export default function TranslationEditor({
                     (l) => !(translationInputs[l.name] ?? "").trim(),
                   )
                 }
-                className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${
-                  saved
+                className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${saved
                     ? "bg-green-600 text-white"
                     : "bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {saved ? "✓ Saved" : "Save Translation"}
               </button>
@@ -742,11 +739,10 @@ export default function TranslationEditor({
                     (l) => !(stringTranslations[l.name] ?? "").trim(),
                   )
                 }
-                className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${
-                  saved
+                className={`w-full py-2.5 rounded text-sm font-semibold transition-all ${saved
                     ? "bg-green-600 text-white"
                     : "bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-40 disabled:cursor-not-allowed"
-                }`}
+                  }`}
               >
                 {saved ? "✓ Saved" : "Save Translation"}
               </button>

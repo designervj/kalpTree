@@ -39,15 +39,15 @@ export async function GET(req: NextRequest) {
   const session = await auth();
   const user = session?.user
     ? {
-        id: session.user.id || "",
-        email: session.user.email || "",
-        role: session.user.role || "",
-        permissions: Array.isArray((session.user as any).permissions)
-          ? (session.user as any).permissions
-          : undefined,
-        createdById: session.user.createdById || "",
-        tenantId: session.user.tenantId || "",
-      }
+      id: session.user.id || "",
+      email: session.user.email || "",
+      role: session.user.role || "",
+      permissions: Array.isArray((session.user as any).permissions)
+        ? (session.user as any).permissions
+        : undefined,
+      createdById: session.user.createdById || "",
+      tenantId: session.user.tenantId || "",
+    }
     : null;
   let agencies: any[] = [];
   let business: any[] = [];

@@ -148,7 +148,7 @@ interface ColorPickerProps {
   className?: string
 }
 
-export function   ColorPicker({ color, onChange, className = "" }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, className = "" }: ColorPickerProps) {
   // ── parse incoming color ──
   const parseColor = (c: string): [number, number, number, number] => {
     if (c.startsWith("rgba")) {

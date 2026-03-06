@@ -446,20 +446,20 @@ export default function CurrentForm() {
         <div class="form-group" data-id="${f.id}">
           <label>${labelText}</label>
           ${f.kind === "paragraph"
-            ? `<textarea name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} rows="5"></textarea>`
+            ? `< textarea name = "${fieldName}" placeholder = "${f.placeholder || ""}" ${requiredAttr} rows = "5" ></textarea > `
             : f.kind === "short_answer"
-              ? `<input type="${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name="${fieldName}" placeholder="${f.placeholder || ""}" ${requiredAttr} />`
+              ? `< input type = "${f.textType === "email" ? "email" : f.textType === "phone" ? "tel" : "text"}" name = "${fieldName}" placeholder = "${f.placeholder || ""}" ${requiredAttr} />`
               : f.kind === "single_choice"
                 ? `
                 <div class="options-group">
                   ${(f.options || [])
                   .map(
                     (opt) => `
-                    <label class="option-label">
+    < label class="option-label" >
                       <input type="radio" name="${fieldName}" value="${opt.label}" />
                       <span>${opt.label}</span>
-                    </label>
-                  `
+                    </label >
+    `
                   )
                   .join("")}
                 </div>
@@ -470,25 +470,25 @@ export default function CurrentForm() {
                   ${(f.options || [])
                     .map(
                       (opt) => `
-                    <label class="option-label">
+    < label class="option-label" >
                       <input type="checkbox" name="${fieldName}" value="${opt.label}" />
                       <span>${opt.label}</span>
-                    </label>
-                  `
+                    </label >
+    `
                     )
                     .join("")}
                 </div>
               `
                   : ""
           }
-        </div>
-      `;
+        </div >
+  `;
       });
       html += `
-      <div class="form-submit">
-        <button type="submit" class="btn-primary">Submit</button>
-      </div>
-    </form>`;
+  < div class="form-submit" >
+    <button type="submit" class="btn-primary">Submit</button>
+      </div >
+    </form > `;
       return html;
     }
     return "";
@@ -651,7 +651,7 @@ export default function CurrentForm() {
         const opts = f.options || [];
         return {
           ...f,
-          options: [...opts, { id: uid(), label: `Option ${opts.length + 1}` }],
+          options: [...opts, { id: uid(), label: `Option ${opts.length + 1} ` }],
         };
       })
     );

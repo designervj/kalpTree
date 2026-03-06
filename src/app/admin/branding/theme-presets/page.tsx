@@ -360,7 +360,7 @@ export default function ThemePresetsPage() {
 
         {/* Only 2 theme cards */}
 
-            {/* Live preview */}
+        {/* Live preview */}
         <div className="rounded-2xl border border-emerald-100 bg-white p-5 shadow-sm">
           <h2 className="mb-3 text-lg font-semibold text-emerald-950">Selected Theme Preview</h2>
 
@@ -437,7 +437,7 @@ export default function ThemePresetsPage() {
           ))}
         </div>
 
-    
+
       </div>
     </div>
   );

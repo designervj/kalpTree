@@ -85,16 +85,16 @@ const LayerItem: React.FC<LayerItemProps> = ({
   const descendantCount = countDescendants(node);
 
 
-    const {
-      state,
-      actions,
-      isAiChatOpen,
-      setIsAiChatOpen,
-      selectedComponentForAi,
-      editForm
-    } = useEditor("gjs-editor");
+  const {
+    state,
+    actions,
+    isAiChatOpen,
+    setIsAiChatOpen,
+    selectedComponentForAi,
+    editForm
+  } = useEditor("gjs-editor");
 
-    console.log("state of canvas", state);
+  console.log("state of canvas", state);
 
   return (
     <div className="layer-item">

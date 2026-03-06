@@ -31,7 +31,7 @@ const ProductCart = ({ product, cardConfig, mergedStyleConfig }: Props) => {
           lift: "group-hover:-translate-y-2",
           none: "",
         };
-       
+
         return (
           <div
             className={`group cursor-pointer transition-all duration-300 ${getCardStyleClasses(mergedStyleConfig?.cardStyle || "")}`}
@@ -78,11 +78,11 @@ const ProductCart = ({ product, cardConfig, mergedStyleConfig }: Props) => {
                   className="old-price line-through mr-2"
                   style={{ color: mergedStyleConfig?.secondaryColor }}
                 >
-                  ₹{p?.basePrice}
+                  ${p?.basePrice}
                 </span>
               )}
               <span className="new-price font-bold" style={{ color: mergedStyleConfig.primaryColor }}>
-                ₹{minPrice}
+                ${minPrice}
               </span>
             </div>
           </div>

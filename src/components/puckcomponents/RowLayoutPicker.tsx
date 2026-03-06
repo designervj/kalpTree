@@ -63,8 +63,8 @@ export function RowLayoutPicker({
                                     key={option.label}
                                     onClick={() => onChange(option.columns)}
                                     className={`group relative flex flex-col items-center gap-2 p-2 rounded-xl border-2 transition-all duration-200 ${isActive
-                                            ? "border-blue-500 bg-blue-50/50 shadow-md"
-                                            : "border-slate-100 bg-slate-50/50 hover:border-slate-200 hover:bg-white hover:shadow-sm"
+                                        ? "border-blue-500 bg-blue-50/50 shadow-md"
+                                        : "border-slate-100 bg-slate-50/50 hover:border-slate-200 hover:bg-white hover:shadow-sm"
                                         }`}
                                     title={option.label}
                                 >

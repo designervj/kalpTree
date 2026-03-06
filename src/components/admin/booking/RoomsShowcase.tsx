@@ -32,7 +32,7 @@ const RoomsRateplans = () => {
     },
     {
       id: 4,
-      name: "₹ Deluxe Room (Hourly)",
+      name: "$ Deluxe Room (Hourly)",
       description: "Deluxe Room",
       active: false,
       rateplans: [
@@ -143,9 +143,8 @@ const RoomsRateplans = () => {
                 {rooms.map((room, index) => (
                   <tr
                     key={room.id}
-                    className={`border-b border-gray-200 hover:bg-gray-50 transition ${
-                      index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                    }`}
+                    className={`border-b border-gray-200 hover:bg-gray-50 transition ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      }`}
                   >
                     {/* Room Name */}
                     <td className="px-6 py-5">

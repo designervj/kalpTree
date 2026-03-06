@@ -53,7 +53,7 @@ export default async function Page() {
     <div>
       <GetAllRolePermission />
       <UserForm />
-     
+
       <GetAllAccount allaccounts={allaccounts || []} />
       {/* <GetAllRolePermission /> */}
       <GetBusinessUsers />

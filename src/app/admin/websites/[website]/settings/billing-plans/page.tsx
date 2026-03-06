@@ -6,8 +6,8 @@ export default function BillingPlansPage() {
   return (
     <div className="p-6 space-y-6">
       {/* <h1 className="text-2xl font-semibold">Billing & Plans</h1> */}
-               <BreadCrumbPage />
-      
+      <BreadCrumbPage />
+
 
       {/* Current Plan Section */}
       <div className="bg-white p-6 rounded-lg shadow space-y-4">

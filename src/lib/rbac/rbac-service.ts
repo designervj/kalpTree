@@ -9,10 +9,10 @@ export class RBACService {
   // User role management
   static async updateUserRole(userId: ObjectId, newRole: UserRole, updatedBy: ObjectId): Promise<void> {
     const db = await this.db;
-    
+
     // Get default permissions for the new role
     const defaultPermissions = DEFAULT_USER_PERMISSIONS[newRole];
-    
+
     await db.collection('users').updateOne(
       { _id: userId },
       {
@@ -44,7 +44,7 @@ export class RBACService {
   ): Promise<boolean> {
     const db = await this.db;
     const user = await db.collection('users').findOne({ _id: userId }) as User | null;
-    
+
     if (!user) return false;
 
     // Ensure role exists on the user object
@@ -88,10 +88,10 @@ export class RBACService {
   // Check if a tenant is at franchise level relative to another tenant
   private static async isFranchiseLevel(userTenantId: ObjectId, targetTenantId?: ObjectId): Promise<boolean> {
     if (!targetTenantId) return false;
-    
+
     const db = await this.db;
     const targetTenant = await db.collection('tenants').findOne({ _id: targetTenantId });
-    
+
     return targetTenant?.parentTenantId?.equals(userTenantId) || false;
   }
 
@@ -125,7 +125,7 @@ export class RBACService {
     relationshipData: Partial<FranchiseClient>
   ): Promise<ObjectId> {
     const db = await this.db;
-    
+
     const relationship: Omit<FranchiseClient, '_id'> = {
       tenantId: franchiseId, // The franchise tenant
       franchiseId,
@@ -181,7 +181,7 @@ export class RBACService {
     userAgent?: string
   ): Promise<void> {
     const db = await this.db;
-    
+
     const log: Omit<ActivityLog, '_id'> = {
       tenantId,
       userId,
@@ -213,9 +213,9 @@ export class RBACService {
     }
   ): Promise<ActivityLog[]> {
     const db = await this.db;
-    
+
     const query: any = { tenantId };
-    
+
     if (filters?.userId) query.userId = filters.userId;
     if (filters?.resource) query.resource = filters.resource;
     if (filters?.action) query.action = filters.action;
@@ -236,7 +236,7 @@ export class RBACService {
   // User management with role restrictions
   static async canUserManageUser(managerId: ObjectId, targetUserId: ObjectId): Promise<boolean> {
     const db = await this.db;
-    
+
     const [manager, target] = await Promise.all([
       db.collection('users').findOne({ _id: managerId }) as Promise<User | null>,
       db.collection('users').findOne({ _id: targetUserId }) as Promise<User | null>,
@@ -251,12 +251,12 @@ export class RBACService {
   // Get users that a role can manage
   static async getManageableUsers(managerId: ObjectId, tenantId: ObjectId): Promise<User[]> {
     const db = await this.db;
-    
+
     const manager = await db.collection('users').findOne({ _id: managerId }) as User | null;
     if (!manager) return [];
 
     const manageableRoles = RoleManager.getManageableRoles(manager.role);
-    
+
     return await db.collection('users')
       .find({
         tenantId,
@@ -269,7 +269,7 @@ export class RBACService {
   // Tenant hierarchy management
   static async canAccessTenant(userId: ObjectId, targetTenantId: ObjectId): Promise<boolean> {
     const db = await this.db;
-    
+
     const user = await db.collection('users').findOne({ _id: userId }) as User | null;
     if (!user) return false;
 
@@ -295,7 +295,7 @@ export class RBACService {
   // Get accessible tenants for a user
   static async getAccessibleTenants(userId: ObjectId): Promise<ObjectId[]> {
     const db = await this.db;
-    
+
     const user = await db.collection('users').findOne({ _id: userId }) as User | null;
     if (!user) return [];
 
@@ -312,7 +312,7 @@ export class RBACService {
       const relationships = await db.collection('franchise_clients')
         .find({ franchiseId: user.tenantId, status: 'active' })
         .toArray() as FranchiseClient[];
-      
+
       relationships.forEach(rel => {
         accessibleTenants.push(rel.clientTenantId);
       });

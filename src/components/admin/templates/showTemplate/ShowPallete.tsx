@@ -70,8 +70,8 @@ const ShowPallete = ({ html }: HtmlProps) => {
     const safe: PaletteColor[] =
       Array.isArray(rawColors) && rawColors.length
         ? (rawColors as PaletteColor[])
-            .filter((c) => c && c.color)
-            .map((c) => ({ color: String(c.color), count: Number(c.count ?? 0) }))
+          .filter((c) => c && c.color)
+          .map((c) => ({ color: String(c.color), count: Number(c.count ?? 0) }))
         : [{ color: "#e5e7eb", count: 0 }];
 
     // sort by usage (dominant first) + remove duplicates
@@ -98,19 +98,19 @@ const ShowPallete = ({ html }: HtmlProps) => {
         <div className="flex items-center justify-between gap-3">
           {/* LEFT: circles + +N clickable */}
           <div className="flex ">
-          <div className="flex min-w-0 items-center gap-1.5 bg-black/10 rounded-full px-2 py-1">
-            {swatches.map((c, idx) => (
-              <div
-                key={`${c.color}-${idx}`}
-                className="h-4 w-4 rounded-full ring-1 ring-white/25"
-                style={{ background: c.color }}
-                title={`${c.color}${c.count ? ` • used ${c.count}x` : ""}`}
-              />
-            ))}
-        
-          </div>
+            <div className="flex min-w-0 items-center gap-1.5 bg-black/10 rounded-full px-2 py-1">
+              {swatches.map((c, idx) => (
+                <div
+                  key={`${c.color}-${idx}`}
+                  className="h-4 w-4 rounded-full ring-1 ring-white/25"
+                  style={{ background: c.color }}
+                  title={`${c.color}${c.count ? ` • used ${c.count}x` : ""}`}
+                />
+              ))}
 
-           {extra > 0 && (
+            </div>
+
+            {extra > 0 && (
               <button
                 type="button"
                 onClick={() => {
@@ -124,9 +124,9 @@ const ShowPallete = ({ html }: HtmlProps) => {
               </button>
             )}
 
-            </div>
+          </div>
 
-          
+
           {/* RIGHT: font family (always visible) */}
           <div className="flex shrink-0 items-center gap-3">
             <div className="text-right leading-tight">

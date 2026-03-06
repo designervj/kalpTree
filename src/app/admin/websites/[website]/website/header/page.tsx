@@ -5,13 +5,13 @@ import React from 'react'
 
 const page = () => {
   return (
-   <>
-   <HeaderHome/>
-   </>
+    <>
+      <HeaderHome />
+    </>
   )
 }
 
- export default page
+export default page
 // import React, { useMemo, useState } from "react";
 // import Link from "next/link";
 // import {

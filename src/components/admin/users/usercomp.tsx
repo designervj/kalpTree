@@ -873,63 +873,63 @@ export default function BusinessCreatePage({
 
   const tabs = isAgencyPath
     ? [
-        {
-          id: "agency" as const,
-          label: "Agency Details",
-          desc: "Basic organization setup",
-          icon: User,
-        },
-        {
-          id: "business" as const,
-          label: "Website Setup",
-          desc: "Configure your website",
-          icon: Briefcase,
-        },
-        {
-          id: "general" as const,
-          label: "Account Details",
-          desc: "Basic information & branding",
-          icon: Briefcase,
-        },
-        {
-          id: "branding" as const,
-          label: "Branding",
-          desc: "Colors, logo & typography",
-          icon: Palette,
-        },
-        {
-          id: "review" as const,
-          label: "Review",
-          desc: "Review & submit",
-          icon: CheckCircle,
-        },
-      ]
+      {
+        id: "agency" as const,
+        label: "Agency Details",
+        desc: "Basic organization setup",
+        icon: User,
+      },
+      {
+        id: "business" as const,
+        label: "Website Setup",
+        desc: "Configure your website",
+        icon: Briefcase,
+      },
+      {
+        id: "general" as const,
+        label: "Account Details",
+        desc: "Basic information & branding",
+        icon: Briefcase,
+      },
+      {
+        id: "branding" as const,
+        label: "Branding",
+        desc: "Colors, logo & typography",
+        icon: Palette,
+      },
+      {
+        id: "review" as const,
+        label: "Review",
+        desc: "Review & submit",
+        icon: CheckCircle,
+      },
+    ]
     : [
-        {
-          id: "business" as const,
-          label: "Business Setup",
-          desc: "Configure your business",
-          icon: Briefcase,
-        },
-        {
-          id: "general" as const,
-          label: "Account Details",
-          desc: "Basic information",
-          icon: Briefcase,
-        },
-        {
-          id: "branding" as const,
-          label: "Branding",
-          desc: "Colors, logo & typography",
-          icon: Palette,
-        },
-        {
-          id: "review" as const,
-          label: "Review",
-          desc: "Review & submit",
-          icon: CheckCircle,
-        },
-      ];
+      {
+        id: "business" as const,
+        label: "Business Setup",
+        desc: "Configure your business",
+        icon: Briefcase,
+      },
+      {
+        id: "general" as const,
+        label: "Account Details",
+        desc: "Basic information",
+        icon: Briefcase,
+      },
+      {
+        id: "branding" as const,
+        label: "Branding",
+        desc: "Colors, logo & typography",
+        icon: Palette,
+      },
+      {
+        id: "review" as const,
+        label: "Review",
+        desc: "Review & submit",
+        icon: CheckCircle,
+      },
+    ];
 
   const currentIdx = useMemo(
     () => tabs.findIndex((t) => t.id === activeTab),
@@ -975,153 +975,138 @@ export default function BusinessCreatePage({
 
   return (
     <>
-    {/* get all color pallets */}
-    <GetAlColorPallet />
-    <div className="min-h-screen bg-[#f3f4f6] a">
-      <div className="mx-auto max-w-5xl px-6 py-8">
-        {/* Breadcrumb */}
-        <div className="mb-6">
-          <BreadCrumbPage />
-        </div>
-
-        {/* ── HORIZONTAL STEPPER (top) ── */}
-        <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#0b1220] via-[#0f1a2f] to-[#0b1220] px-8 py-6 shadow-xl">
-          <div className="mb-5 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-white">Account Setup</h3>
-            </div>
+      {/* get all color pallets */}
+      <GetAlColorPallet />
+      <div className="min-h-screen bg-[#f3f4f6] a">
+        <div className="mx-auto max-w-5xl px-6 py-8">
+          {/* Breadcrumb */}
+          <div className="mb-6">
+            <BreadCrumbPage />
           </div>
 
-          <div className="relative flex items-start gap-0">
-            <div
-              className="absolute top-[18px] left-0 right-0 h-[2px] bg-white/10"
-              style={{ zIndex: 0 }}
-            />
-            <div
-              className="absolute top-[18px] left-0 h-[2px] bg-gradient-to-r from-blue-500 to-fuchsia-500 transition-all duration-500"
-              style={{
-                width:
-                  currentIdx === 0
-                    ? "0%"
-                    : `${(currentIdx / (tabs.length - 1)) * 100}%`,
-                zIndex: 1,
-              }}
-            />
+          {/* ── HORIZONTAL STEPPER (top) ── */}
+          <div className="mb-6 rounded-2xl bg-gradient-to-r from-[#0b1220] via-[#0f1a2f] to-[#0b1220] px-8 py-6 shadow-xl">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-white">Account Setup</h3>
+              </div>
+            </div>
 
-            {tabs.map((step, idx) => {
-              const isActive = idx === currentIdx;
-              const isDone = idx < currentIdx;
+            <div className="relative flex items-start gap-0">
+              <div
+                className="absolute top-[18px] left-0 right-0 h-[2px] bg-white/10"
+                style={{ zIndex: 0 }}
+              />
+              <div
+                className="absolute top-[18px] left-0 h-[2px] bg-gradient-to-r from-blue-500 to-fuchsia-500 transition-all duration-500"
+                style={{
+                  width:
+                    currentIdx === 0
+                      ? "0%"
+                      : `${(currentIdx / (tabs.length - 1)) * 100}%`,
+                  zIndex: 1,
+                }}
+              />
 
-              return (
-                <button
-                  key={step.id}
-                  type="button"
-                  onClick={() => setActiveTab(step.id)}
-                  className="relative z-10 flex flex-1 flex-col items-center gap-2 px-2 text-center group"
-                >
-                  <div
-                    className={[
-                      "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-300",
-                      isDone
-                        ? "border-emerald-500 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
-                        : isActive
-                          ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-600/40 ring-4 ring-blue-500/20"
-                          : "border-white/20 bg-[#0b1220] text-white/50 group-hover:border-white/40 group-hover:text-white/80",
-                    ].join(" ")}
+              {tabs.map((step, idx) => {
+                const isActive = idx === currentIdx;
+                const isDone = idx < currentIdx;
+
+                return (
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => setActiveTab(step.id)}
+                    className="relative z-10 flex flex-1 flex-col items-center gap-2 px-2 text-center group"
                   >
-                    {isDone ? <Check className="h-4 w-4" /> : idx + 1}
-                  </div>
-
-                  <div>
-                    <p
+                    <div
                       className={[
-                        "text-xs font-semibold leading-tight transition-colors",
-                        isActive
-                          ? "text-white"
-                          : isDone
-                            ? "text-emerald-400"
-                            : "text-white/50 group-hover:text-white/80",
+                        "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-bold transition-all duration-300",
+                        isDone
+                          ? "border-emerald-500 bg-emerald-500 text-white shadow-lg shadow-emerald-500/30"
+                          : isActive
+                            ? "border-blue-500 bg-blue-600 text-white shadow-lg shadow-blue-600/40 ring-4 ring-blue-500/20"
+                            : "border-white/20 bg-[#0b1220] text-white/50 group-hover:border-white/40 group-hover:text-white/80",
                       ].join(" ")}
                     >
-                      {step.label}
-                    </p>
-                    <p className="mt-0.5 text-[10px] text-white/40 hidden sm:block">
-                      {step.desc}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
+                      {isDone ? <Check className="h-4 w-4" /> : idx + 1}
+                    </div>
+
+                    <div>
+                      <p
+                        className={[
+                          "text-xs font-semibold leading-tight transition-colors",
+                          isActive
+                            ? "text-white"
+                            : isDone
+                              ? "text-emerald-400"
+                              : "text-white/50 group-hover:text-white/80",
+                        ].join(" ")}
+                      >
+                        {step.label}
+                      </p>
+                      <p className="mt-0.5 text-[10px] text-white/40 hidden sm:block">
+                        {step.desc}
+                      </p>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
 
-        {/* ── FORM AREA ── */}
-        <div>
-          {message.text && (
-            <div
-              className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${
-                message.type === "success"
-                  ? "bg-green-50 text-green-800 border-green-200"
-                  : "bg-red-50 text-red-800 border-red-200"
-              }`}
-            >
-              {message.type === "success" ? (
-                <CheckCircle className="h-5 w-5 shrink-0" />
-              ) : (
-                <XCircle className="h-5 w-5 shrink-0" />
+          {/* ── FORM AREA ── */}
+          <div>
+            {message.text && (
+              <div
+                className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${message.type === "success"
+                    ? "bg-green-50 text-green-800 border-green-200"
+                    : "bg-red-50 text-red-800 border-red-200"
+                  }`}
+              >
+                {message.type === "success" ? (
+                  <CheckCircle className="h-5 w-5 shrink-0" />
+                ) : (
+                  <XCircle className="h-5 w-5 shrink-0" />
+                )}
+                <span className="text-sm">{message.text}</span>
+              </div>
+            )}
+
+            <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
+              {/* Step label inside form */}
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C2D64]/10">
+                  {React.createElement(tabs[currentIdx]?.icon ?? Briefcase, {
+                    className: "h-4 w-4 text-[#7C2D64]",
+                  })}
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">
+                    {tabs[currentIdx]?.label}
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    {tabs[currentIdx]?.desc}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6 h-px bg-gray-100" />
+
+              {/* Step content */}
+              {activeTab === "agency" && isAgencyPath && (
+                <Userdetails
+                  handleInputChange={handleInputChange}
+                  formData={formData}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                  role={safeUser.role}
+                />
               )}
-              <span className="text-sm">{message.text}</span>
-            </div>
-          )}
 
-          <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm">
-            {/* Step label inside form */}
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#7C2D64]/10">
-                {React.createElement(tabs[currentIdx]?.icon ?? Briefcase, {
-                  className: "h-4 w-4 text-[#7C2D64]",
-                })}
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-gray-900">
-                  {tabs[currentIdx]?.label}
-                </h2>
-                <p className="text-xs text-gray-500">
-                  {tabs[currentIdx]?.desc}
-                </p>
-              </div>
-            </div>
-
-            <div className="mb-6 h-px bg-gray-100" />
-
-            {/* Step content */}
-            {activeTab === "agency" && isAgencyPath && (
-              <Userdetails
-                handleInputChange={handleInputChange}
-                formData={formData}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                role={safeUser.role}
-              />
-            )}
-
-            {activeTab === "general" && (
-              <Businessdetails
-                step="general"
-                handleInputChange={handleInputChange}
-                formData={formData}
-                showPassword={showPassword}
-                setShowPassword={setShowPassword}
-                user={user}
-                agencies={agencies}
-                businessType={businessType}
-              />
-            )}
-
-            {activeTab === "business" && (
-              <div className="space-y-6">
+              {activeTab === "general" && (
                 <Businessdetails
-                  step="business"
+                  step="general"
                   handleInputChange={handleInputChange}
                   formData={formData}
                   showPassword={showPassword}
@@ -1130,152 +1115,166 @@ export default function BusinessCreatePage({
                   agencies={agencies}
                   businessType={businessType}
                 />
-                <div className="pt-6 border-t border-gray-200">
-                  <PrimaryDomains
-                    formData={formData}
+              )}
+
+              {activeTab === "business" && (
+                <div className="space-y-6">
+                  <Businessdetails
+                    step="business"
                     handleInputChange={handleInputChange}
+                    formData={formData}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    user={user}
+                    agencies={agencies}
+                    businessType={businessType}
                   />
+                  <div className="pt-6 border-t border-gray-200">
+                    <PrimaryDomains
+                      formData={formData}
+                      handleInputChange={handleInputChange}
+                    />
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {activeTab === "branding" && (
-              <Brandingdetails
-                handleInputChange={handleInputChange}
-                logoPreview={logoPreview}
-              />
-            )}
-       
-            {/* ── Rev  iew Step ── */}
-            {activeTab === "review" && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900">
-                    Review Your Information
-                  </h2>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Please review all details before submitting
-                  </p>
-                </div>
+              {activeTab === "branding" && (
+                <Brandingdetails
+                  handleInputChange={handleInputChange}
+                  logoPreview={logoPreview}
+                />
+              )}
 
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {/* ── Business Details ── */}
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-                      Business Details
-                    </h3>
-                    <div className="divide-y divide-gray-100">
-                      <InfoRow label="Business Name:" value={orgName} />
-                      <InfoRow label="Industry:" value={industry} />
-                      <InfoRow label="Founded Year:" value={foundedYear} />
-                      <InfoRow label="Tagline:" value={tagline} />
-                      <InfoRow label="Headquarters:" value={headquarters} />
-                      <InfoRow label="Phone:" value={phone} />
-                      <InfoRow label="Public Email:" value={publicEmail} />
-                    </div>
+              {/* ── Rev  iew Step ── */}
+              {activeTab === "review" && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      Review Your Information
+                    </h2>
+                    <p className="mt-1 text-sm text-gray-500">
+                      Please review all details before submitting
+                    </p>
                   </div>
 
-                  {/* ── Account Details ── */}
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-                      Account Details
-                    </h3>
-                    <div className="divide-y divide-gray-100">
-                      <InfoRow label="Login Email:" value={ownerEmail} />
-                      <InfoRow label="Plan / Service:" value={plan} />
-                      <InfoRow label="Created By:" value={safeUser?.name} />
-                      {/* <InfoRow label="Role:" value={safeUser?.role} /> */}
-                      {isAgencyPath && safeUser.role === "superadmin" && (
-                        <>
-                          <InfoRow
-                            label="Agency Name:"
-                            value={formData?.agency_name}
-                          />
-                          <InfoRow
-                            label="Agency Email:"
-                            value={formData?.agency_email}
-                          />
-                        </>
-                      )}
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {/* ── Business Details ── */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                        Business Details
+                      </h3>
+                      <div className="divide-y divide-gray-100">
+                        <InfoRow label="Business Name:" value={orgName} />
+                        <InfoRow label="Industry:" value={industry} />
+                        <InfoRow label="Founded Year:" value={foundedYear} />
+                        <InfoRow label="Tagline:" value={tagline} />
+                        <InfoRow label="Headquarters:" value={headquarters} />
+                        <InfoRow label="Phone:" value={phone} />
+                        <InfoRow label="Public Email:" value={publicEmail} />
+                      </div>
                     </div>
-                  </div>
 
-                  {/* ── Website Configuration ── */}
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-                      Website Configuration
-                    </h3>
-                    <div className="divide-y divide-gray-100">
-                      <InfoRow label="Brand Name:" value={bd.brand_name} />
-                      <InfoRow label="URL Slug:" value={slug} />
-                      <InfoRow label="Primary Domain:" value={primaryDomain} />
-                    </div>
-                  </div>
-
-                  {/* ── Branding ── */}
-                  <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
-                    <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
-                      Branding
-                    </h3>
-                    <div className="divide-y divide-gray-100">
-                      {/* <InfoRow label="Typography:" value={typography} /> */}
-                      <InfoRow
-                        label="Brand Colors:"
-                        value={<ColorDots colors={styleContentSelected} />}
-                      />
-                      <InfoRow
-                        label="Logo:"
-                        value={
-                          logoPreview ? (
-                            <img
-                              src={logoPreview}
-                              alt="Logo preview"
-                              className="ml-auto h-10 w-10 rounded-md object-contain border border-gray-200"
+                    {/* ── Account Details ── */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                        Account Details
+                      </h3>
+                      <div className="divide-y divide-gray-100">
+                        <InfoRow label="Login Email:" value={ownerEmail} />
+                        <InfoRow label="Plan / Service:" value={plan} />
+                        <InfoRow label="Created By:" value={safeUser?.name} />
+                        {/* <InfoRow label="Role:" value={safeUser?.role} /> */}
+                        {isAgencyPath && safeUser.role === "superadmin" && (
+                          <>
+                            <InfoRow
+                              label="Agency Name:"
+                              value={formData?.agency_name}
                             />
-                          ) : (
-                            <span className="text-gray-400 font-medium">
-                              No logo uploaded
-                            </span>
-                          )
-                        }
-                      />
+                            <InfoRow
+                              label="Agency Email:"
+                              value={formData?.agency_email}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* ── Website Configuration ── */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                        Website Configuration
+                      </h3>
+                      <div className="divide-y divide-gray-100">
+                        <InfoRow label="Brand Name:" value={bd.brand_name} />
+                        <InfoRow label="URL Slug:" value={slug} />
+                        <InfoRow label="Primary Domain:" value={primaryDomain} />
+                      </div>
+                    </div>
+
+                    {/* ── Branding ── */}
+                    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+                      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-3">
+                        Branding
+                      </h3>
+                      <div className="divide-y divide-gray-100">
+                        {/* <InfoRow label="Typography:" value={typography} /> */}
+                        <InfoRow
+                          label="Brand Colors:"
+                          value={<ColorDots colors={styleContentSelected} />}
+                        />
+                        <InfoRow
+                          label="Logo:"
+                          value={
+                            logoPreview ? (
+                              <img
+                                src={logoPreview}
+                                alt="Logo preview"
+                                className="ml-auto h-10 w-10 rounded-md object-contain border border-gray-200"
+                              />
+                            ) : (
+                              <span className="text-gray-400 font-medium">
+                                No logo uploaded
+                              </span>
+                            )
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
 
-          {/* Footer navigation */}
-          <div className="mt-6 flex items-center justify-between">
-            <button
-              onClick={goPrev}
-              disabled={currentIdx === 0}
-              className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-            >
-              ← Previous
-            </button>
+            {/* Footer navigation */}
+            <div className="mt-6 flex items-center justify-between">
+              <button
+                onClick={goPrev}
+                disabled={currentIdx === 0}
+                className="rounded-lg border border-gray-300 bg-white px-6 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                ← Previous
+              </button>
 
-            {activeTab === "review" ? (
-              <button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="rounded-xl bg-gradient-to-r from-blue-600 to-fuchsia-600 px-8 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
-              >
-                {isSubmitting ? "Submitting…" : "Submit & Create Tenant"}
-              </button>
-            ) : (
-              <button
-                onClick={goNext}
-                className="rounded-lg bg-[#7C2D64] px-8 py-2.5 text-sm font-semibold text-white shadow hover:bg-[#6B2457] transition-colors"
-              >
-                Next →
-              </button>
-            )}
+              {activeTab === "review" ? (
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="rounded-xl bg-gradient-to-r from-blue-600 to-fuchsia-600 px-8 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 hover:opacity-95 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+                >
+                  {isSubmitting ? "Submitting…" : "Submit & Create Tenant"}
+                </button>
+              ) : (
+                <button
+                  onClick={goNext}
+                  className="rounded-lg bg-[#7C2D64] px-8 py-2.5 text-sm font-semibold text-white shadow hover:bg-[#6B2457] transition-colors"
+                >
+                  Next →
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
     </>
   );
 }

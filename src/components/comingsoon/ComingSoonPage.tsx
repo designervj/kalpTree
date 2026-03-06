@@ -204,8 +204,8 @@ function ScribbleFrame({ children }: { children: React.ReactNode }) {
     <div
       className="rounded-none p-6"
       style={{
-        backgroundImage:"url(https://static.wixstatic.com/media/338bcf1ccf184340a38279c8b9025f8d.jpg/v1/fill/w_669,h_377,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/338bcf1ccf184340a38279c8b9025f8d.jpg)",
-       
+        backgroundImage: "url(https://static.wixstatic.com/media/338bcf1ccf184340a38279c8b9025f8d.jpg/v1/fill/w_669,h_377,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/338bcf1ccf184340a38279c8b9025f8d.jpg)",
+
       }}
     >
       <div className="bg-white p-10">{children}</div>
@@ -230,7 +230,7 @@ export default function ComingSoonPage() {
       <ConfettiLayer />
 
       {/* Top tiny nav */}
-    
+
 
       {/* Center content */}
       <div className="relative mx-auto flex min-h-screen max-w-5xl flex-col items-center justify-center px-4 text-center">
@@ -279,7 +279,7 @@ export default function ComingSoonPage() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="max-w-[820px] border-0 bg-transparent p-0 shadow-none"
-          // remove default close because we want big X like screenshot
+        // remove default close because we want big X like screenshot
         >
           {/* Big X close top-right */}
           <DialogHeader className="sr-only">Notify</DialogHeader>

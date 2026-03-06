@@ -340,19 +340,19 @@ function generateMegaMenuHtml(item: NavigationItem) {
     s.containerWidth === "full"
       ? "w-screen"
       : s.containerWidth === "wide"
-      ? "max-w-6xl mx-auto"
-      : s.containerWidth === "custom"
-      ? `max-w-[${s.containerMaxWidthPx || 1100}px] mx-auto`
-      : "max-w-5xl mx-auto";
+        ? "max-w-6xl mx-auto"
+        : s.containerWidth === "custom"
+          ? `max-w-[${s.containerMaxWidthPx || 1100}px] mx-auto`
+          : "max-w-5xl mx-auto";
 
   const anim =
     s.animation === "fade-in-up"
       ? "animate-[fadeInUp_.18s_ease-out]"
       : s.animation === "fade"
-      ? "animate-[fadeIn_.15s_ease-out]"
-      : s.animation === "scale"
-      ? "animate-[scaleIn_.12s_ease-out]"
-      : "";
+        ? "animate-[fadeIn_.15s_ease-out]"
+        : s.animation === "scale"
+          ? "animate-[scaleIn_.12s_ease-out]"
+          : "";
 
   const colClass = (w: ColumnWidth) => {
     if (w === "1/4") return "md:col-span-3 col-span-12";
@@ -372,8 +372,8 @@ function generateMegaMenuHtml(item: NavigationItem) {
     <div class="aspect-video w-full bg-slate-100" style="background-image:url('${fc.image}'); background-size:cover; background-position:center;"></div>
     <div class="p-4">
       <div class="text-base font-semibold text-slate-900">${fc.title}</div>
-      ${fc.description ? `<div class="mt-1 text-sm text-slate-600">${fc.description}</div>` : ""}
-      ${fc.ctaLabel ? `<div class="mt-3 inline-flex rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white">${fc.ctaLabel}</div>` : ""}
+      ${fc.description ? `< div class="mt-1 text-sm text-slate-600" >${fc.description}</div > ` : ""}
+      ${fc.ctaLabel ? `< div class="mt-3 inline-flex rounded-lg bg-violet-600 px-3 py-2 text-sm font-semibold text-white" >${fc.ctaLabel}</div > ` : ""}
     </div>
   </a>
 </div>`;
@@ -389,9 +389,9 @@ function generateMegaMenuHtml(item: NavigationItem) {
   <div class="p-3">
     <div class="flex items-center justify-between gap-2">
       <div class="text-sm font-semibold text-slate-900">${it.title}</div>
-      ${it.badge ? `<span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold">${it.badge.text}</span>` : ""}
+      ${it.badge ? `< span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold" >${it.badge.text}</span > ` : ""}
     </div>
-    ${it.subtitle ? `<div class="mt-1 text-xs text-slate-500">${it.subtitle}</div>` : ""}
+    ${it.subtitle ? `< div class="mt-1 text-xs text-slate-500" >${it.subtitle}</div > ` : ""}
   </div>
 </a>`;
           })
@@ -412,21 +412,20 @@ function generateMegaMenuHtml(item: NavigationItem) {
 <a href="${l.href}" class="group flex items-start justify-between gap-3 rounded-xl px-2 py-2 hover:bg-slate-50">
   <div>
     <div class="text-sm ${l.isBold ? "font-semibold" : "font-medium"} text-slate-900">${l.label}</div>
-    ${l.description ? `<div class="text-xs text-slate-500">${l.description}</div>` : ""}
+    ${l.description ? `< div class= "text-xs text-slate-500" >${l.description}</div > ` : ""}
   </div>
-  ${l.badge ? `<span class="rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold">${l.badge.text}</span>` : ""}
+  ${l.badge ? `< span class= "rounded-md bg-slate-100 px-2 py-1 text-xs font-semibold" >${l.badge.text}</span > ` : ""}
 </a>`
             )
             .join("");
 
           return `
 <div class="space-y-1">
-  ${
-    sec.title
-      ? `<a href="${sec.titleHref || "#"}" class="text-sm font-semibold text-slate-900 hover:underline">${sec.title}</a>`
-      : ""
-  }
-  ${sec.description ? `<div class="text-xs text-slate-500">${sec.description}</div>` : ""}
+  ${sec.title
+              ? `< a href = "${sec.titleHref || "#"}" class="text-sm font-semibold text-slate-900 hover:underline" >${sec.title}</a > `
+              : ""
+            }
+  ${sec.description ? `< div class="text-xs text-slate-500" >${sec.description}</div > ` : ""}
   <div class="mt-1 space-y-1">${links}</div>
 </div>`;
         })
@@ -1474,7 +1473,7 @@ function MegaPanel({ item }: { item: NavigationItem }) {
 export default function HeaderMegaMenuSettingsModalSpace() {
   return (
     <div className="w-full max-w-[980px]">
-         <AdminMegaMenuSettings />
+      <AdminMegaMenuSettings />
     </div>
   );
 }

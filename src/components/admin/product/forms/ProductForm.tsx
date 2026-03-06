@@ -14,7 +14,7 @@ type ProductFormProps = {
   fieldErrors: Record<string, string>;
   filterCategory: MaterialCategory[];
   listBrand: MaterialBrandModel[];
-  
+
 };
 
 export default function ProductForm({
@@ -23,11 +23,11 @@ export default function ProductForm({
   fieldErrors,
   filterCategory,
   listBrand,
-  
+
 }: ProductFormProps) {
 
-   const [imageLoading, setImageLoading] = useState(false);
-    const CheckJobImageUpload = (file: File) => {
+  const [imageLoading, setImageLoading] = useState(false);
+  const CheckJobImageUpload = (file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload a valid image file");
       return false;
@@ -116,7 +116,7 @@ export default function ProductForm({
         </select>
       </div>
 
-     
+
 
       <div>
         <label className="block text-sm font-medium">Base Price</label>
@@ -144,12 +144,12 @@ export default function ProductForm({
           className="mt-1 block w-full rounded-md border p-2"
           placeholder="https://example.com/photo.jpg"
         /> */}
-         <UploadImage
+        <UploadImage
           createdProjectId={`${product.name}/logo` || null}
           jobImageUpload={CheckJobImageUpload}
           onUploadSuccess={(data) => {
             setImageLoading(false);
-           setProduct({ ...product, photo: data })
+            setProduct({ ...product, photo: data })
           }}
           onUploadError={() => setImageLoading(false)}
         />

@@ -21,12 +21,12 @@ import { updateWebsite } from '@/hooks/slices/websites/WebsiteThunk';
 import StaticTypography from '@/app/admin/websites/[website]/branding/typography/StaticTypography';
 
 function isHexColor(v: string) {
-  return /^#([0-9a-fA-F]{6})$/.test(v.trim());
+    return /^#([0-9a-fA-F]{6})$/.test(v.trim());
 }
 
 const ShowStyle = () => {
 
-   const {currentStyle} = useSelector((state:RootState) => state.globalStyle)
+    const { currentStyle } = useSelector((state: RootState) => state.globalStyle)
     const [currentStyles, setCurrentStyles] = React.useState<GlobalStyleModel | null>(null);
     const [leftTab, setLeftTab] = useState<LeftTab>("colors");
     const [copied, setCopied] = useState(false);
@@ -302,7 +302,7 @@ const ShowStyle = () => {
             };
         });
 
-       
+
     };
 
     const handleBodyChange = (patch: Partial<BodyStyle>) => {
@@ -311,7 +311,7 @@ const ShowStyle = () => {
             return { ...prev, ...patch } as BodyStyle;
         });
 
-      
+
     };
 
     const handleButtonBaseChange = (patch: Partial<ButtonBaseStyle>) => {
@@ -320,7 +320,7 @@ const ShowStyle = () => {
             return { ...prev, ...patch };
         });
 
-       
+
     };
 
     const handleButtonColorChange = (patch: any) => {
@@ -397,16 +397,16 @@ const ShowStyle = () => {
 
 
     const handleSave = async () => {
-    
+
     }
 
- 
+
     return (
         <>
-         <StaticTypography />
+            <StaticTypography />
         </>
         // <div className="space-y-6 max-w-6xl mx-auto pb-10">
-           
+
         //     <div className="flex justify-between items-center gap-3">
         //         <div className="grid grid-cols-4 gap-2">
         //             <Button variant={leftTab === "colors" ? "default" : "outline"}
@@ -428,7 +428,7 @@ const ShowStyle = () => {
         //         </div>
 
         //         <div className="flex items-center gap-2">
-                  
+
         //             <Button
         //                 size="sm"
         //                 variant="outline"
@@ -449,7 +449,7 @@ const ShowStyle = () => {
         //                 variant={rightPanel === "preview" ? "secondary" : "ghost"}
         //                 onClick={() => {
         //                     setRightPanel("preview");
-                    
+
         //                     setLeftTab("headings");
         //                 }}
         //                 className="gap-2"
@@ -471,7 +471,7 @@ const ShowStyle = () => {
         //     </div>
 
         //     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
+
         //         <div className="lg:col-span-4 space-y-6">
         //             {leftTab === "colors" &&
         //                 brand &&
@@ -501,7 +501,7 @@ const ShowStyle = () => {
         //                 globalFontFamily={globalFontFamily}
         //                 setGlobalFontFamily={(value) => {
         //                     setGlobalFontFamily(value);
-                         
+
         //                 }}
         //             />}
         //             {leftTab === "buttons" && buttonBase && buttonColors && <ButtonControl
@@ -514,7 +514,7 @@ const ShowStyle = () => {
         //             />}
         //         </div>
 
-          
+
         //         <div className="lg:col-span-8">
         //             <Card className="h-full min-h-[580px] border-2 border-muted/40">
         //                 <div className="border-b p-2 flex items-center justify-end gap-2 rounded-t-lg">

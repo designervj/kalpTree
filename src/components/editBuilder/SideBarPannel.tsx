@@ -71,7 +71,7 @@ const SideBarPannel = ({ children }: { children?: React.ReactNode }) => {
 
     return (
         <>
-         
+
             {/* Content wrapper with offset for sidebar */}
             <div
                 style={{

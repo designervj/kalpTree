@@ -2296,13 +2296,13 @@ function BusinessForm({
                 <div className="space-y-2 mt-1">
                   {(!fd.website.primaryDomain ||
                     fd.website.primaryDomain.length === 0) && (
-                    <div className="rounded-xl border-2 border-dashed border-gray-200 py-8 text-center">
-                      <Globe className="h-8 w-8 text-gray-300 mx-auto mb-2" />
-                      <p className="text-sm text-gray-400">
-                        No domains added yet
-                      </p>
-                    </div>
-                  )}
+                      <div className="rounded-xl border-2 border-dashed border-gray-200 py-8 text-center">
+                        <Globe className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-sm text-gray-400">
+                          No domains added yet
+                        </p>
+                      </div>
+                    )}
                   {(fd.website.primaryDomain || []).map(
                     (domain: string, i: number) => (
                       <div key={i} className="flex items-center gap-2">
@@ -2522,7 +2522,7 @@ export const BusinessModal = ({ open, business, onClose }: ModalProps) => {
       if (data.success) {
         toast.success(data.message);
         const cloned = structuredClone(business)
-        
+
         // dispatch(setBusinessWebsite(formData));
         onClose();
       } else {

@@ -34,21 +34,19 @@ export function AccountSharing() {
             <div className="flex">
               <button
                 onClick={() => setActiveTab("request")}
-                className={`px-6 py-4 font-medium border-b-2 transition-colors ${
-                  activeTab === "request"
+                className={`px-6 py-4 font-medium border-b-2 transition-colors ${activeTab === "request"
                     ? "border-purple-600 text-purple-600"
                     : "border-transparent text-gray-600 hover:text-gray-800"
-                }`}
+                  }`}
               >
                 Request access
               </button>
               <button
                 onClick={() => setActiveTab("grant")}
-                className={`px-6 py-4 font-medium border-b-2 transition-colors ${
-                  activeTab === "grant"
+                className={`px-6 py-4 font-medium border-b-2 transition-colors ${activeTab === "grant"
                     ? "border-purple-600 text-purple-600"
                     : "border-transparent text-gray-600 hover:text-gray-800"
-                }`}
+                  }`}
               >
                 Grant access
               </button>

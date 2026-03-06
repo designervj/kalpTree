@@ -42,7 +42,7 @@ const ShowTemplate = () => {
   const router = useRouter();
   const [template, setTemplate] = useState<TemplateDocument[]>([]);
   const [previewOpen, setPreviewOpen] = useState(false);
-   const [isUseBrandColor, setIsUseBrandColor] = useState(false);
+  const [isUseBrandColor, setIsUseBrandColor] = useState(false);
   useEffect(() => {
     const sorted = [...allTemplate].sort((a, b) => {
       const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
@@ -69,7 +69,7 @@ const ShowTemplate = () => {
   const handlePreview = (data: TemplateDocument) => {
     dispatch(setCurrentTemplate(data));
     setPreviewOpen(true);
-     setIsUseBrandColor(false);
+    setIsUseBrandColor(false);
   };
 
   const handleClosePreview = () => {
@@ -78,10 +78,10 @@ const ShowTemplate = () => {
     setIsUseBrandColor(false);
   };
 
-const handlePreviewBrand = (data: TemplateDocument) => {
+  const handlePreviewBrand = (data: TemplateDocument) => {
     dispatch(setCurrentTemplate(data));
     setPreviewOpen(true);
-     setIsUseBrandColor(true);
+    setIsUseBrandColor(true);
   };
 
   const handleDelete = async (data: TemplateDocument) => {
@@ -148,14 +148,14 @@ const handlePreviewBrand = (data: TemplateDocument) => {
                           loading="lazy"
                         />
                       ) : ( */}
-                        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white flex flex-col overflow-hidden">
-                          <div className="flex-1 relative overflow-hidden">
-                            <ShowHTMLtemplate html={t?.content} />
-                          </div>
-                          <div className="h-2.5 w-full flex">
-                            <ShowPallete html={t?.content} />
-                          </div>
+                      <div className="h-full w-full transition-transform duration-500 group-hover:scale-105 bg-white flex flex-col overflow-hidden">
+                        <div className="flex-1 relative overflow-hidden">
+                          <ShowHTMLtemplate html={t?.content} />
                         </div>
+                        <div className="h-2.5 w-full flex">
+                          <ShowPallete html={t?.content} />
+                        </div>
+                      </div>
                       {/* )} */}
 
                       {/* Overlay on hover */}
@@ -176,13 +176,13 @@ const handlePreviewBrand = (data: TemplateDocument) => {
                           </p> */}
                         </div>
 
-                           {/* action template */}
-                            <TemplateAction data={t} 
-                            onEdit={handleEdit}
-                            onPreview={handlePreview}
-                            onPreviewBrand={handlePreviewBrand}
-                            onDelete={handleDelete}
-                            />
+                        {/* action template */}
+                        <TemplateAction data={t}
+                          onEdit={handleEdit}
+                          onPreview={handlePreview}
+                          onPreviewBrand={handlePreviewBrand}
+                          onDelete={handleDelete}
+                        />
 
                         {/* RIGHT icons */}
                         {/* <div className="flex items-center gap-2">
@@ -270,9 +270,9 @@ const handlePreviewBrand = (data: TemplateDocument) => {
       </div>
 
       {previewOpen &&
-       <PreviewTemplate 
-       isUseBrandColor={isUseBrandColor}
-       onClose={handleClosePreview} />}
+        <PreviewTemplate
+          isUseBrandColor={isUseBrandColor}
+          onClose={handleClosePreview} />}
     </div>
   );
 };

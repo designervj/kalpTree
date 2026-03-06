@@ -126,7 +126,7 @@ const RenderHtml = ({
             #cursor, #cursor-follower { pointer-events: none; }
             ${extractedStyles}
           </style>
-          ${allExternalScripts.map(src => `<script src="${src}"></script>`).join("\n")}
+          ${allExternalScripts.map(src => `< script src = "${src}" ></script > `).join("\n")}
         </head>
         <body class="min-h-screen">
           <div id="iframe-wrapper">

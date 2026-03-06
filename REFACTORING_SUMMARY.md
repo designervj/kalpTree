@@ -13,7 +13,9 @@
 ## 📁 Files Created
 
 ### 1. `/src/lib/entities/entityConfig.ts`
+
 Central registry for all entity CRUD operations
+
 ```typescript
 export const entityConfig: Record<string, EntityOperations> = {
   category: { create, list, getById, update, delete },
@@ -23,7 +25,9 @@ export const entityConfig: Record<string, EntityOperations> = {
 ```
 
 ### 2. `/src/components/admin/EntityRegistry.tsx`
+
 Maps entity names to React components
+
 ```typescript
 export const entityComponents: Record<string, React.ComponentType> = {
   category: CategoryHome,
@@ -39,6 +43,7 @@ export const entityComponents: Record<string, React.ComponentType> = {
 ### API Route: POST Method
 
 #### ❌ Before (50+ lines)
+
 ```typescript
 export async function POST(req: NextRequest, ctx: any) {
   const params = (await ctx?.params) ?? {};
@@ -76,13 +81,14 @@ export async function POST(req: NextRequest, ctx: any) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 ```
 
 #### ✅ After (25 lines)
+
 ```typescript
 export async function POST(req: NextRequest, ctx: any) {
   const params = (await ctx?.params) ?? {};
@@ -92,7 +98,7 @@ export async function POST(req: NextRequest, ctx: any) {
     if (!isValidEntity(entity)) {
       return NextResponse.json(
         { error: `Unsupported entity: ${entity}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -103,7 +109,7 @@ export async function POST(req: NextRequest, ctx: any) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -114,6 +120,7 @@ export async function POST(req: NextRequest, ctx: any) {
 ### API Route: GET Method
 
 #### ❌ Before (70+ lines with nested switch cases)
+
 ```typescript
 export async function GET(req: NextRequest, ctx: any) {
   const params = (await ctx?.params) ?? {};
@@ -121,7 +128,7 @@ export async function GET(req: NextRequest, ctx: any) {
 
   try {
     const id = req.nextUrl?.searchParams?.get("id");
-   
+
     switch (entity) {
       case "category": {
         if (id) {
@@ -143,7 +150,7 @@ export async function GET(req: NextRequest, ctx: any) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
           return NextResponse.json({ item });
         }
-        const items = await listBrands(websiteId||"");
+        const items = await listBrands(websiteId || "");
         return NextResponse.json({ items });
       }
 
@@ -155,26 +162,27 @@ export async function GET(req: NextRequest, ctx: any) {
             return NextResponse.json({ error: "Not found" }, { status: 404 });
           return NextResponse.json({ item });
         }
-        const items = await listAttributes(websiteId||"");
+        const items = await listAttributes(websiteId || "");
         return NextResponse.json({ items });
       }
 
       default:
         return NextResponse.json(
           { error: `Unsupported entity: ${entity}` },
-          { status: 400 }
+          { status: 400 },
         );
     }
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 ```
 
 #### ✅ After (35 lines)
+
 ```typescript
 export async function GET(req: NextRequest, ctx: any) {
   const params = (await ctx?.params) ?? {};
@@ -184,7 +192,7 @@ export async function GET(req: NextRequest, ctx: any) {
     if (!isValidEntity(entity)) {
       return NextResponse.json(
         { error: `Unsupported entity: ${entity}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -203,11 +211,10 @@ export async function GET(req: NextRequest, ctx: any) {
     // Otherwise, get list of items
     const items = await entityConfig[entity].list(websiteId);
     return NextResponse.json({ items });
-    
   } catch (error: any) {
     return NextResponse.json(
       { error: error.message || "Server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -218,6 +225,7 @@ export async function GET(req: NextRequest, ctx: any) {
 ### Page Component
 
 #### ❌ Before (Manual if-checks)
+
 ```typescript
 export default async function EntityIndexPage(props: any) {
   const params = await props.params;
@@ -238,6 +246,7 @@ export default async function EntityIndexPage(props: any) {
 ```
 
 #### ✅ After (Dynamic component rendering)
+
 ```typescript
 export default async function EntityIndexPage(props: any) {
   const params = await props.params;
@@ -276,6 +285,7 @@ export default async function EntityIndexPage(props: any) {
 ## 🎯 Key Benefits
 
 ### 1. **Code Reduction**
+
 - API routes: **233 → 137 lines** (41% smaller)
 - Page component: Cleaner and more maintainable
 - Eliminated repetitive code blocks
@@ -283,11 +293,13 @@ export default async function EntityIndexPage(props: any) {
 ### 2. **Easier to Add New Entities**
 
 #### Before: Required changes in 2+ files
+
 1. Add all CRUD operations to API route (multiple switch cases)
 2. Add component check in page component
 3. Prone to errors and inconsistencies
 
 #### After: Only 2 simple additions
+
 1. Add entity to `entityConfig.ts` (5 lines)
 2. Add component to `EntityRegistry.tsx` (1 line)
 3. **That's it!** ✨
@@ -315,13 +327,16 @@ product: ProductHome,
 ## 🚀 How to Use
 
 ### Accessing Entities
+
 - `/admin/category` → CategoryHome component
-- `/admin/brand` → BrandHome component  
+- `/admin/brand` → BrandHome component
 - `/admin/attribute` → AttributeHome component
 - `/admin/product` → ProductHome component (after adding)
 
 ### API Endpoints
+
 All entities support the same endpoints:
+
 - `GET /api/admin/[entity]` - List all items
 - `GET /api/admin/[entity]?id=123` - Get single item
 - `POST /api/admin/[entity]` - Create new item
@@ -333,6 +348,7 @@ All entities support the same endpoints:
 ## 📚 Documentation
 
 See `DYNAMIC_ENTITY_SYSTEM.md` for:
+
 - Detailed architecture explanation
 - Step-by-step guide to add new entities
 - API documentation
@@ -344,11 +360,13 @@ See `DYNAMIC_ENTITY_SYSTEM.md` for:
 ## ✨ Summary
 
 This refactoring transforms your codebase from:
+
 - ❌ Repetitive, hard-to-maintain switch statements
 - ❌ Duplicate code for each entity
 - ❌ Manual if-checks in components
 
 To:
+
 - ✅ Clean, centralized configuration
 - ✅ DRY (Don't Repeat Yourself) principles
 - ✅ Easy to extend and maintain

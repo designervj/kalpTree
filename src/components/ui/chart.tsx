@@ -14,7 +14,7 @@ type ChartTooltipPayload = {
   dataKey: string | number;
   name?: string;
   // FIX: Changed 'value' type from unknown to any to resolve incompatibility with Recharts generics
-  value?: any; 
+  value?: any;
   payload: { // This ensures item.payload is recognized
     fill?: string;
     color?: string;
@@ -103,13 +103,13 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
-  .map(([key, itemConfig]) => {
-    const color =
-      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-      itemConfig.color
-    return color ? ` 	--color-${key}: ${color};` : null
-  })
-  .join("\n")}
+                .map(([key, itemConfig]) => {
+                  const color =
+                    itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+                    itemConfig.color
+                  return color ? ` 	--color -${key}: ${color};` : null
+                })
+                .join("\n")}
 }
 `
           )
@@ -125,20 +125,20 @@ const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   // We include RechartsPrimitive.TooltipProps to get the required props (active, payload, label, etc.)
   React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-    React.ComponentProps<"div"> & {
-      hideLabel?: boolean
-      hideIndicator?: boolean
-      indicator?: "line" | "dot" | "dashed"
-      nameKey?: string
-      labelKey?: string
-    } & { // FIX: Fallback to manual prop definition to force TypeScript compliance
-      active?: boolean
-      // FIX: Use the custom defined type
-      payload?: ChartTooltipPayload[] 
-      label?: any
-      formatter?: any
-      color?: string
-    }
+  React.ComponentProps<"div"> & {
+    hideLabel?: boolean
+    hideIndicator?: boolean
+    indicator?: "line" | "dot" | "dashed"
+    nameKey?: string
+    labelKey?: string
+  } & { // FIX: Fallback to manual prop definition to force TypeScript compliance
+    active?: boolean
+    // FIX: Use the custom defined type
+    payload?: ChartTooltipPayload[]
+    label?: any
+    formatter?: any
+    color?: string
+  }
 >(
   (
     {
@@ -177,7 +177,7 @@ const ChartTooltipContent = React.forwardRef<
         return (
           <div className={cn("font-medium", labelClassName)}>
             {/* FIX: Cast payload to 'any' to resolve the type incompatibility in labelFormatter call */}
-            {labelFormatter(value, payload as any)} 
+            {labelFormatter(value, payload as any)}
           </div>
         )
       }
@@ -217,9 +217,9 @@ const ChartTooltipContent = React.forwardRef<
             // FIX: item is now correctly typed as ChartTooltipPayload
             const key = `${nameKey || item.name || item.dataKey || "value"}`
             const itemConfig = getPayloadConfigFromPayload(config, item, key)
-            
+
             // FIX: item.payload is now accessible without TypeScript errors
-            const indicatorColor = color || item.payload.fill || item.color 
+            const indicatorColor = color || item.payload.fill || item.color
 
             return (
               <div
@@ -292,13 +292,13 @@ const ChartLegend = RechartsPrimitive.Legend
 const ChartLegendContent = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> &
-    // FIX: Removed Pick and defined props manually to avoid type conflict with ComponentProps<'div'>
-    {
-      payload?: ChartTooltipPayload[]; // Use custom type for consistency
-      verticalAlign?: RechartsPrimitive.LegendProps["verticalAlign"]; // Use type from LegendProps
-      hideIcon?: boolean
-      nameKey?: string
-    }
+  // FIX: Removed Pick and defined props manually to avoid type conflict with ComponentProps<'div'>
+  {
+    payload?: ChartTooltipPayload[]; // Use custom type for consistency
+    verticalAlign?: RechartsPrimitive.LegendProps["verticalAlign"]; // Use type from LegendProps
+    hideIcon?: boolean
+    nameKey?: string
+  }
 >(
   (
     { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
@@ -362,8 +362,8 @@ function getPayloadConfigFromPayload(
 
   const payloadPayload =
     "payload" in payload &&
-    typeof payload.payload === "object" &&
-    payload.payload !== null
+      typeof payload.payload === "object" &&
+      payload.payload !== null
       ? payload.payload
       : undefined
 

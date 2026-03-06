@@ -64,7 +64,7 @@ export function getFileUrl(key: string): string {
   if (s3Config.cloudFrontDomain) {
     return `https://${s3Config.cloudFrontDomain}/${key}`;
   }
-  
+
   // Fallback to direct S3 URL
   return `https://${s3Config.bucket}.s3.${s3Config.region}.amazonaws.com/${key}`;
 }
@@ -80,7 +80,7 @@ export function debugS3Config(): void {
   console.log('Access Key ID:', s3Config.accessKeyId ? '✅ Set' : '❌ Not set');
   console.log('Secret Access Key:', s3Config.secretAccessKey ? '✅ Set' : '❌ Not set');
   console.log('CloudFront Domain:', s3Config.cloudFrontDomain || 'Not configured (optional)');
-  
+
   const validation = validateS3Config();
   if (!validation.isValid) {
     console.error('Configuration Errors:', validation.errors);

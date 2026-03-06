@@ -65,9 +65,8 @@ const ProductGalleryPreview: React.FC<ProductGalleryPreviewProps> = ({
         {products.map((product) => (
           <div
             key={product.id}
-            className={`${getCardStyleClasses()} ${getHoverClasses()} cursor-pointer bg-white dark:bg-slate-800 ${
-              config.layout === "masonry" ? "mb-4 break-inside-avoid" : ""
-            }`}
+            className={`${getCardStyleClasses()} ${getHoverClasses()} cursor-pointer bg-white dark:bg-slate-800 ${config.layout === "masonry" ? "mb-4 break-inside-avoid" : ""
+              }`}
           >
             <div className="relative">
               <img

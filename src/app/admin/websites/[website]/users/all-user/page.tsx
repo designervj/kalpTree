@@ -81,8 +81,8 @@ export default function Page() {
   };
 
   const handleDelete = (row: IUser) => {
-  
-      const confirmDelete = confirm("Are you sure you want to delete this user?")  
+
+    const confirmDelete = confirm("Are you sure you want to delete this user?")
     if (confirmDelete) {
       dispatch(deleteBusinessUser(row._id?.toString() ?? ""))
     }
@@ -130,14 +130,14 @@ export default function Page() {
   ];
   return (
     <>
- 
+
       {/* get business users */}
       <GetAllRolePermission />
       <GetBusinessUsers />
 
-<DataTableExt
+      <DataTableExt
         title=""
-        data={updatedAllUser ?? []} 
+        data={updatedAllUser ?? []}
         onCreate={handleAdd}
         initialColumns={initialColumns}
         onDelete={(row) => handleDelete(row)}

@@ -537,7 +537,7 @@ const basePresets: Record<string, Theme> = {
       "--chart-5": "211 28% 40%",
     },
   },
-  
+
   "organic-calm": {
     id: "organic-calm",
     name: "Organic Calm",

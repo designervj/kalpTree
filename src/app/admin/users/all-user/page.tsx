@@ -24,17 +24,17 @@ export default function Page() {
 
 
 
-   
-    const updatedAllUser: IUser[] = useMemo(() => {
-      if(user && user.role==="superadmin" &&alluser && alluser.length>0){
-        return (alluser || []).filter((user) => user?.role !== "superadmin");
-      }
-      else if(user && user.role==="business" &&alluser && alluser.length>0 ){
-        return(alluser || []).filter((user) => user?.role !== "business");
-      }
-     return (alluser || [])
-    }, [alluser, user]);
-  
+
+  const updatedAllUser: IUser[] = useMemo(() => {
+    if (user && user.role === "superadmin" && alluser && alluser.length > 0) {
+      return (alluser || []).filter((user) => user?.role !== "superadmin");
+    }
+    else if (user && user.role === "business" && alluser && alluser.length > 0) {
+      return (alluser || []).filter((user) => user?.role !== "business");
+    }
+    return (alluser || [])
+  }, [alluser, user]);
+
   const handleAdd = () => {
     // const check = hasPermission(user, "user:create");
     if (true) {
@@ -53,7 +53,7 @@ export default function Page() {
     }
   };
 
-  const handleDelete = (row: IUser) => {};
+  const handleDelete = (row: IUser) => { };
   // const handleView = (row: IUser) => {
 
   // };
@@ -73,7 +73,7 @@ export default function Page() {
   return (
     <>
       {/* get all users */}
-         <GetAllRolePermission />
+      <GetAllRolePermission />
       <GetAllUsers />
       <DataTableExt
         title=""

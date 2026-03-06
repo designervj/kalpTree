@@ -135,7 +135,7 @@ const RULES_SEED: PricingRule[] = [
   },
   {
     id: "r_3",
-    name: "VIP Customers - ₹200 Off",
+    name: "VIP Customers - $200 Off",
     status: "paused",
     priority: 70,
     scope: "customer_group",
@@ -190,7 +190,7 @@ function statusBadge(status: RuleStatus) {
 
 function currencyLabel(value: number) {
   // Adjust to your currency if needed
-  return `₹${value}`;
+  return `$${value}`;
 }
 
 function ruleSummary(r: Partial<PricingRule>) {
@@ -354,12 +354,12 @@ export default function PricingRulesPage() {
       <div className="mx-auto w-full max-w-[1400px] px-4 py-6">
         {/* Breadcrumb + title row */}
         <div className="flex flex-col gap-4">
-         
- 
+
+
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-               <BreadCrumbPage />
+                <BreadCrumbPage />
                 <Badge variant="secondary">{counts.total} total</Badge>
                 <Badge>Active {counts.active}</Badge>
                 <Badge variant="secondary">Paused {counts.paused}</Badge>
@@ -873,10 +873,10 @@ export default function PricingRulesPage() {
                                             prev.map((x) =>
                                               x.id === r.id
                                                 ? {
-                                                    ...x,
-                                                    status: x.status === "active" ? "paused" : "active",
-                                                    updatedAt: new Date().toISOString(),
-                                                  }
+                                                  ...x,
+                                                  status: x.status === "active" ? "paused" : "active",
+                                                  updatedAt: new Date().toISOString(),
+                                                }
                                                 : x
                                             )
                                           )

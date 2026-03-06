@@ -87,16 +87,15 @@ function PillButton({
   );
 }
 
-function  StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status }: { status: string }) {
   const isActive = status === "active";
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-        isActive
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${isActive
           ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
           : "bg-slate-100 text-slate-700 border border-slate-200"
-      }`}
+        }`}
     >
       {isActive ? (
         <CheckCircle2 className="h-3 w-3" />
@@ -403,16 +402,16 @@ export default function AdminIndex() {
                         ) : (
                           <BusinessIcon colors={{ primary: primaryColor }} />
                         )}
-                        
+
 
                         <div className="min-w-0 flex-1">
                           <div className="flex items-start gap-3 flex-wrap">
                             <div className="text-[24px] font-semibold text-slate-900">
                               {business.name}
                             </div>
-                            <StatusBadge 
-                            status={business?.status!}
-                             />
+                            <StatusBadge
+                              status={business?.status!}
+                            />
                           </div>
 
                           {business.businessdetails?.tagline && (

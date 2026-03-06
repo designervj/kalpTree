@@ -50,7 +50,7 @@ export default function Page() {
       {/* HEADER */}
       <div className="mb-6">
         {/* <h1 className="text-3xl font-semibold">Activity Logs</h1> */}
-        <BreadCrumbPage/>
+        <BreadCrumbPage />
         <p className="text-gray-500 mt-1">
           Track all user and system activities
         </p>
@@ -69,7 +69,7 @@ export default function Page() {
           <option>Editor</option>
         </select> */}
 
-         <Select defaultValue="all">
+        <Select defaultValue="all">
           <SelectTrigger className="w-[220px]">
             <SelectValue placeholder="Select role" />
           </SelectTrigger>
@@ -160,11 +160,10 @@ export default function Page() {
 
                 <td className="px-5 py-4">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      log.status === "Success"
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${log.status === "Success"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
-                    }`}
+                      }`}
                   >
                     {log.status}
                   </span>

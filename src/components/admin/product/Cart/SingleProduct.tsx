@@ -72,7 +72,7 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
     );
     console.log("variantOptions", variantOptions);
     const selectedKeys = Object.keys(selectedOptions);
-  console.log("selectedKeys", selectedKeys);
+    console.log("selectedKeys", selectedKeys);
     const allVariantOptionsSelected = variantOptions?.every((opt) =>
       selectedKeys.includes(opt.id),
     );
@@ -218,10 +218,10 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
             {product.title}
           </h3>
           <div className="flex items-baseline gap-2 mt-2">
-            <span className="text-lg font-bold text-gray-900">₹{minPrice}</span>
+            <span className="text-lg font-bold text-gray-900">${minPrice}</span>
             {maxDiscount > 0 && (
               <span className="text-sm text-gray-400 line-through">
-                ₹{product.basePrice}
+                ${product.basePrice}
               </span>
             )}
           </div>
@@ -333,7 +333,7 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
               </h1>
 
               <div className="text-3xl font-bold text-gray-900 mb-5">
-                ₹{currentPrice}
+                ${currentPrice}
               </div>
 
               {/* Meta Info */}
@@ -782,7 +782,7 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
                               </button>
                             </div>
                             <span className="font-bold text-gray-900">
-                              ₹{(parseFloat(variant.price || "0") * item.quantity).toFixed(2)}
+                              ${(parseFloat(variant.price || "0") * item.quantity).toFixed(2)}
                             </span>
                           </div>
                         </div>
@@ -796,7 +796,7 @@ const SingleProductShowcase = ({ slug }: { slug?: any }) => {
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-lg font-semibold">Total:</span>
                       <span className="text-2xl font-bold text-gray-900">
-                        ₹{getTotalPrice().toFixed(2)}
+                        ${getTotalPrice().toFixed(2)}
                       </span>
                     </div>
                     <button

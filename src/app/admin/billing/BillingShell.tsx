@@ -70,7 +70,7 @@ export default function BillingShell({ children }: { children: React.ReactNode }
 
   return (
 
-    
+
     <div className="min-h-screen px-3 pt-1">
       {/* subtle background */}
       <div className="pointer-events-none fixed inset-0 opacity-[0.35]">
@@ -185,7 +185,7 @@ export default function BillingShell({ children }: { children: React.ReactNode }
 
                 <Separator />
 
-            
+
               </Card>
             </div>
           </aside>
@@ -245,30 +245,30 @@ export default function BillingShell({ children }: { children: React.ReactNode }
 
 
 
-              
+
             </Card>
 
-                {/* Help box */}
-                <div className="py-4">
-                  <div className="rounded-md bg-white border border-slate-200 p-4">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-                      <LifeBuoy className="h-4 w-4" />
-                      Need help?
-                    </div>
-                    <div className="mt-1 text-sm text-slate-500">
-                      Contact support for billing assistance.
-                    </div>
-
-                    <Button className="mt-4  rounded-md bg-primary hover:bg-slate-800   ">
-                      Contact Support
-                    </Button>
-
-                    <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
-                      <ShieldCheck className="h-4 w-4" />
-                      Payments are secure & encrypted
-                    </div>
-                  </div>
+            {/* Help box */}
+            <div className="py-4">
+              <div className="rounded-md bg-white border border-slate-200 p-4">
+                <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
+                  <LifeBuoy className="h-4 w-4" />
+                  Need help?
                 </div>
+                <div className="mt-1 text-sm text-slate-500">
+                  Contact support for billing assistance.
+                </div>
+
+                <Button className="mt-4  rounded-md bg-primary hover:bg-slate-800   ">
+                  Contact Support
+                </Button>
+
+                <div className="mt-3 flex items-center gap-2 text-xs text-slate-500">
+                  <ShieldCheck className="h-4 w-4" />
+                  Payments are secure & encrypted
+                </div>
+              </div>
+            </div>
 
           </main>
         </div>

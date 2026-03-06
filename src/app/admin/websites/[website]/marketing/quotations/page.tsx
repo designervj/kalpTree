@@ -134,9 +134,9 @@ export default function QuotationsPage() {
             </p>
           </div> */}
 
-              <div>
+          <div>
             <BreadCrumbPage />
-                  <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Create, send and track quotations with validity and status flow.
             </p>
           </div>
@@ -177,7 +177,7 @@ export default function QuotationsPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Total amount (₹)</Label>
+                  <Label>Total amount ($)</Label>
                   <Input type="number" placeholder="e.g., 150000" />
                 </div>
 
@@ -332,7 +332,7 @@ export default function QuotationsPage() {
                       <IndianRupee className="h-4 w-4" />
                       <p className="text-xs">Amount</p>
                     </div>
-                    <p className="mt-1 text-sm font-semibold">₹{fmt(x.amount)}</p>
+                    <p className="mt-1 text-sm font-semibold">${fmt(x.amount)}</p>
                   </div>
 
                   <div className="rounded-xl border p-3">

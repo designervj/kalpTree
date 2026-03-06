@@ -522,11 +522,11 @@ export const FontUploader: React.FC<FontUploaderProps> = ({ s3Config }) => {
       setFontFile((prev) =>
         prev
           ? {
-              ...prev,
-              uploadStatus: "success",
-              url: uploadResult.url,
-              s3Key: uploadResult.key,
-            }
+            ...prev,
+            uploadStatus: "success",
+            url: uploadResult.url,
+            s3Key: uploadResult.key,
+          }
           : null,
       );
 
@@ -536,10 +536,10 @@ export const FontUploader: React.FC<FontUploaderProps> = ({ s3Config }) => {
       setFontFile((prev) =>
         prev
           ? {
-              ...prev,
-              uploadStatus: "error",
-              error: error instanceof Error ? error.message : "Upload failed",
-            }
+            ...prev,
+            uploadStatus: "error",
+            error: error instanceof Error ? error.message : "Upload failed",
+          }
           : null,
       );
       throw error;

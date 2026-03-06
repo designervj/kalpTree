@@ -182,7 +182,7 @@ export default function CampaignsPage() {
 
           <div>
             <BreadCrumbPage />
-              <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-muted-foreground">
               Build cross-channel campaigns, set audience targeting and track performance.
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function CampaignsPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label>Budget (₹)</Label>
+                  <Label>Budget ($)</Label>
                   <Input type="number" placeholder="e.g., 50000" />
                 </div>
 
@@ -459,7 +459,7 @@ export default function CampaignsPage() {
                         <p className="text-xs">Spend</p>
                       </div>
                       <p className="mt-1 text-sm font-medium">
-                        ₹{fmt(c.spent)} / ₹{fmt(c.budget)}
+                        ${fmt(c.spent)} / ${fmt(c.budget)}
                       </p>
                       <div className="mt-2">{progress(spendPct)}</div>
                     </div>

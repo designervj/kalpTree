@@ -27,7 +27,7 @@ export default function EntityDetailPage(props: any) {
 
       <div className="mt-6">
         <Link href={`/admin/${entity}`} className="text-sm underline">
-          ← Back to {entity} 
+          ← Back to {entity}
         </Link>
       </div>
     </div>

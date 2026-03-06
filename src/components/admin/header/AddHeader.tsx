@@ -188,7 +188,7 @@ const AddHeader = ({ header, isEdit }: Props) => {
                 className={cn(
                   "h-9 rounded-xl px-4",
                   mode === "html" &&
-                    "bg-violet-600 hover:bg-violet-700 text-white",
+                  "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("html")}
               >
@@ -200,7 +200,7 @@ const AddHeader = ({ header, isEdit }: Props) => {
                 className={cn(
                   "h-9 rounded-xl px-4",
                   mode === "preview" &&
-                    "bg-violet-600 hover:bg-violet-700 text-white",
+                  "bg-violet-600 hover:bg-violet-700 text-white",
                 )}
                 onClick={() => setMode("preview")}
               >
@@ -418,7 +418,7 @@ const AddHeader = ({ header, isEdit }: Props) => {
               <Button
                 type="submit"
                 disabled={saving}
-                // className="h-10 rounded-md bg-violet-700 hover:bg-violet-800"
+              // className="h-10 rounded-md bg-violet-700 hover:bg-violet-800"
               >
                 {saving
                   ? isEdit

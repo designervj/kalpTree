@@ -140,9 +140,9 @@ export class UserService {
   }
 
   async updatepasswordafterverification(data: {
-    name: string ;
+    name: string;
     password: string;
-    id:ObjectId;
+    id: ObjectId;
   }): Promise<any> {
     const collection = await this.getCollection();
     const passwordHash = await bcrypt.hash(data.password, 10);

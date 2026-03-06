@@ -240,34 +240,34 @@ export class TenantService {
 
   async getWebsiteByDomain(host: string): Promise<Tenant | null> {
     const collection = await this.getCollection();
-        const extractSubdomain = (hostname: string) => {
- 
+    const extractSubdomain = (hostname: string) => {
+
       const withoutPort = hostname.split(':')[0];
-   
+
       const parts = withoutPort.split('.');
       return parts.length > 1 ? parts[0] : null;
     };
-     const subdomain = extractSubdomain(host);
-     console.log("subdomain==",subdomain)
-        const orConditions: any[] = [
+    const subdomain = extractSubdomain(host);
+    console.log("subdomain==", subdomain)
+    const orConditions: any[] = [
       { primaryDomain: host }, // exact match for string
       { primaryDomain: { $elemMatch: { $eq: host } } }, // exact match in array
       { systemSubdomain: host }, // exact match for system subdomain
     ];
 
-     if (subdomain) {
+    if (subdomain) {
       // Match domains that start with the subdomain pattern
       // e.g., "ai-tech" matches "ai-tech.kalptree.xyz" or "ai-tech.localhost:55803"
       orConditions.push({
         "website.primaryDomain": {
-           $elemMatch: {
-             $regex: `^${subdomain}\\.`,
-             $options: 'i'
-           }
-         }
+          $elemMatch: {
+            $regex: `^${subdomain}\\.`,
+            $options: 'i'
+          }
+        }
       });
     }
-     
+
     const doc = await collection.findOne({
       $or: orConditions,
     });

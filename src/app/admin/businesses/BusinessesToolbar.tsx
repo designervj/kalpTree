@@ -52,7 +52,7 @@ function buildUrlWithParams(
   return qs ? `${pathname}?${qs}` : pathname;
 }
 
-const   BusinessesToolbar = ({
+const BusinessesToolbar = ({
   className,
   showColumnsButton = true,
   onOpenColumns,
@@ -145,7 +145,7 @@ const   BusinessesToolbar = ({
 
       {/* Right actions */}
       <div className="flex items-center gap-3">
-    
+
         {/* Filters (Sheet) */}
         <Sheet>
           <SheetTrigger asChild>

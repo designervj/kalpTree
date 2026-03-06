@@ -18,7 +18,7 @@ interface UploadImageProps {
   className?: string;
   accept?: string;
   createdProjectId?: string | null;
-  jobImageUpload: (file: File ) => void;
+  jobImageUpload: (file: File) => void;
 
 }
 
@@ -34,61 +34,61 @@ const UploadImage: React.FC<UploadImageProps> = ({
   className = '',
   accept = 'image/*',
   createdProjectId,
-  jobImageUpload 
+  jobImageUpload
 }) => {
   const [selectedFile, setSelectedFile] = useState<FileWithPreview | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [dragActive, setDragActive] = useState(false);
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
- const {user }= useSelector((state:RootState)=>state.user)
+  const { user } = useSelector((state: RootState) => state.user)
 
   useEffect(() => {
-     if( createdProjectId && createdProjectId!==null) {
-     handleUpload()
-     }
+    if (createdProjectId && createdProjectId !== null) {
+      handleUpload()
+    }
   }, [createdProjectId]);
 
   // Handle file selection
 
 
-const handleFileSelect = useCallback(async (file: File) => {
-  // Validate file using direct S3 upload service
-  const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
-  if (!validation.valid) {
-    setUploadResult({
-      success: false,
-      error: validation.error,
-    });
-    onUploadError?.(validation.error || 'Invalid file');
-    return;
-  }
+  const handleFileSelect = useCallback(async (file: File) => {
+    // Validate file using direct S3 upload service
+    const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
+    if (!validation.valid) {
+      setUploadResult({
+        success: false,
+        error: validation.error,
+      });
+      onUploadError?.(validation.error || 'Invalid file');
+      return;
+    }
 
-  // Convert to WebP
-  let webpFile: File;
-  try {
-    webpFile = await convertImageFileToWebp(file);
-  } catch (err) {
-    setUploadResult({
-      success: false,
-      error: 'Failed to convert image to WebP.',
-    });
-    onUploadError?.('Failed to convert image to WebP.');
-    return;
-  }
+    // Convert to WebP
+    let webpFile: File;
+    try {
+      webpFile = await convertImageFileToWebp(file);
+    } catch (err) {
+      setUploadResult({
+        success: false,
+        error: 'Failed to convert image to WebP.',
+      });
+      onUploadError?.('Failed to convert image to WebP.');
+      return;
+    }
 
-  // Create preview URL
-  const fileWithPreview = webpFile as FileWithPreview;
-  fileWithPreview.preview = URL.createObjectURL(webpFile);
+    // Create preview URL
+    const fileWithPreview = webpFile as FileWithPreview;
+    fileWithPreview.preview = URL.createObjectURL(webpFile);
 
-  setSelectedFile(fileWithPreview);
-  setUploadResult(null);
-  setUploadProgress(null);
-  jobImageUpload(webpFile);
-}, [maxSize, allowedTypes, onUploadError, jobImageUpload]);
+    setSelectedFile(fileWithPreview);
+    setUploadResult(null);
+    setUploadProgress(null);
+    jobImageUpload(webpFile);
+  }, [maxSize, allowedTypes, onUploadError, jobImageUpload]);
   // const handleFileSelect = useCallback((file: File) => {
   //   // Validate file using direct S3 upload service
   //   const validation = DirectS3UploadService.validateFile(file, maxSize, allowedTypes);
@@ -104,7 +104,7 @@ const handleFileSelect = useCallback(async (file: File) => {
   //   // Create preview URL
   //   const fileWithPreview = file as FileWithPreview;
   //   fileWithPreview.preview = URL.createObjectURL(file);
-    
+
   //   setSelectedFile(fileWithPreview);
   //   setUploadResult(null);
   //   setUploadProgress(null);
@@ -115,9 +115,9 @@ const handleFileSelect = useCallback(async (file: File) => {
     const file = event.target.files?.[0];
     if (file) {
       handleFileSelect(file);
-       jobImageUpload(file);
+      jobImageUpload(file);
     }
-   
+
   };
 
   // Handle drag and drop
@@ -142,7 +142,7 @@ const handleFileSelect = useCallback(async (file: File) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files[0]) {
       handleFileSelect(files[0]);
@@ -181,13 +181,13 @@ const handleFileSelect = useCallback(async (file: File) => {
       // Use direct S3 upload service
       const result = await DirectS3UploadService.uploadFile(
         selectedFile,
-       createdProjectId??"",
+        createdProjectId ?? "",
         (progress) => setUploadProgress(progress)
       );
 
-      
+
       setUploadResult(result);
-      
+
       if (result.success && result.fileUrl && result.key) {
         onUploadSuccess?.(result.fileUrl, result.key);
       } else {
@@ -270,7 +270,7 @@ const handleFileSelect = useCallback(async (file: File) => {
                 </Button>
               </div>
             )}
-            
+
             {/* File Info */}
             <div className="text-sm text-gray-600">
               <p className="font-medium">{selectedFile.name}</p>
@@ -323,8 +323,8 @@ const handleFileSelect = useCallback(async (file: File) => {
       {/* Action Buttons */}
       <div className="mt-4 flex gap-2">
         {selectedFile && !uploadResult?.success && (
-          <Button 
-           // onClick={handleUpload} 
+          <Button
+            // onClick={handleUpload} 
             disabled={uploading}
             className="flex-1"
           >
@@ -336,15 +336,15 @@ const handleFileSelect = useCallback(async (file: File) => {
             ) : (
               <>
                 <Upload className="h-4 w-4 mr-2" />
-              
+
               </>
             )}
           </Button>
         )}
-        
+
         {(selectedFile || uploadResult) && (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleClear}
             disabled={uploading}
           >

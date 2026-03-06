@@ -55,7 +55,7 @@ export const fetchSingleAgency = createAsyncThunk<
       throw new Error(data?.error || `HTTP ${res.status}`);
     }
     const data = await res.json();
- 
+
     return data.data;
   } catch (err: any) {
     return rejectWithValue(err?.message || "Failed to fetch agencies");

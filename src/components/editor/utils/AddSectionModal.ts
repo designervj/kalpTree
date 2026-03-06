@@ -1,12 +1,12 @@
 export const openAddSectionModal = (editor: any, component: any) => {
-    if (!editor || !component) return;
+  if (!editor || !component) return;
 
-    const index = component.index();
-    const componentName = component.getName() || 'this section';
+  const index = component.index();
+  const componentName = component.getName() || 'this section';
 
-    editor.Modal.open({
-        title: 'Add New Section',
-        content: `
+  editor.Modal.open({
+    title: 'Add New Section',
+    content: `
       <div style="padding: 24px; text-align: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
         <p style="margin-bottom: 24px; color: #4b5563; font-size: 15px; line-height: 1.5;">
           Choose a section template to add after <b>${componentName}</b>.
@@ -66,5 +66,5 @@ export const openAddSectionModal = (editor: any, component: any) => {
         }
       </style>
     `,
-    });
+  });
 };

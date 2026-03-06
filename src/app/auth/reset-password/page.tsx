@@ -230,26 +230,26 @@ function ResetPasswordForm() {
               </div>
             )}
 
-<div className="flex items-center justify-center gap-2">
-            <Button
-              type="submit"
-              disabled={loading}
-              className="cursor-pointer h-10 w-[49%]"
-            // className="w-full bg-primary hover:opacity-90 text-primary-foreground py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {loading ? "Updating password..." : "Reset Password"}
-              {!loading && <ArrowRight className="w-5 h-5" />}
-            </Button>
+            <div className="flex items-center justify-center gap-2">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="cursor-pointer h-10 w-[49%]"
+              // className="w-full bg-primary hover:opacity-90 text-primary-foreground py-4 rounded-xl font-bold transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {loading ? "Updating password..." : "Reset Password"}
+                {!loading && <ArrowRight className="w-5 h-5" />}
+              </Button>
 
-            <Button
-              type="button"
-              onClick={() => router.push("/signin")}
-              variant="outline"
-                  className="cursor-pointer h-10 w-[49%]"
-            //   className="w-full py-3 rounded-xl font-semibold border border-border text-foreground hover:bg-muted/50 transition-colors"
-            >
-              Back to Sign In
-            </Button>
+              <Button
+                type="button"
+                onClick={() => router.push("/signin")}
+                variant="outline"
+                className="cursor-pointer h-10 w-[49%]"
+              //   className="w-full py-3 rounded-xl font-semibold border border-border text-foreground hover:bg-muted/50 transition-colors"
+              >
+                Back to Sign In
+              </Button>
             </div>
 
           </form>
@@ -262,9 +262,8 @@ function ResetPasswordForm() {
 function RuleItem({ ok, text }: { ok: boolean; text: string }) {
   return (
     <div
-      className={`flex items-center gap-2 text-sm ${
-        ok ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
-      }`}
+      className={`flex items-center gap-2 text-sm ${ok ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground"
+        }`}
     >
       <CheckCircle2 className="w-4 h-4" />
       <span>{text}</span>

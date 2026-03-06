@@ -15,11 +15,11 @@ const initialState: AttributeState = {
 
 export const fetchAttributes = createAsyncThunk<
   MaterialAttributes[],
-  {websiteId:string},
+  { websiteId: string },
   { state: { attribute: AttributeState }; rejectValue: string }
 >(
   "attribute/fetchAttributes",
-  async ({websiteId}, { rejectWithValue }) => {
+  async ({ websiteId }, { rejectWithValue }) => {
     try {
       const res = await fetch(`/api/admin/attribute?websiteId=${websiteId}`);
       if (!res.ok) {
@@ -28,7 +28,7 @@ export const fetchAttributes = createAsyncThunk<
       }
       const data = await res.json();
       // API returns { items }
-    
+
       return data?.items || [];
     } catch (error: unknown) {
       return rejectWithValue(
@@ -86,8 +86,8 @@ const attributeSlice = createSlice({
     },
     clearAttributes(state) {
       state.listAttribute = [];
-      state.hasFetched= false;
-      state.isAttributeLoading= false
+      state.hasFetched = false;
+      state.isAttributeLoading = false
     },
   },
   extraReducers: (builder) => {

@@ -38,7 +38,7 @@ export default function Page() {
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
         <div>
-        <BreadCrumbPage/>
+          <BreadCrumbPage />
           <p className="text-gray-500 mt-1">
             Manage team members and their roles
           </p>
@@ -91,10 +91,9 @@ export default function Page() {
                 <td className="p-4">
                   <span
                     className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm
-                      ${
-                        member.role === "Admin"
-                          ? "bg-red-100 text-red-600"
-                          : member.role === "Editor"
+                      ${member.role === "Admin"
+                        ? "bg-red-100 text-red-600"
+                        : member.role === "Editor"
                           ? "bg-blue-100 text-blue-600"
                           : "bg-gray-200 text-gray-600"
                       }

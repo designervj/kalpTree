@@ -182,7 +182,7 @@ function inStockBadge(stock: number) {
 
 function money(v: number) {
   // adjust currency if needed
-  return `₹${v.toLocaleString()}`;
+  return `$${v.toLocaleString()}`;
 }
 
 type VariantForm = {
@@ -237,8 +237,8 @@ export default function VariantsPage() {
         stockFilter === "all"
           ? true
           : stockFilter === "in"
-          ? v.stock > 0
-          : v.stock === 0;
+            ? v.stock > 0
+            : v.stock === 0;
 
       const matchesImages = imagesOnly ? v.hasImage : true;
 
@@ -336,8 +336,8 @@ export default function VariantsPage() {
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
-               <BreadCrumbPage />
-             
+              <BreadCrumbPage />
+
               <Badge variant="secondary">{counts.total} total</Badge>
               <Badge>Active {counts.active}</Badge>
               <Badge variant="outline">Draft {counts.draft}</Badge>
@@ -679,10 +679,10 @@ export default function VariantsPage() {
                                           prev.map((x) =>
                                             x.id === v.id
                                               ? {
-                                                  ...x,
-                                                  hasImage: !x.hasImage,
-                                                  updatedAt: new Date().toISOString(),
-                                                }
+                                                ...x,
+                                                hasImage: !x.hasImage,
+                                                updatedAt: new Date().toISOString(),
+                                              }
                                               : x
                                           )
                                         )

@@ -82,11 +82,11 @@ export async function GET(
       ])
       .toArray();
 
-      return NextResponse.json({
-        data: data[0],
-        message: "SuccessFull",
-        success:true
-      })
+    return NextResponse.json({
+      data: data[0],
+      message: "SuccessFull",
+      success: true
+    })
   } catch (error) {
     return NextResponse.json({
       success: false,

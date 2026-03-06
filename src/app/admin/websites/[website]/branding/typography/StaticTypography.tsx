@@ -758,7 +758,7 @@ export default function TypographyPage({
      ROOT CSS output
   ───────────────────────────────────────── */
 
-  
+
   const ROOT_CSS = root_css;
 
   const handleSaveGlobalCss = async (type: string = "new") => {

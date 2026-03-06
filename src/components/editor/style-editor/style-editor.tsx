@@ -279,7 +279,7 @@ function FontFamilyControl({
           onStyleChange("font-family", v);
         }}
       >
-        <SelectTrigger     style={{height:"32px"}} className="w-full  bg-white border border-slate-200 rounded text-[12px] text-slate-700 focus:ring-1 focus:ring-blue-400">
+        <SelectTrigger style={{ height: "32px" }} className="w-full  bg-white border border-slate-200 rounded text-[12px] text-slate-700 focus:ring-1 focus:ring-blue-400">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className={UI.selectContent}>
@@ -321,7 +321,7 @@ function FontSizeControl({
           onChange={(e) => apply(e.target.value)}
         />
         <Select value={unit} onValueChange={(u) => apply(value, u as any)}>
-          <SelectTrigger style={{height:"32px"}} className=" w-14 rounded-l-none border border-slate-200 bg-slate-50 text-[11px] text-slate-500 focus:ring-0 px-1">
+          <SelectTrigger style={{ height: "32px" }} className=" w-14 rounded-l-none border border-slate-200 bg-slate-50 text-[11px] text-slate-500 focus:ring-0 px-1">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className={UI.selectContent}>
@@ -370,7 +370,7 @@ function FontWeightControl({
           onStyleChange("font-weight", v);
         }}
       >
-        <SelectTrigger      style={{height:"32px"}} className=" w-full bg-white border border-slate-200 rounded text-[12px] text-slate-700 focus:ring-1 focus:ring-blue-400">
+        <SelectTrigger style={{ height: "32px" }} className=" w-full bg-white border border-slate-200 rounded text-[12px] text-slate-700 focus:ring-1 focus:ring-blue-400">
           <SelectValue />
         </SelectTrigger>
         <SelectContent className={UI.selectContent}>
@@ -442,7 +442,7 @@ function TextColorControl({
     <div className={UI.propRow}>
       <Label className={UI.label}>Text Text Color</Label>
       <div className="flex items-center gap-1.5">
-       
+
         <Input
           className="h-7 w-full border border-slate-200 bg-white text-[12px] text-slate-800 px-2 rounded focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-400"
           value={value}
@@ -451,7 +451,7 @@ function TextColorControl({
             onStyleChange("color", e.target.value);
           }}
         />
-         <ColorPicker
+        <ColorPicker
           color={value}
           onChange={(c) => {
             setValue(c);
@@ -491,7 +491,7 @@ function LineHeightControl({
           onChange={(e) => apply(e.target.value)}
         />
         <Select value={unit} onValueChange={(u) => apply(value, u as any)}>
-          <SelectTrigger style={{height:"32px"}} className="w-16 rounded-l-none border border-slate-200 bg-slate-50 text-[11px] text-slate-500 focus:ring-0 px-1">
+          <SelectTrigger style={{ height: "32px" }} className="w-16 rounded-l-none border border-slate-200 bg-slate-50 text-[11px] text-slate-500 focus:ring-0 px-1">
             <SelectValue />
           </SelectTrigger>
           <SelectContent className={UI.selectContent} >
@@ -587,7 +587,7 @@ function TextDecorationControl({
             type="button"
             title={key}
             onClick={handler}
-        
+
             className={[
               "h-8 w-8 flex items-center justify-center border-r border-slate-200 last:border-r-0 transition-colors",
               active
@@ -659,7 +659,7 @@ function TextShadowControl({
           <button
             type="button"
             onClick={() => { setEnabled(false); onStyleChange("text-shadow", "none"); }}
-            
+
             className="h-6 w-6 flex items-center justify-center rounded border border-slate-200 bg-white text-slate-400 hover:bg-red-50 hover:text-red-500 transition-colors"
           >
             <X className="h-3.5 w-3.5" />
@@ -1027,7 +1027,7 @@ export function StyleEditor({
     ) ||
     ["text", "p", "span", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tagType);
 
-    // AttributesEditor
+  // AttributesEditor
   return (
     <div className={`${UI.panel} bg-[#4a3c47] p-1`}>
       <Accordion
@@ -1036,39 +1036,39 @@ export function StyleEditor({
         defaultValue={showTypography ? "typography" : "spacing"}
         className="w-full"
       >
-           {showTypography && (
-        <AccordionItem value="attributesEditor" className={UI.accordionItem}>
-          <AccordionTrigger className={UI.accordionTrigger}>Attributes</AccordionTrigger>
-          <AccordionContent>
-            <AttributesEditor
-              // styles={styles}
-              // onStyleChange={onStyleChange}
-              // elementStyles={elementStyles}
-              // rootStyles={rootStyles}
-              // selectedElement={selectedElement}
-                selectedElement={selectedElement}
-                // onAttributeChange={onAttributeChange}
-            />
-          </AccordionContent>
-        </AccordionItem>
-          )}
-       
-          <AccordionItem value="typography" className={UI.accordionItem}>
-            <AccordionTrigger className={UI.accordionTrigger}>
-              Typography
-            </AccordionTrigger>
+        {showTypography && (
+          <AccordionItem value="attributesEditor" className={UI.accordionItem}>
+            <AccordionTrigger className={UI.accordionTrigger}>Attributes</AccordionTrigger>
             <AccordionContent>
-              <TypographySection
-                styles={styles}
-                onStyleChange={onStyleChange}
-                elementStyles={elementStyles}
-                rootStyles={rootStyles}
+              <AttributesEditor
+                // styles={styles}
+                // onStyleChange={onStyleChange}
+                // elementStyles={elementStyles}
+                // rootStyles={rootStyles}
+                // selectedElement={selectedElement}
+                selectedElement={selectedElement}
+              // onAttributeChange={onAttributeChange}
               />
             </AccordionContent>
           </AccordionItem>
-      
+        )}
 
-      
+        <AccordionItem value="typography" className={UI.accordionItem}>
+          <AccordionTrigger className={UI.accordionTrigger}>
+            Typography
+          </AccordionTrigger>
+          <AccordionContent>
+            <TypographySection
+              styles={styles}
+              onStyleChange={onStyleChange}
+              elementStyles={elementStyles}
+              rootStyles={rootStyles}
+            />
+          </AccordionContent>
+        </AccordionItem>
+
+
+
 
         <AccordionItem value="spacing" className={UI.accordionItem}>
           <AccordionTrigger className={UI.accordionTrigger}>Spacing</AccordionTrigger>

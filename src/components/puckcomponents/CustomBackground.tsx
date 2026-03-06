@@ -591,11 +591,10 @@ function TransformButtons({
           <button
             key={opt}
             onClick={() => onChange(opt)}
-            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${
-              value === opt
+            className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${value === opt
                 ? "border-blue-500 bg-blue-50 text-blue-600"
                 : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300"
-            }`}
+              }`}
           >
             {TransformIcons[opt]}
           </button>
@@ -883,7 +882,7 @@ function ImageTab({
 }) {
   return (
     <div>
-      <UploadBox label="Background Image" value={s.imageUrl} onAdd={() => {}} />
+      <UploadBox label="Background Image" value={s.imageUrl} onAdd={() => { }} />
       <Toggle
         label="Use Parallax Effect"
         value={s.useParallax}
@@ -963,12 +962,12 @@ function VideoTab({
       <UploadBox
         label="Background Video MP4"
         value={s.videoMp4}
-        onAdd={() => {}}
+        onAdd={() => { }}
       />
       <UploadBox
         label="Background Video Webm"
         value={s.videoWebm}
-        onAdd={() => {}}
+        onAdd={() => { }}
       />
       <SimpleInput
         label="Background Video Width"
@@ -1146,11 +1145,10 @@ function MaskAspectButton({
   return (
     <button
       onClick={() => onChange(value)}
-      className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${
-        current === value
+      className={`w-9 h-8 rounded-md flex items-center justify-center border transition-all ${current === value
           ? "border-blue-500 bg-blue-50 text-blue-600"
           : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300"
-      }`}
+        }`}
     >
       {icon}
     </button>
@@ -1372,11 +1370,10 @@ export function BackgroundPanel({
                 <button
                   key={tab}
                   onClick={() => updateField("activeTab", tab)}
-                  className={`flex-1 flex items-center justify-center py-2 transition-all relative ${
-                    activeTab === tab
+                  className={`flex-1 flex items-center justify-center py-2 transition-all relative ${activeTab === tab
                       ? "text-blue-600"
                       : "text-slate-400 hover:text-slate-600"
-                  }`}
+                    }`}
                 >
                   {TabIcons[tab]}
                   {activeTab === tab && (

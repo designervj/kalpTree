@@ -406,7 +406,7 @@ export default function InventoryModal() {
                       .join(", ");
                     return (
                       <SelectItem key={variant._id} value={variant._id}>
-                        {variantLabel} - ₹{variant.price}
+                        {variantLabel} - ${variant.price}
                       </SelectItem>
                     );
                   })}

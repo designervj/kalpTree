@@ -267,7 +267,7 @@ export default function FormSubmissionsModal({
               <Button
                 type="button"
                 onClick={() => setScreen("list")}
-                // className="inline-flex items-center gap-2 rounded-lg px-2 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100"
+              // className="inline-flex items-center gap-2 rounded-lg px-2 py-2 text-base font-semibold text-slate-700 hover:bg-slate-100"
               >
                 <ArrowLeft className="h-5 w-5" />
                 Back
@@ -403,7 +403,7 @@ export default function FormSubmissionsModal({
                       No submissions just yet
                     </div>
                     <div>
-                     <p className="mt-2 max-w-xl text-sm text-slate-500 font-normal"> This forms submissions will appear here once someone fills it out.</p>
+                      <p className="mt-2 max-w-xl text-sm text-slate-500 font-normal"> This forms submissions will appear here once someone fills it out.</p>
                     </div>
                   </div>
                 ) : null}

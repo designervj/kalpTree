@@ -56,10 +56,10 @@ const GetWebsiteFooter = () => {
         </div>
       )}
       {hasFetched &&
-      currentFooter &&
-      currentFooter._id &&
-      currentFooter._id.toString() &&
-      currentFooter.content ? (
+        currentFooter &&
+        currentFooter._id &&
+        currentFooter._id.toString() &&
+        currentFooter.content ? (
         <div className="border rounded-lg shadow-sm hover:shadow-md transition-shadow">
           {/* Header with action buttons */}
           <div className="flex items-center justify-between gap-2 p-2 border-b bg-gray-50">

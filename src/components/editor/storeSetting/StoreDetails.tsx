@@ -24,8 +24,8 @@ const StoreDetails = () => {
       <div className="mx-auto w-full  px-4 py-10">
         {/* Page title */}
         <div>
-            {/* <h4 className="text-[28px] font-semibold leading-none">Store details</h4> */}
-                  <h1 className="text-2xl font-semibold  tracking-tight">Store details </h1>
+          {/* <h4 className="text-[28px] font-semibold leading-none">Store details</h4> */}
+          <h1 className="text-2xl font-semibold  tracking-tight">Store details </h1>
         </div>
 
         {/* Main card */}
@@ -37,7 +37,7 @@ const StoreDetails = () => {
             </div>
             <div className="mt-2">
               <p className="text-slate-600 dark:text-slate-400">Choose the currency your products are sold in and a measurement system
-              needed for shipping.</p>
+                needed for shipping.</p>
             </div>
           </div>
 
@@ -65,7 +65,7 @@ const StoreDetails = () => {
 
                 <SelectContent className="rounded-xl w-full">
                   <SelectItem value="usd">USD ($)</SelectItem>
-                  <SelectItem value="inr">INR (₹)</SelectItem>
+                  <SelectItem value="inr">INR ($)</SelectItem>
                   <SelectItem value="eur">EUR (€)</SelectItem>
                   <SelectItem value="gbp">GBP (£)</SelectItem>
                 </SelectContent>

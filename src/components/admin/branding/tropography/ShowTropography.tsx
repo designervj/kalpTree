@@ -337,7 +337,7 @@ const ShowTropography = () => {
       return { ...prev, ...patch };
     });
 
-   
+
   };
 
   const handleButtonColorChange = (patch: any) => {

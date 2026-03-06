@@ -15,11 +15,11 @@ const initialState: BrandState = {
 
 export const fetchBrands = createAsyncThunk<
   MaterialBrandModel[],
-  {websiteId:string},
+  { websiteId: string },
   { state: { brand: BrandState }; rejectValue: string }
 >(
   "brand/fetchBrands",
-  async ({websiteId}, { rejectWithValue }) => {
+  async ({ websiteId }, { rejectWithValue }) => {
     try {
       const res = await fetch(`/api/admin/brand?websiteId=${websiteId}`);
       if (!res.ok) {
@@ -83,9 +83,9 @@ const brandSlice = createSlice({
     },
     clearBrands(state) {
       state.listBrand = [];
-      state.hasFetched= false;
-      state.isBrandLoading= false
-        },
+      state.hasFetched = false;
+      state.isBrandLoading = false
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -95,11 +95,11 @@ const brandSlice = createSlice({
       .addCase(
         fetchBrands.fulfilled,
         (state, action: PayloadAction<MaterialBrandModel[]>) => {
-           if(action.payload && action.payload.length){
-          state.listBrand = action.payload;
-          state.hasFetched = true;
-          state.isBrandLoading = false;
-           }
+          if (action.payload && action.payload.length) {
+            state.listBrand = action.payload;
+            state.hasFetched = true;
+            state.isBrandLoading = false;
+          }
         }
       )
       .addCase(fetchBrands.rejected, (state) => {

@@ -364,8 +364,8 @@ function SidebarNav({
 
               {/* children */}
               {item.id === "products-group" &&
-              productsOpen &&
-              item.children?.length ? (
+                productsOpen &&
+                item.children?.length ? (
                 <div className="mt-1 space-y-1 pl-9">
                   {item.children.map((c) => {
                     const isActive = active === c.id;
@@ -389,8 +389,8 @@ function SidebarNav({
               ) : null}
 
               {item.id === "settings-group" &&
-              settingsOpen &&
-              item.children?.length ? (
+                settingsOpen &&
+                item.children?.length ? (
                 <div className="mt-1 space-y-1 pl-9">
                   {item.children.map((c) => {
                     const isActive = active === c.id;

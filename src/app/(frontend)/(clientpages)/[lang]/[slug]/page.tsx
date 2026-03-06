@@ -67,7 +67,7 @@ export default async function PageTemplate({
           $in: [host],
         },
       });
-     
+
       if (!tenantData) {
         return <NotFound />;
       }
@@ -97,7 +97,7 @@ export default async function PageTemplate({
         tenantId: tenantData.tenantId ? tenantData.tenantId.toString() : null,
       };
     }
-  
+
     if (
       (lang && lang.length > 2 && lang === "product-category") ||
       (lang && lang.length == 2 && slug == "product-category")
@@ -130,7 +130,7 @@ export default async function PageTemplate({
       return obj[slug];
     }
 
-  console.log("website", website);
+    console.log("website", website);
     if (!website) {
       return <NotFound />;
     }

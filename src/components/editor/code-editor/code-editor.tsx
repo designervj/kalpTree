@@ -100,13 +100,13 @@ export function CodeEditor({
               
               // Execute scripts extracted from HTML first
               ${extractedScripts.map((script, idx) => `
-                // Script ${idx + 1} from HTML
-                try {
+    // Script ${idx + 1} from HTML
+    try {
                   ${script}
-                } catch (error) {
-                  console.error('HTML Script ${idx + 1} error:', error);
-                }
-              `).join('\n')}
+} catch (error) {
+  console.error('HTML Script ${idx + 1} error:', error);
+}
+`).join('\n')}
 
               // Then execute the JavaScript tab content
               try {
@@ -121,12 +121,12 @@ export function CodeEditor({
               console.error('❌ Failed to load Tailwind CSS');
               // Execute scripts anyway even if Tailwind fails to load
               ${extractedScripts.map((script, idx) => `
-                try {
+try {
                   ${script}
-                } catch (error) {
-                  console.error('HTML Script ${idx + 1} error:', error);
-                }
-              `).join('\n')}
+} catch (error) {
+  console.error('HTML Script ${idx + 1} error:', error);
+}
+`).join('\n')}
               
               try {
                 ${localJs}
@@ -154,10 +154,10 @@ export function CodeEditor({
     setIsDialogOpen(false);
   };
 
-const handleCancel = () => {
-  console.log("Cancel");
-  setIsDialogOpen(false);
-}
+  const handleCancel = () => {
+    console.log("Cancel");
+    setIsDialogOpen(false);
+  }
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

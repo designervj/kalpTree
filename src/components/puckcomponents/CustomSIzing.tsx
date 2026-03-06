@@ -109,11 +109,10 @@ function UnitDropdown({
                 onChange(unit);
                 onClose();
               }}
-              className={`px-3 py-1 text-xs cursor-pointer font-mono transition-colors ${
-                value === unit
+              className={`px-3 py-1 text-xs cursor-pointer font-mono transition-colors ${value === unit
                   ? "bg-blue-600 text-white"
                   : "text-slate-600 hover:bg-slate-50"
-              }`}
+                }`}
             >
               {unit}
             </div>
@@ -244,11 +243,10 @@ export function SizingPanel({
                   <button
                     key={opt}
                     onClick={() => updateField("sectionAlignment", opt)}
-                    className={`w-9 h-8 rounded-md flex items-center justify-center transition-all border ${
-                      s.sectionAlignment === opt
+                    className={`w-9 h-8 rounded-md flex items-center justify-center transition-all border ${s.sectionAlignment === opt
                         ? "border-blue-500 bg-blue-50 text-blue-600"
                         : "border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300 hover:text-slate-600"
-                    }`}
+                      }`}
                   >
                     {AlignIcons[opt]}
                   </button>

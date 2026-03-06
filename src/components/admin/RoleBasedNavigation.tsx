@@ -4,14 +4,14 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Building2, 
-  Package, 
-  ShoppingCart, 
-  FileText, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Users,
+  Building2,
+  Package,
+  ShoppingCart,
+  FileText,
+  Settings,
   Palette,
   UserPlus,
   BarChart3,
@@ -393,7 +393,7 @@ export default function RoleBasedNavigation({ className }: RoleBasedNavigationPr
     if (session?.user?.role) {
       const userRole = session.user.role as UserRole;
       const items = ROLE_NAVIGATION[userRole] || [];
-      
+
       // Filter items based on user's actual permissions
       const filteredItems = items.filter(item => {
         // Check if user's role is in the allowed roles for this item
@@ -415,8 +415,8 @@ export default function RoleBasedNavigation({ className }: RoleBasedNavigationPr
           href={item.href || '#'}
           className={`
             flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors
-            ${isActive 
-              ? 'bg-primary text-primary-foreground' 
+            ${isActive
+              ? 'bg-primary text-primary-foreground'
               : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             }
           `}
@@ -424,7 +424,7 @@ export default function RoleBasedNavigation({ className }: RoleBasedNavigationPr
           {IconComponent && <IconComponent className="mr-3 h-4 w-4" />}
           {item.label}
         </Link>
-        
+
         {hasChildren && (
           <div className="ml-4 mt-1 space-y-1">
             {item.children!.map(child => renderNavigationItem(child, level + 1))}

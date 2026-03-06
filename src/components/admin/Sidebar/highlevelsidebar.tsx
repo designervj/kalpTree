@@ -164,7 +164,7 @@ const navigationItems = [
     submenuItems: [
       { label: "Templates", href: "/admin/template-manager/templates" },
       { label: "All Components", href: "/admin/template-manager/all-components" },
-      
+
     ],
   },
 
@@ -215,7 +215,7 @@ export function HighLevelSidebar({
   // Filter navigation items based on user role
   const filteredNavigationItems = React.useMemo(() => {
     if (user?.role === "agency") {
-      return navigationItems.filter((item) => item.id !== "agencies" &&item?.id!="roles");
+      return navigationItems.filter((item) => item.id !== "agencies" && item?.id != "roles");
     }
     return navigationItems;
   }, [user?.role]);

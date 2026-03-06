@@ -94,7 +94,7 @@ export default async function SingleProductPage({
         <main className="flex-grow">
           <GetAllProduct websiteId={currentWebsite?._id} />
           {/* <SingleProductShowcase /> */}
-          <SingleProductNestCraft/>
+          <SingleProductNestCraft />
         </main>
 
         {/* Footer */}

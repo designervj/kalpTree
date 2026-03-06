@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { 
-  Plus, 
-  Zap, 
-  UserPlus, 
-  ShoppingBag, 
-  FileText, 
-  RefreshCcw, 
-  Database, 
-  Mail, 
-  Shield, 
+import {
+  Plus,
+  Zap,
+  UserPlus,
+  ShoppingBag,
+  FileText,
+  RefreshCcw,
+  Database,
+  Mail,
+  Shield,
   Globe,
   UploadCloud,
   Eraser
@@ -60,7 +60,7 @@ export default function page() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           {/* <h1 className="text-2xl font-bold tracking-tight">Quick Actions</h1> */}
-          <BreadCrumbPage/>
+          <BreadCrumbPage />
           <p className="text-muted-foreground">Shortcuts for your most frequent administrative tasks.</p>
         </div>
         <Button variant="secondary" className="bg-primary text-white hover:bg-secondary text-sm"><Zap className="mr-0 h-4 w-4" /> Customize Shortcuts</Button>
@@ -75,8 +75,8 @@ export default function page() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {section.items.map((action, i) => (
-                <Card 
-                  key={i} 
+                <Card
+                  key={i}
                   className="hover:shadow-md transition-all cursor-pointer group border-gray-200 hover:border-primary/50 relative overflow-hidden"
                 >
                   <CardContent className="p-5 flex items-start gap-4">

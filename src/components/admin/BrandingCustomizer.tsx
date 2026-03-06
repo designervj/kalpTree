@@ -366,7 +366,7 @@ export default function BrandingCustomizer({ className }: BrandingCustomizerProp
                   </div>
                 </div>
               )}
-              
+
               <div className="space-y-2">
                 <Label htmlFor="logo-upload">Upload New Logo</Label>
                 <div className="flex items-center space-x-2">

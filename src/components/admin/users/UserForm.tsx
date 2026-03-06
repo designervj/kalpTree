@@ -745,7 +745,7 @@ export function UserForm() {
               </button> : <button
                 onClick={handleSubmit}
                 disabled={loading}
-                 className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="px-6 py-3 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
               >
                 {loading ? "Creating..." : "Create User"}
               </button>}
@@ -756,7 +756,7 @@ export function UserForm() {
                 Cancel
               </Button>
             </div>
-            
+
           </div>
         </div>
       </div>

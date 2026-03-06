@@ -684,7 +684,7 @@ export default function Page() {
           try {
             c.remove();
             newBody.append(c);
-          } catch {}
+          } catch { }
         });
       }
     });
@@ -1084,7 +1084,7 @@ export default function Page() {
       mounted = false;
       try {
         editorRef.current?.destroy?.();
-      } catch {}
+      } catch { }
       editorRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1109,13 +1109,13 @@ export default function Page() {
 
   const router = useRouter();
 
-  const {currentWebsite} = useSelector((state: RootState) => state.websites);
-   const {currentBusiness} = useSelector((state: RootState) => state.business);
-   const {curretAgency} = useSelector((state: RootState) => state.agency);
+  const { currentWebsite } = useSelector((state: RootState) => state.websites);
+  const { currentBusiness } = useSelector((state: RootState) => state.business);
+  const { curretAgency } = useSelector((state: RootState) => state.agency);
 
   const addPageTemplate = () => {
     router.push(`/admin/websites/${currentWebsite?.websiteId}/marketing/proposal/create?businessId=${currentBusiness?._id}&agencyId=${curretAgency?._id}`);
-  }; 
+  };
   return (
     <div style={uiStyleVars as any} className="min-h-screen bg-[var(--ui-app-bg)] text-[var(--ui-text)]">
       {/* Topbar */}
@@ -1149,7 +1149,7 @@ export default function Page() {
               >
                 Customize
               </button>
-            </div>  
+            </div>
 
             <div className="flex items-center gap-2 rounded-md border border-[var(--ui-border)] bg-[var(--ui-surface)] p-2">
               <div className="w-14 text-right text-sm font-semibold text-[var(--ui-muted)]">
