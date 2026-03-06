@@ -19,6 +19,7 @@ export async function POST(req: Request) {
     const agency_name = formData.get("agency_name") as string;
     const agency_email = formData.get("agency_email") as string;
     const agency_password = formData.get("agency_password") as string;
+    const colors = JSON.parse(formData.get("branding") as string);
 
     const businessdetails = JSON.parse(
       formData.get("businessdetails") as string,
@@ -203,6 +204,7 @@ export async function POST(req: Request) {
       lang,
       isComingSoon: true,
       globalStyle: globalStyle,
+      branding: colors,
     };
 
     await tenantService.updateTenant(id, {

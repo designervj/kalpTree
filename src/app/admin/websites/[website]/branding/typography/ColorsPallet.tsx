@@ -44,7 +44,7 @@ export type SelectedToken =
 ───────────────────────────────────────────── */
 export default function ColorPaletteStudio() {
   const { currentBusiness } = useSelector((state: RootState) => state.business);
-  const palettes = currentBusiness?.website?.branding.colors || [];
+  const palettes = currentBusiness?.website?.branding?.colors || [];
   const [tab, setTab] = useState<"all" | "edit">("all");
   const dispatch = useDispatch<AppDispatch>();
   const [editing, setEditing] = useState<any>(null);

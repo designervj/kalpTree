@@ -7,6 +7,7 @@ import attributeReducer from "../hooks/slices/attribute/AttributeSlice";
 import brandReducer from "../hooks/slices/brand/BrandSlice";
 import accountReducer from "../hooks/slices/user/accountSlice";
 import productReducer from "../hooks/slices/product/ProductSlice";
+import packageReducer from "../hooks/slices/packages/PackagesSlice";
 import tenantsReducer from "../hooks/slices/tenants/TenantSlice";
 import llmSettingReducer from "../hooks/slices/setting/llmSetting/LLMSettingSlice";
 import BlockReducer from "../hooks/slices/blocks/BlockSlice";
@@ -20,7 +21,6 @@ import footerReducer from "../hooks/slices/footer/FooterSlice";
 import attributesetsReducer from "../hooks/slices/attributessets/attributeSetsSlice";
 import globalStyleReducer from "../hooks/slices/setting/globalStyle/GlobalStyleSlice";
 import colorPalletReducer from "../hooks/slices/branding/colorPalletSlice/ColorPalletSlice";
-
 
 export const store = configureStore({
   reducer: {
@@ -37,6 +37,7 @@ export const store = configureStore({
     template: templateReducer,
     attribute: attributeReducer,
     product: productReducer,
+    packages: packageReducer,
 
     tenants: tenantsReducer,
     llmSetting: llmSettingReducer,
@@ -48,7 +49,6 @@ export const store = configureStore({
     attributeSets: attributesetsReducer,
     globalStyle: globalStyleReducer,
     colorPallet: colorPalletReducer,
-
   },
 });
 

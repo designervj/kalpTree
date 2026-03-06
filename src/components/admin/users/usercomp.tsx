@@ -737,10 +737,6 @@ export default function BusinessCreatePage({
       primary_domain: "",
       globalStyle: "",
       logo: "",
-      primary_color: "",
-      secondary_color: "",
-      tertiary_color: "",
-      typography: "",
     },
     createdById: safeUser?.id,
   }));
@@ -816,12 +812,39 @@ export default function BusinessCreatePage({
     setFormData((prev: any) => ({ ...prev, [name]: value }));
   };
 
+  const styleContentSelected = useMemo(() => {
+    const major = transformRawToGlobalStyleModel(
+      formData.businessdetails.globalStyle,
+    );
+    return Object.values(major.brand);
+  }, [formData.businessdetails.globalStyle]);
+
+  console.log(styleContentSelected);
+
   const handleSubmit = async () => {
     try {
       setIsSubmitting(true);
       setMessage({ type: "", text: "" });
 
       const fd = new FormData();
+
+      const major = transformRawToGlobalStyleModel(
+        formData.businessdetails.globalStyle,
+      );
+
+      const branding = {
+        colors: [
+          {
+            name: "Default Color",
+            seed: "",
+            colors: {
+              brand: major.body,
+              buttons: major.buttonColors,
+            },
+            isGlobal: true,
+          },
+        ],
+      };
 
       if (isAgencyPath && safeUser.role === "superadmin") {
         fd.append("agency_name", formData.agency_name || "");
@@ -831,7 +854,7 @@ export default function BusinessCreatePage({
 
       fd.append("createdById", safeUser?.id.toString());
       fd.append("businessdetails", JSON.stringify(formData.businessdetails));
-
+      fd.append("branding", JSON.stringify("branding"));
       if (formData.businessdetails.logo)
         fd.append("logo", formData.businessdetails.logo);
 
@@ -873,63 +896,63 @@ export default function BusinessCreatePage({
 
   const tabs = isAgencyPath
     ? [
-      {
-        id: "agency" as const,
-        label: "Agency Details",
-        desc: "Basic organization setup",
-        icon: User,
-      },
-      {
-        id: "business" as const,
-        label: "Website Setup",
-        desc: "Configure your website",
-        icon: Briefcase,
-      },
-      {
-        id: "general" as const,
-        label: "Account Details",
-        desc: "Basic information & branding",
-        icon: Briefcase,
-      },
-      {
-        id: "branding" as const,
-        label: "Branding",
-        desc: "Colors, logo & typography",
-        icon: Palette,
-      },
-      {
-        id: "review" as const,
-        label: "Review",
-        desc: "Review & submit",
-        icon: CheckCircle,
-      },
-    ]
+        {
+          id: "agency" as const,
+          label: "Agency Details",
+          desc: "Basic organization setup",
+          icon: User,
+        },
+        {
+          id: "business" as const,
+          label: "Website Setup",
+          desc: "Configure your website",
+          icon: Briefcase,
+        },
+        {
+          id: "general" as const,
+          label: "Account Details",
+          desc: "Basic information & branding",
+          icon: Briefcase,
+        },
+        {
+          id: "branding" as const,
+          label: "Branding",
+          desc: "Colors, logo & typography",
+          icon: Palette,
+        },
+        {
+          id: "review" as const,
+          label: "Review",
+          desc: "Review & submit",
+          icon: CheckCircle,
+        },
+      ]
     : [
-      {
-        id: "business" as const,
-        label: "Business Setup",
-        desc: "Configure your business",
-        icon: Briefcase,
-      },
-      {
-        id: "general" as const,
-        label: "Account Details",
-        desc: "Basic information",
-        icon: Briefcase,
-      },
-      {
-        id: "branding" as const,
-        label: "Branding",
-        desc: "Colors, logo & typography",
-        icon: Palette,
-      },
-      {
-        id: "review" as const,
-        label: "Review",
-        desc: "Review & submit",
-        icon: CheckCircle,
-      },
-    ];
+        {
+          id: "business" as const,
+          label: "Business Setup",
+          desc: "Configure your business",
+          icon: Briefcase,
+        },
+        {
+          id: "general" as const,
+          label: "Account Details",
+          desc: "Basic information",
+          icon: Briefcase,
+        },
+        {
+          id: "branding" as const,
+          label: "Branding",
+          desc: "Colors, logo & typography",
+          icon: Palette,
+        },
+        {
+          id: "review" as const,
+          label: "Review",
+          desc: "Review & submit",
+          icon: CheckCircle,
+        },
+      ];
 
   const currentIdx = useMemo(
     () => tabs.findIndex((t) => t.id === activeTab),
@@ -959,19 +982,6 @@ export default function BusinessCreatePage({
   const foundedYear = bd.founded_year;
   const primaryDomain =
     bd.primary_domain || (slug ? `${slug}.kalptree.xyz` : "-");
-
-  const brandColors = [
-    { label: "Primary", value: bd.primary_color || "" },
-    { label: "Secondary", value: bd.secondary_color || "" },
-    { label: "Tertiary", value: bd.tertiary_color || "" },
-  ];
-
-  const styleContentSelected = useMemo(() => {
-    const major = transformRawToGlobalStyleModel(
-      formData.businessdetails.globalStyle,
-    );
-    return Object.values(major.brand);
-  }, [formData.businessdetails.globalStyle]);
 
   return (
     <>
@@ -1059,10 +1069,11 @@ export default function BusinessCreatePage({
           <div>
             {message.text && (
               <div
-                className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${message.type === "success"
+                className={`mb-5 rounded-xl border p-4 flex items-center gap-3 ${
+                  message.type === "success"
                     ? "bg-green-50 text-green-800 border-green-200"
                     : "bg-red-50 text-red-800 border-red-200"
-                  }`}
+                }`}
               >
                 {message.type === "success" ? (
                   <CheckCircle className="h-5 w-5 shrink-0" />
@@ -1207,7 +1218,10 @@ export default function BusinessCreatePage({
                       <div className="divide-y divide-gray-100">
                         <InfoRow label="Brand Name:" value={bd.brand_name} />
                         <InfoRow label="URL Slug:" value={slug} />
-                        <InfoRow label="Primary Domain:" value={primaryDomain} />
+                        <InfoRow
+                          label="Primary Domain:"
+                          value={primaryDomain}
+                        />
                       </div>
                     </div>
 
