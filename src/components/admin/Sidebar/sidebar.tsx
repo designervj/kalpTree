@@ -28,7 +28,6 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
   const { user } = useSelector((state: RootState) => state.user);
   const { currentBusiness } = useSelector((state: RootState) => state.business);
 
-  console.log(currentBusiness);
 
   const pathname = usePathname();
   const hasPermission = useHasPermission(user);

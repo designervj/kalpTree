@@ -27,7 +27,7 @@ const GetAlColorPallet = () => {
   useEffect(() => {
     if (
       currentBusiness?.website?.branding &&
-      currentBusiness.website?.branding?.colors &&
+      currentBusiness?.website?.branding?.colors &&
       colorPallets &&
       colorPallets.length > 0
     ) {
@@ -37,6 +37,8 @@ const GetAlColorPallet = () => {
       ];
 
       dispatch(setAllColorPallets(allColorPallet));
+    } else {
+      dispatch(setAllColorPallets([...colorPallets]));
     }
   }, [currentBusiness, colorPallets]);
 

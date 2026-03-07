@@ -265,7 +265,7 @@ export function AppShell({ children }: AppShellProps) {
     }
   };
 
-  console.log("=====>>>", currentBusiness);
+
 
   const resetRedux = () => {
     dispatch(clearAttributes());
