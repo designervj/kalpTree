@@ -847,9 +847,10 @@ export default function TypographyPage({
       currentBusiness?.website?.globalStyle || "",
     );
 
-    const global = currentBusiness?.website?.branding.colors.find(
+    const global = currentBusiness?.website?.branding?.colors.find(
       (d) => d.isGlobal,
     );
+
 
     setRoot_Css(cssOnly);
     // Brand colors

@@ -73,9 +73,6 @@ export async function PUT(req: Request) {
     if (body.tenantId) {
       body.tenantId = new ObjectId(body.tenantId);
     }
-    if (body.websiteId) {
-      body.websiteId = new ObjectId(body.websiteId);
-    }
 
     const now = new Date().toISOString();
     const updateDoc = {
@@ -88,7 +85,7 @@ export async function PUT(req: Request) {
     if (updateDoc.isHomePage) {
       // update all other pages isHomePage to false
       await collection.updateMany(
-        { websiteId: updateDoc.websiteId, _id: { $ne: updateDoc._id } },
+        { tenantId: updateDoc.tenantId, _id: { $ne: updateDoc._id } },
         { $set: { isHomePage: false } },
       );
     }

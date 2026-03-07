@@ -23,13 +23,13 @@ export default async function PageTemplate({
   const header = await headers();
   const host = header.get("host");
   const db = await getDatabase();
-  console.log("host", host);
-  const EditButton = (await import("../../EditButtonBackup")).default;
 
-  // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
-  const isLocalhost =
-    host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
-  const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
+  // const EditButton = (await import("../../EditButtonBackup")).default;
+
+  // // Check if it's localhost (any port) or the MAIN KalpTree domain (not subdomains)
+  // const isLocalhost =
+  //   host?.startsWith("localhost") || host?.startsWith("127.0.0.1");
+  // const isMainKalpTree = host === "kalptree.xyz" || host === "www.kalptree.xyz";
 
   const jar = await cookies();
   let websiteData = jar.get("current_website_data")?.value || null;
@@ -73,7 +73,9 @@ export default async function PageTemplate({
       }
 
       let page;
+
       if (!slug) {
+        console.log("===>>", slug);
         page = await pagecoll.findOne({
           tenantId: tenantData._id,
           isHomePage: true,
@@ -81,10 +83,10 @@ export default async function PageTemplate({
       } else {
         page = await pagecoll.findOne({
           tenantId: tenantData._id,
-          slug: slug,
+          slug: slug == null ? "home" : slug,
         });
       }
-      console.log("page", page);
+
       if (!lang && tenantData.website.lang) {
         lang = tenantData.website.lang.find(
           (d: any) => d.default == true,
@@ -181,7 +183,9 @@ export default async function PageTemplate({
     const serializedCurrentWebsite = currentWebsite
       ? JSON.parse(JSON.stringify(currentWebsite))
       : null;
-    const serializedUser = session?.user ? JSON.parse(JSON.stringify(session.user)) : {};
+    const serializedUser = session?.user
+      ? JSON.parse(JSON.stringify(session.user))
+      : {};
 
     const processedHtml = html;
 
